@@ -134,6 +134,33 @@ button.plan-item:active{background:#111a22}
 .plan-item-state.done{color:var(--green)}.plan-item-state.planned{color:var(--blue)}
 .plan-empty{padding:10px 3px 12px;color:var(--muted);font-size:11.5px;line-height:1.4}
 
+
+.plan-detail{position:fixed;inset:0;z-index:70;background:var(--bg);overflow:auto;-webkit-overflow-scrolling:touch;padding:calc(env(safe-area-inset-top) + 8px) 12px calc(env(safe-area-inset-bottom) + 26px)}
+.plan-detail.hidden{display:none}
+.plan-detail-shell{max-width:720px;margin:0 auto}
+.plan-detail-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.plan-detail-back{appearance:none;border:0;background:transparent;color:var(--blue);font:inherit;font-size:16px;line-height:1.2;font-weight:700;padding:7px 2px}
+.plan-detail-date{font-size:10.5px;color:var(--muted);font-weight:650;white-space:nowrap}
+.plan-detail-title-wrap{display:flex;align-items:flex-start;gap:8px;margin-bottom:12px;min-width:0}
+.plan-detail-icon{font-size:22px;line-height:1.2;flex:0 0 auto}
+.plan-detail-title{font-size:24px;line-height:1.14;font-weight:780;letter-spacing:-.5px;color:#fff;white-space:nowrap;transform-origin:left center;min-width:0}
+.plan-detail-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--line);border-radius:18px;overflow:hidden;background:linear-gradient(180deg,#0e151c,#091016);margin-bottom:12px}
+.plan-detail-stat{position:relative;text-align:center;padding:11px 5px 10px}
+.plan-detail-stat+.plan-detail-stat::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:1px;background:var(--line)}
+.plan-detail-value{font-size:18px;line-height:1.2;font-weight:720;color:#fff;font-variant-numeric:tabular-nums}
+.plan-detail-label{margin-top:3px;font-size:9.5px;line-height:1.25;color:var(--muted);font-weight:650}
+.plan-detail-card{border:1px solid var(--line);border-radius:18px;background:#0b1117;padding:12px;margin-bottom:10px}
+.plan-detail-section-title{font-size:13px;line-height:1.25;font-weight:760;color:#fff;margin-bottom:9px}
+.plan-detail-steps{display:flex;flex-direction:column;gap:0}
+.plan-detail-step{display:grid;grid-template-columns:28px minmax(0,1fr);gap:9px;align-items:start;padding:9px 0;border-top:1px solid rgba(255,255,255,.06)}
+.plan-detail-step:first-child{border-top:0;padding-top:2px}
+.plan-detail-step-icon{font-size:17px;line-height:1.25;text-align:center}
+.plan-detail-step-title{font-size:13.5px;line-height:1.3;font-weight:720;color:#fff}
+.plan-detail-step-meta{margin-top:3px;font-size:11px;line-height:1.35;color:var(--muted)}
+.plan-detail-purpose{font-size:12px;line-height:1.5;color:#d8dee3}
+.plan-detail-raw{margin-top:7px;font-size:10.5px;line-height:1.45;color:var(--muted);word-break:break-word}
+.plan-detail-bottom{appearance:none;width:100%;border:1px solid var(--line);border-radius:14px;background:#0d141b;color:var(--blue);font:inherit;font-size:13px;font-weight:720;padding:12px}
+
 .data-grid{display:grid;grid-template-columns:1fr;gap:6px}
 .data-tile{appearance:none;border:1px solid var(--line);background:#0b1117;color:var(--text);border-radius:15px;min-height:48px;padding:8px 11px;text-align:left;display:grid;grid-template-columns:30px minmax(0,1fr) auto 12px;align-items:center;gap:8px}
 .data-tile:active{background:#111b24;transform:scale(.992)}
@@ -455,6 +482,35 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
   </div>
 </section>
 
+
+  <section class="plan-detail hidden" id="planDetail" aria-hidden="true">
+    <div class="plan-detail-shell">
+      <div class="plan-detail-top">
+        <button class="plan-detail-back" id="planDetailBack">‹ Volver</button>
+        <div class="plan-detail-date" id="planDetailDate">—</div>
+      </div>
+      <div class="plan-detail-title-wrap">
+        <div class="plan-detail-icon" id="planDetailIcon">🏃🏻‍♂️</div>
+        <div class="plan-detail-title" id="planDetailTitle">Entrenamiento</div>
+      </div>
+      <div class="plan-detail-summary">
+        <div class="plan-detail-stat"><div class="plan-detail-value" id="planDetailDistance">—</div><div class="plan-detail-label">Distancia</div></div>
+        <div class="plan-detail-stat"><div class="plan-detail-value" id="planDetailDuration">—</div><div class="plan-detail-label">Duración</div></div>
+        <div class="plan-detail-stat"><div class="plan-detail-value" id="planDetailTarget">—</div><div class="plan-detail-label">Objetivo</div></div>
+      </div>
+      <div class="plan-detail-card">
+        <div class="plan-detail-section-title">Estructura</div>
+        <div class="plan-detail-steps" id="planDetailSteps"></div>
+      </div>
+      <div class="plan-detail-card">
+        <div class="plan-detail-section-title">Propósito</div>
+        <div class="plan-detail-purpose" id="planDetailPurpose">—</div>
+        <div class="plan-detail-raw hidden" id="planDetailRaw"></div>
+      </div>
+      <button class="plan-detail-bottom" id="planDetailBottomBack">Volver al plan</button>
+    </div>
+  </section>
+
 <nav class="nav" aria-label="Navegación principal">
   <button class="nav-btn active" data-tab="today"><span class="nav-icon">☀️</span><span class="nav-label">Hoy</span></button>
   <button class="nav-btn" data-tab="activities"><span class="nav-icon">🏃🏻‍♂️</span><span class="nav-label">Actividades</span></button>
@@ -491,9 +547,10 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
 
 
 
+
 (()=>{
 "use strict";
-const APP_VERSION="0.42.0",SCHEMA_VERSION=9,DB_NAME="atlas",DB_VERSION=2;
+const APP_VERSION="0.43.0",SCHEMA_VERSION=9,DB_NAME="atlas",DB_VERSION=2;
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -503,12 +560,13 @@ function onAll(selector,type,handler,root=document,options){qsa(selector,root).f
 const ui={
  todayDate:$("todayDate"),stateDateLabel:$("stateDateLabel"),quickSyncBtn:$("quickSyncBtn"),trainingStateBtn:$("trainingStateBtn"),trainingStateCircle:$("trainingStateCircle"),trainingStateScore:$("trainingStateScore"),trainingStateWord:$("trainingStateWord"),trainingStateNote:$("trainingStateNote"),sleepValue:$("sleepValue"),sleepMeta:$("sleepMeta"),hrvValue:$("hrvValue"),hrvMeta:$("hrvMeta"),rhrValue:$("rhrValue"),rhrMeta:$("rhrMeta"),vo2Value:$("vo2Value"),vo2Meta:$("vo2Meta"),freshValue:$("freshValue"),freshMeta:$("freshMeta"),volumeValue:$("volumeValue"),volumeMeta:$("volumeMeta"),
  lastActivityBtn:$("lastActivityBtn"),activitySportFilter:$("activitySportFilter"),activityYearFilter:$("activityYearFilter"),activitySearch:$("activitySearch"),activitiesSummary:$("activitiesSummary"),activitiesList:$("activitiesList"),activityDetail:$("activityDetail"),activityDetailBack:$("activityDetailBack"),activityDetailBottomBack:$("activityDetailBottomBack"),activityDetailEmoji:$("activityDetailEmoji"),activityDetailTitle:$("activityDetailTitle"),activityDetailDate:$("activityDetailDate"),activityMap:$("activityMap"),activityDetailLoading:$("activityDetailLoading"),activityPrimary:$("activityPrimary"),activityEquipment:$("activityEquipment"),activityPerception:$("activityPerception"),activityAnalysis:$("activityAnalysis"),activityChartTabs:$("activityChartTabs"),activityChartStats:$("activityChartStats"),activityChartCard:$("activityChartCard"),activityChartScroll:$("activityChartScroll"),activityChart:$("activityChart"),activityChartReadout:$("activityChartReadout"),activityLaps:$("activityLaps"),activityLapsRows:$("activityLapsRows"),activityDescription:$("activityDescription"),
+ planDetail:$("planDetail"),planDetailBack:$("planDetailBack"),planDetailBottomBack:$("planDetailBottomBack"),planDetailDate:$("planDetailDate"),planDetailIcon:$("planDetailIcon"),planDetailTitle:$("planDetailTitle"),planDetailDistance:$("planDetailDistance"),planDetailDuration:$("planDetailDuration"),planDetailTarget:$("planDetailTarget"),planDetailSteps:$("planDetailSteps"),planDetailPurpose:$("planDetailPurpose"),planDetailRaw:$("planDetailRaw"),
  planPrev:$("planPrev"),planNext:$("planNext"),planToday:$("planToday"),planRange:$("planRange"),planRangeSub:$("planRangeSub"),planPlannedKm:$("planPlannedKm"),planDoneKm:$("planDoneKm"),planSessions:$("planSessions"),planDays:$("planDays"),
  profileTileNote:$("profileTileNote"),shoesTileNote:$("shoesTileNote"),connectionTileNote:$("connectionTileNote"),profileName:$("profileName"),gearState:$("gearState"),connectionState:$("connectionState"),
  smartSyncBtn:$("smartSyncBtn"),testBtn:$("testBtn"),settingsBtn:$("settingsBtn"),fullSyncBtn:$("fullSyncBtn"),exportBtn:$("exportBtn"),importBtn:$("importBtn"),clearBtn:$("clearBtn"),fileInput:$("fileInput"),toast:$("toast"),
  settingsDialog:$("settingsDialog"),settingsForm:$("settingsForm"),workerUrl:$("workerUrl"),clientToken:$("clientToken"),oldestDate:$("oldestDate"),newestDate:$("newestDate"),historyStart:$("historyStart"),overlapDays:$("overlapDays"),metricDetail:$("metricDetail"),metricDetailBack:$("metricDetailBack"),metricDetailTitle:$("metricDetailTitle"),metricDetailEmoji:$("metricDetailEmoji"),metricPeriodControl:$("metricPeriodControl"),metricPrev:$("metricPrev"),metricNext:$("metricNext"),metricRangeLabel:$("metricRangeLabel"),metricChartScroll:$("metricChartScroll"),metricChart:$("metricChart"),metricChartReadout:$("metricChartReadout"),chartLegend:$("chartLegend"),detailStatLabel1:$("detailStatLabel1"),detailStatValue1:$("detailStatValue1"),detailStatLabel2:$("detailStatLabel2"),detailStatValue2:$("detailStatValue2"),detailStatLabel3:$("detailStatLabel3"),detailStatValue3:$("detailStatValue3"),detailStatSub1:$("detailStatSub1"),detailStatSub2:$("detailStatSub2"),detailStatSub3:$("detailStatSub3"),metricContext:$("metricContext"),metricDetailBottomBack:$("metricDetailBottomBack"),stateDetail:$("stateDetail"),stateDetailBack:$("stateDetailBack"),stateDetailBottomBack:$("stateDetailBottomBack"),stateDetailHero:$("stateDetailHero"),stateDetailRing:$("stateDetailRing"),stateDetailScore:$("stateDetailScore"),stateDetailWord:$("stateDetailWord"),stateDetailNote:$("stateDetailNote"),stateDetailMeta:$("stateDetailMeta"),stateFactors:$("stateFactors"),stateBaseScore:$("stateBaseScore"),stateRecoveryPenalty:$("stateRecoveryPenalty"),stateLimiter:$("stateLimiter")
 };
-let db,toastTimer,currentActivities=[],currentWellness=[],currentGear=[],currentEvents=[],currentCachedVo2=null,currentPlanWeekStart=null,currentActivityDetail=null,currentActivityMap=null,currentActivityStreams=null,currentActivityVo2=null,currentActivityChartKey=null,activityChartZoom=1,activityPinchStartDistance=0,activityPinchStartZoom=1,activityChartPointerStart=null,activityChartReadoutTimer=null,currentMetricDetail=null,currentMetricDays=30,currentMetricEnd=null,currentAtlasState=null,currentChartState=null,chartReadoutTimer=null,chartZoom=1,pinchStartDistance=0,pinchStartZoom=1,chartPointerStart=null;
+let db,toastTimer,currentActivities=[],currentWellness=[],currentGear=[],currentEvents=[],currentCachedVo2=null,currentPlanWeekStart=nullcurrentPlanEvent=null,currentActivityDetail=null,currentActivityMap=null,currentActivityStreams=null,currentActivityVo2=null,currentActivityChartKey=null,activityChartZoom=1,activityPinchStartDistance=0,activityPinchStartZoom=1,activityChartPointerStart=null,activityChartReadoutTimer=null,currentMetricDetail=null,currentMetricDays=30,currentMetricEnd=null,currentAtlasState=null,currentChartState=null,chartReadoutTimer=null,chartZoom=1,pinchStartDistance=0,pinchStartZoom=1,chartPointerStart=null;
 window.addEventListener("DOMContentLoaded",()=>init().catch(reportFatalError));
 const CORE_UI_KEYS=["todayDate","lastActivityBtn","activitiesList","activityDetail","metricDetail","stateDetail","toast","settingsDialog"];
 function assertCoreUi(){const missing=CORE_UI_KEYS.filter(key=>!ui[key]);if(missing.length)throw new Error(`Interfaz incompleta: ${missing.join(", ")}`);return true;}
@@ -525,7 +583,7 @@ function bindEvents(){
  on(ui.activityChartTabs,"click",e=>{const b=e.target.closest(".activity-chart-tab");if(!b)return;const key=b.dataset.key;currentActivityChartKey=currentActivityChartKey===key?null:key;activityChartZoom=1;if(ui.activityChartScroll)ui.activityChartScroll.scrollLeft=0;hideActivityChartReadout();renderActivityAnalysis();});
  on(ui.activityChart,"pointerdown",e=>{activityChartPointerStart={x:e.clientX,y:e.clientY};});on(ui.activityChart,"pointerup",handleActivityChartPointerUp);
  on(ui.activityChartScroll,"touchstart",handleActivityChartPinchStart,{passive:true});on(ui.activityChartScroll,"touchmove",handleActivityChartPinchMove,{passive:false});on(ui.activityChartScroll,"touchend",handleActivityChartPinchEnd,{passive:true});on(ui.activityChartScroll,"dblclick",()=>setActivityChartZoom(1));
- on(ui.planPrev,"click",()=>shiftPlanWeek(-1));on(ui.planNext,"click",()=>shiftPlanWeek(1));on(ui.planToday,"click",()=>{currentPlanWeekStart=mondayOf(new Date());renderPlan();});on(ui.planDays,"click",e=>{const row=e.target.closest("[data-activity-id]");if(row)openActivityDetail(row.dataset.activityId);});
+ on(ui.planPrev,"click",()=>shiftPlanWeek(-1));on(ui.planNext,"click",()=>shiftPlanWeek(1));on(ui.planToday,"click",()=>{currentPlanWeekStart=mondayOf(new Date());renderPlan();});on(ui.planDays,"click",e=>{const activity=e.target.closest("[data-activity-id]");if(activity){openActivityDetail(activity.dataset.activityId);return;}const planned=e.target.closest("[data-plan-event-id]");if(planned)openPlanDetail(planned.dataset.planEventId);});on(ui.planDetailBack,"click",closePlanDetail);on(ui.planDetailBottomBack,"click",closePlanDetail);
  onAll(".metric-link","click",e=>openMetricDetail(e.currentTarget.dataset.metric));
  on(ui.metricDetailBack,"click",closeMetricDetail);on(ui.metricDetailBottomBack,"click",closeMetricDetail);
  on(ui.metricChart,"pointerdown",e=>{chartPointerStart={x:e.clientX,y:e.clientY};});on(ui.metricChart,"pointerup",handleChartPointerUp);
@@ -679,6 +737,88 @@ function shiftPlanWeek(delta){if(!currentPlanWeekStart)currentPlanWeekStart=mond
 function planRangeLabel(start,end){const months=["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"];if(start.getMonth()===end.getMonth())return`${start.getDate()}–${end.getDate()} ${months[start.getMonth()]} ${String(end.getFullYear()).slice(-2)}`;return`${start.getDate()} ${months[start.getMonth()]} – ${end.getDate()} ${months[end.getMonth()]} ${String(end.getFullYear()).slice(-2)}`;}
 function planWeekSubLabel(start){const current=mondayOf(new Date()),diff=Math.round((start-current)/604800000);return diff===0?"Esta semana":diff===1?"Próxima semana":diff===-1?"Semana anterior":diff>1?`Dentro de ${diff} semanas`:`Hace ${Math.abs(diff)} semanas`;}
 
+
+function planEventId(e,i=0){return String(e?.id??e?.event_id??e?.calendar_id??`${planEventDate(e)}-${i}-${planEventName(e)}`);}
+function normalizePlanName(name){return String(name||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[’‘´`]/g,"'").trim();}
+function parsePlanWorkout(e){
+  const raw=planEventName(e),s=normalizePlanName(raw),steps=[];
+  const warm=/\bWU\b|calent/i.test(s),cool=/\bCD\b|enfri|vuelta a la calma/i.test(s);
+  const rep=s.match(/(\d+)\s*[x×]\s*\(?\s*([\d.,]+)\s*(km|m)\b(?:\s*@\s*([0-9]+:[0-9]{2}))?(?:[^)]*?\bR\s*([0-9]+(?::[0-9]{2})?)\s*['"m]?)/i)
+         ||s.match(/(\d+)\s*[x×]\s*\(?\s*([\d.,]+)\s*(km|m)\b(?:\s*@\s*([0-9]+:[0-9]{2}))?/i);
+  let reps=null,repDistanceM=null,targetPace=null,recovery=null;
+  if(rep){
+    reps=Number(rep[1]);
+    const token=rep[2],unit=rep[3].toLowerCase();
+    let d;
+    if(unit==="m"&&/^\d{1,3}[.,]\d{3}$/.test(token))d=Number(token.replace(/[.,]/g,""));
+    else d=Number(token.replace(",","."));
+    repDistanceM=unit==="km"?d*1000:d;
+    targetPace=rep[4]||null;
+    recovery=rep[5]||null;
+  }
+  const tempo=s.match(/(?:tempo|umbral|threshold)[^0-9]*([\d.,]+)\s*(km|m)?(?:\s*@\s*([0-9]+:[0-9]{2}))?/i);
+  if(warm)steps.push({icon:"🔥",title:"Calentamiento",meta:"Rodaje suave y progresivo"});
+  if(rep&&reps&&repDistanceM){
+    const dist=repDistanceM>=1000?`${formatNatural(repDistanceM/1000,2)} km`:`${Math.round(repDistanceM)} m`;
+    const parts=[`${reps} × ${dist}`];
+    if(targetPace)parts.push(`${targetPace} min/km`);
+    if(recovery)parts.push(`Rec. ${recovery}${recovery.includes(":")?" min":" min"}`);
+    steps.push({icon:"⚡",title:"Bloque principal",meta:parts.join(" · ")});
+  }else if(tempo){
+    const token=tempo[1],unit=(tempo[2]||"km").toLowerCase(),d=Number(token.replace(",","."));
+    const dist=unit==="m"?`${Math.round(d)} m`:`${formatNatural(d,2)} km`;
+    steps.push({icon:"⚡",title:"Bloque principal",meta:[dist,tempo[3]?`${tempo[3]} min/km`:null].filter(Boolean).join(" · ")});
+  }else{
+    const dist=planEventDistanceM(e),dur=planEventDurationSec(e),parts=[];
+    if(dist)parts.push(`${formatNatural(dist/1000,2)} km`);
+    if(dur)parts.push(formatDuration(dur));
+    steps.push({icon:sportMeta(planEventType(e)).emoji,title:raw,meta:parts.join(" · ")||sportMeta(planEventType(e)).label});
+  }
+  if(cool)steps.push({icon:"❄️",title:"Enfriamiento",meta:"Rodaje suave para terminar"});
+  const totalDistance=planEventDistanceM(e);
+  const totalDuration=planEventDurationSec(e);
+  let target="Libre";
+  if(targetPace)target=targetPace;
+  else if(/suave|easy/i.test(s))target="Suave";
+  else if(/tempo|umbral|threshold/i.test(s))target="Tempo";
+  else if(rep)target="Series";
+  const purpose=rep
+    ?"Desarrollar velocidad y economía de carrera manteniendo una ejecución homogénea en las repeticiones."
+    :/tirada|long run|larga/i.test(s)
+      ?"Acumular resistencia aeróbica y tolerancia al tiempo prolongado de carrera."
+      :/suave|easy|rodaje/i.test(s)
+        ?"Acumular volumen aeróbico con una exigencia controlada y favorecer la recuperación."
+        :"Completar la sesión prevista respetando la intensidad y el volumen indicados.";
+  return{raw,steps,totalDistance,totalDuration,target,purpose};
+}
+function fitPlanDetailTitle(){
+  const el=ui.planDetailTitle;if(!el)return;el.style.transform="";el.style.width="";
+  const box=el.parentElement;if(!box)return;
+  const max=box.clientWidth-(ui.planDetailIcon?.offsetWidth||0)-8,natural=el.scrollWidth;
+  if(natural>max&&max>0){const scale=Math.max(.72,Math.min(1,max/natural));el.style.transform=`scaleX(${scale})`;el.style.width=`${100/scale}%`;}
+}
+function openPlanDetail(id){
+  const idx=currentEvents.findIndex((e,i)=>planEventId(e,i)===String(id));
+  if(idx<0)return;
+  const e=currentEvents[idx],parsed=parsePlanWorkout(e),meta=sportMeta(planEventType(e));
+  currentPlanEvent=e;
+  ui.planDetailIcon.textContent=meta.emoji;
+  ui.planDetailTitle.textContent=planEventName(e);
+  const date=planEventDate(e),d=date?new Date(`${date}T12:00:00`):null;
+  ui.planDetailDate.textContent=d&&!Number.isNaN(d.getTime())?d.toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long"}):"";
+  ui.planDetailDistance.textContent=parsed.totalDistance?`${formatNatural(parsed.totalDistance/1000,2)} km`:"—";
+  ui.planDetailDuration.textContent=parsed.totalDuration?formatDuration(parsed.totalDuration):"—";
+  ui.planDetailTarget.textContent=parsed.target==="Libre"?"Libre":parsed.target.includes(":")?parsed.target:parsed.target;
+  ui.planDetailSteps.innerHTML=parsed.steps.map(x=>`<div class="plan-detail-step"><div class="plan-detail-step-icon">${x.icon}</div><div><div class="plan-detail-step-title">${esc(x.title)}</div><div class="plan-detail-step-meta">${esc(x.meta)}</div></div></div>`).join("");
+  ui.planDetailPurpose.textContent=parsed.purpose;
+  ui.planDetailRaw.textContent=parsed.raw;
+  ui.planDetailRaw.classList.toggle("hidden",parsed.steps.length>1);
+  ui.planDetail.classList.remove("hidden");ui.planDetail.setAttribute("aria-hidden","false");
+  document.body.style.overflow="hidden";
+  requestAnimationFrame(fitPlanDetailTitle);
+}
+function closePlanDetail(){if(!ui.planDetail)return;ui.planDetail.classList.add("hidden");ui.planDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";currentPlanEvent=null;}
+
 function fitPlanTitles(){
   qsa(".plan-day-main-title").forEach(el=>{
     el.style.transform="";el.style.width="";
@@ -693,7 +833,7 @@ function fitPlanTitles(){
   });
 }
 function planActivityMetaParts(a){const parts=[],d=activityDistanceM(a),t=activityElapsedSec(a),pace=activityPaceSecKm(a);if(d)parts.push(`${formatNatural(d/1000,2)} km`);if(t)parts.push(formatDuration(t));if(isRun(a)&&pace)parts.push(formatPaceSecs(pace));return parts;}function planActivityMeta(a){return planActivityMetaParts(a).join(" · ");}
-function renderPlan(){if(!ui.planDays)return;if(!currentPlanWeekStart)currentPlanWeekStart=mondayOf(new Date());const{start,end,startKey,endKey}=planWeekRange(),today=fmtDate(new Date()),events=currentEvents.filter(e=>{const d=planEventDate(e);return d>=startKey&&d<=endKey;}),activities=currentActivities.filter(a=>{const d=activityDate(a);return d>=startKey&&d<=endKey;});ui.planRange.textContent=planRangeLabel(start,end);ui.planRangeSub.textContent=planWeekSubLabel(start);const plannedKm=events.reduce((s,e)=>s+(planEventDistanceM(e)||0),0)/1000,doneKm=activities.reduce((s,a)=>s+(activityDistanceM(a)||0),0)/1000;ui.planPlannedKm.textContent=formatNatural(plannedKm,1);ui.planDoneKm.textContent=formatNatural(doneKm,1);ui.planSessions.textContent=String(events.length||activities.length);const days=["LUN","MAR","MIÉ","JUE","VIE","SÁB","DOM"],markup=[];for(let i=0;i<7;i++){const d=new Date(start);d.setDate(start.getDate()+i);const key=planDateKey(d),dayEvents=events.filter(e=>planEventDate(e)===key),dayActivities=activities.filter(a=>activityDate(a)===key).sort((a,b)=>activityStamp(a).localeCompare(activityStamp(b))),sessions=[];for(const e of dayEvents){const meta=sportMeta(planEventType(e));sessions.push({kind:"plan",icon:meta.emoji,title:planEventName(e),metaParts:(planEventMeta(e)||meta.label).split(" · "),activityId:null});}for(const a of dayActivities){sessions.push({kind:"done",icon:activityIcon(a),title:activityName(a),metaParts:planActivityMetaParts(a),activityId:String(a.id)});}let head="",body="";if(sessions.length===1){const s=sessions[0],tag=s.activityId?"button":"div",attrs=s.activityId?` type="button" data-activity-id="${esc(s.activityId)}"`:"",metaHtml=s.metaParts.filter(Boolean).map((x,idx)=>`${idx?'<span class="activity-mini-sep" aria-hidden="true"></span>':""}<span>${esc(x)}</span>`).join("");head=`<${tag} class="plan-day-head single-session"${attrs}><div class="plan-day-date"><span class="plan-day-weekday">${days[i]}</span><span class="plan-day-number">${d.getDate()}</span></div><span class="plan-day-sep" aria-hidden="true"></span><div class="plan-day-copy"><div class="plan-day-mainline"><span class="plan-day-main-icon">${s.icon}</span><span class="plan-day-main-title">${esc(s.title)}</span></div><div class="plan-day-main-meta">${metaHtml}</div></div></${tag}>`;}else if(sessions.length===0){head=`<div class="plan-day-head"><div class="plan-day-date"><span class="plan-day-weekday">${days[i]}</span><span class="plan-day-number">${d.getDate()}</span></div><span class="plan-day-sep" aria-hidden="true"></span><div class="plan-day-copy"></div></div>`;}else{head=`<div class="plan-day-head"><div class="plan-day-date"><span class="plan-day-weekday">${days[i]}</span><span class="plan-day-number">${d.getDate()}</span></div><span class="plan-day-sep" aria-hidden="true"></span><div class="plan-day-copy"><div class="plan-day-title">${sessions.length} sesiones</div></div></div>`;body=`<div class="plan-items">${sessions.map(s=>{const metaHtml=s.metaParts.filter(Boolean).map((x,idx)=>`${idx?'<span class="activity-mini-sep" aria-hidden="true"></span>':""}<span>${esc(x)}</span>`).join("");return`${s.activityId?`<button class="plan-item" data-activity-id="${esc(s.activityId)}">`:`<div class="plan-item">`}<div class="plan-item-icon">${s.icon}</div><div class="plan-item-copy"><div class="plan-item-title">${esc(s.title)}</div><div class="plan-item-meta">${metaHtml}</div></div>${s.activityId?"</button>":"</div>"}`;}).join("")}</div>`;}markup.push(`<section class="plan-day${key===today?" today":""}">${head}${body}</section>`);}ui.planDays.innerHTML=markup.join("");requestAnimationFrame(fitPlanTitles);}
+function renderPlan(){if(!ui.planDays)return;if(!currentPlanWeekStart)currentPlanWeekStart=mondayOf(new Date());const{start,end,startKey,endKey}=planWeekRange(),today=fmtDate(new Date()),events=currentEvents.filter(e=>{const d=planEventDate(e);return d>=startKey&&d<=endKey;}),activities=currentActivities.filter(a=>{const d=activityDate(a);return d>=startKey&&d<=endKey;});ui.planRange.textContent=planRangeLabel(start,end);ui.planRangeSub.textContent=planWeekSubLabel(start);const plannedKm=events.reduce((s,e)=>s+(planEventDistanceM(e)||0),0)/1000,doneKm=activities.reduce((s,a)=>s+(activityDistanceM(a)||0),0)/1000;ui.planPlannedKm.textContent=formatNatural(plannedKm,1);ui.planDoneKm.textContent=formatNatural(doneKm,1);ui.planSessions.textContent=String(events.length||activities.length);const days=["LUN","MAR","MIÉ","JUE","VIE","SÁB","DOM"],markup=[];for(let i=0;i<7;i++){const d=new Date(start);d.setDate(start.getDate()+i);const key=planDateKey(d),dayEvents=events.filter(e=>planEventDate(e)===key),dayActivities=activities.filter(a=>activityDate(a)===key).sort((a,b)=>activityStamp(a).localeCompare(activityStamp(b))),sessions=[];for(const e of dayEvents){const meta=sportMeta(planEventType(e));sessions.push({kind:"plan",icon:meta.emoji,title:planEventName(e),metaParts:(planEventMeta(e)||meta.label).split(" · "),activityId:null,planEventId:planEventId(e,currentEvents.indexOf(e))});}for(const a of dayActivities){sessions.push({kind:"done",icon:activityIcon(a),title:activityName(a),metaParts:planActivityMetaParts(a),activityId:String(a.id)});}let head="",body="";if(sessions.length===1){const s=sessions[0],tag=(s.activityId||s.planEventId)?"button":"div",attrs=s.activityId?` type="button" data-activity-id="${esc(s.activityId)}"`:s.planEventId?` type="button" data-plan-event-id="${esc(s.planEventId)}"`:"",metaHtml=s.metaParts.filter(Boolean).map((x,idx)=>`${idx?'<span class="activity-mini-sep" aria-hidden="true"></span>':""}<span>${esc(x)}</span>`).join("");head=`<${tag} class="plan-day-head single-session"${attrs}><div class="plan-day-date"><span class="plan-day-weekday">${days[i]}</span><span class="plan-day-number">${d.getDate()}</span></div><span class="plan-day-sep" aria-hidden="true"></span><div class="plan-day-copy"><div class="plan-day-mainline"><span class="plan-day-main-icon">${s.icon}</span><span class="plan-day-main-title">${esc(s.title)}</span></div><div class="plan-day-main-meta">${metaHtml}</div></div></${tag}>`;}else if(sessions.length===0){head=`<div class="plan-day-head"><div class="plan-day-date"><span class="plan-day-weekday">${days[i]}</span><span class="plan-day-number">${d.getDate()}</span></div><span class="plan-day-sep" aria-hidden="true"></span><div class="plan-day-copy"></div></div>`;}else{head=`<div class="plan-day-head"><div class="plan-day-date"><span class="plan-day-weekday">${days[i]}</span><span class="plan-day-number">${d.getDate()}</span></div><span class="plan-day-sep" aria-hidden="true"></span><div class="plan-day-copy"><div class="plan-day-title">${sessions.length} sesiones</div></div></div>`;body=`<div class="plan-items">${sessions.map(s=>{const metaHtml=s.metaParts.filter(Boolean).map((x,idx)=>`${idx?'<span class="activity-mini-sep" aria-hidden="true"></span>':""}<span>${esc(x)}</span>`).join("");return`${s.activityId?`<button class="plan-item" data-activity-id="${esc(s.activityId)}">`:s.planEventId?`<button class="plan-item" data-plan-event-id="${esc(s.planEventId)}">`:`<div class="plan-item">`}<div class="plan-item-icon">${s.icon}</div><div class="plan-item-copy"><div class="plan-item-title">${esc(s.title)}</div><div class="plan-item-meta">${metaHtml}</div></div>${(s.activityId||s.planEventId)?"</button>":"</div>"}`;}).join("")}</div>`;}markup.push(`<section class="plan-day${key===today?" today":""}">${head}${body}</section>`);}ui.planDays.innerHTML=markup.join("");requestAnimationFrame(fitPlanTitles);}
 
 /* ===== Actividades: normalización, listado y detalle ===== */
 function activityType(a){const type=String(a?.type||""),sport=String(a?.sport||a?.activity_type||""),name=String(a?.name||a?.title||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();const joined=`${type} ${sport}`.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();if(/soccer|football|futbol/.test(joined)||/\bfutbol\b/.test(name))return"Football";return sport||type||"Actividad";}
@@ -1034,6 +1174,7 @@ async function exportDatabase(){try{const data={};for(const s of STORES)data[s]=
 async function importDatabase(e){const file=e.target.files?.[0];e.target.value="";if(!file)return;try{const p=JSON.parse(await file.text()),v=Number(p?.atlas?.schemaVersion);if(![1,2,3,4,5,6,7,8,9].includes(v)||!p?.data)throw new Error("Copia de ɅTLɅS no compatible.");const stores=v===1?["settings","meta","profile","activities","wellness"]:STORES;for(const s of stores){if(!db.objectStoreNames.contains(s))continue;const rec=p.data[s];if(!Array.isArray(rec)||!rec.length)continue;const tx=db.transaction(s,"readwrite"),st=tx.objectStore(s);for(const r of rec){if(s==="settings"&&r?.key==="clientToken")continue;st.put(r);}await txDone(tx);}await refreshAll();toast("✅ JSON importado.");}catch(err){toast(`⚠️ ${err.message}`,true);}}
 async function clearData(){if(!confirm("¿Borrar todos los datos deportivos locales? La conexión se conservará."))return;try{for(const s of DATA_STORES)await storeClear(s);await refreshAll();toast("✅ Base de datos vaciada.");}catch(e){toast(`⚠️ ${e.message}`,true);}}
 })();
+
 
 
 
