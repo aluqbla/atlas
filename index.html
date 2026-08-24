@@ -570,9 +570,10 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
 
 
 
+
 (()=>{
 "use strict";
-const APP_VERSION="0.44.0",SCHEMA_VERSION=9,DB_NAME="atlas",DB_VERSION=2;
+const APP_VERSION="0.44.1",SCHEMA_VERSION=9,DB_NAME="atlas",DB_VERSION=2;
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -589,7 +590,7 @@ const ui={
  smartSyncBtn:$("smartSyncBtn"),testBtn:$("testBtn"),settingsBtn:$("settingsBtn"),fullSyncBtn:$("fullSyncBtn"),exportBtn:$("exportBtn"),importBtn:$("importBtn"),clearBtn:$("clearBtn"),fileInput:$("fileInput"),toast:$("toast"),
  settingsDialog:$("settingsDialog"),settingsForm:$("settingsForm"),workerUrl:$("workerUrl"),clientToken:$("clientToken"),oldestDate:$("oldestDate"),newestDate:$("newestDate"),historyStart:$("historyStart"),overlapDays:$("overlapDays"),metricDetail:$("metricDetail"),metricDetailBack:$("metricDetailBack"),metricDetailTitle:$("metricDetailTitle"),metricDetailEmoji:$("metricDetailEmoji"),metricPeriodControl:$("metricPeriodControl"),metricPrev:$("metricPrev"),metricNext:$("metricNext"),metricRangeLabel:$("metricRangeLabel"),metricChartScroll:$("metricChartScroll"),metricChart:$("metricChart"),metricChartReadout:$("metricChartReadout"),chartLegend:$("chartLegend"),detailStatLabel1:$("detailStatLabel1"),detailStatValue1:$("detailStatValue1"),detailStatLabel2:$("detailStatLabel2"),detailStatValue2:$("detailStatValue2"),detailStatLabel3:$("detailStatLabel3"),detailStatValue3:$("detailStatValue3"),detailStatSub1:$("detailStatSub1"),detailStatSub2:$("detailStatSub2"),detailStatSub3:$("detailStatSub3"),metricContext:$("metricContext"),metricDetailBottomBack:$("metricDetailBottomBack"),stateDetail:$("stateDetail"),stateDetailBack:$("stateDetailBack"),stateDetailBottomBack:$("stateDetailBottomBack"),stateDetailHero:$("stateDetailHero"),stateDetailRing:$("stateDetailRing"),stateDetailScore:$("stateDetailScore"),stateDetailWord:$("stateDetailWord"),stateDetailNote:$("stateDetailNote"),stateDetailMeta:$("stateDetailMeta"),stateFactors:$("stateFactors"),stateBaseScore:$("stateBaseScore"),stateRecoveryPenalty:$("stateRecoveryPenalty"),stateLimiter:$("stateLimiter")
 };
-let db,toastTimer,currentActivities=[],currentWellness=[],currentGear=[],currentEvents=[],currentCachedVo2=null,currentPlanWeekStart=nullcurrentPlanEvent=null,currentActivityDetail=null,currentActivityMap=null,currentActivityStreams=null,currentActivityVo2=null,currentActivityChartKey=null,activityChartZoom=1,activityPinchStartDistance=0,activityPinchStartZoom=1,activityChartPointerStart=null,activityChartReadoutTimer=null,currentMetricDetail=null,currentMetricDays=30,currentMetricEnd=null,currentAtlasState=null,currentChartState=null,chartReadoutTimer=null,chartZoom=1,pinchStartDistance=0,pinchStartZoom=1,chartPointerStart=null;
+let db,toastTimer,currentActivities=[],currentWellness=[],currentGear=[],currentEvents=[],currentCachedVo2=null,currentPlanWeekStart=null,currentPlanEvent=null,currentActivityDetail=null,currentActivityMap=null,currentActivityStreams=null,currentActivityVo2=null,currentActivityChartKey=null,activityChartZoom=1,activityPinchStartDistance=0,activityPinchStartZoom=1,activityChartPointerStart=null,activityChartReadoutTimer=null,currentMetricDetail=null,currentMetricDays=30,currentMetricEnd=null,currentAtlasState=null,currentChartState=null,chartReadoutTimer=null,chartZoom=1,pinchStartDistance=0,pinchStartZoom=1,chartPointerStart=null;
 window.addEventListener("DOMContentLoaded",()=>init().catch(reportFatalError));
 const CORE_UI_KEYS=["todayDate","lastActivityBtn","activitiesList","activityDetail","metricDetail","stateDetail","toast","settingsDialog"];
 function assertCoreUi(){const missing=CORE_UI_KEYS.filter(key=>!ui[key]);if(missing.length)throw new Error(`Interfaz incompleta: ${missing.join(", ")}`);return true;}
@@ -1204,6 +1205,7 @@ async function exportDatabase(){try{const data={};for(const s of STORES)data[s]=
 async function importDatabase(e){const file=e.target.files?.[0];e.target.value="";if(!file)return;try{const p=JSON.parse(await file.text()),v=Number(p?.atlas?.schemaVersion);if(![1,2,3,4,5,6,7,8,9].includes(v)||!p?.data)throw new Error("Copia de ɅTLɅS no compatible.");const stores=v===1?["settings","meta","profile","activities","wellness"]:STORES;for(const s of stores){if(!db.objectStoreNames.contains(s))continue;const rec=p.data[s];if(!Array.isArray(rec)||!rec.length)continue;const tx=db.transaction(s,"readwrite"),st=tx.objectStore(s);for(const r of rec){if(s==="settings"&&r?.key==="clientToken")continue;st.put(r);}await txDone(tx);}await refreshAll();toast("✅ JSON importado.");}catch(err){toast(`⚠️ ${err.message}`,true);}}
 async function clearData(){if(!confirm("¿Borrar todos los datos deportivos locales? La conexión se conservará."))return;try{for(const s of DATA_STORES)await storeClear(s);await refreshAll();toast("✅ Base de datos vaciada.");}catch(e){toast(`⚠️ ${e.message}`,true);}}
 })();
+
 
 
 
