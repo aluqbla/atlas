@@ -95,6 +95,39 @@ button,input{font:inherit}button{cursor:pointer}
 
 
 
+
+
+
+.plan-manual-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.plan-manual-btn{appearance:none;min-height:39px;border:1px solid rgba(29,155,240,.24);border-radius:11px;background:rgba(29,155,240,.065);color:#b7ddf6;font:inherit;font-size:9.8px;font-weight:730;padding:7px 5px}
+.plan-manual-btn:active{background:rgba(29,155,240,.12)}
+.plan-manual-session{border:1px solid rgba(255,255,255,.06);border-radius:12px;background:#0a1117;padding:8px 9px;margin-bottom:9px;color:#fff;font-size:10.4px;line-height:1.4;font-weight:690}
+.plan-manual-impact{margin-top:9px;border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:9px;color:#cbd6dc;font-size:10px;line-height:1.45;background:rgba(255,255,255,.018)}
+.plan-manual-impact.ok{border-color:rgba(0,186,124,.22);color:#9ee6c8}.plan-manual-impact.warn{border-color:rgba(255,212,0,.22);color:#ffe37a}.plan-manual-impact.bad{border-color:rgba(244,33,46,.25);color:#ff9aa2}
+.session-preview-rest{border:1px solid rgba(255,255,255,.04);border-radius:10px;background:rgba(255,255,255,.008);padding:7px 8px;margin-top:5px;color:var(--muted);font-size:9.6px;line-height:1.35}
+.adaptive-revision-status{font-size:10.2px;line-height:1.42;color:var(--muted);margin-bottom:7px}
+.adaptive-revision-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:7px 0}
+.adaptive-revision-stat{border:1px solid rgba(255,255,255,.055);border-radius:9px;background:rgba(255,255,255,.018);padding:6px 4px;text-align:center}
+.adaptive-revision-value{font-size:12px;font-weight:760;color:#fff}.adaptive-revision-label{margin-top:2px;font-size:8.3px;color:var(--muted2)}
+.adaptive-revision-list{display:flex;flex-direction:column;gap:5px;margin-top:7px}
+.adaptive-revision-item{border-top:1px solid rgba(255,255,255,.05);padding-top:6px;font-size:9.6px;line-height:1.38}.adaptive-revision-item:first-child{border-top:0;padding-top:0}
+.adaptive-revision-title{color:#fff;font-weight:710}.adaptive-revision-meta{margin-top:2px;color:var(--muted)}
+.adaptive-revision-reason{margin-top:2px;color:#c7d2d9;font-size:8.9px}
+.adaptive-revision-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px}
+.adaptive-revision-btn{appearance:none;min-height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.09);background:#0d151c;color:#fff;font:inherit;font-size:10.8px;font-weight:750;padding:8px}
+.adaptive-revision-btn.primary{border-color:rgba(29,155,240,.34);background:rgba(29,155,240,.10);color:#9ed8fa}.adaptive-revision-btn.danger{color:#ff9aa2}.adaptive-revision-btn:disabled{opacity:.45}
+
+.adaptive-card{appearance:none;width:100%;border:1px solid rgba(0,186,124,.18);border-radius:18px;background:linear-gradient(180deg,rgba(0,186,124,.035),#0b1117 60%);color:var(--text);display:grid;grid-template-columns:34px minmax(0,1fr) 12px;align-items:center;gap:9px;padding:10px 11px;margin:0 0 10px;text-align:left}
+.adaptive-card:active{background:rgba(0,186,124,.075);transform:scale(.995)}
+.adaptive-level{display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.09);border-radius:999px;padding:3px 8px;font-size:9px;font-weight:780;line-height:1.35;margin-top:4px}
+.adaptive-level.l0{color:#86e2ba;border-color:rgba(0,186,124,.25);background:rgba(0,186,124,.055)}
+.adaptive-level.l1{color:#ffe27b;border-color:rgba(255,212,0,.25);background:rgba(255,212,0,.055)}
+.adaptive-level.l2{color:#ffb274;border-color:rgba(255,122,0,.25);background:rgba(255,122,0,.055)}
+.adaptive-level.l3{color:#ff9aa2;border-color:rgba(244,33,46,.27);background:rgba(244,33,46,.055)}
+.adaptive-outcome{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-top:1px solid rgba(255,255,255,.05);font-size:9.7px;line-height:1.35}.adaptive-outcome:first-child{border-top:0}
+.adaptive-outcome-main{min-width:0}.adaptive-outcome-title{color:#fff;font-weight:700}.adaptive-outcome-meta{margin-top:2px;color:var(--muted);font-size:8.9px}.adaptive-outcome-status{white-space:nowrap;font-weight:720}
+.adaptive-outcome-status.good{color:var(--green)}.adaptive-outcome-status.mid{color:var(--yellow)}.adaptive-outcome-status.bad{color:var(--red)}.adaptive-outcome-status.pending{color:var(--muted)}
+
 .plan-publish-status{font-size:10.5px;line-height:1.45;color:var(--muted);margin-bottom:8px}
 .plan-publish-status.ok{color:#8fe3bc}.plan-publish-status.warn{color:#ffe37a}.plan-publish-status.bad{color:#ff9aa2}
 .plan-publish-btn{appearance:none;width:100%;min-height:42px;border:1px solid rgba(29,155,240,.34);border-radius:13px;background:rgba(29,155,240,.10);color:#9ed8fa;font:inherit;font-size:11.5px;font-weight:760;padding:9px 11px}
@@ -102,6 +135,27 @@ button,input{font:inherit}button{cursor:pointer}
 
 .session-generator-card{appearance:none;width:100%;border:1px solid rgba(255,255,255,.08);border-radius:18px;background:#0b1117;color:var(--text);display:grid;grid-template-columns:34px minmax(0,1fr) 12px;align-items:center;gap:9px;padding:10px 11px;margin:0 0 10px;text-align:left}
 .session-generator-card:active{background:#111b24;transform:scale(.995)}
+
+.plan-week-calendar{display:flex;flex-direction:column;gap:7px;margin-top:7px}
+.plan-week-calendar-day{border:1px solid var(--line);border-radius:16px;background:#0b1117;overflow:hidden}
+.plan-week-calendar-day.off{opacity:.58}
+.plan-week-calendar-head{display:grid;grid-template-columns:38px 1px minmax(0,1fr);align-items:center;gap:8px;padding:8px 10px;min-height:55px}
+.plan-week-calendar-date{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;line-height:1;text-align:center}
+.plan-week-calendar-weekday{font-size:9px;line-height:1.05;font-weight:800;color:var(--muted2);letter-spacing:.25px}
+.plan-week-calendar-number{margin-top:2px;font-size:20px;line-height:1;font-weight:760;color:#fff;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.plan-week-calendar-sep{width:1px;height:32px;background:rgba(255,255,255,.10);border-radius:2px}
+.plan-week-calendar-copy{min-width:0}
+.plan-week-calendar-session+.plan-week-calendar-session{margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,255,255,.055)}
+.plan-week-calendar-mainline{display:flex;align-items:center;gap:6px;min-width:0}
+.plan-week-calendar-icon{flex:0 0 auto;font-size:15.5px;line-height:1}
+.plan-week-calendar-title{min-width:0;font-size:14.5px;line-height:1.28;font-weight:740;color:#fff}
+.plan-week-calendar-meta{margin-top:3px;font-size:11.5px;line-height:1.35;color:var(--muted);font-variant-numeric:tabular-nums}
+.plan-week-calendar-structure{margin-top:5px;font-size:11.2px;line-height:1.42;color:#dce5eb}
+.plan-week-calendar-rest{font-size:13.5px;line-height:1.3;color:var(--muted);font-weight:620}
+.plan-week-calendar-note{margin-top:3px;font-size:10.5px;line-height:1.35;color:var(--muted)}
+.plan-meta-values{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.plan-extra-meta-chip{flex:0 0 auto;margin-left:auto}
+
 .session-preview-week{padding:10px 0;border-top:1px solid rgba(255,255,255,.06)}
 .session-preview-week:first-child{border-top:0;padding-top:1px}
 .session-preview-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:7px}
@@ -182,6 +236,14 @@ button,input{font:inherit}button{cursor:pointer}
 .plan-overview-card{appearance:none;width:100%;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,#0e151c,#091016);color:var(--text);display:grid;grid-template-columns:30px minmax(0,1fr) 12px;align-items:center;gap:8px;padding:9px 10px;margin:0 0 9px;text-align:left}
 .plan-overview-card:active{background:#111b24;transform:scale(.995)}
 .plan-overview-icon{font-size:18px;line-height:1;text-align:center}.plan-overview-copy{min-width:0}.plan-overview-title{display:block;font-size:14px;line-height:1.28;font-weight:760;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.plan-overview-meta{display:block;margin-top:2px;font-size:10px;line-height:1.35;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}.plan-overview-arrow{color:var(--blue);font-size:17px;font-weight:800;text-align:right}
+
+.plan-control-group+.plan-control-group{margin-top:16px}
+.adaptive-history-item{padding:7px 0;border-top:1px solid rgba(255,255,255,.05)}
+.adaptive-history-item:first-child{padding-top:0;border-top:0}
+.adaptive-history-title{font-size:10.2px;line-height:1.38;color:#fff;font-weight:710}
+.adaptive-history-meta{margin-top:2px;font-size:9px;line-height:1.35;color:var(--muted)}
+.adaptive-history-status{font-weight:740}.adaptive-history-status.ok{color:var(--green)}.adaptive-history-status.mid{color:var(--yellow)}
+
 .plan-control-group{margin-bottom:12px}.plan-control-label{font-size:11px;line-height:1.35;color:var(--muted);font-weight:720;margin:0 2px 7px}
 .plan-analysis-details{border:1px solid var(--line);border-radius:16px;background:#0b1117;margin-bottom:10px;overflow:hidden}.plan-analysis-details>summary{list-style:none;cursor:pointer;padding:11px 12px;font-size:13px;line-height:1.3;font-weight:750;color:#fff;display:flex;align-items:center;justify-content:space-between}.plan-analysis-details>summary::-webkit-details-marker{display:none}.plan-analysis-details>summary::after{content:"›";color:var(--blue);font-size:17px;transform:rotate(90deg);transition:transform .15s}.plan-analysis-details[open]>summary::after{transform:rotate(-90deg)}.plan-analysis-body{padding:0 10px 2px}.plan-analysis-note{font-size:9.5px;line-height:1.4;color:var(--muted);padding:0 2px 9px}
 
@@ -244,6 +306,19 @@ button.plan-day-head:active{background:#111b24}
 .plan-day-main-title{min-width:0;font-size:15.5px;line-height:1.25;font-weight:740;white-space:nowrap;overflow:visible;text-overflow:clip;transform-origin:left center}
 
 .plan-day-main-meta .activity-mini-sep,.plan-item-meta .activity-mini-sep{display:inline-block;width:1px;height:13px;background:rgba(255,255,255,.14);margin:0 8px;vertical-align:-2px;border-radius:1px}
+
+
+.plan-execution-chip{display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.10);border-radius:999px;padding:2px 7px;font-size:8.8px;line-height:1.3;font-weight:760;white-space:nowrap}
+.plan-execution-chip.good{color:#8fe3bc;border-color:rgba(0,186,124,.27);background:rgba(0,186,124,.055)}
+.plan-execution-chip.mid{color:#ffe37a;border-color:rgba(255,212,0,.27);background:rgba(255,212,0,.055)}
+.plan-execution-chip.bad{color:#ff9aa2;border-color:rgba(244,33,46,.27);background:rgba(244,33,46,.055)}
+.plan-execution-chip.pending{color:#a9b2b9;border-color:rgba(255,255,255,.10);background:rgba(255,255,255,.025)}
+.plan-execution-meta{margin-top:4px;display:flex;align-items:center;gap:6px;min-width:0;color:var(--muted);font-size:9.4px;line-height:1.35;white-space:nowrap;overflow:hidden}
+.plan-execution-meta .plan-execution-actual{overflow:hidden;text-overflow:ellipsis}
+.plan-execution-extra{color:#9ed8fa}
+.plan-rest-copy{font-size:13.5px;line-height:1.3;color:var(--muted);font-weight:620}
+.plan-execution-detail{display:flex;flex-direction:column;gap:8px}
+.plan-result-activity{appearance:none;align-self:flex-start;border:0;background:transparent;color:var(--blue);font:inherit;font-size:11px;font-weight:720;padding:2px 0}
 
 .plan-day-main-meta{margin-top:4px;display:flex;align-items:center;min-width:0;overflow:hidden;white-space:nowrap;color:#c9d0d6;font-size:13.3px;line-height:1.3;font-weight:570;font-variant-numeric:tabular-nums}
 
@@ -507,7 +582,7 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
     <div class="plan-summary">
       <div class="plan-summary-item"><div><span class="plan-summary-value" id="planPlannedKm">0</span> <span class="plan-summary-unit">km</span></div><div class="plan-summary-label">Planificados</div></div>
       <div class="plan-summary-item"><div><span class="plan-summary-value" id="planDoneKm">0</span> <span class="plan-summary-unit">km</span></div><div class="plan-summary-label">Realizados</div></div>
-      <div class="plan-summary-item"><div class="plan-summary-value" id="planSessions">0</div><div class="plan-summary-label">Sesiones</div></div>
+      <div class="plan-summary-item"><div class="plan-summary-value" id="planSessions">0</div><div class="plan-summary-label">Cumplidas</div></div>
     </div>
     <div class="plan-days" id="planDays"></div>
   </section>
@@ -649,6 +724,23 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
         <div class="plan-detail-purpose" id="planDetailPurpose">—</div>
         <div class="plan-detail-raw hidden" id="planDetailRaw"></div>
       </div>
+      <div class="plan-detail-card hidden" id="planDetailResult">
+        <div class="plan-detail-section-title">Resultado</div>
+        <div class="plan-execution-detail">
+          <div><span class="plan-execution-chip pending" id="planDetailResultStatus">Pendiente</span></div>
+          <div class="plan-detail-purpose" id="planDetailResultMeta">—</div>
+          <button class="plan-result-activity hidden" id="planDetailResultActivity" type="button">Ver actividad realizada</button>
+        </div>
+      </div>
+      <div class="plan-detail-card hidden" id="planAdaptiveActions">
+        <div class="plan-detail-section-title">Gestionar sesión</div>
+        <div class="plan-manual-actions">
+          <button class="plan-manual-btn" type="button" id="planDetailMove">Mover</button>
+          <button class="plan-manual-btn" type="button" id="planDetailUnavailable">No puedo realizarla</button>
+          <button class="plan-manual-btn" type="button" id="planDetailReplace">Sustituir</button>
+        </div>
+        <div class="engine-v2-footnote">ATLAS analiza el impacto antes de aplicar el cambio y conserva la identidad de la sesión cuando corresponde.</div>
+      </div>
       <div class="plan-detail-actions hidden" id="planDetailActions">
         <button class="action" id="planDetailEdit">Editar</button>
         <button class="action danger" id="planDetailDelete">Eliminar</button>
@@ -674,9 +766,11 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
     </button>
     <button class="availability-card" id="availabilityCard" type="button">
       <span class="engine-v2-icon">📅</span>
-      <span class="engine-v2-copy"><span class="engine-v2-title">Disponibilidad futura</span><span class="engine-v2-meta" id="availabilityMeta">Sin excepciones semanales</span></span>
+      <span class="engine-v2-copy"><span class="engine-v2-title">Disponibilidad</span><span class="engine-v2-meta" id="availabilityMeta">Sin excepciones semanales</span></span>
       <span class="engine-v2-arrow">›</span>
     </button>
+    </div>
+    <div class="plan-control-group"><div class="plan-control-label">Plan</div>
     <button class="engine-v2-card" id="engineDiagnosticCard" type="button">
       <span class="engine-v2-icon">🧠</span>
       <span class="engine-v2-copy"><span class="engine-v2-title">Análisis del objetivo</span><span class="engine-v2-meta" id="engineDiagnosticMeta">Analizando histórico…</span></span>
@@ -699,7 +793,14 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
     </button>
     <button class="session-generator-card" id="sessionGeneratorCard" type="button">
       <span class="engine-v2-icon">📝</span>
-      <span class="engine-v2-copy"><span class="engine-v2-title">Sesiones propuestas</span><span class="engine-v2-meta" id="sessionGeneratorMeta">Pendiente de distribución semanal</span></span>
+      <span class="engine-v2-copy"><span class="engine-v2-title" id="sessionGeneratorCardTitle">Sesiones propuestas</span><span class="engine-v2-meta" id="sessionGeneratorMeta">Pendiente de distribución semanal</span></span>
+      <span class="engine-v2-arrow">›</span>
+    </button>
+    </div>
+    <div class="plan-control-group"><div class="plan-control-label">Seguimiento</div>
+    <button class="adaptive-card" id="adaptiveEngineCard" type="button">
+      <span class="engine-v2-icon">🔄</span>
+      <span class="engine-v2-copy"><span class="engine-v2-title">Adaptación</span><span class="engine-v2-meta" id="adaptiveEngineMeta">Pendiente de inicio del plan</span></span>
       <span class="engine-v2-arrow">›</span>
     </button>
     </div>
@@ -708,17 +809,43 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
 </section>
 
 
+
+<section class="plan-detail hidden" id="adaptiveEngineDetail" aria-hidden="true">
+  <div class="plan-detail-shell">
+    <div class="plan-detail-top"><button class="plan-detail-back" id="adaptiveEngineBack">‹ Volver</button><div class="plan-detail-date" id="adaptiveEngineDate">Adaptación</div></div>
+    <div class="plan-detail-title-wrap"><div class="plan-detail-icon">🔄</div><div class="plan-detail-title">Adaptación</div></div>
+    <div class="plan-detail-summary">
+      <div class="plan-detail-stat"><div class="plan-detail-value" id="adaptiveCompleted">—</div><div class="plan-detail-label">cumplidas</div></div>
+      <div class="plan-detail-stat"><div class="plan-detail-value" id="adaptiveKeyIssues">—</div><div class="plan-detail-label">incidencias clave</div></div>
+      <div class="plan-detail-stat"><div class="plan-detail-value" id="adaptiveLevel">—</div><div class="plan-detail-label">ajuste</div></div>
+    </div>
+    <div class="plan-detail-card"><div class="plan-detail-section-title">Decisión ATLAS</div><div id="adaptiveDecision"></div><div class="engine-v2-reading" id="adaptiveReading">—</div></div>
+    <div class="plan-detail-card">
+      <div class="plan-detail-section-title">Revisión propuesta</div>
+      <div class="adaptive-revision-status" id="adaptiveRevisionStatus">Sin revisión pendiente.</div>
+      <div id="adaptiveRevisionSummary"></div>
+      <div class="adaptive-revision-list" id="adaptiveRevisionDiff"></div>
+      <button class="adaptive-revision-btn primary" type="button" id="adaptiveRevisionPrepare">Preparar revisión</button>
+      <div class="adaptive-revision-actions hidden" id="adaptiveRevisionActions"><button class="adaptive-revision-btn danger" type="button" id="adaptiveRevisionReject">Descartar</button><button class="adaptive-revision-btn primary" type="button" id="adaptiveRevisionApply">Aplicar en Intervals.icu</button></div>
+    </div>
+    <div class="plan-detail-card"><div class="plan-detail-section-title">Evidencia</div><div class="engine-v2-rows" id="adaptiveEvidenceRows"></div></div>
+    <div class="plan-detail-card"><div class="plan-detail-section-title">Sesiones recientes</div><div id="adaptiveOutcomes"></div></div>
+    <div class="plan-detail-card hidden" id="adaptiveHistoryCard"><div class="plan-detail-section-title">Últimos cambios</div><div id="adaptiveHistory"></div></div>
+    <button class="plan-detail-bottom" id="adaptiveEngineBottomBack">Volver al plan</button>
+  </div>
+</section>
+
 <section class="plan-detail hidden" id="sessionGeneratorDetail" aria-hidden="true">
   <div class="plan-detail-shell">
     <div class="plan-detail-top"><button class="plan-detail-back" id="sessionGeneratorBack">‹ Volver</button><div class="plan-detail-date" id="sessionGeneratorDate">Sesiones propuestas</div></div>
-    <div class="plan-detail-title-wrap"><div class="plan-detail-icon">📝</div><div class="plan-detail-title">Sesiones propuestas</div></div>
+    <div class="plan-detail-title-wrap"><div class="plan-detail-icon">📝</div><div class="plan-detail-title" id="sessionGeneratorTitle">Sesiones propuestas</div></div>
     <div class="plan-detail-summary">
       <div class="plan-detail-stat"><div class="plan-detail-value" id="sessionGeneratorWeeks">—</div><div class="plan-detail-label">semanas</div></div>
       <div class="plan-detail-stat"><div class="plan-detail-value" id="sessionGeneratorRuns">—</div><div class="plan-detail-label">carreras</div></div>
       <div class="plan-detail-stat"><div class="plan-detail-value" id="sessionGeneratorStrength">—</div><div class="plan-detail-label">fuerza</div></div>
     </div>
-    <div class="plan-detail-card"><div class="plan-detail-section-title">Comprobaciones</div><div class="engine-v2-rows" id="sessionGeneratorAudit"></div></div>
-    <div class="plan-detail-card"><div class="plan-detail-section-title">Plan propuesto</div><div id="sessionGeneratorList"></div></div>
+    <div class="plan-detail-card"><div class="plan-detail-section-title">Estado</div><div class="engine-v2-rows" id="sessionGeneratorAudit"></div></div>
+    <div class="plan-detail-card"><div class="plan-detail-section-title" id="sessionGeneratorListTitle">Plan propuesto</div><div id="sessionGeneratorList"></div></div>
     <div class="plan-detail-card"><div class="plan-detail-section-title">Lectura ATLAS</div><div class="engine-v2-reading" id="sessionGeneratorReading">—</div></div>
     <div class="plan-detail-card">
       <div class="plan-detail-section-title">Intervals.icu</div>
@@ -834,7 +961,7 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
 
 <dialog id="engineGoalDialog">
 <form class="sheet" method="dialog" id="engineGoalForm">
-  <div class="sheet-head"><div class="sheet-title">🏁 Objetivos</div><button class="close" value="cancel" aria-label="Cerrar">✕</button></div>
+  <div class="sheet-head"><div class="sheet-title">🏁 Objetivos</div><button class="close" value="cancel" formnovalidate aria-label="Cerrar">✕</button></div>
   <div class="form-row">
     <div><label for="engineGoalType">Distancia</label><select class="plan-editor-select" id="engineGoalType"><option value="5K">5 km</option><option value="10K">10 km</option><option value="HALF">Media maratón</option><option value="MARATHON">Maratón</option></select></div>
     <div><label for="engineGoalDate">Fecha de la carrera</label><input id="engineGoalDate" type="date" required></div>
@@ -858,7 +985,7 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
   <div class="engine-list" id="secondaryGoalList"></div>
 
   <button class="engine-v2-delete hidden" type="button" id="engineGoalDelete">Eliminar plan</button>
-  <div class="sheet-actions"><button class="action" value="cancel">Cancelar</button><button class="action primary" value="default" id="engineGoalSave">Guardar objetivo</button></div>
+  <div class="sheet-actions"><button class="action" value="cancel" formnovalidate>Cancelar</button><button class="action primary" value="default" id="engineGoalSave">Guardar objetivo</button></div>
 </form>
 </dialog>
 
@@ -900,6 +1027,18 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
   <div class="sheet-actions"><button class="action" value="cancel">Cancelar</button><button class="action primary" value="default" id="availabilitySave">Guardar semana</button></div>
   <div class="engine-manage-head"><div class="engine-manage-title">Excepciones guardadas</div></div>
   <div class="engine-list" id="availabilityExceptionsList"></div>
+</form>
+</dialog>
+
+
+<dialog id="planManualDialog">
+<form class="sheet" method="dialog" id="planManualForm" novalidate>
+  <div class="sheet-head"><div class="sheet-title" id="planManualTitle">Gestionar sesión</div><button class="close" value="cancel" formnovalidate aria-label="Cerrar">✕</button></div>
+  <div class="plan-manual-session" id="planManualSession">—</div>
+  <div class="hidden" id="planManualMoveFields"><label for="planManualDate">Nueva fecha</label><input id="planManualDate" type="date"></div>
+  <div class="hidden" id="planManualReplaceFields"><label for="planManualReplacement">Alternativa</label><select class="plan-editor-select" id="planManualReplacement"></select></div>
+  <div class="plan-manual-impact" id="planManualImpact">—</div>
+  <div class="sheet-actions"><button class="action" value="cancel" formnovalidate>Cancelar</button><button class="action primary" value="default" id="planManualApply">Aplicar</button></div>
 </form>
 </dialog>
 
@@ -956,9 +1095,17 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
 
 
 
+
+
+
+
+
+
+
+
 (()=>{
 "use strict";
-const APP_VERSION="0.55.0",SCHEMA_VERSION=9,DB_NAME="atlas",DB_VERSION=2;
+const APP_VERSION="0.63.0",SCHEMA_VERSION=9,DB_NAME="atlas",DB_VERSION=2;
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -968,10 +1115,12 @@ function onAll(selector,type,handler,root=document,options){qsa(selector,root).f
 const ui={
  todayDate:$("todayDate"),stateDateLabel:$("stateDateLabel"),quickSyncBtn:$("quickSyncBtn"),trainingStateBtn:$("trainingStateBtn"),trainingStateCircle:$("trainingStateCircle"),trainingStateScore:$("trainingStateScore"),trainingStateWord:$("trainingStateWord"),trainingStateNote:$("trainingStateNote"),sleepValue:$("sleepValue"),sleepMeta:$("sleepMeta"),hrvValue:$("hrvValue"),hrvMeta:$("hrvMeta"),rhrValue:$("rhrValue"),rhrMeta:$("rhrMeta"),vo2Value:$("vo2Value"),vo2Meta:$("vo2Meta"),freshValue:$("freshValue"),freshMeta:$("freshMeta"),volumeValue:$("volumeValue"),volumeMeta:$("volumeMeta"),
  lastActivityBtn:$("lastActivityBtn"),activitySportFilter:$("activitySportFilter"),activityYearFilter:$("activityYearFilter"),activitySearch:$("activitySearch"),activitiesSummary:$("activitiesSummary"),activitiesList:$("activitiesList"),activityDetail:$("activityDetail"),activityDetailBack:$("activityDetailBack"),activityDetailBottomBack:$("activityDetailBottomBack"),activityDetailEmoji:$("activityDetailEmoji"),activityDetailTitle:$("activityDetailTitle"),activityDetailDate:$("activityDetailDate"),activityMap:$("activityMap"),activityDetailLoading:$("activityDetailLoading"),activityPrimary:$("activityPrimary"),activityEquipment:$("activityEquipment"),activityPerception:$("activityPerception"),activityAnalysis:$("activityAnalysis"),activityChartTabs:$("activityChartTabs"),activityChartStats:$("activityChartStats"),activityChartCard:$("activityChartCard"),activityChartScroll:$("activityChartScroll"),activityChart:$("activityChart"),activityChartReadout:$("activityChartReadout"),activityLaps:$("activityLaps"),activityLapsRows:$("activityLapsRows"),activityDescription:$("activityDescription"),
- planDetail:$("planDetail"),planDetailBack:$("planDetailBack"),planDetailBottomBack:$("planDetailBottomBack"),planDetailActions:$("planDetailActions"),planDetailEdit:$("planDetailEdit"),planDetailDelete:$("planDetailDelete"),planDetailDate:$("planDetailDate"),planDetailIcon:$("planDetailIcon"),planDetailTitle:$("planDetailTitle"),planDetailDistance:$("planDetailDistance"),planDetailDuration:$("planDetailDuration"),planDetailTarget:$("planDetailTarget"),planDetailSteps:$("planDetailSteps"),planDetailPurpose:$("planDetailPurpose"),planDetailRaw:$("planDetailRaw"),
+ planDetail:$("planDetail"),planDetailBack:$("planDetailBack"),planDetailBottomBack:$("planDetailBottomBack"),planAdaptiveActions:$("planAdaptiveActions"),planDetailMove:$("planDetailMove"),planDetailUnavailable:$("planDetailUnavailable"),planDetailReplace:$("planDetailReplace"),planManualDialog:$("planManualDialog"),planManualForm:$("planManualForm"),planManualTitle:$("planManualTitle"),planManualSession:$("planManualSession"),planManualMoveFields:$("planManualMoveFields"),planManualDate:$("planManualDate"),planManualReplaceFields:$("planManualReplaceFields"),planManualReplacement:$("planManualReplacement"),planManualImpact:$("planManualImpact"),planManualApply:$("planManualApply"),planDetailActions:$("planDetailActions"),planDetailEdit:$("planDetailEdit"),planDetailDelete:$("planDetailDelete"),planDetailDate:$("planDetailDate"),planDetailIcon:$("planDetailIcon"),planDetailTitle:$("planDetailTitle"),planDetailDistance:$("planDetailDistance"),planDetailDuration:$("planDetailDuration"),planDetailTarget:$("planDetailTarget"),planDetailSteps:$("planDetailSteps"),planDetailPurpose:$("planDetailPurpose"),planDetailRaw:$("planDetailRaw"),planDetailResult:$("planDetailResult"),planDetailResultStatus:$("planDetailResultStatus"),planDetailResultMeta:$("planDetailResultMeta"),planDetailResultActivity:$("planDetailResultActivity"),
  availabilityCard:$("availabilityCard"),availabilityMeta:$("availabilityMeta"),availabilityDialog:$("availabilityDialog"),availabilityForm:$("availabilityForm"),availabilityWeekDate:$("availabilityWeekDate"),availabilityWeekDays:$("availabilityWeekDays"),availabilityNote:$("availabilityNote"),availabilityDelete:$("availabilityDelete"),availabilitySave:$("availabilitySave"),availabilityExceptionsList:$("availabilityExceptionsList"), secondaryGoalAdd:$("secondaryGoalAdd"),secondaryGoalList:$("secondaryGoalList"),secondaryGoalDialog:$("secondaryGoalDialog"),secondaryGoalForm:$("secondaryGoalForm"),secondaryGoalPriority:$("secondaryGoalPriority"),secondaryGoalType:$("secondaryGoalType"),secondaryGoalDate:$("secondaryGoalDate"),secondaryGoalName:$("secondaryGoalName"),secondaryGoalIntention:$("secondaryGoalIntention"),secondaryGoalTime:$("secondaryGoalTime"),secondaryGoalDelete:$("secondaryGoalDelete"),secondaryGoalSave:$("secondaryGoalSave"),
+ adaptiveRevisionStatus:$("adaptiveRevisionStatus"),adaptiveRevisionSummary:$("adaptiveRevisionSummary"),adaptiveRevisionDiff:$("adaptiveRevisionDiff"),adaptiveRevisionPrepare:$("adaptiveRevisionPrepare"),adaptiveRevisionActions:$("adaptiveRevisionActions"),adaptiveRevisionReject:$("adaptiveRevisionReject"),adaptiveRevisionApply:$("adaptiveRevisionApply"),
+ adaptiveEngineCard:$("adaptiveEngineCard"),adaptiveEngineMeta:$("adaptiveEngineMeta"),adaptiveEngineDetail:$("adaptiveEngineDetail"),adaptiveEngineBack:$("adaptiveEngineBack"),adaptiveEngineBottomBack:$("adaptiveEngineBottomBack"),adaptiveEngineDate:$("adaptiveEngineDate"),adaptiveCompleted:$("adaptiveCompleted"),adaptiveKeyIssues:$("adaptiveKeyIssues"),adaptiveLevel:$("adaptiveLevel"),adaptiveDecision:$("adaptiveDecision"),adaptiveReading:$("adaptiveReading"),adaptiveEvidenceRows:$("adaptiveEvidenceRows"),adaptiveOutcomes:$("adaptiveOutcomes"),adaptiveHistoryCard:$("adaptiveHistoryCard"),adaptiveHistory:$("adaptiveHistory"),
  sessionPublishStatus:$("sessionPublishStatus"),sessionPublishBtn:$("sessionPublishBtn"),
- sessionGeneratorCard:$("sessionGeneratorCard"),sessionGeneratorMeta:$("sessionGeneratorMeta"),sessionGeneratorDetail:$("sessionGeneratorDetail"),sessionGeneratorBack:$("sessionGeneratorBack"),sessionGeneratorBottomBack:$("sessionGeneratorBottomBack"),sessionGeneratorDate:$("sessionGeneratorDate"),sessionGeneratorWeeks:$("sessionGeneratorWeeks"),sessionGeneratorRuns:$("sessionGeneratorRuns"),sessionGeneratorStrength:$("sessionGeneratorStrength"),sessionGeneratorAudit:$("sessionGeneratorAudit"),sessionGeneratorList:$("sessionGeneratorList"),sessionGeneratorReading:$("sessionGeneratorReading"),
+ sessionGeneratorCard:$("sessionGeneratorCard"),sessionGeneratorCardTitle:$("sessionGeneratorCardTitle"),sessionGeneratorMeta:$("sessionGeneratorMeta"),sessionGeneratorDetail:$("sessionGeneratorDetail"),sessionGeneratorBack:$("sessionGeneratorBack"),sessionGeneratorBottomBack:$("sessionGeneratorBottomBack"),sessionGeneratorDate:$("sessionGeneratorDate"),sessionGeneratorTitle:$("sessionGeneratorTitle"),sessionGeneratorListTitle:$("sessionGeneratorListTitle"),sessionGeneratorWeeks:$("sessionGeneratorWeeks"),sessionGeneratorRuns:$("sessionGeneratorRuns"),sessionGeneratorStrength:$("sessionGeneratorStrength"),sessionGeneratorAudit:$("sessionGeneratorAudit"),sessionGeneratorList:$("sessionGeneratorList"),sessionGeneratorReading:$("sessionGeneratorReading"),
  calendarSolverCard:$("calendarSolverCard"),calendarSolverMeta:$("calendarSolverMeta"),calendarSolverDetail:$("calendarSolverDetail"),calendarSolverBack:$("calendarSolverBack"),calendarSolverBottomBack:$("calendarSolverBottomBack"),calendarSolverDate:$("calendarSolverDate"),calendarSolverWeeks:$("calendarSolverWeeks"),calendarSolverSessions:$("calendarSolverSessions"),calendarSolverConflicts:$("calendarSolverConflicts"),calendarSolverAudit:$("calendarSolverAudit"),calendarSolverWeeksList:$("calendarSolverWeeksList"),calendarSolverReading:$("calendarSolverReading"),
  weeklyTargetsCard:$("weeklyTargetsCard"),weeklyTargetsMeta:$("weeklyTargetsMeta"),weeklyTargetsDetail:$("weeklyTargetsDetail"),weeklyTargetsBack:$("weeklyTargetsBack"),weeklyTargetsBottomBack:$("weeklyTargetsBottomBack"),weeklyTargetsDate:$("weeklyTargetsDate"),weeklyTargetsWeeks:$("weeklyTargetsWeeks"),weeklyTargetsSpecific:$("weeklyTargetsSpecific"),weeklyTargetsRaces:$("weeklyTargetsRaces"),weeklyTargetsList:$("weeklyTargetsList"),weeklyTargetsReading:$("weeklyTargetsReading"),
  macroTrajectoryCard:$("macroTrajectoryCard"),macroTrajectoryMeta:$("macroTrajectoryMeta"),macroTrajectoryDetail:$("macroTrajectoryDetail"),macroTrajectoryBack:$("macroTrajectoryBack"),macroTrajectoryBottomBack:$("macroTrajectoryBottomBack"),macroTrajectoryDate:$("macroTrajectoryDate"),macroWeeks:$("macroWeeks"),macroPeakVolume:$("macroPeakVolume"),macroPeakLong:$("macroPeakLong"),macroArchitectureRows:$("macroArchitectureRows"),macroAuditRows:$("macroAuditRows"),macroWeeksList:$("macroWeeksList"),macroReading:$("macroReading"),
@@ -983,15 +1132,15 @@ const ui={
  smartSyncBtn:$("smartSyncBtn"),testBtn:$("testBtn"),settingsBtn:$("settingsBtn"),fullSyncBtn:$("fullSyncBtn"),exportBtn:$("exportBtn"),importBtn:$("importBtn"),clearBtn:$("clearBtn"),fileInput:$("fileInput"),toast:$("toast"),
  settingsDialog:$("settingsDialog"),settingsForm:$("settingsForm"),workerUrl:$("workerUrl"),clientToken:$("clientToken"),oldestDate:$("oldestDate"),newestDate:$("newestDate"),historyStart:$("historyStart"),overlapDays:$("overlapDays"),metricDetail:$("metricDetail"),metricDetailBack:$("metricDetailBack"),metricDetailTitle:$("metricDetailTitle"),metricDetailEmoji:$("metricDetailEmoji"),metricPeriodControl:$("metricPeriodControl"),metricPrev:$("metricPrev"),metricNext:$("metricNext"),metricRangeLabel:$("metricRangeLabel"),metricChartScroll:$("metricChartScroll"),metricChart:$("metricChart"),metricChartReadout:$("metricChartReadout"),chartLegend:$("chartLegend"),detailStatLabel1:$("detailStatLabel1"),detailStatValue1:$("detailStatValue1"),detailStatLabel2:$("detailStatLabel2"),detailStatValue2:$("detailStatValue2"),detailStatLabel3:$("detailStatLabel3"),detailStatValue3:$("detailStatValue3"),detailStatSub1:$("detailStatSub1"),detailStatSub2:$("detailStatSub2"),detailStatSub3:$("detailStatSub3"),metricContext:$("metricContext"),metricDetailBottomBack:$("metricDetailBottomBack"),stateDetail:$("stateDetail"),stateDetailBack:$("stateDetailBack"),stateDetailBottomBack:$("stateDetailBottomBack"),stateDetailHero:$("stateDetailHero"),stateDetailRing:$("stateDetailRing"),stateDetailScore:$("stateDetailScore"),stateDetailWord:$("stateDetailWord"),stateDetailNote:$("stateDetailNote"),stateDetailMeta:$("stateDetailMeta"),stateFactors:$("stateFactors"),stateBaseScore:$("stateBaseScore"),stateRecoveryPenalty:$("stateRecoveryPenalty"),stateLimiter:$("stateLimiter")
 };
-let db,toastTimer,currentActivities=[],currentWellness=[],currentGear=[],currentEvents=[],currentCachedVo2=null,currentEngineV2Goal=null,currentSecondaryGoals=[],currentAvailabilityExceptions=[],currentSecondaryEditId=null,currentAvailabilityEditWeek=null,currentAthleteProfileV2=null,currentGoalRequirements=null,currentGoalAssessment=null,currentMacroTrajectory=null,currentWeeklyTargets=null,currentCalendarSolution=null,currentSessionPlan=null,currentPlanManifest=null,currentPlanWeekStart=null,currentPlanEvent=null,currentPlanEditEvent=null,lastCalendarRefreshAt=0,currentActivityDetail=null,currentActivityMap=null,currentActivityStreams=null,currentActivityVo2=null,currentActivityChartKey=null,activityChartZoom=1,activityPinchStartDistance=0,activityPinchStartZoom=1,activityChartPointerStart=null,activityChartReadoutTimer=null,currentMetricDetail=null,currentMetricDays=30,currentMetricEnd=null,currentAtlasState=null,currentChartState=null,chartReadoutTimer=null,chartZoom=1,pinchStartDistance=0,pinchStartZoom=1,chartPointerStart=null;
+let db,toastTimer,currentActivities=[],currentWellness=[],currentGear=[],currentEvents=[],currentCachedVo2=null,currentEngineV2Goal=null,currentSecondaryGoals=[],currentAvailabilityExceptions=[],currentSecondaryEditId=null,currentAvailabilityEditWeek=null,currentAthleteProfileV2=null,currentGoalRequirements=null,currentGoalAssessment=null,currentMacroTrajectory=null,currentWeeklyTargets=null,currentCalendarSolution=null,currentSessionPlan=null,currentPlanManifest=null,currentPlanCloudMeta=null,currentAdaptiveState=null,currentPlanRevisionDraft=null,currentPlanRevisionHistory=[],currentPlanManualAction=null,currentPlanWeekStart=null,currentPlanEvent=null,currentPlanOutcome=null,currentPlanEditEvent=null,lastCalendarRefreshAt=0,currentActivityDetail=null,currentActivityMap=null,currentActivityStreams=null,currentActivityVo2=null,currentActivityChartKey=null,activityChartZoom=1,activityPinchStartDistance=0,activityPinchStartZoom=1,activityChartPointerStart=null,activityChartReadoutTimer=null,currentMetricDetail=null,currentMetricDays=30,currentMetricEnd=null,currentAtlasState=null,currentChartState=null,chartReadoutTimer=null,chartZoom=1,pinchStartDistance=0,pinchStartZoom=1,chartPointerStart=null;
 window.addEventListener("DOMContentLoaded",()=>init().catch(reportFatalError));
 const CORE_UI_KEYS=["todayDate","lastActivityBtn","activitiesList","activityDetail","metricDetail","stateDetail","toast","settingsDialog"];
 function assertCoreUi(){const missing=CORE_UI_KEYS.filter(key=>!ui[key]);if(missing.length)throw new Error(`Interfaz incompleta: ${missing.join(", ")}`);return true;}
 function reportFatalError(error){console.error("ɅTLɅS · error de arranque",error);const message=`⚠️ ${error?.message||"Error inesperado al iniciar ATLAS."}`;if(ui?.toast){toast(message,true);return;}const box=document.createElement("div");box.style.cssText="position:fixed;left:12px;right:12px;bottom:18px;z-index:9999;padding:12px;border-radius:14px;background:#2a0d11;color:#fff;font:13px -apple-system,BlinkMacSystemFont,system-ui,sans-serif";box.textContent=message;document.body.appendChild(box);}
-async function init(){assertCoreUi();db=await openDb();await cleanupLegacySettings();setDefaultDates();await loadSettingsIntoForm();bindEvents();initializeStaticUi();await refreshAll();startRuntimeRefresh();refreshCalendarFromCloud(true).catch(error=>console.warn("ɅTLɅS · calendario inicial",error));}
+async function init(){assertCoreUi();db=await openDb();await cleanupLegacySettings();setDefaultDates();await loadSettingsIntoForm();await syncPlanStateFromCloud({startup:true}).catch(error=>console.warn("ɅTLɅS · plan cloud inicial",error));bindEvents();initializeStaticUi();await refreshAll();startRuntimeRefresh();refreshCalendarFromCloud(true).catch(error=>console.warn("ɅTLɅS · calendario inicial",error));}
 function initializeStaticUi(){ui.todayDate.textContent="Hoy";if(ui.stateDateLabel)ui.stateDateLabel.textContent=fullTodayDate();}
 function refreshTodayIfLoaded(){if(!(currentActivities.length||currentWellness.length))return;try{renderToday(currentActivities,currentWellness,currentCachedVo2);}catch(error){console.error("ɅTLɅS · actualización de Hoy",error);}}
-function startRuntimeRefresh(){if(navigator.storage?.persist)navigator.storage.persist().catch(()=>{});setInterval(refreshTodayIfLoaded,15*60*1000);on(document,"visibilitychange",()=>{if(!document.hidden){refreshTodayIfLoaded();refreshCalendarFromCloud(false).catch(error=>console.warn("ɅTLɅS · calendario en primer plano",error));}});}
+function startRuntimeRefresh(){if(navigator.storage?.persist)navigator.storage.persist().catch(()=>{});setInterval(refreshTodayIfLoaded,15*60*1000);on(document,"visibilitychange",()=>{if(!document.hidden){refreshTodayIfLoaded();refreshPlanStateFromCloud(false).catch(error=>console.warn("ɅTLɅS · plan cloud en primer plano",error));refreshCalendarFromCloud(false).catch(error=>console.warn("ɅTLɅS · calendario en primer plano",error));}});}
 function bindEvents(){
  onAll(".nav-btn","click",e=>showView(e.currentTarget.dataset.tab));
  on(ui.activitySportFilter,"change",renderActivities);on(ui.activityYearFilter,"change",renderActivities);on(ui.activitySearch,"input",renderActivities);
@@ -1000,9 +1149,9 @@ function bindEvents(){
  on(ui.activityChartTabs,"click",e=>{const b=e.target.closest(".activity-chart-tab");if(!b)return;const key=b.dataset.key;currentActivityChartKey=currentActivityChartKey===key?null:key;activityChartZoom=1;if(ui.activityChartScroll)ui.activityChartScroll.scrollLeft=0;hideActivityChartReadout();renderActivityAnalysis();});
  on(ui.activityChart,"pointerdown",e=>{activityChartPointerStart={x:e.clientX,y:e.clientY};});on(ui.activityChart,"pointerup",handleActivityChartPointerUp);
  on(ui.activityChartScroll,"touchstart",handleActivityChartPinchStart,{passive:true});on(ui.activityChartScroll,"touchmove",handleActivityChartPinchMove,{passive:false});on(ui.activityChartScroll,"touchend",handleActivityChartPinchEnd,{passive:true});on(ui.activityChartScroll,"dblclick",()=>setActivityChartZoom(1));
- on(ui.secondaryGoalAdd,"click",()=>openSecondaryGoalDialog());on(ui.secondaryGoalList,"click",e=>{const b=e.target.closest("[data-secondary-goal-id]");if(b)openSecondaryGoalDialog(b.dataset.secondaryGoalId);});on(ui.secondaryGoalForm,"submit",saveSecondaryGoal);on(ui.secondaryGoalDelete,"click",deleteSecondaryGoal);on(ui.availabilityCard,"click",openAvailabilityDialog);on(ui.availabilityForm,"submit",saveAvailabilityException);on(ui.availabilityDelete,"click",deleteAvailabilityException);on(ui.availabilityWeekDate,"change",loadAvailabilityWeekFromInput);on(ui.availabilityExceptionsList,"click",e=>{const b=e.target.closest("[data-availability-week]");if(b)loadAvailabilityException(b.dataset.availabilityWeek);});on(ui.engineGoalCard,"click",openEngineV2GoalDialog);on(ui.engineGoalForm,"submit",saveEngineV2Goal);on(ui.engineGoalDelete,"click",deleteEngineV2Goal);on(ui.sessionPublishBtn,"click",publishCurrentPlan);on(ui.sessionGeneratorCard,"click",openSessionGenerator);on(ui.sessionGeneratorBack,"click",closeSessionGenerator);on(ui.sessionGeneratorBottomBack,"click",closeSessionGenerator);on(ui.calendarSolverCard,"click",openCalendarSolver);on(ui.calendarSolverBack,"click",closeCalendarSolver);on(ui.calendarSolverBottomBack,"click",closeCalendarSolver);on(ui.weeklyTargetsCard,"click",openWeeklyTargets);on(ui.weeklyTargetsBack,"click",closeWeeklyTargets);on(ui.weeklyTargetsBottomBack,"click",closeWeeklyTargets);on(ui.macroTrajectoryCard,"click",openMacroTrajectory);on(ui.macroTrajectoryBack,"click",closeMacroTrajectory);on(ui.macroTrajectoryBottomBack,"click",closeMacroTrajectory);on(ui.engineDiagnosticCard,"click",openEngineV2Diagnostic);on(ui.engineDiagnosticBack,"click",closeEngineV2Diagnostic);on(ui.engineDiagnosticBottomBack,"click",closeEngineV2Diagnostic);
- on(ui.planAddBtn,"click",()=>openPlanEditor());on(ui.planEditorForm,"submit",savePlanEditor);on(ui.planDetailEdit,"click",()=>{if(currentPlanEvent)openPlanEditor(currentPlanEvent);});on(ui.planDetailDelete,"click",deleteCurrentPlanEvent);
- on(ui.planOverviewCard,"click",openPlanControl);on(ui.planControlBack,"click",closePlanControl);on(ui.planControlBottomBack,"click",closePlanControl);on(ui.planPrev,"click",()=>shiftPlanWeek(-1));on(ui.planNext,"click",()=>shiftPlanWeek(1));on(ui.planToday,"click",()=>{currentPlanWeekStart=mondayOf(new Date());renderPlan();});on(ui.planDays,"click",e=>{const activity=e.target.closest("[data-activity-id]");if(activity){openActivityDetail(activity.dataset.activityId);return;}const planned=e.target.closest("[data-plan-event-id]");if(planned)openPlanDetail(planned.dataset.planEventId);});on(ui.planDetailBack,"click",closePlanDetail);on(ui.planDetailBottomBack,"click",closePlanDetail);
+ on(ui.secondaryGoalAdd,"click",()=>openSecondaryGoalDialog());on(ui.secondaryGoalList,"click",e=>{const b=e.target.closest("[data-secondary-goal-id]");if(b)openSecondaryGoalDialog(b.dataset.secondaryGoalId);});on(ui.secondaryGoalForm,"submit",saveSecondaryGoal);on(ui.secondaryGoalDelete,"click",deleteSecondaryGoal);on(ui.availabilityCard,"click",openAvailabilityDialog);on(ui.availabilityForm,"submit",saveAvailabilityException);on(ui.availabilityDelete,"click",deleteAvailabilityException);on(ui.availabilityWeekDate,"change",loadAvailabilityWeekFromInput);on(ui.availabilityExceptionsList,"click",e=>{const b=e.target.closest("[data-availability-week]");if(b)loadAvailabilityException(b.dataset.availabilityWeek);});on(ui.engineGoalCard,"click",openEngineV2GoalDialog);on(ui.engineGoalForm,"submit",saveEngineV2Goal);on(ui.engineGoalDelete,"click",deleteEngineV2Goal);on(ui.adaptiveRevisionPrepare,"click",prepareAdaptiveRevision);on(ui.adaptiveRevisionReject,"click",rejectAdaptiveRevision);on(ui.adaptiveRevisionApply,"click",applyAdaptiveRevision);on(ui.adaptiveEngineCard,"click",openAdaptiveEngine);on(ui.adaptiveEngineBack,"click",closeAdaptiveEngine);on(ui.adaptiveEngineBottomBack,"click",closeAdaptiveEngine);on(ui.sessionPublishBtn,"click",publishCurrentPlan);on(ui.sessionGeneratorCard,"click",openSessionGenerator);on(ui.sessionGeneratorBack,"click",closeSessionGenerator);on(ui.sessionGeneratorBottomBack,"click",closeSessionGenerator);on(ui.calendarSolverCard,"click",openCalendarSolver);on(ui.calendarSolverBack,"click",closeCalendarSolver);on(ui.calendarSolverBottomBack,"click",closeCalendarSolver);on(ui.weeklyTargetsCard,"click",openWeeklyTargets);on(ui.weeklyTargetsBack,"click",closeWeeklyTargets);on(ui.weeklyTargetsBottomBack,"click",closeWeeklyTargets);on(ui.macroTrajectoryCard,"click",openMacroTrajectory);on(ui.macroTrajectoryBack,"click",closeMacroTrajectory);on(ui.macroTrajectoryBottomBack,"click",closeMacroTrajectory);on(ui.engineDiagnosticCard,"click",openEngineV2Diagnostic);on(ui.engineDiagnosticBack,"click",closeEngineV2Diagnostic);on(ui.engineDiagnosticBottomBack,"click",closeEngineV2Diagnostic);
+ on(ui.planAddBtn,"click",()=>openPlanEditor());on(ui.planEditorForm,"submit",savePlanEditor);on(ui.planDetailEdit,"click",()=>{if(currentPlanEvent)openPlanEditor(currentPlanEvent);});on(ui.planDetailDelete,"click",deleteCurrentPlanEvent);on(ui.planDetailMove,"click",()=>openPlanManualAction("move"));on(ui.planDetailUnavailable,"click",()=>openPlanManualAction("unavailable"));on(ui.planDetailReplace,"click",()=>openPlanManualAction("replace"));on(ui.planManualForm,"submit",applyPlanManualAction);on(ui.planManualDate,"change",renderPlanManualImpact);on(ui.planManualReplacement,"change",renderPlanManualImpact);
+ on(ui.planOverviewCard,"click",openPlanControl);on(ui.planControlBack,"click",closePlanControl);on(ui.planControlBottomBack,"click",closePlanControl);on(ui.planPrev,"click",()=>shiftPlanWeek(-1));on(ui.planNext,"click",()=>shiftPlanWeek(1));on(ui.planToday,"click",()=>{currentPlanWeekStart=mondayOf(new Date());renderPlan();});on(ui.planDays,"click",e=>{const activity=e.target.closest("[data-activity-id]");if(activity){openActivityDetail(activity.dataset.activityId);return;}const planned=e.target.closest("[data-plan-event-id]");if(planned)openPlanDetail(planned.dataset.planEventId);});on(ui.planDetailBack,"click",closePlanDetail);on(ui.planDetailBottomBack,"click",closePlanDetail);on(ui.planDetailResultActivity,"click",()=>{const a=currentPlanOutcome?.activity;if(!a?.id)return;const id=String(a.id);closePlanDetail();openActivityDetail(id);});
  onAll(".metric-link","click",e=>openMetricDetail(e.currentTarget.dataset.metric));
  on(ui.metricDetailBack,"click",closeMetricDetail);on(ui.metricDetailBottomBack,"click",closeMetricDetail);
  on(ui.metricChart,"pointerdown",e=>{chartPointerStart={x:e.clientX,y:e.clientY};});on(ui.metricChart,"pointerup",handleChartPointerUp);
@@ -1141,10 +1290,101 @@ async function apiRequest(path,{method="GET",body=null}={}){
 }
 async function api(path){return apiRequest(path);}
 
+const PLAN_CLOUD_META_KEY="engineV2PlanCloudMeta";
+
+function planCloudState(goal,secondary,availability,manifest,draft,history){
+  return JSON.parse(JSON.stringify({
+    version:1,
+    goal:goal||null,
+    secondaryGoals:Array.isArray(secondary)?secondary:[],
+    availabilityExceptions:Array.isArray(availability)?availability:[],
+    planManifest:manifest||null,
+    planRevisionDraft:draft||null,
+    planRevisionHistory:Array.isArray(history)?history:[]
+  }));
+}
+function currentPlanCloudState(){return planCloudState(currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions,currentPlanManifest,currentPlanRevisionDraft,currentPlanRevisionHistory);}
+function planCloudHasSource(state){return!!(state?.goal||state?.planManifest||state?.planRevisionDraft||(state?.secondaryGoals||[]).length||(state?.availabilityExceptions||[]).length||(state?.planRevisionHistory||[]).length);}
+function planCloudDecision(localMeta,remote,localState){
+  const localRevision=Number(localMeta?.revision)||0,remoteRevision=Number(remote?.revision)||0;
+  if(remote?.exists&&remote?.deleted&&remoteRevision>localRevision)return"delete";
+  if(localMeta?.dirty&&planCloudHasSource(localState))return"push";
+  if(remote?.exists&&remoteRevision>localRevision)return remote.deleted?"delete":"pull";
+  if(!remote?.exists&&planCloudHasSource(localState))return"push";
+  if(remote?.exists&&localRevision===0)return remote.deleted?"delete":"pull";
+  return"none";
+}
+async function readLocalPlanCloudState(){
+  const[goal,secondary,availability,manifest,draft,history,meta]=await Promise.all([
+    storeGet("meta","engineV2Goal"),storeGet("meta","engineV2SecondaryGoals"),storeGet("meta","engineV2AvailabilityExceptions"),
+    storeGet("meta","engineV2PlanManifest"),storeGet("meta","engineV2PlanRevisionDraft"),storeGet("meta","engineV2PlanRevisionHistory"),
+    storeGet("meta",PLAN_CLOUD_META_KEY)
+  ]);
+  return{
+    state:planCloudState(goal?.value||null,secondary?.value||[],availability?.value||[],manifest?.value||null,draft?.value||null,history?.value||[]),
+    meta:meta?.value||null
+  };
+}
+async function storePlanCloudMeta(value){currentPlanCloudMeta=value;await storePut("meta",{key:PLAN_CLOUD_META_KEY,value});}
+async function markPlanCloudDirty(){
+  const local=(await storeGet("meta",PLAN_CLOUD_META_KEY))?.value||currentPlanCloudMeta||{};
+  await storePlanCloudMeta({...local,dirty:true,dirtyAt:new Date().toISOString()});
+}
+async function applyCloudPlanState(state,envelope){
+  const write=async(key,value)=>{if(value==null)await storeDelete("meta",key);else await storePut("meta",{key,value});};
+  await write("engineV2Goal",state?.goal||null);
+  await write("engineV2SecondaryGoals",state?.secondaryGoals||[]);
+  await write("engineV2AvailabilityExceptions",state?.availabilityExceptions||[]);
+  await write("engineV2PlanManifest",state?.planManifest||null);
+  await write("engineV2PlanRevisionDraft",state?.planRevisionDraft||null);
+  await write("engineV2PlanRevisionHistory",state?.planRevisionHistory||[]);
+  await storePlanCloudMeta({revision:Number(envelope?.revision)||0,updatedAt:envelope?.updatedAt||new Date().toISOString(),dirty:false});
+}
+async function applyCloudPlanDeletion(envelope){
+  await Promise.all([
+    storeDelete("meta","engineV2Goal"),storeDelete("meta","engineV2SecondaryGoals"),storeDelete("meta","engineV2AvailabilityExceptions"),
+    storeDelete("meta","engineV2PlanManifest"),storeDelete("meta","engineV2PlanRevisionDraft"),storeDelete("meta","engineV2PlanRevisionHistory")
+  ]);
+  await storePlanCloudMeta({revision:Number(envelope?.revision)||0,updatedAt:envelope?.updatedAt||new Date().toISOString(),dirty:false,deleted:true});
+}
+async function pushPlanStateCloudBestEffort(){
+  const state=currentPlanCloudState();if(!planCloudHasSource(state))return true;
+  try{
+    const local=(await storeGet("meta",PLAN_CLOUD_META_KEY))?.value||currentPlanCloudMeta||{},res=await apiRequest("/api/plan-state",{method:"PUT",body:{baseRevision:Number(local.revision)||0,state}});
+    await storePlanCloudMeta({revision:Number(res.revision)||0,updatedAt:res.updatedAt||new Date().toISOString(),dirty:false});return true;
+  }catch(error){
+    await markPlanCloudDirty();console.warn("ɅTLɅS · plan cloud push",error);return false;
+  }
+}
+async function deletePlanStateCloud(){
+  const res=await apiRequest("/api/plan-state",{method:"DELETE"});
+  await storePlanCloudMeta({revision:Number(res.revision)||0,updatedAt:res.updatedAt||new Date().toISOString(),dirty:false,deleted:true});
+  return res;
+}
+async function syncPlanStateFromCloud({startup=false}={}){
+  const local=await readLocalPlanCloudState(),remote=await api("/api/plan-state"),decision=planCloudDecision(local.meta,remote,local.state);
+  if(decision==="delete"){await applyCloudPlanDeletion(remote);return true;}
+  if(decision==="pull"){await applyCloudPlanState(remote.state||{},remote);return true;}
+  if(decision==="push"){
+    const res=await apiRequest("/api/plan-state",{method:"PUT",body:{baseRevision:Number(local.meta?.revision)||Number(remote?.revision)||0,state:local.state}});
+    await storePlanCloudMeta({revision:Number(res.revision)||0,updatedAt:res.updatedAt||new Date().toISOString(),dirty:false});return false;
+  }
+  if(remote?.exists&&Number(remote.revision)===Number(local.meta?.revision)&&local.meta?.dirty){
+    await storePlanCloudMeta({...local.meta,dirty:false,updatedAt:remote.updatedAt||local.meta.updatedAt});
+  }
+  return false;
+}
+async function refreshPlanStateFromCloud(showToast=false){
+  const changed=await syncPlanStateFromCloud({startup:false});
+  if(changed){await refreshAll();if(showToast)toast("☁️ Plan actualizado desde otro dispositivo.");}
+  return changed;
+}
+
+
 async function testConnection(){await busy(async()=>{try{const status=await api("/api/status"),pp=await api("/api/profile");await storePut("profile",{key:"me",data:pp.profile,updatedAt:new Date().toISOString()});await storePut("meta",{key:"gatewayVersion",value:status.version});toast("✅ Intervals.icu conectado.");await refreshAll();}catch(e){toast(`⚠️ ${e.message}`,true);}});}
 async function smartSync(){await busy(async()=>{ui.quickSyncBtn.classList.add("syncing");try{const r=await smartRange();await performSync(r.oldest,r.newest,"incremental");toast("✅ Datos actualizados.");}catch(e){toast(`⚠️ ${e.message}`,true);}finally{ui.quickSyncBtn.classList.remove("syncing");}});}
 async function fullSync(){await busy(async()=>{try{const oldest=ui.oldestDate.value,newest=ui.newestDate.value;validateRange(oldest,newest);await storePut("settings",{key:"manualOldest",value:oldest});await storePut("settings",{key:"manualNewest",value:newest});await performSync(oldest,newest,"manual");toast("✅ Rango actualizado.");}catch(e){toast(`⚠️ ${e.message}`,true);}});}
-async function performSync(oldest,newest,mode){validateRange(oldest,newest);const p=await api(`/api/sync?oldest=${encodeURIComponent(oldest)}&newest=${encodeURIComponent(newest)}`);await bulkUpsert("activities",p.activities);await bulkUpsert("wellness",p.wellness);try{const b=await api("/api/bootstrap");await storePut("athlete",{key:"me",data:b.athlete,updatedAt:b.syncedAt||new Date().toISOString()});await replaceStore("gear",b.gear||[]);await replaceStore("sportSettings",b.sportSettings||[]);}catch(error){console.warn("ɅTLɅS · bootstrap",error);}await syncCalendar(false);const at=p.syncedAt||new Date().toISOString();await storePut("meta",{key:"lastSync",value:at});await storePut("meta",{key:"lastSyncRange",value:{oldest,newest}});await storePut("meta",{key:"lastSyncMode",value:mode});await refreshAll();}
+async function performSync(oldest,newest,mode){validateRange(oldest,newest);const p=await api(`/api/sync?oldest=${encodeURIComponent(oldest)}&newest=${encodeURIComponent(newest)}`);await bulkUpsert("activities",p.activities);await bulkUpsert("wellness",p.wellness);try{const b=await api("/api/bootstrap");await storePut("athlete",{key:"me",data:b.athlete,updatedAt:b.syncedAt||new Date().toISOString()});await replaceStore("gear",b.gear||[]);await replaceStore("sportSettings",b.sportSettings||[]);}catch(error){console.warn("ɅTLɅS · bootstrap",error);}await syncCalendar(false);await syncPlanStateFromCloud({startup:false}).catch(error=>console.warn("ɅTLɅS · plan cloud durante sync",error));const at=p.syncedAt||new Date().toISOString();await storePut("meta",{key:"lastSync",value:at});await storePut("meta",{key:"lastSyncRange",value:{oldest,newest}});await storePut("meta",{key:"lastSyncMode",value:mode});await refreshAll();}
 async function smartRange(){const today=fmtDate(new Date()),[last,h,o]=await Promise.all([storeGet("meta","lastSyncRange"),storeGet("settings","historyStart"),storeGet("settings","overlapDays")]);const start=h?.value||ui.historyStart.value||"2018-01-01",days=Math.max(3,Math.min(90,Number(o?.value||ui.overlapDays.value||21)));if(!last?.value?.newest)return{oldest:start,newest:today};const anchor=last.value.newest>today?today:last.value.newest;return{oldest:maxDate(start,addDays(anchor,-(days-1))),newest:today};}
 function calendarRange(){const t=fmtDate(new Date()),base=addDays(t,120),goal=currentEngineV2Goal?.date?addDays(currentEngineV2Goal.date,7):base;return{oldest:addDays(t,-30),newest:goal>base?goal:base};}
 
@@ -1175,12 +1415,12 @@ async function refreshCalendarFromCloud(force=false){
 
 
 async function loadLocalSnapshot(){
-  const[activities,wellness,gear,events,profile,worker,cachedVo2,engineV2Goal,engineV2SecondaryGoals,engineV2AvailabilityExceptions,engineV2PlanManifest]=await Promise.all([
+  const[activities,wellness,gear,events,profile,worker,cachedVo2,engineV2Goal,engineV2SecondaryGoals,engineV2AvailabilityExceptions,engineV2PlanManifest,engineV2PlanRevisionDraft,engineV2PlanRevisionHistory,engineV2PlanCloudMeta]=await Promise.all([
     storeGetAll("activities"),storeGetAll("wellness"),storeGetAll("gear"),storeGetAll("events"),
     storeGet("profile","me"),storeGet("settings","workerUrl"),storeGet("meta","latestRunVo2"),storeGet("meta","engineV2Goal"),
-    storeGet("meta","engineV2SecondaryGoals"),storeGet("meta","engineV2AvailabilityExceptions"),storeGet("meta","engineV2PlanManifest")
+    storeGet("meta","engineV2SecondaryGoals"),storeGet("meta","engineV2AvailabilityExceptions"),storeGet("meta","engineV2PlanManifest"),storeGet("meta","engineV2PlanRevisionDraft"),storeGet("meta","engineV2PlanRevisionHistory"),storeGet("meta",PLAN_CLOUD_META_KEY)
   ]);
-  return{activities,wellness,gear,events,profile,worker,cachedVo2,engineV2Goal,engineV2SecondaryGoals,engineV2AvailabilityExceptions,engineV2PlanManifest};
+  return{activities,wellness,gear,events,profile,worker,cachedVo2,engineV2Goal,engineV2SecondaryGoals,engineV2AvailabilityExceptions,engineV2PlanManifest,engineV2PlanRevisionDraft,engineV2PlanRevisionHistory,engineV2PlanCloudMeta};
 }
 function renderDataSummary({gear,profile,worker}){
   if(ui.profileName)ui.profileName.textContent=profileLabel(profile?.data);
@@ -1191,8 +1431,8 @@ function renderDataSummary({gear,profile,worker}){
   if(ui.connectionTileNote)ui.connectionTileNote.textContent=profile?.data?"Intervals.icu conectado":"Intervals.icu";
 }
 async function refreshAll(){
-  const snapshot=await loadLocalSnapshot(),{activities,wellness,gear,events,cachedVo2,engineV2Goal,engineV2SecondaryGoals,engineV2AvailabilityExceptions,engineV2PlanManifest}=snapshot;
-  currentActivities=activities;currentWellness=wellness;currentGear=gear;currentEvents=events;currentCachedVo2=cachedVo2?.value||null;currentEngineV2Goal=engineV2Goal?.value||null;currentPlanManifest=engineV2PlanManifest?.value||null;
+  const snapshot=await loadLocalSnapshot(),{activities,wellness,gear,events,cachedVo2,engineV2Goal,engineV2SecondaryGoals,engineV2AvailabilityExceptions,engineV2PlanManifest,engineV2PlanRevisionDraft,engineV2PlanRevisionHistory,engineV2PlanCloudMeta}=snapshot;
+  currentActivities=activities;currentWellness=wellness;currentGear=gear;currentEvents=events;currentCachedVo2=cachedVo2?.value||null;currentEngineV2Goal=engineV2Goal?.value||null;currentPlanManifest=engineV2PlanManifest?.value||null;currentPlanRevisionDraft=engineV2PlanRevisionDraft?.value||null;currentPlanRevisionHistory=Array.isArray(engineV2PlanRevisionHistory?.value)?engineV2PlanRevisionHistory.value:[];currentPlanCloudMeta=engineV2PlanCloudMeta?.value||null;
   currentSecondaryGoals=normalizeSecondaryGoals(engineV2SecondaryGoals?.value||[],currentEngineV2Goal);
   currentAvailabilityExceptions=normalizeAvailabilityExceptions(engineV2AvailabilityExceptions?.value||[],currentEngineV2Goal);
   currentAthleteProfileV2=buildAthleteProfileV2(activities,wellness,currentCachedVo2);
@@ -1202,8 +1442,10 @@ async function refreshAll(){
   currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);
   currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);
   currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);
+  currentPlanManifest=await backfillManifestSessionSnapshot(currentPlanManifest,currentSessionPlan);
+  currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);
   if(!currentPlanWeekStart)currentPlanWeekStart=mondayOf(new Date());
-  initActivityFilters();renderActivities();renderToday(activities,wellness,currentCachedVo2);renderEngineV2Cards();renderAvailabilityCard();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderPlan();renderDataSummary(snapshot);
+  initActivityFilters();renderActivities();renderToday(activities,wellness,currentCachedVo2);renderEngineV2Cards();renderAvailabilityCard();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderAdaptiveEngineCard();renderPlan();renderDataSummary(snapshot);
   const latestRun=activities.filter(isRun).sort((a,b)=>activityStamp(b).localeCompare(activityStamp(a)))[0]||null;
   if(latestRun?.id&&currentCachedVo2?.activityId!==latestRun.id)refreshLatestRunVo2(latestRun).catch(error=>console.warn("ɅTLɅS · VO₂ máx.",error));
 }
@@ -1215,7 +1457,7 @@ function renderPlanOverview(){
   if(!g){ui.planOverviewTitle.textContent="Configurar plan";ui.planOverviewMeta.textContent="Objetivo, carreras y disponibilidad";return;}
   ui.planOverviewTitle.textContent=g.name||engineV2GoalLabel(g.type);
   const start=g.startDate||engineV2DefaultPlanStart(),secondary=currentSecondaryGoals.length?` · ${currentSecondaryGoals.length} B/C`:"";
-  ui.planOverviewMeta.textContent=`${engineV2DateLabel(g.date)} · ${engineV2FormatTime(g.targetTimeSec)} · inicio ${engineV2DateLabel(start)}${secondary}`;
+  const lifecycle=planLifecycle();ui.planOverviewMeta.textContent=`${engineV2DateLabel(g.date)} · ${engineV2FormatTime(g.targetTimeSec)} · ${lifecycle.label}${secondary}`;
 }
 function openPlanControl(){renderPlanOverview();ui.planControlDetail.classList.remove("hidden");ui.planControlDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";}
 function closePlanControl(){ui.planControlDetail.classList.add("hidden");ui.planControlDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";}
@@ -1348,6 +1590,7 @@ function buildAthleteProfileV2(activities,wellness,cachedVo2,anchor=fmtDate(new 
 function engineV2DefaultPlanStart(anchor=fmtDate(new Date())){
   const d=new Date(`${anchor}T12:00:00`),day=d.getDay()||7;if(day===1)return anchor;d.setDate(d.getDate()+(8-day));return fmtDate(d);
 }
+function engineV2ConfiguredPlanStart(goal,anchor=fmtDate(new Date())){return goal?.startDate||engineV2DefaultPlanStart(anchor);}
 function engineV2EffectivePlanStart(goal,anchor=fmtDate(new Date())){
   const raw=goal?.startDate||engineV2DefaultPlanStart(anchor);return raw<anchor?anchor:raw;
 }
@@ -1420,7 +1663,7 @@ function renderEngineV2Diagnostic(){
 }
 async function openEngineV2GoalDialog(){const g=currentEngineV2Goal,today=fmtDate(new Date()),suggested=g?.startDate||engineV2DefaultPlanStart(today);ui.engineGoalType.value=g?.type||"HALF";ui.engineGoalDate.min=today;ui.engineGoalDate.value=g?.date||"";ui.engineGoalStartDate.min=g?.startDate&&g.startDate<today?g.startDate:today;ui.engineGoalStartDate.value=suggested;ui.engineGoalName.value=g?.name||"";ui.engineGoalTime.value=g?.targetTimeSec?engineV2FormatTime(g.targetTimeSec):"";const selected=new Set(g?.availableDays||[]);qsa('input[type="checkbox"]',ui.engineGoalDays).forEach(x=>x.checked=selected.has(Number(x.value)));ui.engineGoalDelete.classList.toggle("hidden",!g);renderSecondaryGoalList();ui.engineGoalDialog.showModal();}
 function collectEngineV2Days(){return qsa('input[type="checkbox"]:checked',ui.engineGoalDays).map(x=>Number(x.value)).filter(n=>n>=1&&n<=7).sort((a,b)=>a-b);}
-async function saveEngineV2Goal(event){if(!event.submitter||event.submitter.value!=="default")return;event.preventDefault();const type=ui.engineGoalType.value,date=ui.engineGoalDate.value,startDate=ui.engineGoalStartDate.value,name=ui.engineGoalName.value.trim(),targetTimeSec=engineV2ParseTime(ui.engineGoalTime.value),today=fmtDate(new Date());if(!date||date<today){toast("⚠️ Indica una fecha futura para la carrera.",true);return;}if(!startDate||startDate>=date){toast("⚠️ El inicio del plan debe ser anterior a la carrera.",true);return;}if(startDate<today&&startDate!==currentEngineV2Goal?.startDate){toast("⚠️ La nueva fecha de inicio no puede estar en el pasado.",true);return;}if(!Number.isFinite(targetTimeSec)||targetTimeSec<=0){toast("⚠️ Usa H:MM:SS o MM:SS para la marca objetivo.",true);return;}const goal={version:3,type,date,startDate,name:name||null,targetTimeSec,availableDays:collectEngineV2Days(),planId:currentEngineV2Goal?.planId||currentPlanManifest?.planId||null,updatedAt:new Date().toISOString()};await storePut("meta",{key:"engineV2Goal",value:goal});currentEngineV2Goal=goal;currentGoalRequirements=buildGoalRequirementsV2(goal);currentGoalAssessment=assessGoalV2(currentAthleteProfileV2,currentGoalRequirements,goal);currentSecondaryGoals=normalizeSecondaryGoals(currentSecondaryGoals,goal);currentAvailabilityExceptions=normalizeAvailabilityExceptions(currentAvailabilityExceptions,goal);await persistEngineV2Constraints();currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,goal);renderEngineV2Cards();renderAvailabilityCard();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();ui.engineGoalDialog.close();toast("✅ Plan actualizado.");}
+async function saveEngineV2Goal(event){if(!event.submitter||event.submitter.value!=="default")return;event.preventDefault();const type=ui.engineGoalType.value,date=ui.engineGoalDate.value,startDate=ui.engineGoalStartDate.value,name=ui.engineGoalName.value.trim(),targetTimeSec=engineV2ParseTime(ui.engineGoalTime.value),today=fmtDate(new Date());if(!date||date<today){toast("⚠️ Indica una fecha futura para la carrera.",true);return;}if(!startDate||startDate>=date){toast("⚠️ El inicio del plan debe ser anterior a la carrera.",true);return;}if(startDate<today&&startDate!==currentEngineV2Goal?.startDate){toast("⚠️ La nueva fecha de inicio no puede estar en el pasado.",true);return;}if(!Number.isFinite(targetTimeSec)||targetTimeSec<=0){toast("⚠️ Usa H:MM:SS o MM:SS para la marca objetivo.",true);return;}const goal={version:3,type,date,startDate,name:name||null,targetTimeSec,availableDays:collectEngineV2Days(),planId:currentEngineV2Goal?.planId||currentPlanManifest?.planId||null,updatedAt:new Date().toISOString()};await storePut("meta",{key:"engineV2Goal",value:goal});currentEngineV2Goal=goal;currentGoalRequirements=buildGoalRequirementsV2(goal);currentGoalAssessment=assessGoalV2(currentAthleteProfileV2,currentGoalRequirements,goal);currentSecondaryGoals=normalizeSecondaryGoals(currentSecondaryGoals,goal);currentAvailabilityExceptions=normalizeAvailabilityExceptions(currentAvailabilityExceptions,goal);await persistEngineV2Constraints();await pushPlanStateCloudBestEffort();currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,goal);currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,goal,currentSecondaryGoals,currentAvailabilityExceptions);renderEngineV2Cards();renderAvailabilityCard();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderAdaptiveEngineCard();ui.engineGoalDialog.close();toast("✅ Plan actualizado.");}
 async function deleteEngineV2Goal(){
   if(!currentEngineV2Goal)return;
   const planId=currentPlanManifest?.planId||currentEngineV2Goal?.planId||null,published=!!planId;
@@ -1432,9 +1675,10 @@ async function deleteEngineV2Goal(){
     ui.engineGoalDelete.disabled=true;
     let remoteDeleted=0;
     if(planId)remoteDeleted=await deletePublishedPlanRemote(planId,currentEngineV2Goal);
-    await storeDelete("meta","engineV2Goal");await storeDelete("meta","engineV2SecondaryGoals");await storeDelete("meta","engineV2AvailabilityExceptions");await storeDelete("meta","engineV2PlanManifest");
-    currentEngineV2Goal=null;currentSecondaryGoals=[];currentAvailabilityExceptions=[];currentPlanManifest=null;currentGoalRequirements=null;currentGoalAssessment=null;currentMacroTrajectory=null;currentWeeklyTargets=null;currentCalendarSolution=null;currentSessionPlan=null;
-    renderEngineV2Cards();renderAvailabilityCard();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderPlanPublicationStatus();ui.engineGoalDialog.close();
+    await deletePlanStateCloud();
+    await storeDelete("meta","engineV2Goal");await storeDelete("meta","engineV2SecondaryGoals");await storeDelete("meta","engineV2AvailabilityExceptions");await storeDelete("meta","engineV2PlanManifest");await storeDelete("meta","engineV2PlanRevisionDraft");await storeDelete("meta","engineV2PlanRevisionHistory");
+    currentEngineV2Goal=null;currentSecondaryGoals=[];currentAvailabilityExceptions=[];currentPlanManifest=null;currentGoalRequirements=null;currentGoalAssessment=null;currentMacroTrajectory=null;currentWeeklyTargets=null;currentCalendarSolution=null;currentSessionPlan=null;currentAdaptiveState=null;currentPlanRevisionDraft=null;currentPlanRevisionHistory=[];
+    renderEngineV2Cards();renderAvailabilityCard();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderAdaptiveEngineCard();renderPlanPublicationStatus();ui.engineGoalDialog.close();
     lastCalendarRefreshAt=Date.now();await syncCalendar(false);
     toast(remoteDeleted?`✅ Plan eliminado · ${remoteDeleted} sesiones retiradas de Intervals.icu.`:"✅ Plan eliminado.");
   }catch(error){
@@ -1458,7 +1702,7 @@ function normalizeSecondaryGoals(goals,primary){
   })).sort((a,b)=>a.date.localeCompare(b.date)||a.priority.localeCompare(b.priority));
 }
 function normalizeAvailabilityExceptions(items,primary){
-  const maxWeek=primary?.date?engineV2Monday(primary.date):"9999-12-31",minWeek=engineV2Monday(engineV2EffectivePlanStart(primary)),map=new Map();
+  const maxWeek=primary?.date?engineV2Monday(primary.date):"9999-12-31",minWeek=engineV2Monday(engineV2ConfiguredPlanStart(primary)),map=new Map();
   for(const x of Array.isArray(items)?items:[]){
     const weekStart=engineV2Monday(x?.weekStart||"");if(!weekStart||weekStart<minWeek||weekStart>maxWeek)continue;
     const days=Array.isArray(x.availableDays)?[...new Set(x.availableDays.map(Number).filter(n=>n>=1&&n<=7))].sort((a,b)=>a-b):[];
@@ -1492,15 +1736,15 @@ async function saveSecondaryGoal(event){
   const date=ui.secondaryGoalDate.value;if(!date||date<fmtDate(new Date())||date>=currentEngineV2Goal.date){toast("⚠️ La carrera B/C debe ser futura y anterior al objetivo A.",true);return;}
   const rawTime=ui.secondaryGoalTime.value.trim(),targetTimeSec=rawTime?engineV2ParseTime(rawTime):null;if(rawTime&&!Number.isFinite(targetTimeSec)){toast("⚠️ La marca opcional debe usar H:MM:SS o MM:SS.",true);return;}
   const existing=currentSecondaryEditId?currentSecondaryGoals.find(x=>x.id===currentSecondaryEditId):null,next={id:existing?.id||engineV2Uuid(),priority:ui.secondaryGoalPriority.value,type:ui.secondaryGoalType.value,date,name:ui.secondaryGoalName.value.trim()||null,intention:ui.secondaryGoalIntention.value,targetTimeSec:Number.isFinite(targetTimeSec)?targetTimeSec:null,createdAt:existing?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};
-  currentSecondaryGoals=normalizeSecondaryGoals([...currentSecondaryGoals.filter(x=>x.id!==next.id),next],currentEngineV2Goal);await persistEngineV2Constraints();
-  currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);
-  renderEngineV2Cards();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();ui.secondaryGoalDialog.close();openEngineV2GoalDialog();toast(`✅ Carrera ${next.priority} integrada en la trayectoria.`);
+  currentSecondaryGoals=normalizeSecondaryGoals([...currentSecondaryGoals.filter(x=>x.id!==next.id),next],currentEngineV2Goal);await persistEngineV2Constraints();await pushPlanStateCloudBestEffort();
+  currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);
+  renderEngineV2Cards();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderAdaptiveEngineCard();ui.secondaryGoalDialog.close();openEngineV2GoalDialog();toast(`✅ Carrera ${next.priority} integrada en la trayectoria.`);
 }
 async function deleteSecondaryGoal(){
   if(!currentSecondaryEditId)return;const g=currentSecondaryGoals.find(x=>x.id===currentSecondaryEditId);if(!g)return;
   if(!confirm(`¿Eliminar la carrera ${g.priority} del ${engineV2DateLabel(g.date)}?`))return;
-  currentSecondaryGoals=currentSecondaryGoals.filter(x=>x.id!==g.id);await persistEngineV2Constraints();currentSecondaryEditId=null;currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);
-  renderEngineV2Cards();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();ui.secondaryGoalDialog.close();openEngineV2GoalDialog();toast("✅ Carrera secundaria eliminada.");
+  currentSecondaryGoals=currentSecondaryGoals.filter(x=>x.id!==g.id);await persistEngineV2Constraints();await pushPlanStateCloudBestEffort();currentSecondaryEditId=null;currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);
+  renderEngineV2Cards();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderAdaptiveEngineCard();ui.secondaryGoalDialog.close();openEngineV2GoalDialog();toast("✅ Carrera secundaria eliminada.");
 }
 function baseAvailabilityDays(){return Array.isArray(currentEngineV2Goal?.availableDays)&&currentEngineV2Goal.availableDays.length?[...currentEngineV2Goal.availableDays]:[1,2,3,4,5,6,7];}
 function renderAvailabilityCard(){
@@ -1521,18 +1765,18 @@ function loadAvailabilityWeekFromInput(){
 }
 function openAvailabilityDialog(){
   if(!currentEngineV2Goal){toast("⚠️ Guarda primero el objetivo A.",true);return;}
-  renderAvailabilityExceptionList();const firstWeek=engineV2Monday(engineV2EffectivePlanStart(currentEngineV2Goal));ui.availabilityWeekDate.min=firstWeek;ui.availabilityWeekDate.max=currentEngineV2Goal.date;loadAvailabilityException(currentAvailabilityExceptions[0]?.weekStart||firstWeek);ui.availabilityDialog.showModal();
+  renderAvailabilityExceptionList();const firstWeek=engineV2Monday(engineV2ConfiguredPlanStart(currentEngineV2Goal));ui.availabilityWeekDate.min=firstWeek;ui.availabilityWeekDate.max=currentEngineV2Goal.date;loadAvailabilityException(currentAvailabilityExceptions[0]?.weekStart||firstWeek);ui.availabilityDialog.showModal();
 }
 async function saveAvailabilityException(event){
   if(!event.submitter||event.submitter.value!=="default")return;event.preventDefault();
-  const weekStart=engineV2Monday(ui.availabilityWeekDate.value),min=engineV2Monday(engineV2EffectivePlanStart(currentEngineV2Goal)),max=engineV2Monday(currentEngineV2Goal?.date);if(!weekStart||weekStart<min||weekStart>max){toast("⚠️ La semana debe estar dentro del horizonte del objetivo A.",true);return;}
+  const weekStart=engineV2Monday(ui.availabilityWeekDate.value),min=engineV2Monday(engineV2ConfiguredPlanStart(currentEngineV2Goal)),max=engineV2Monday(currentEngineV2Goal?.date);if(!weekStart||weekStart<min||weekStart>max){toast("⚠️ La semana debe estar dentro del horizonte del objetivo A.",true);return;}
   const availableDays=qsa('input[type="checkbox"]:checked',ui.availabilityWeekDays).map(x=>Number(x.value)).sort((a,b)=>a-b),next={weekStart,availableDays,note:ui.availabilityNote.value.trim(),updatedAt:new Date().toISOString()};
-  currentAvailabilityExceptions=normalizeAvailabilityExceptions([...currentAvailabilityExceptions.filter(x=>x.weekStart!==weekStart),next],currentEngineV2Goal);await persistEngineV2Constraints();currentAvailabilityEditWeek=weekStart;currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);
-  renderAvailabilityCard();renderAvailabilityExceptionList();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();ui.availabilityDelete.classList.remove("hidden");toast("✅ Disponibilidad semanal actualizada.");
+  currentAvailabilityExceptions=normalizeAvailabilityExceptions([...currentAvailabilityExceptions.filter(x=>x.weekStart!==weekStart),next],currentEngineV2Goal);await persistEngineV2Constraints();await pushPlanStateCloudBestEffort();currentAvailabilityEditWeek=weekStart;currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);
+  renderAvailabilityCard();renderAvailabilityExceptionList();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderAdaptiveEngineCard();ui.availabilityDelete.classList.remove("hidden");toast("✅ Disponibilidad semanal actualizada.");
 }
 async function deleteAvailabilityException(){
-  const week=engineV2Monday(ui.availabilityWeekDate.value)||currentAvailabilityEditWeek;if(!week)return;currentAvailabilityExceptions=currentAvailabilityExceptions.filter(x=>x.weekStart!==week);await persistEngineV2Constraints();currentAvailabilityEditWeek=null;currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);
-  renderAvailabilityCard();renderAvailabilityExceptionList();renderWeeklyTargetsCard();renderCalendarSolverCard();setAvailabilityDayChecks(baseAvailabilityDays());ui.availabilityNote.value="";ui.availabilityDelete.classList.add("hidden");renderMacroTrajectoryCard();toast("✅ Excepción eliminada.");
+  const week=engineV2Monday(ui.availabilityWeekDate.value)||currentAvailabilityEditWeek;if(!week)return;currentAvailabilityExceptions=currentAvailabilityExceptions.filter(x=>x.weekStart!==week);await persistEngineV2Constraints();await pushPlanStateCloudBestEffort();currentAvailabilityEditWeek=null;currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);
+  renderAvailabilityCard();renderAvailabilityExceptionList();renderWeeklyTargetsCard();renderCalendarSolverCard();renderAdaptiveEngineCard();setAvailabilityDayChecks(baseAvailabilityDays());ui.availabilityNote.value="";ui.availabilityDelete.classList.add("hidden");renderMacroTrajectoryCard();toast("✅ Excepción eliminada.");
 }
 function effectiveAvailabilityForWeek(goal,exceptions,weekStart){
   const base=Array.isArray(goal?.availableDays)&&goal.availableDays.length?[...goal.availableDays]:[1,2,3,4,5,6,7],x=(exceptions||[]).find(e=>e.weekStart===weekStart);return x?{days:[...x.availableDays],source:"exception",note:x.note||""}:{days:base,source:"base",note:""};
@@ -1643,7 +1887,7 @@ function macroStrengthFor(phase){if(phase==="Readaptación"||phase==="Base")retu
 function macroFocusFor(phase,type){if(phase==="Readaptación")return"Recuperar frecuencia y tolerancia sin perseguir todavía el volumen final.";if(phase==="Base")return"Construir base aeróbica, fuerza y tolerancia al entrenamiento.";if(phase==="Construcción")return type==="MARATHON"?"Aumentar volumen, umbral y tirada larga.":"Aumentar capacidad aeróbica, umbral y resistencia específica.";if(phase==="Específica"){if(type==="MARATHON")return"Durabilidad, ritmo maratón y tiradas largas específicas.";if(type==="HALF")return"Umbral alto y grandes bloques a ritmo de media maratón.";if(type==="10K")return"Equilibrio VO₂, umbral y ritmo 10K.";return"VO₂, economía y tolerancia creciente al ritmo 5K.";}return"Reducir fatiga conservando intensidad y especificidad.";}
 function macroTaperFactor(type,pos){const maps={MARATHON:[.75,.55,.32],HALF:[.62,.38],"10K":[.50],"5K":[.48]},arr=maps[type]||[.5];return arr[Math.min(pos,arr.length-1)]??.4;}
 function buildMacroTrajectoryV1(profile,req,goal,secondaryGoals=[],availabilityExceptions=[],anchor=fmtDate(new Date())){
-  if(!profile?.available||!req||!goal?.date)return null;const planStart=engineV2EffectivePlanStart(goal,anchor),days=(new Date(`${goal.date}T12:00:00`)-new Date(`${planStart}T12:00:00`))/86400000;if(!Number.isFinite(days)||days<7)return{ok:false,error:"Queda menos de una semana efectiva de preparación."};
+  if(!profile?.available||!req||!goal?.date)return null;const planStart=engineV2ConfiguredPlanStart(goal,anchor),days=(new Date(`${goal.date}T12:00:00`)-new Date(`${planStart}T12:00:00`))/86400000;if(!Number.isFinite(days)||days<7)return{ok:false,error:"Queda menos de una semana efectiva de preparación."};
   const calendarStart=engineV2Monday(planStart),goalWeek=engineV2Monday(goal.date),totalWeeks=Math.round((new Date(`${goalWeek}T12:00:00`)-new Date(`${calendarStart}T12:00:00`))/(7*86400000))+1;
   const allSecondaryGoals=normalizeSecondaryGoals(secondaryGoals,goal),normalizedRaces=allSecondaryGoals.filter(g=>g.date>=planStart),normalizedAvailability=normalizeAvailabilityExceptions(availabilityExceptions,goal),baseAvailable=Array.isArray(goal.availableDays)&&goal.availableDays.length?goal.availableDays.length:7;
   const layout=macroPhaseLayout(totalWeeks,req),startVolume=macroStartVolume(profile),peakVolume=Math.max(startVolume,macroPeakVolume(profile,req,totalWeeks)),startFrequency=macroStartFrequency(profile,req,baseAvailable),targetFrequency=macroTargetFrequency(req,baseAvailable),peakLong=macroPeakLong(profile,req,totalWeeks),startLong=macroStartLong(profile,peakLong),preTaper=Math.max(1,totalWeeks-layout.taper),weeks=[];
@@ -1701,7 +1945,7 @@ function renderMacroTrajectory(){
   }).join("");
   ui.macroReading.textContent=t.reading;
 }
-function openMacroTrajectory(){currentAthleteProfileV2=buildAthleteProfileV2(currentActivities,currentWellness,currentCachedVo2);currentGoalRequirements=buildGoalRequirementsV2(currentEngineV2Goal);currentGoalAssessment=assessGoalV2(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);renderEngineV2Cards();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderMacroTrajectory();ui.macroTrajectoryDetail.classList.remove("hidden");ui.macroTrajectoryDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";}
+function openMacroTrajectory(){currentAthleteProfileV2=buildAthleteProfileV2(currentActivities,currentWellness,currentCachedVo2);currentGoalRequirements=buildGoalRequirementsV2(currentEngineV2Goal);currentGoalAssessment=assessGoalV2(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);renderEngineV2Cards();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderAdaptiveEngineCard();renderMacroTrajectory();ui.macroTrajectoryDetail.classList.remove("hidden");ui.macroTrajectoryDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";}
 function closeMacroTrajectory(){ui.macroTrajectoryDetail.classList.add("hidden");ui.macroTrajectoryDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";}
 
 
@@ -1792,7 +2036,7 @@ function renderWeeklyTargets(){
   ui.weeklyTargetsList.innerHTML=t.weeks.map(w=>{const stim=w.stimuli.length?w.stimuli.map(s=>`${s.label} · ${s.dose}`).join(" + "):"Sin estímulo intenso",constraints=w.constraints.length?w.constraints.join(" · "):"Sin restricciones";return`<div class="weekly-target-week"><div class="weekly-target-head"><div><div class="weekly-target-title">Semana ${w.weekIndex} · ${esc(w.phase)}${w.raceWeek?" · 🏁 A":""}</div><span class="weekly-target-role">${esc(w.role)}</span>${w.secondaryFocus?`<span class="secondary-focus-chip">🏁 ${esc(secondaryFocusLabel(w.secondaryFocus))} · ${w.secondaryFocus.weeksToRace} sem</span>`:""}</div><div class="weekly-target-date">${esc(macroWeekRange({start:w.start,end:w.end}))}</div></div><div class="weekly-target-grid"><div class="weekly-target-stat"><div class="weekly-target-value">${formatNatural(w.trainingVolume,1)}</div><div class="weekly-target-label">km entren.</div></div><div class="weekly-target-stat"><div class="weekly-target-value">${w.frequency}</div><div class="weekly-target-label">días</div></div><div class="weekly-target-stat"><div class="weekly-target-value">${formatNatural(w.easyRange[0],1)}–${formatNatural(w.easyRange[1],1)}</div><div class="weekly-target-label">km fáciles</div></div><div class="weekly-target-stat"><div class="weekly-target-value">${w.stimuli.length}</div><div class="weekly-target-label">estímulos</div></div></div><div class="weekly-target-lines"><div class="weekly-target-line"><div class="weekly-target-key">Objetivo</div><div class="weekly-target-text">${esc(w.primaryAdaptation)}</div></div><div class="weekly-target-line"><div class="weekly-target-key">Calidad</div><div class="weekly-target-text">${esc(stim)}</div></div><div class="weekly-target-line"><div class="weekly-target-key">Tirada</div><div class="weekly-target-text">${esc(w.longRun)}</div></div><div class="weekly-target-line"><div class="weekly-target-key">Fuerza</div><div class="weekly-target-text">${esc(w.strength)}</div></div><div class="weekly-target-line"><div class="weekly-target-key">Recuperación</div><div class="weekly-target-text">${esc(w.recovery)}</div></div>${w.constraints.length?`<div class="weekly-target-line"><div class="weekly-target-key">Restricción</div><div class="weekly-target-text">${esc(constraints)}</div></div>`:""}</div></div>`;}).join("");
   ui.weeklyTargetsReading.textContent=t.reading;
 }
-function openWeeklyTargets(){currentAthleteProfileV2=buildAthleteProfileV2(currentActivities,currentWellness,currentCachedVo2);currentGoalRequirements=buildGoalRequirementsV2(currentEngineV2Goal);currentGoalAssessment=assessGoalV2(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);renderEngineV2Cards();renderAvailabilityCard();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderWeeklyTargets();ui.weeklyTargetsDetail.classList.remove("hidden");ui.weeklyTargetsDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";}
+function openWeeklyTargets(){currentAthleteProfileV2=buildAthleteProfileV2(currentActivities,currentWellness,currentCachedVo2);currentGoalRequirements=buildGoalRequirementsV2(currentEngineV2Goal);currentGoalAssessment=assessGoalV2(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);renderEngineV2Cards();renderAvailabilityCard();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderAdaptiveEngineCard();renderWeeklyTargets();ui.weeklyTargetsDetail.classList.remove("hidden");ui.weeklyTargetsDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";}
 function closeWeeklyTargets(){ui.weeklyTargetsDetail.classList.add("hidden");ui.weeklyTargetsDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";}
 
 
@@ -1962,11 +2206,11 @@ function renderCalendarSolver(){
   if(!s?.ok){ui.calendarSolverWeeks.textContent="—";ui.calendarSolverSessions.textContent="—";ui.calendarSolverConflicts.textContent="—";ui.calendarSolverAudit.innerHTML="";ui.calendarSolverWeeksList.innerHTML='<div class="engine-list-empty">No hay objetivos semanales suficientes.</div>';ui.calendarSolverReading.textContent="Genera primero WeeklyTargets.";return;}
   ui.calendarSolverWeeks.textContent=String(s.weeks.length);ui.calendarSolverSessions.textContent=String(s.totalBlocks);ui.calendarSolverConflicts.textContent=String(s.conflicts);
   ui.calendarSolverAudit.innerHTML=s.audit.map(x=>`<div class="engine-v2-row"><div class="engine-v2-row-key">${esc(x.label)}</div><div class="engine-v2-row-value ${calendarAuditClass(x.status)}">${calendarAuditSymbol(x.status)} ${esc(x.detail)}</div></div>`).join("");
-  ui.calendarSolverWeeksList.innerHTML=s.weeks.map(w=>`<div class="solver-week"><div class="solver-week-head"><div><div class="solver-week-title">Semana ${w.weekIndex} · ${esc(w.phase)} · ${esc(w.role)}</div>${w.warnings.length?`<div class="macro-week-note">${esc(w.warnings.map(x=>x.text).join(" · "))}</div>`:""}</div><div class="solver-week-date">${esc(macroWeekRange({start:w.start,end:w.end}))}</div></div><div class="solver-days">${w.days.map(d=>`<div class="solver-day${d.isAvailable?"":" off"}"><div class="solver-day-date">${SOLVER_DAY_LABELS[d.day]}<br>${new Date(`${d.date}T12:00:00`).getDate()}</div><div class="solver-day-body">${d.slots.length?d.slots.map(slot=>`<div class="solver-slot"><div class="solver-slot-icon">${solverSlotIcon(slot.type)}</div><div class="solver-slot-copy"><span class="solver-slot-title">${esc(slot.title)}</span><span class="solver-slot-meta">${esc(slot.meta||"")}</span></div></div>`).join(""):`<div class="solver-rest">${d.isAvailable?"Descanso":"No disponible"}</div>`}</div></div>`).join("")}</div></div>`).join("");
+  ui.calendarSolverWeeksList.innerHTML=s.weeks.map(w=>`<div class="solver-week"><div class="solver-week-head"><div><div class="solver-week-title">Semana ${w.weekIndex} · ${esc(w.phase)} · ${esc(w.role)}</div>${w.warnings.length?`<div class="macro-week-note">${esc(w.warnings.map(x=>x.text).join(" · "))}</div>`:""}</div><div class="solver-week-date">${esc(macroWeekRange({start:w.start,end:w.end}))}</div></div><div class="plan-week-calendar">${w.days.map(d=>`<div class="plan-week-calendar-day${d.isAvailable?"":" off"}"><div class="plan-week-calendar-head"><div class="plan-week-calendar-date"><span class="plan-week-calendar-weekday">${SOLVER_DAY_LABELS[d.day]}</span><span class="plan-week-calendar-number">${new Date(`${d.date}T12:00:00`).getDate()}</span></div><span class="plan-week-calendar-sep"></span><div class="plan-week-calendar-copy">${d.slots.length?d.slots.map(slot=>`<div class="plan-week-calendar-session"><div class="plan-week-calendar-mainline"><span class="plan-week-calendar-icon">${solverSlotIcon(slot.type)}</span><span class="plan-week-calendar-title">${esc(slot.title)}</span></div>${slot.meta?`<div class="plan-week-calendar-meta">${esc(slot.meta)}</div>`:""}</div>`).join(""):`<div class="plan-week-calendar-rest">${d.isAvailable?"Descanso":"No disponible"}</div>`}</div></div></div>`).join("")}</div></div>`).join("");
   ui.calendarSolverReading.textContent=s.reading;
 }
 function openCalendarSolver(){
-  currentAthleteProfileV2=buildAthleteProfileV2(currentActivities,currentWellness,currentCachedVo2);currentGoalRequirements=buildGoalRequirementsV2(currentEngineV2Goal);currentGoalAssessment=assessGoalV2(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);renderEngineV2Cards();renderAvailabilityCard();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderCalendarSolver();ui.calendarSolverDetail.classList.remove("hidden");ui.calendarSolverDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";
+  currentAthleteProfileV2=buildAthleteProfileV2(currentActivities,currentWellness,currentCachedVo2);currentGoalRequirements=buildGoalRequirementsV2(currentEngineV2Goal);currentGoalAssessment=assessGoalV2(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);renderEngineV2Cards();renderAvailabilityCard();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderAdaptiveEngineCard();renderCalendarSolver();ui.calendarSolverDetail.classList.remove("hidden");ui.calendarSolverDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";
 }
 function closeCalendarSolver(){ui.calendarSolverDetail.classList.add("hidden");ui.calendarSolverDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";}
 
@@ -2131,21 +2375,35 @@ function buildPlanPublicationEvents(sessionPlan,planId){
   }));
 }
 function planPublishRange(goal){return{oldest:goal?.startDate||fmtDate(new Date()),newest:goal?.date||addDays(fmtDate(new Date()),120)};}
+function manifestSecondarySnapshot(items){return(items||[]).map(x=>({id:x.id,priority:x.priority,type:x.type,date:x.date,intention:x.intention,targetTimeSec:x.targetTimeSec||null}));}
+function manifestAvailabilitySnapshot(items){return(items||[]).map(x=>({weekStart:x.weekStart,availableDays:[...x.availableDays],note:x.note||""}));}
+function manifestGoalSnapshot(goal){return goal?{type:goal.type,date:goal.date,startDate:goal.startDate,targetTimeSec:goal.targetTimeSec}:null;}
+function manifestConfigurationStatus(manifest,goal=currentEngineV2Goal,secondary=currentSecondaryGoals,availability=currentAvailabilityExceptions){
+  if(!manifest?.status||manifest.status!=="published")return{dirty:false,level:0,detail:"Sin revisión remota activa"};const g=manifest.goalSnapshot;if(!g)return{dirty:false,level:0,detail:"Plan publicado"};
+  if(g.type!==goal?.type||g.date!==goal?.date||g.startDate!==goal?.startDate||Number(g.targetTimeSec)!==Number(goal?.targetTimeSec))return{dirty:true,level:3,detail:"Objetivo principal modificado"};
+  if(JSON.stringify(manifest.secondarySnapshot||[])!==JSON.stringify(manifestSecondarySnapshot(secondary)))return{dirty:true,level:2,detail:"Carreras B/C modificadas"};
+  if(JSON.stringify(manifest.availabilitySnapshot||[])!==JSON.stringify(manifestAvailabilitySnapshot(availability)))return{dirty:true,level:2,detail:"Disponibilidad modificada"};
+  return{dirty:false,level:0,detail:"Configuración alineada con Intervals.icu"};
+}
 function currentPlanPublishState(){
-  if(!currentPlanManifest)return"unpublished";
-  if(currentPlanManifest.status==="publishing")return"publishing";
-  if(currentPlanManifest.status==="error")return"error";
-  if(currentPlanManifest.status==="published"&&currentSessionPlan?.fingerprint===currentPlanManifest.fingerprint)return"published";
-  if(currentPlanManifest.status==="published")return"dirty";
-  return"unpublished";
+  if(!currentPlanManifest)return"unpublished";if(currentPlanManifest.status==="publishing")return"publishing";if(currentPlanManifest.status==="error")return"error";if(currentPlanManifest.status==="published"&&manifestConfigurationStatus(currentPlanManifest).dirty)return"dirty";if(currentPlanManifest.status==="published")return"published";return"unpublished";
+}
+function authoritativePublishedPlan(generated=currentSessionPlan,manifest=currentPlanManifest){
+  if(manifest?.status==="published"&&Array.isArray(manifest.sessionSnapshot)&&manifest.sessionSnapshot.length)return{ok:true,sessions:manifest.sessionSnapshot.map(x=>({...x})),fingerprint:manifest.fingerprint||null,source:"manifest"};
+  if(manifest?.status==="published"&&generated?.ok&&generated.fingerprint===manifest.fingerprint)return{ok:true,sessions:generated.sessions.map(x=>({...x})),fingerprint:generated.fingerprint,source:"generated"};
+  return generated;
+}
+async function backfillManifestSessionSnapshot(manifest,sessionPlan){
+  if(!manifest||manifest.status!=="published"||Array.isArray(manifest.sessionSnapshot)||!sessionPlan?.ok||sessionPlan.fingerprint!==manifest.fingerprint)return manifest;
+  const upgraded={...manifest,version:3,sessionSnapshot:sessionPlan.sessions.map(x=>({...x})),updatedAt:new Date().toISOString()};await storePut("meta",{key:"engineV2PlanManifest",value:upgraded});currentPlanManifest=upgraded;await pushPlanStateCloudBestEffort();return upgraded;
 }
 function renderPlanPublicationStatus(){
   if(!ui.sessionPublishStatus||!ui.sessionPublishBtn)return;const state=currentPlanPublishState(),count=currentPlanManifest?.events?.length||0;
   ui.sessionPublishStatus.className="plan-publish-status";
   if(!currentSessionPlan?.ok){ui.sessionPublishStatus.textContent="No hay un plan válido para publicar.";ui.sessionPublishStatus.classList.add("bad");ui.sessionPublishBtn.textContent="Publicar plan en Intervals.icu";ui.sessionPublishBtn.disabled=true;return;}
   const hasBad=currentSessionPlan.audit?.some(x=>x.status==="bad");
-  if(state==="published"){ui.sessionPublishStatus.textContent=`Publicado y verificado · ${count} sesiones.`;ui.sessionPublishStatus.classList.add("ok");ui.sessionPublishBtn.textContent="Volver a publicar / verificar"; }
-  else if(state==="dirty"){ui.sessionPublishStatus.textContent="El plan ha cambiado desde la última publicación. Intervals.icu necesita actualizarse.";ui.sessionPublishStatus.classList.add("warn");ui.sessionPublishBtn.textContent="Actualizar Intervals.icu";}
+  if(state==="published"){ui.sessionPublishStatus.textContent=`Sincronizado y verificado · ${count} sesiones.`;ui.sessionPublishStatus.classList.add("ok");ui.sessionPublishBtn.textContent="Verificar Intervals.icu"; }
+  else if(state==="dirty"){ui.sessionPublishStatus.textContent="Hay cambios pendientes. Revísalos en Adaptación antes de modificar Intervals.icu.";ui.sessionPublishStatus.classList.add("warn");ui.sessionPublishBtn.textContent="Revisar cambios";}
   else if(state==="publishing"){ui.sessionPublishStatus.textContent="Publicación en curso…";ui.sessionPublishStatus.classList.add("warn");ui.sessionPublishBtn.textContent="Publicando…";}
   else if(state==="error"){ui.sessionPublishStatus.textContent="La última publicación quedó incompleta. Reintentar usa los mismos identificadores y no debe duplicar sesiones.";ui.sessionPublishStatus.classList.add("bad");ui.sessionPublishBtn.textContent="Reintentar publicación";}
   else{ui.sessionPublishStatus.textContent="Plan todavía no publicado.";ui.sessionPublishBtn.textContent="Publicar plan en Intervals.icu";}
@@ -2178,6 +2436,9 @@ async function deletePublishedPlanRemote(planId,goal){
 }
 async function publishCurrentPlan(){
   if(!currentSessionPlan?.ok||!currentEngineV2Goal){toast("⚠️ No hay un plan válido para publicar.",true);return;}
+  const publishState=currentPlanPublishState();
+  if(publishState==="published"&&currentPlanManifest?.planId){try{ui.sessionPublishBtn.disabled=true;const expected=(currentPlanManifest.events||[]).map(e=>e.external_id).filter(Boolean);await verifyPlanEvents(currentPlanManifest.planId,currentEngineV2Goal,expected);currentPlanManifest={...currentPlanManifest,verifiedAt:new Date().toISOString()};await storePut("meta",{key:"engineV2PlanManifest",value:currentPlanManifest});await syncCalendar(false);renderPlanPublicationStatus();toast(`✅ Intervals.icu verificado · ${expected.length} sesiones.`);}catch(error){toast(`⚠️ ${error.message}`,true);}finally{ui.sessionPublishBtn.disabled=false;renderPlanPublicationStatus();}return;}
+  if(publishState==="dirty"){if(ui.sessionGeneratorDetail&&!ui.sessionGeneratorDetail.classList.contains("hidden"))closeSessionGenerator();openAdaptiveEngine();toast("ℹ️ Prepara y revisa los cambios antes de actualizar Intervals.icu.");return;}
   if(currentSessionPlan.audit?.some(x=>x.status==="bad")){toast("⚠️ Corrige primero los conflictos críticos del plan.",true);return;}
   const oldManifest=currentPlanManifest,planId=oldManifest?.planId||currentEngineV2Goal.planId||engineV2Uuid(),events=buildPlanPublicationEvents(currentSessionPlan,planId);
   if(!events.length){toast("⚠️ El plan no contiene sesiones.",true);return;}
@@ -2194,27 +2455,348 @@ async function publishCurrentPlan(){
     const expected=events.map(e=>e.external_id),verified=await verifyPlanEvents(planId,currentEngineV2Goal,expected),newSet=new Set(expected);
     const stale=previousEvents.map(e=>String(e.external_id||"")).filter(x=>x&&!newSet.has(x));
     if(stale.length)await deletePlanExternalIds(stale,currentEngineV2Goal);
-    const manifest={version:1,planId,revision:(Number(oldManifest?.revision)||0)+1,status:"published",fingerprint:currentSessionPlan.fingerprint,publishedAt:new Date().toISOString(),verifiedAt:new Date().toISOString(),range:planPublishRange(currentEngineV2Goal),events:verified.map(e=>({id:e.id,external_id:e.external_id,date:String(e.start_date_local||"").slice(0,10),type:e.type,name:e.name}))};
-    currentPlanManifest=manifest;await storePut("meta",{key:"engineV2PlanManifest",value:manifest});lastCalendarRefreshAt=Date.now();await syncCalendar(false);renderPlanPublicationStatus();renderSessionGeneratorCard();toast(`✅ Plan publicado y verificado · ${manifest.events.length} sesiones.`);
+    const manifest={version:3,planId,revision:(Number(oldManifest?.revision)||0)+1,status:"published",fingerprint:currentSessionPlan.fingerprint,publishedAt:new Date().toISOString(),verifiedAt:new Date().toISOString(),range:planPublishRange(currentEngineV2Goal),goalSnapshot:manifestGoalSnapshot(currentEngineV2Goal),secondarySnapshot:manifestSecondarySnapshot(currentSecondaryGoals),availabilitySnapshot:manifestAvailabilitySnapshot(currentAvailabilityExceptions),sessionSnapshot:currentSessionPlan.sessions.map(x=>({...x})),revisions:Array.isArray(oldManifest?.revisions)?oldManifest.revisions.slice(-24):[],events:verified.map(e=>({id:e.id,external_id:e.external_id,date:String(e.start_date_local||"").slice(0,10),type:e.type,name:e.name}))};
+    currentPlanManifest=manifest;await storePut("meta",{key:"engineV2PlanManifest",value:manifest});await storeDelete("meta","engineV2PlanRevisionDraft");currentPlanRevisionDraft=null;await pushPlanStateCloudBestEffort();lastCalendarRefreshAt=Date.now();await syncCalendar(false);currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);renderPlanPublicationStatus();renderSessionGeneratorCard();renderAdaptiveEngineCard();toast(`✅ Plan publicado y verificado · ${manifest.events.length} sesiones.`);
   }catch(error){
     const failed={...draft,status:"error",error:String(error.message||error),updatedAt:new Date().toISOString()};currentPlanManifest=failed;await storePut("meta",{key:"engineV2PlanManifest",value:failed});renderPlanPublicationStatus();toast(`⚠️ ${error.message}`,true);
   }finally{ui.sessionPublishBtn.disabled=false;renderPlanPublicationStatus();}
 }
 function renderSessionGeneratorCard(){
-  if(!ui.sessionGeneratorMeta)return;const s=currentSessionPlan;if(!currentEngineV2Goal){ui.sessionGeneratorMeta.textContent="Define primero el objetivo A";return;}if(!s?.ok){ui.sessionGeneratorMeta.textContent="Pendiente de distribución semanal";return;}ui.sessionGeneratorMeta.textContent=`${s.runCount} carreras · ${s.strengthCount} fuerza · previsualización`;
+  if(!ui.sessionGeneratorMeta)return;const s=currentSessionPlan,state=currentPlanPublishState(),published=["published","dirty","error"].includes(state);if(ui.sessionGeneratorCardTitle)ui.sessionGeneratorCardTitle.textContent=published?"Sesiones del plan":"Sesiones propuestas";if(!currentEngineV2Goal){ui.sessionGeneratorMeta.textContent="Define primero el objetivo A";return;}if(!s?.ok){ui.sessionGeneratorMeta.textContent="Pendiente de distribución semanal";return;}
+  if(state==="published")ui.sessionGeneratorMeta.textContent=`${s.runCount} carreras · ${s.strengthCount} fuerza · sincronizado`;
+  else if(state==="dirty")ui.sessionGeneratorMeta.textContent="Cambios pendientes de sincronizar";
+  else if(state==="error")ui.sessionGeneratorMeta.textContent="Revisar sincronización con Intervals.icu";
+  else ui.sessionGeneratorMeta.textContent=`${s.runCount} carreras · ${s.strengthCount} fuerza · sin publicar`;
+}
+function sessionPreviewIcon(type){
+  if(type==="strength")return"🏋🏻";
+  if(type==="race"||type==="raceA")return"🏁";
+  if(type==="long")return"🏃🏻‍♂️";
+  if(type==="quality")return"⚡";
+  return"🏃🏻‍♂️";
+}
+function renderSessionPreviewWeekDays(w){
+  const byDay=new Map();for(const s of w.sessions||[]){const day=Number(s.day)||engineV2DayNumber(s.date);if(!byDay.has(day))byDay.set(day,[]);byDay.get(day).push(s);}
+  let html='<div class="plan-week-calendar">';
+  for(let day=1;day<=7;day++){
+    const date=addDays(w.start,day-1),n=new Date(`${date}T12:00:00`).getDate(),items=byDay.get(day)||[];
+    const content=items.length?items.map(s=>`<div class="plan-week-calendar-session"><div class="plan-week-calendar-mainline"><span class="plan-week-calendar-icon">${sessionPreviewIcon(s.type)}</span><span class="plan-week-calendar-title">${esc(s.title)}</span></div><div class="plan-week-calendar-meta">${s.distanceKm?`${formatNatural(s.distanceKm,1)} km${s.pace?` · ${esc(s.pace)}`:""}`:esc(s.pace||"")}</div>${s.structure?`<div class="plan-week-calendar-structure">${esc(s.structure)}</div>`:""}</div>`).join(""):`<div class="plan-week-calendar-rest">Descanso</div>`;
+    html+=`<div class="plan-week-calendar-day"><div class="plan-week-calendar-head"><div class="plan-week-calendar-date"><span class="plan-week-calendar-weekday">${SOLVER_DAY_LABELS[day]}</span><span class="plan-week-calendar-number">${n}</span></div><span class="plan-week-calendar-sep"></span><div class="plan-week-calendar-copy">${content}</div></div></div>`;
+  }
+  return html+"</div>";
 }
 function renderSessionGenerator(){
-  const s=currentSessionPlan;ui.sessionGeneratorDate.textContent="Sesiones propuestas";
+  const s=currentSessionPlan,state=currentPlanPublishState(),published=["published","dirty","error"].includes(state),title=published?"Sesiones del plan":"Sesiones propuestas";ui.sessionGeneratorDate.textContent=title;if(ui.sessionGeneratorTitle)ui.sessionGeneratorTitle.textContent=title;if(ui.sessionGeneratorListTitle)ui.sessionGeneratorListTitle.textContent=published?"Plan completo":"Plan propuesto";
   if(!s?.ok){ui.sessionGeneratorWeeks.textContent="—";ui.sessionGeneratorRuns.textContent="—";ui.sessionGeneratorStrength.textContent="—";ui.sessionGeneratorAudit.innerHTML="";ui.sessionGeneratorList.innerHTML='<div class="engine-list-empty">No hay distribución suficiente para generar sesiones.</div>';ui.sessionGeneratorReading.textContent="Completa primero el plan.";return;}
   ui.sessionGeneratorWeeks.textContent=String(s.weeks.length);ui.sessionGeneratorRuns.textContent=String(s.runCount);ui.sessionGeneratorStrength.textContent=String(s.strengthCount);
   ui.sessionGeneratorAudit.innerHTML=s.audit.map(x=>`<div class="engine-v2-row"><div class="engine-v2-row-key">${esc(x.label)}</div><div class="engine-v2-row-value ${sessionAuditClass(x.status)}">${sessionAuditSymbol(x.status)} ${esc(x.detail)}</div></div>`).join("");
-  ui.sessionGeneratorList.innerHTML=s.weeks.map(w=>`<div class="session-preview-week"><div class="session-preview-head"><div><div class="session-preview-title">Semana ${w.weekIndex} · ${esc(w.phase)} · ${esc(w.role)}</div>${w.secondaryFocus?`<span class="secondary-focus-chip">🏁 ${esc(secondaryFocusLabel(w.secondaryFocus))} · ${w.secondaryFocus.weeksToRace} sem</span>`:""}</div><div class="session-preview-date">${esc(macroWeekRange({start:w.start,end:w.end}))}</div></div>${w.sessions.length?w.sessions.map(s=>`<div class="session-preview-item"><div class="session-preview-top"><div class="session-preview-day">${SOLVER_DAY_LABELS[s.day]}<br>${new Date(`${s.date}T12:00:00`).getDate()}</div><div><div class="session-preview-name">${esc(s.title)}</div><div class="session-preview-meta">${s.distanceKm?`${formatNatural(s.distanceKm,1)} km · `:""}${esc(s.pace||"")}</div><div class="session-preview-structure">${esc(s.structure)}</div></div></div></div>`).join(""):'<div class="engine-list-empty">Descanso / sin sesiones.</div>'}</div>`).join("");
+  ui.sessionGeneratorList.innerHTML=s.weeks.map(w=>`<div class="session-preview-week"><div class="session-preview-head"><div><div class="session-preview-title">Semana ${w.weekIndex} · ${esc(w.phase)} · ${esc(w.role)}</div>${w.secondaryFocus?`<span class="secondary-focus-chip">🏁 ${esc(secondaryFocusLabel(w.secondaryFocus))} · ${w.secondaryFocus.weeksToRace} sem</span>`:""}</div><div class="session-preview-date">${esc(macroWeekRange({start:w.start,end:w.end}))}</div></div>${renderSessionPreviewWeekDays(w)}</div>`).join("");
   ui.sessionGeneratorReading.textContent=s.reading;renderPlanPublicationStatus();
 }
 function openSessionGenerator(){
-  currentAthleteProfileV2=buildAthleteProfileV2(currentActivities,currentWellness,currentCachedVo2);currentGoalRequirements=buildGoalRequirementsV2(currentEngineV2Goal);currentGoalAssessment=assessGoalV2(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);renderEngineV2Cards();renderAvailabilityCard();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderSessionGenerator();ui.sessionGeneratorDetail.classList.remove("hidden");ui.sessionGeneratorDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";
+  currentAthleteProfileV2=buildAthleteProfileV2(currentActivities,currentWellness,currentCachedVo2);currentGoalRequirements=buildGoalRequirementsV2(currentEngineV2Goal);currentGoalAssessment=assessGoalV2(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);renderEngineV2Cards();renderAvailabilityCard();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderAdaptiveEngineCard();renderSessionGenerator();ui.sessionGeneratorDetail.classList.remove("hidden");ui.sessionGeneratorDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";
 }
 function closeSessionGenerator(){ui.sessionGeneratorDetail.classList.add("hidden");ui.sessionGeneratorDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";}
+
+
+/* ===== Motor Adaptativo ATLAS ===== */
+const ATLAS_ADAPTIVE_VERSION="1.1";
+function adaptiveIsStrengthActivity(a){const t=String(a?.type||a?.sport||a?.sub_type||"").toLowerCase(),n=String(a?.name||"").toLowerCase();return /weight|strength|gym|fuerza/.test(t)||/fuerza|gimnasio|strength/.test(n);}
+function adaptiveActivityDistanceKm(a){const m=v2ActivityDistanceM(a);return Number.isFinite(m)&&m>0?m/1000:null;}
+function adaptiveManifestMap(manifest){const m=new Map();for(const e of manifest?.events||[]){if(e?.external_id)m.set(String(e.external_id),e);}return m;}
+function adaptiveSessionExternalId(s,manifest,goal){const planId=manifest?.planId||goal?.planId;return planId?planExternalId(planId,s.logicalId):null;}
+function adaptiveDateDelta(a,b){return Math.round((new Date(`${a}T12:00:00`)-new Date(`${b}T12:00:00`))/86400000);}
+function adaptiveTypeCompatible(session,a){if(session.type==="strength")return adaptiveIsStrengthActivity(a);return ["easy","quality","long","race","raceA"].includes(session.type)&&v2IsRun(a);}
+function adaptiveNameScore(session,a){const n=v2RunName(a),t=String(session.title||"").normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase();let s=0;if(session.type==="quality"&&/series|interval|tempo|umbral|threshold|fartlek|repet|progres|vo2|ritmo/.test(n))s+=12;if(session.type==="long"&&/tirada|larga|long/.test(n))s+=12;if(session.type==="easy"&&/suave|easy|rodaje|recuper|base/.test(n))s+=8;if((session.type==="race"||session.type==="raceA")&&(a?.race===true||/carrera|race|maraton|media|10k|5k/.test(n)))s+=14;if(t&&n&&t.split(/\\s+/).some(w=>w.length>4&&n.includes(w)))s+=4;return s;}
+function adaptiveMatchSessions(sessionPlan,manifest,activities,today=fmtDate(new Date())){
+  if(!sessionPlan?.ok)return[];const acts=(activities||[]).filter(a=>{const d=v2ActivityDate(a);return d&&d<=today;}),unused=new Set(acts.map((_,i)=>i)),manifestMap=adaptiveManifestMap(manifest),out=[];
+  for(const s of sessionPlan.sessions){
+    const externalId=adaptiveSessionExternalId(s,manifest,null),remote=externalId?manifestMap.get(externalId):null;let best=-1,bestScore=-1e9,matchMethod=null;
+    if(remote?.id!=null){for(const i of unused){if(String(acts[i]?.paired_event_id||"")===String(remote.id)){best=i;bestScore=1000;matchMethod="paired_event_id";break;}}}
+    if(best<0&&s.date<today){for(const i of unused){const a=acts[i];if(!adaptiveTypeCompatible(s,a))continue;const d=v2ActivityDate(a),delta=Math.abs(adaptiveDateDelta(d,s.date));if(delta>2)continue;let score=delta===0?55:delta===1?36:22;const planned=Number(s.distanceKm),actual=adaptiveActivityDistanceKm(a);if(Number.isFinite(planned)&&planned>0&&Number.isFinite(actual)){const err=Math.abs(actual-planned)/planned;score+=30*(1-Math.min(1,err));}score+=adaptiveNameScore(s,a);if(score>bestScore){best=i;bestScore=score;matchMethod="heuristic";}}
+      if(bestScore<48){best=-1;matchMethod=null;}
+    }
+    const a=best>=0?acts[best]:null;if(best>=0)unused.delete(best);out.push(adaptiveOutcome(s,a,today,matchMethod));
+  }
+  return out;
+}
+function adaptiveFeelWeak(feel){return /flojo|débil|debil|weak|poor|malo/i.test(String(feel||""));}
+function adaptiveResponseCost(session,rpe,feel){
+  const hard=["quality","long","race","raceA"].includes(session?.type),weak=adaptiveFeelWeak(feel);
+  if(weak)return"high";
+  if(Number.isFinite(rpe)){
+    if(hard&&rpe>=9)return"high";
+    if(session?.type==="easy"&&rpe>=7)return"high";
+    if(hard&&rpe>=8)return"moderate";
+    if(session?.type==="easy"&&rpe>=6)return"moderate";
+  }
+  return"normal";
+}
+function adaptiveOutcome(s,a,today,method){
+  if(!a)return{session:s,activity:null,status:s.date>=today?"Pendiente":"No realizado",tone:s.date>=today?"pending":"bad",isKey:["quality","long","race","raceA"].includes(s.type),dateDelta:null,distanceRatio:null,method:null,responseCost:"unknown"};
+  const planned=Number(s.distanceKm),actual=adaptiveActivityDistanceKm(a),ratio=Number.isFinite(planned)&&planned>0&&Number.isFinite(actual)?actual/planned:null,delta=adaptiveDateDelta(v2ActivityDate(a),s.date),isKey=["quality","long","race","raceA"].includes(s.type),rpe=activityRpe(a),feel=activityFeel(a),responseCost=adaptiveResponseCost(s,rpe,feel);let status="Cumplido",tone="good";
+  if(Number.isFinite(ratio)){if(ratio<.55){status="No cumplido";tone="bad";}else if(ratio<.88){status="Parcial";tone="mid";}}
+  if(s.type==="strength")status="Cumplido";
+  if(delta!==0&&status!=="No cumplido")status=`${status} · movido`;
+  return{session:s,activity:a,status,tone,isKey,dateDelta:delta,distanceRatio:ratio,method,actualDistanceKm:actual,rpe,feel,load:Number(pick(a,["icu_training_load","training_load"])),responseCost};
+}
+function adaptiveRecoveryEvidence(profile){
+  const r=profile?.recovery||{},signals=[];let negatives=0,positives=0;
+  if(Number.isFinite(r.hrv7)&&Number.isFinite(r.hrv28)&&r.hrv28>0){const ratio=r.hrv7/r.hrv28,status=ratio<.92?"negative":ratio>=.98?"positive":"neutral";if(status==="negative")negatives++;if(status==="positive")positives++;signals.push({label:"VFC",status,detail:`7 d ${formatNatural(r.hrv7,1)} · 28 d ${formatNatural(r.hrv28,1)}`});}
+  if(Number.isFinite(r.rhr7)&&Number.isFinite(r.rhr28)&&r.rhr28>0){const ratio=r.rhr7/r.rhr28,status=ratio>1.05?"negative":ratio<=1.02?"positive":"neutral";if(status==="negative")negatives++;if(status==="positive")positives++;signals.push({label:"FC reposo",status,detail:`7 d ${formatNatural(r.rhr7,1)} · 28 d ${formatNatural(r.rhr28,1)}`});}
+  if(Number.isFinite(r.sleep7)){const hours=r.sleep7>1000?r.sleep7/3600:r.sleep7,status=hours<6.25?"negative":hours>=7?"positive":"neutral";if(status==="negative")negatives++;if(status==="positive")positives++;signals.push({label:"Sueño",status,detail:`Media 7 d ${hours.toFixed(1).replace(".",",")} h`});}
+  const loadStress=Number.isFinite(r.ctl)&&Number.isFinite(r.atl)&&r.ctl>8?r.atl/r.ctl:null;if(Number.isFinite(loadStress)){const status=loadStress>1.55?"negative":loadStress<1.2?"positive":"neutral";if(status==="negative")negatives++;if(status==="positive")positives++;signals.push({label:"Carga reciente",status,detail:`ATL/CTL ${formatNatural(loadStress,2)}`});}
+  return{signals,negatives,positives,degraded:negatives>=2,stronglyDegraded:negatives>=3};
+}
+
+function adaptiveManualEvidence(manifest,today=fmtDate(new Date())){
+  const items=[];
+  for(const r of manifest?.revisions||[]){
+    if(!["move","unavailable","replace"].includes(r?.action))continue;
+    const session=r.originalSession||r.session||null,date=String(r.sessionDate||session?.date||r.from||r.to||"").slice(0,10);
+    if(!date)continue;
+    const delta=adaptiveDateDelta(date,today);
+    if(delta<-14||delta>7)continue;
+    const type=r.sessionType||session?.type||null,isKey=typeof r.isKey==="boolean"?r.isKey:["quality","long","race","raceA"].includes(type);
+    const losesStimulus=r.action==="unavailable"&&isKey || r.action==="replace"&&isKey&&["easy","mobility"].includes(r.replacement);
+    items.push({action:r.action,date,type,title:r.sessionTitle||session?.title||r.reason||"Sesión",isKey,losesStimulus,originalSession:session?revisionClone(session):null,replacement:r.replacement||null,delta});
+  }
+  const keyLossItems=items.filter(x=>x.losesStimulus),moved=items.filter(x=>x.action==="move").length,complementaryLosses=items.filter(x=>x.action==="unavailable"&&!x.isKey).length;
+  return{items,keyLossItems,keyLosses:keyLossItems.length,moved,complementaryLosses};
+}
+function adaptiveConfigurationEvidence(manifest,goal,secondary,availability,sessionPlan){
+  if(!manifest?.status||manifest.status!=="published")return{changed:false,level:0,label:"Plan no publicado",detail:"Sin revisión remota activa"};
+  const state=manifestConfigurationStatus(manifest,goal,secondary,availability);if(!state.dirty)return{changed:false,level:0,label:"Plan publicado",detail:state.detail};
+  if(state.level===3)return{changed:true,level:3,label:"Objetivo modificado",detail:state.detail};
+  if(/Carreras/.test(state.detail))return{changed:true,level:2,label:"Carreras B/C modificadas",detail:"El subplan de competiciones necesita recalcularse"};
+  if(/Disponibilidad/.test(state.detail))return{changed:true,level:2,label:"Disponibilidad modificada",detail:"Hay semanas que requieren redistribución"};
+  return{changed:true,level:2,label:"Plan modificado",detail:state.detail};
+}
+
+function adaptiveRaceGoalForOutcome(outcome,goal,secondary){
+  if(!outcome?.session)return null;
+  if(outcome.session.type==="raceA")return{...(goal||{}),priority:"A",intention:"race"};
+  if(outcome.session.type!=="race")return null;
+  const list=Array.isArray(secondary)?secondary:[];
+  return list.find(g=>g.date===outcome.session.date)||list.find(g=>String(outcome.session.title||"").includes(g.name||"___"))||null;
+}
+function adaptiveRaceCheckpointKey(outcome,race){
+  const aid=outcome?.activity?.id??outcome?.activity?.activity_id??v2ActivityDate(outcome?.activity||{});
+  return`${outcome?.session?.logicalId||race?.id||race?.date}:${aid||race?.date}`;
+}
+function adaptiveRaceEvidence(outcomes,manifest,goal,secondary){
+  const consumed=new Set(Array.isArray(manifest?.performanceCheckpoints)?manifest.performanceCheckpoints:[]),checkpoints=[];
+  for(const o of outcomes||[]){
+    if(!o?.activity||!["race","raceA"].includes(o.session?.type))continue;
+    const race=adaptiveRaceGoalForOutcome(o,goal,secondary);if(!race)continue;
+    const key=adaptiveRaceCheckpointKey(o,race),actual=v2ActivityDurationSec(o.activity),target=Number(race.targetTimeSec),deltaPct=Number.isFinite(actual)&&actual>0&&Number.isFinite(target)&&target>0?(actual-target)/target:null,priority=race.priority||"C",intention=race.intention||"race";
+    let level=0;
+    if(priority==="B"&&intention==="race")level=2;
+    else if(priority==="B"&&intention==="controlled")level=1;
+    else if(priority==="C"&&intention==="race")level=1;
+    checkpoints.push({key,logicalId:o.session.logicalId,priority,intention,name:race.name||engineV2GoalLabel(race.type),date:o.session.date,actualSec:actual,targetSec:Number.isFinite(target)?target:null,deltaPct,level,consumed:consumed.has(key),isPrimary:priority==="A"});
+  }
+  const pending=checkpoints.filter(x=>!x.consumed&&!x.isPrimary&&x.level>0),maxLevel=pending.reduce((m,x)=>Math.max(m,x.level),0),latest=[...pending].sort((a,b)=>b.date.localeCompare(a.date))[0]||null;
+  const primary=checkpoints.filter(x=>x.isPrimary).sort((a,b)=>b.date.localeCompare(a.date))[0]||null;
+  return{checkpoints,pending,maxLevel,latest,primary};
+}
+function adaptiveRaceCheckpointDetail(cp){
+  if(!cp)return"Sin carrera de control pendiente";
+  const result=Number.isFinite(cp.actualSec)?engineV2FormatTime(cp.actualSec):"resultado registrado";
+  if(Number.isFinite(cp.deltaPct)&&cp.targetSec){
+    const pct=Math.abs(cp.deltaPct*100),dir=cp.deltaPct<=0?"mejor":"peor";
+    return`${cp.priority} · ${cp.name} · ${result} · ${formatNatural(pct,1)} % ${dir} que el objetivo`;
+  }
+  return`${cp.priority} · ${cp.name} · ${result}`;
+}
+function adaptiveDecisionFromEvidence(outcomes,recovery,config,manual,race,today,goal){
+  const past=outcomes.filter(o=>o.session.date<today),recent=past.filter(o=>adaptiveDateDelta(today,o.session.date)<=14),recentKey=recent.filter(o=>o.isKey),outcomeKeyIssues=recentKey.filter(o=>["Parcial","No cumplido","No realizado"].some(x=>o.status.startsWith(x))),manualKeyIssues=manual?.keyLossItems||[],keyIssueCount=outcomeKeyIssues.length+manualKeyIssues.length,missedAll=recent.filter(o=>o.status==="No realizado"),completed=recent.filter(o=>/^(Cumplido|Superado)/.test(o.status)),costly=recent.filter(o=>o.responseCost==="high"),costlyKey=costly.filter(o=>o.isKey),weeksWithIssues=new Set([...recent.filter(o=>o.tone!=="good"&&o.tone!=="pending").map(o=>v2WeekKey(o.session.date)),...manualKeyIssues.map(x=>v2WeekKey(x.date))]).size;
+  let level=config?.level||0,reasons=[];
+  if(config?.changed){level=Math.max(level,config.level);reasons.push(config.detail);}
+  if(race?.maxLevel){level=Math.max(level,race.maxLevel);reasons.push(`Carrera de control completada: ${adaptiveRaceCheckpointDetail(race.latest)}. Recalibrar ritmos futuros.`);}
+  if(keyIssueCount>=3&&weeksWithIssues>=2){level=Math.max(level,3);reasons.push("Incidencias repetidas en sesiones clave durante varias semanas");}
+  else if(keyIssueCount>=2){level=Math.max(level,2);reasons.push("Dos estímulos clave recientes no se han completado según lo previsto");}
+  else if(keyIssueCount===1){level=Math.max(level,1);reasons.push(manualKeyIssues.length?"Una decisión manual ha eliminado o rebajado un estímulo clave":"Una sesión clave reciente requiere seguimiento");}
+  if(costlyKey.length>=2){level=Math.max(level,1);reasons.push("Dos sesiones clave recientes han tenido un coste subjetivo superior al esperado");}
+  if(recovery.stronglyDegraded&&keyIssueCount>=1){level=Math.max(level,2);reasons.push("Recuperación degradada de forma convergente junto a problemas de ejecución");}
+  else if(recovery.degraded){level=Math.max(level,1);reasons.push("Varias señales de recuperación aconsejan moderar los próximos días");}
+  if(recovery.degraded&&costly.length>=2){level=Math.max(level,2);reasons.push("La recuperación y la percepción del esfuerzo apuntan en la misma dirección");}
+  const completion=recent.length?completed.length/recent.length:null;if(Number.isFinite(completion)&&recent.length>=6&&completion<.5){level=Math.max(level,3);reasons.push("Menos de la mitad de las sesiones recientes se han completado según lo previsto");}
+  if(!past.length&&goal?.startDate&&today<goal.startDate&&!manualKeyIssues.length)return{level:0,label:"Continuar",action:"Plan aún no iniciado",reasons:["No hay sesiones del plan que evaluar todavía"],completion:null,keyIssues:0,outcomeKeyIssues:0,manualKeyIssues:0,missed:0,costly:0};
+  if(level===0&&missedAll.length&&outcomeKeyIssues.length===0)reasons.push("Las ausencias recientes son complementarias; no se recupera kilometraje de forma automática");
+  if(level===0&&!reasons.length)reasons.push(recent.length?"La ejecución y la recuperación no justifican cambios":"Todavía no hay evidencia suficiente para modificar el plan");
+  const labels=["Continuar","Ajuste local","Replanificación parcial","Revisión estructural"],actions=["Mantener el plan actual","Ajustar únicamente las próximas 48–72 h","Recalcular aproximadamente las próximas 2–4 semanas","Recalcular la trayectoria restante y revisar viabilidad"];
+  return{level,label:labels[level],action:actions[level],reasons:[...new Set(reasons)],completion,keyIssues:keyIssueCount,outcomeKeyIssues:outcomeKeyIssues.length,manualKeyIssues:manualKeyIssues.length,missed:missedAll.length,costly:costly.length};
+}
+function buildAdaptiveStateV1(sessionPlan,manifest,activities,profile,goal,secondary,availability,today=fmtDate(new Date())){
+  if(!sessionPlan?.ok||!profile?.available||!goal)return null;const outcomes=adaptiveMatchSessions(sessionPlan,manifest,activities,today),recovery=adaptiveRecoveryEvidence(profile),config=adaptiveConfigurationEvidence(manifest,goal,secondary,availability,sessionPlan),manual=adaptiveManualEvidence(manifest,today),race=adaptiveRaceEvidence(outcomes,manifest,goal,secondary),decision=adaptiveDecisionFromEvidence(outcomes,recovery,config,manual,race,today,goal),past=outcomes.filter(o=>o.session.date<today),completed=past.filter(o=>/^(Cumplido|Superado)/.test(o.status)).length,recent=outcomes.filter(o=>o.session.date<today&&adaptiveDateDelta(today,o.session.date)<=14).sort((a,b)=>b.session.date.localeCompare(a.session.date));
+  const costly=recent.filter(o=>o.responseCost==="high").length,evidence=[{label:"Ejecución 14 d",status:decision.outcomeKeyIssues>=2?"negative":decision.outcomeKeyIssues===1?"neutral":"positive",detail:recent.length?`${recent.filter(o=>/^(Cumplido|Superado)/.test(o.status)).length}/${recent.length} sesiones cumplidas · ${decision.outcomeKeyIssues} incidencias clave`:"Sin sesiones evaluables"},{label:"Respuesta al esfuerzo",status:costly>=2?"neutral":"positive",detail:recent.length?`${costly} sesiones con coste subjetivo alto`:"Sin sesiones evaluables"},{label:"Decisiones manuales",status:manual.keyLosses>=2?"negative":manual.keyLosses===1?"neutral":"positive",detail:manual.items.length?`${manual.keyLosses} estímulos clave perdidos · ${manual.moved} movimientos`:"Sin cambios manuales recientes"},{label:"Carrera de control",status:race.pending.length?"neutral":"positive",detail:race.pending.length?adaptiveRaceCheckpointDetail(race.latest):(race.checkpoints.length?"Sin recalibraciones pendientes":"Sin carreras B/C realizadas")},{label:"Recuperación",status:recovery.stronglyDegraded?"negative":recovery.degraded?"neutral":"positive",detail:recovery.signals.length?`${recovery.negatives} señales negativas de ${recovery.signals.length}`:"Datos insuficientes"},{label:"Calendario publicado",status:config.level>=3?"negative":config.changed?"neutral":"positive",detail:config.detail}];
+  return{ok:true,version:ATLAS_ADAPTIVE_VERSION,today,outcomes,recentOutcomes:recent.slice(0,10),recovery,manual,race,config,decision,evidence,completed,pastCount:past.length,reading:`ATLAS distingue cumplimiento, coste de la respuesta y decisiones manuales. No devuelve kilómetros perdidos: solo intenta recuperar un estímulo si sigue siendo necesario y existe un hueco seguro.`};
+}
+
+const ATLAS_REVISION_VERSION="1.0";
+function revisionClone(v){return JSON.parse(JSON.stringify(v));}
+function revisionSessionFingerprint(goal,sessions){return planStableHash(JSON.stringify({goal:[goal?.type,goal?.date,goal?.startDate,goal?.targetTimeSec],sessions:(sessions||[]).map(planSessionFingerprint)}));}
+function revisionPaceText(session){return intervalsPaceToken(session?.pace)||"5:30-6:15";}
+function revisionScaleSession(session,factor,reason){
+  const s={...session,_revisionReason:reason};if(!Number.isFinite(Number(s.distanceKm))||s.distanceKm<=0)return s;const old=Number(s.distanceKm),km=Math.max(s.type==="long"?8:4,sessionRoundKm(old*factor));s.distanceKm=km;
+  if(s.type==="easy"){s.title=`Rodaje fácil · ${formatNatural(km,1)} km`;s.structure=`${formatNatural(km,1)} km continuos @ ${s.pace||"ritmo fácil"}`;}
+  else if(s.type==="long"){s.title=`Tirada larga · ${formatNatural(km,1)} km`;s.structure=`${formatNatural(km,1)} km continuos @ ${s.pace||"ritmo fácil"}`;}
+  else if(s.type==="quality"){
+    s.title=String(s.title||"Calidad").replace(/·\s*[\d.,]+\s*km\s*$/i,`· ${formatNatural(km,1)} km`);s.structure=String(s.structure||"").replace(/hasta\s+[\d.,]+\s*km/i,`hasta ${formatNatural(km,1)} km`);
+    if(factor<=.9){s.structure=s.structure.replace(/\b6\s*×/,'5 ×').replace(/\b5\s*×/,'4 ×').replace(/\b3\s*×\s*8'/,"2 × 8'");}
+  }
+  return s;
+}
+function revisionPressure(adaptive){return !!(adaptive?.decision?.keyIssues||adaptive?.decision?.missed||adaptive?.decision?.costly>=2||adaptive?.manual?.keyLosses||adaptive?.recovery?.degraded);}
+function revisionHardSession(s){return["quality","long","race","raceA"].includes(s?.type);}
+function revisionRecoverableQuality(adaptive,today){
+  const outcome=(adaptive?.recentOutcomes||[]).filter(o=>o?.session?.type==="quality"&&["No realizado","No cumplido"].some(x=>String(o.status||"").startsWith(x))).sort((a,b)=>b.session.date.localeCompare(a.session.date))[0];
+  if(outcome)return{session:revisionClone(outcome.session),date:outcome.session.date,reason:"Recuperar estímulo de calidad no completado"};
+  const manual=(adaptive?.manual?.keyLossItems||[]).filter(x=>x.type==="quality"&&x.originalSession).sort((a,b)=>b.date.localeCompare(a.date))[0];
+  if(manual)return{session:revisionClone(manual.originalSession),date:manual.date,reason:"Recuperar estímulo de calidad retirado manualmente"};
+  return null;
+}
+function revisionTransferQuality(sessions,adaptive,today,windowEnd,reasons){
+  const src=revisionRecoverableQuality(adaptive,today);if(!src)return{sessions,transferred:false};
+  const anchor=src.date>today?src.date:today,candidates=sessions.filter(s=>s.type==="easy"&&s.date>=anchor&&s.date<=windowEnd).sort((a,b)=>a.date.localeCompare(b.date));
+  for(const target of candidates){
+    const unsafe=sessions.some(s=>s.logicalId!==target.logicalId&&revisionHardSession(s)&&s.date>=today&&Math.abs(adaptiveDateDelta(s.date,target.date))<2);
+    if(unsafe)continue;
+    const sourceKm=Number(src.session.distanceKm)||Number(target.distanceKm)||6,targetKm=Number(target.distanceKm)||sourceKm,factor=Math.min(.85,targetKm/sourceKm),replacement=revisionScaleSession(src.session,factor,src.reason);
+    replacement.logicalId=target.logicalId;replacement.date=target.date;replacement.day=target.day;replacement.distanceKm=Math.min(Number(replacement.distanceKm)||targetKm,targetKm);replacement.title=String(replacement.title||"Calidad").replace(/·\s*[\d.,]+\s*km\s*$/i,`· ${formatNatural(replacement.distanceKm,1)} km`);replacement._revisionReason=`${src.reason} sin añadir kilometraje`;replacement._adaptationTransferFrom=src.session.logicalId;
+    const out=sessions.map(s=>s.logicalId===target.logicalId?replacement:s);reasons[replacement.logicalId]=replacement._revisionReason;return{sessions:out,transferred:true,target:replacement};
+  }
+  return{sessions,transferred:false};
+}
+function buildAdaptiveRevisionPlanV1(basePlan,generatedPlan,adaptive,profile,req,goal,today=fmtDate(new Date())){
+  if(!basePlan?.ok||!adaptive?.ok||!goal)return null;const configChanged=!!adaptive.config?.changed,level=adaptive.decision.level,raceRecalibration=!!adaptive.race?.pending?.length;
+  let sessions=(configChanged&&generatedPlan?.ok?generatedPlan.sessions:basePlan.sessions).map(revisionClone),reasons={},removedReasons={},pressure=revisionPressure(adaptive),windowDays=level===1?7:level===2?28:level===3?Math.max(42,adaptiveDateDelta(goal.date,today)):0,windowEnd=windowDays?addDays(today,windowDays):today;
+  const past=(basePlan.sessions||[]).filter(s=>s.date<today).map(revisionClone),future=sessions.filter(s=>s.date>=today);sessions=configChanged?[...past,...future]:sessions;
+  if(raceRecalibration&&!configChanged&&generatedPlan?.ok){
+    const generatedMap=new Map(generatedPlan.sessions.map(s=>[s.logicalId,s]));
+    sessions=sessions.map(s=>{
+      if(s.date<today||s.date>windowEnd||["race","raceA","strength"].includes(s.type))return s;
+      const g=generatedMap.get(s.logicalId);if(!g)return s;
+      if(planSessionFingerprint(g)===planSessionFingerprint(s))return s;
+      const x=revisionClone(g);x._revisionReason=`Recalibración tras ${adaptiveRaceCheckpointDetail(adaptive.race.latest)}`;reasons[x.logicalId]=x._revisionReason;return x;
+    });
+  }
+  let transferredQuality=false;
+  if(level===1&&!adaptive.recovery?.degraded&&!configChanged){
+    const transfer=revisionTransferQuality(sessions,adaptive,today,windowEnd,reasons);sessions=transfer.sessions;transferredQuality=transfer.transferred;
+  }
+  const shouldModerate=level>=2 || level===1&&adaptive.recovery?.degraded;
+  if(level>0&&pressure&&shouldModerate){
+    const reason=adaptive.recovery?.degraded?(adaptive.decision.keyIssues?"Ejecución y recuperación":"Recuperación"):"Ejecución reciente";
+    sessions=sessions.map(s=>{
+      if(s.date<today||s.date>windowEnd||["race","raceA","strength"].includes(s.type))return s;const d=adaptiveDateDelta(s.date,today);let factor=1;
+      if(level===1)factor=d<=3?.88:1;
+      else if(level===2)factor=d<=7?.88:d<=14?.93:d<=28?.97:1;
+      else factor=d<=7?.82:d<=14?.88:d<=28?.94:d<=42?.97:.985;
+      if(s.type==="quality")factor=Math.max(factor,.88);if(factor<.999){const x=revisionScaleSession(s,factor,reason);reasons[s.logicalId]=reason;return x;}return s;
+    });
+    const weeks=new Map();for(const s of sessions.filter(s=>s.date>=today&&s.date<=windowEnd)){const k=v2WeekKey(s.date);if(!weeks.has(k))weeks.set(k,[]);weeks.get(k).push(s);}
+    const remove=new Set();for(const [wk,list] of weeks){
+      const strengths=list.filter(s=>s.type==="strength").sort((a,b)=>a.date.localeCompare(b.date)),quals=list.filter(s=>s.type==="quality").sort((a,b)=>a.date.localeCompare(b.date)),easies=list.filter(s=>s.type==="easy").sort((a,b)=>(a.distanceKm||0)-(b.distanceKm||0));
+      if(adaptive.recovery?.stronglyDegraded&&strengths.length)remove.add(strengths[0].logicalId);
+      else if(level>=2&&strengths.length>1)remove.add(strengths[1].logicalId);
+      if(level>=2&&adaptive.decision.keyIssues>=2&&quals.length>1)remove.add(quals[quals.length-1].logicalId);
+      if(level>=3&&adaptive.decision.keyIssues>=3&&easies.length&&list.filter(s=>["easy","quality","long"].includes(s.type)).length>=4)remove.add(easies[0].logicalId);
+    }
+    sessions=sessions.filter(s=>{if(!remove.has(s.logicalId))return true;removedReasons[s.logicalId]=reason;return false;});
+  }
+  sessions.sort((a,b)=>a.date.localeCompare(b.date)||String(a.logicalId).localeCompare(String(b.logicalId)));
+  const fingerprint=revisionSessionFingerprint(goal,sessions);
+  let reading=configChanged?adaptive.config.detail:adaptive.decision.reasons.join(" · ");
+  const recentLongIssue=(adaptive.recentOutcomes||[]).some(o=>o.session?.type==="long"&&["No realizado","No cumplido","Parcial"].some(x=>String(o.status||"").startsWith(x)));
+  if(level===1&&!transferredQuality&&!adaptive.recovery?.degraded&&recentLongIssue)reading="La tirada perdida no se recupera de forma inmediata: se mantiene la progresión y se observa la siguiente respuesta.";
+  if(transferredQuality)reading="Se propone transferir un estímulo de calidad perdido a un rodaje fácil seguro, sin aumentar el kilometraje previsto.";
+  return{ok:true,version:ATLAS_REVISION_VERSION,level,today,windowEnd,sessions,fingerprint,reasons,removedReasons,transferredQuality,performanceCheckpointKeys:(adaptive.race?.pending||[]).map(x=>x.key),reading};
+}function revisionCanonicalEvent(e){return{date:String(e?.start_date_local||e?.date||"").slice(0,10),type:String(e?.type||""),name:String(e?.name||""),description:String(e?.description||"").replace(/\r\n/g,"\n").trim(),distance:Number(e?.distance||0),moving_time:Number(e?.moving_time||0)};}
+function revisionEventSignature(e){return planStableHash(JSON.stringify(revisionCanonicalEvent(e)));}
+function revisionSessionByExternal(plan,planId){const m=new Map();for(const s of plan?.sessions||[])m.set(planExternalId(planId,s.logicalId),s);return m;}
+function buildPlanRevisionDiff(remoteEvents,candidatePlan,planId,goal,adaptive,today=fmtDate(new Date())){
+  const candidateEvents=buildPlanPublicationEvents({ok:true,sessions:candidatePlan.sessions},planId),remoteMap=new Map((remoteEvents||[]).map(e=>[String(e.external_id||""),e])),candidateMap=new Map(candidateEvents.map(e=>[e.external_id,e])),candidateSessions=revisionSessionByExternal(candidatePlan,planId),changes=[];
+  for(const [id,e] of candidateMap){if(String(e.start_date_local).slice(0,10)<today)continue;const before=remoteMap.get(id),session=candidateSessions.get(id),reason=session?._revisionReason||candidatePlan.reading||adaptive?.decision?.reasons?.[0]||"Revisión ATLAS";if(!before)changes.push({kind:"added",external_id:id,before:null,after:e,reason});else if(revisionEventSignature(before)!==revisionEventSignature(e))changes.push({kind:"modified",external_id:id,before,after:e,reason});}
+  for(const [id,e] of remoteMap){const date=String(e?.start_date_local||"").slice(0,10);if(date<today||candidateMap.has(id))continue;const logical=id.split(":").pop(),reason=candidatePlan.removedReasons?.[logical]||candidatePlan.reading||"Revisión ATLAS";changes.push({kind:"removed",external_id:id,before:e,after:null,reason});}
+  const upserts=changes.filter(x=>x.kind!=="removed").map(x=>x.after),deletes=changes.filter(x=>x.kind==="removed").map(x=>x.external_id);return{changes,upserts,deletes,candidateEvents};
+}
+function revisionChangeLabel(c){return c.kind==="added"?"Añadir":c.kind==="removed"?"Eliminar":"Modificar";}
+function revisionChangeDate(c){const a=c.after||c.before;return String(a?.start_date_local||"").slice(0,10);}
+function revisionConfigurationSignature(goal=currentEngineV2Goal,secondary=currentSecondaryGoals,availability=currentAvailabilityExceptions){return planStableHash(JSON.stringify({goal:manifestGoalSnapshot(goal),secondary:manifestSecondarySnapshot(secondary),availability:manifestAvailabilitySnapshot(availability)}));}
+function revisionAdaptiveSignature(a=currentAdaptiveState){if(!a?.ok)return"none";return planStableHash(JSON.stringify({today:a.today,level:a.decision?.level,reasons:a.decision?.reasons||[],outcomes:(a.recentOutcomes||[]).map(o=>[o.session?.logicalId,o.session?.date,o.status,o.dateDelta,o.responseCost]),manual:(a.manual?.items||[]).map(x=>[x.action,x.date,x.type,x.losesStimulus,x.replacement]),race:(a.race?.pending||[]).map(x=>[x.key,x.level,x.actualSec,x.targetSec]),recovery:(a.recovery?.signals||[]).map(x=>[x.label,x.status])}));}
+async function persistRevisionHistory(entry){currentPlanRevisionHistory=[...currentPlanRevisionHistory,entry].slice(-40);await storePut("meta",{key:"engineV2PlanRevisionHistory",value:currentPlanRevisionHistory});}
+async function prepareAdaptiveRevision(){
+  if(!currentAdaptiveState?.ok||currentAdaptiveState.decision.level===0){toast("✅ El plan actual no necesita revisión.");return;}if(currentPlanManifest?.status!=="published"){toast("⚠️ Publica primero el plan en Intervals.icu.",true);return;}
+  const base=authoritativePublishedPlan(currentSessionPlan,currentPlanManifest);if(!base?.ok||!base.sessions?.length){toast("⚠️ Falta la instantánea estructurada del plan publicado. Vuelve a publicar/verificar el plan.",true);return;}
+  try{ui.adaptiveRevisionPrepare.disabled=true;const remote=await findRemotePlanEvents(currentPlanManifest.planId,currentEngineV2Goal),candidate=buildAdaptiveRevisionPlanV1(base,currentSessionPlan,currentAdaptiveState,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal),diff=buildPlanRevisionDiff(remote,candidate,currentPlanManifest.planId,currentEngineV2Goal,currentAdaptiveState);
+    const draft={version:1,id:engineV2Uuid(),status:"candidate",baseRevision:Number(currentPlanManifest.revision)||0,planId:currentPlanManifest.planId,level:currentAdaptiveState.decision.level,createdAt:new Date().toISOString(),reason:currentAdaptiveState.decision.reasons.join(" · "),configurationSignature:revisionConfigurationSignature(),adaptiveSignature:revisionAdaptiveSignature(),performanceCheckpointKeys:candidate.performanceCheckpointKeys||[],candidatePlan:candidate,changes:diff.changes,upserts:diff.upserts,deletes:diff.deletes};currentPlanRevisionDraft=draft;await storePut("meta",{key:"engineV2PlanRevisionDraft",value:draft});await pushPlanStateCloudBestEffort();renderAdaptiveRevision();toast(diff.changes.length?`✅ Revisión preparada · ${diff.changes.length} cambios.`:"✅ Revisión analizada · no hacen falta cambios de calendario.");
+  }catch(error){toast(`⚠️ ${error.message}`,true);}finally{ui.adaptiveRevisionPrepare.disabled=false;}
+}
+async function rejectAdaptiveRevision(){if(!currentPlanRevisionDraft)return;if(!confirm("¿Descartar esta propuesta de revisión? El calendario publicado no cambiará."))return;await persistRevisionHistory({id:currentPlanRevisionDraft.id,status:"rejected",level:currentPlanRevisionDraft.level,reason:currentPlanRevisionDraft.reason,changes:currentPlanRevisionDraft.changes.length,at:new Date().toISOString()});await storeDelete("meta","engineV2PlanRevisionDraft");currentPlanRevisionDraft=null;await pushPlanStateCloudBestEffort();renderAdaptiveRevision();toast("✅ Propuesta descartada.");}
+async function verifyRevisionRemote(planId,goal,draft){const remote=await findRemotePlanEvents(planId,goal),map=new Map(remote.map(e=>[String(e.external_id||""),e])),future=draft.candidatePlan.sessions.filter(s=>s.date>=draft.candidatePlan.today).map(s=>planExternalId(planId,s.logicalId));const missing=future.filter(id=>!map.has(id)),stale=draft.deletes.filter(id=>map.has(id));if(missing.length||stale.length)throw new Error(`Verificación incompleta: ${missing.length} sesiones ausentes y ${stale.length} obsoletas.`);return remote;}
+async function applyAdaptiveRevision(){
+  const d=currentPlanRevisionDraft;if(!d||!["candidate","error"].includes(d.status))return;if(currentPlanManifest?.status!=="published"||Number(currentPlanManifest.revision)!==Number(d.baseRevision)){toast("⚠️ La propuesta ya no parte de la revisión publicada actual. Prepárala de nuevo.",true);return;}if(d.configurationSignature&&d.configurationSignature!==revisionConfigurationSignature()){toast("⚠️ Objetivo, carreras o disponibilidad han cambiado. Prepara la revisión de nuevo.",true);return;}if(d.adaptiveSignature&&d.adaptiveSignature!==revisionAdaptiveSignature()){toast("⚠️ Hay nueva evidencia de entrenamiento o recuperación. Prepara la revisión de nuevo.",true);return;}
+  if(!d.changes.length&&(d.performanceCheckpointKeys||[]).length){
+    const keys=[...new Set([...(currentPlanManifest.performanceCheckpoints||[]),...(d.performanceCheckpointKeys||[])])],revision=(Number(currentPlanManifest.revision)||0)+1,entry={id:d.id,status:"accepted",revision,level:d.level,reason:d.reason,changes:{modified:0,added:0,removed:0},at:new Date().toISOString()};
+    currentPlanManifest={...currentPlanManifest,revision,performanceCheckpoints:keys,revisions:[...(currentPlanManifest.revisions||[]),entry].slice(-25),verifiedAt:new Date().toISOString()};
+    await storePut("meta",{key:"engineV2PlanManifest",value:currentPlanManifest});await persistRevisionHistory(entry);await storeDelete("meta","engineV2PlanRevisionDraft");currentPlanRevisionDraft=null;await pushPlanStateCloudBestEffort();
+    currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);renderAdaptiveEngineCard();renderAdaptiveEngine();renderPlan();toast("✅ Carrera de control registrada · el calendario no necesita cambios.");return;
+  }
+  const counts={modified:d.changes.filter(x=>x.kind==="modified").length,added:d.changes.filter(x=>x.kind==="added").length,removed:d.changes.filter(x=>x.kind==="removed").length};if(!confirm(`¿Aplicar la revisión? ${counts.modified} modificadas · ${counts.added} añadidas · ${counts.removed} eliminadas.`))return;
+  const applying={...d,status:"applying",updatedAt:new Date().toISOString()};currentPlanRevisionDraft=applying;await storePut("meta",{key:"engineV2PlanRevisionDraft",value:applying});renderAdaptiveRevision();
+  try{
+    if(d.upserts.length){const res=await apiRequest("/api/calendar-events-bulk",{method:"POST",body:{events:d.upserts}});if(Number(res.requested)!==d.upserts.length)throw new Error("Intervals.icu no confirmó todas las sesiones modificadas.");}
+    if(d.deletes.length)await deletePlanExternalIds(d.deletes,currentEngineV2Goal);
+    const remote=await verifyRevisionRemote(d.planId,currentEngineV2Goal,d),old=currentPlanManifest,revision=(Number(old.revision)||0)+1,entry={id:d.id,status:"accepted",revision,level:d.level,reason:d.reason,changes:{modified:counts.modified,added:counts.added,removed:counts.removed},at:new Date().toISOString()};
+    const manifest={...old,version:3,revision,status:"published",fingerprint:d.candidatePlan.fingerprint,verifiedAt:new Date().toISOString(),performanceCheckpoints:[...new Set([...(old.performanceCheckpoints||[]),...(d.performanceCheckpointKeys||[])])],goalSnapshot:manifestGoalSnapshot(currentEngineV2Goal),secondarySnapshot:manifestSecondarySnapshot(currentSecondaryGoals),availabilitySnapshot:manifestAvailabilitySnapshot(currentAvailabilityExceptions),sessionSnapshot:d.candidatePlan.sessions.map(x=>{const y={...x};delete y._revisionReason;return y;}),revisions:[...(old.revisions||[]),entry].slice(-25),events:remote.map(e=>({id:e.id,external_id:e.external_id,date:String(e.start_date_local||"").slice(0,10),type:e.type,name:e.name}))};
+    currentPlanManifest=manifest;await storePut("meta",{key:"engineV2PlanManifest",value:manifest});await persistRevisionHistory(entry);await storeDelete("meta","engineV2PlanRevisionDraft");currentPlanRevisionDraft=null;await pushPlanStateCloudBestEffort();lastCalendarRefreshAt=Date.now();await syncCalendar(false);currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);renderAdaptiveEngineCard();renderAdaptiveEngine();renderPlanPublicationStatus();renderPlan();toast(`✅ Revisión ${revision} aplicada y verificada.`);
+  }catch(error){currentPlanRevisionDraft={...applying,status:"error",error:String(error.message||error),updatedAt:new Date().toISOString()};await storePut("meta",{key:"engineV2PlanRevisionDraft",value:currentPlanRevisionDraft});await pushPlanStateCloudBestEffort();renderAdaptiveRevision();toast(`⚠️ ${error.message}`,true);}
+}
+function renderAdaptiveRevision(){
+  if(!ui.adaptiveRevisionStatus)return;const d=currentPlanRevisionDraft,a=currentAdaptiveState;ui.adaptiveRevisionSummary.innerHTML="";ui.adaptiveRevisionDiff.innerHTML="";ui.adaptiveRevisionActions.classList.add("hidden");ui.adaptiveRevisionPrepare.classList.remove("hidden");ui.adaptiveRevisionPrepare.disabled=false;
+  if(currentPlanManifest?.status!=="published"){ui.adaptiveRevisionStatus.textContent="Publica el plan para poder crear revisiones diferenciales.";ui.adaptiveRevisionPrepare.classList.add("hidden");return;}
+  if(d){const counts={m:d.changes.filter(x=>x.kind==="modified").length,a:d.changes.filter(x=>x.kind==="added").length,r:d.changes.filter(x=>x.kind==="removed").length};ui.adaptiveRevisionStatus.textContent=d.status==="error"?`La aplicación anterior quedó incompleta: ${d.error||"puedes reintentar"}.`:d.status==="applying"?"Aplicando y verificando la revisión…":`${adaptiveUserLevel(d.level)} · ${d.reason||"Revisión ATLAS"}`;ui.adaptiveRevisionSummary.innerHTML=`<div class="adaptive-revision-summary"><div class="adaptive-revision-stat"><div class="adaptive-revision-value">${counts.m}</div><div class="adaptive-revision-label">modificar</div></div><div class="adaptive-revision-stat"><div class="adaptive-revision-value">${counts.a}</div><div class="adaptive-revision-label">añadir</div></div><div class="adaptive-revision-stat"><div class="adaptive-revision-value">${counts.r}</div><div class="adaptive-revision-label">eliminar</div></div></div>`;const shown=d.changes.slice(0,18);ui.adaptiveRevisionDiff.innerHTML=shown.map(c=>{const before=c.before?.name||"—",after=c.after?.name||"—",date=revisionChangeDate(c);return`<div class="adaptive-revision-item"><div class="adaptive-revision-title">${esc(revisionChangeLabel(c))} · ${esc(after!=="—"?after:before)}</div><div class="adaptive-revision-meta">${esc(engineV2DateLabel(date))}${c.kind==="modified"&&before!==after?` · ${esc(before)} → ${esc(after)}`:""}</div><div class="adaptive-revision-reason">${esc(c.reason||"")}</div></div>`;}).join("")+(d.changes.length>shown.length?`<div class="macro-week-note">+ ${d.changes.length-shown.length} cambios más</div>`:"");ui.adaptiveRevisionPrepare.classList.add("hidden");ui.adaptiveRevisionActions.classList.remove("hidden");ui.adaptiveRevisionApply.disabled=d.status==="applying"||(!d.changes.length&&!(d.performanceCheckpointKeys||[]).length);ui.adaptiveRevisionReject.disabled=d.status==="applying";return;}
+  if(!a?.ok||a.decision.level===0){ui.adaptiveRevisionStatus.textContent="No se propone ninguna modificación del calendario.";ui.adaptiveRevisionPrepare.classList.add("hidden");return;}ui.adaptiveRevisionStatus.textContent=`${adaptiveUserLevel(a.decision.level)} · ${a.decision.action}. La propuesta se calcula antes de tocar Intervals.icu.`;ui.adaptiveRevisionPrepare.textContent="Preparar revisión";
+}
+function adaptiveUserLevel(level,short=false){
+  const full=["Sin cambios","Ajuste próximo","Revisión parcial","Revisión completa"],compact=["Ninguno","Próximo","Parcial","Completo"];const i=Math.max(0,Math.min(3,Number(level)||0));return(short?compact:full)[i];
+}
+function adaptiveRevisionStatusLabel(status){
+  if(status==="accepted")return{label:"Aplicado",tone:"ok"};
+  if(status==="rejected")return{label:"Descartado",tone:"mid"};
+  return{label:"Registrado",tone:"ok"};
+}
+function adaptiveHistoryTitle(entry){
+  if(entry?.action==="move")return entry.reason||"Sesión movida";
+  if(entry?.action==="unavailable")return entry.reason||"Sesión omitida";
+  if(entry?.action==="replace")return entry.reason||"Sesión sustituida";
+  return entry?.reason||"Revisión del plan";
+}
+function renderAdaptiveHistory(){
+  if(!ui.adaptiveHistoryCard||!ui.adaptiveHistory)return;const list=(currentPlanRevisionHistory||[]).slice(-6).reverse();
+  ui.adaptiveHistoryCard.classList.toggle("hidden",!list.length);
+  if(!list.length){ui.adaptiveHistory.innerHTML="";return;}
+  ui.adaptiveHistory.innerHTML=list.map(x=>{const s=adaptiveRevisionStatusLabel(x.status),when=x.at?engineV2DateLabel(String(x.at).slice(0,10)):"",changes=x.changes&&typeof x.changes==="object"?`${Number(x.changes.modified)||0} modificadas · ${Number(x.changes.added)||0} añadidas · ${Number(x.changes.removed)||0} eliminadas`:Number.isFinite(Number(x.changes))?`${Number(x.changes)} cambios`:"";return`<div class="adaptive-history-item"><div class="adaptive-history-title">${esc(adaptiveHistoryTitle(x))}</div><div class="adaptive-history-meta"><span class="adaptive-history-status ${s.tone}">${s.label}</span>${when?` · ${esc(when)}`:""}${changes?` · ${esc(changes)}`:""}</div></div>`;}).join("");
+}
+function adaptiveStatusTone(status){return /Cumplido|Superado/.test(status)?"good":/Parcial/.test(status)?"mid":/No cumplido|No realizado/.test(status)?"bad":"pending";}
+function adaptiveEvidenceTone(s){return s==="negative"?"solver-audit-bad":s==="neutral"?"solver-audit-warn":"solver-audit-ok";}
+function adaptiveEvidenceSymbol(s){return s==="negative"?"!":s==="neutral"?"•":"✓";}
+function renderAdaptiveEngineCard(){
+  if(!ui.adaptiveEngineMeta)return;const a=currentAdaptiveState;if(!currentEngineV2Goal){ui.adaptiveEngineMeta.textContent="Define primero el objetivo A";return;}if(!a?.ok){ui.adaptiveEngineMeta.textContent="Pendiente de sesiones del plan";return;}ui.adaptiveEngineMeta.textContent=`${adaptiveUserLevel(a.decision.level)}${a.pastCount?` · ${a.completed}/${a.pastCount} cumplidas`:""}`;
+}
+function renderAdaptiveEngine(){
+  const a=currentAdaptiveState;ui.adaptiveEngineDate.textContent="Adaptación";if(!a?.ok){ui.adaptiveCompleted.textContent="—";ui.adaptiveKeyIssues.textContent="—";ui.adaptiveLevel.textContent="—";ui.adaptiveDecision.innerHTML="";ui.adaptiveEvidenceRows.innerHTML="";ui.adaptiveOutcomes.innerHTML='<div class="engine-list-empty">No hay plan suficiente para evaluar.</div>';ui.adaptiveReading.textContent="—";renderAdaptiveRevision();renderAdaptiveHistory();return;}
+  ui.adaptiveCompleted.textContent=String(a.completed);ui.adaptiveKeyIssues.textContent=String(a.decision.keyIssues);ui.adaptiveLevel.textContent=adaptiveUserLevel(a.decision.level,true);ui.adaptiveDecision.innerHTML=`<span class="adaptive-level l${a.decision.level}">${esc(adaptiveUserLevel(a.decision.level))}</span><div class="engine-v2-reading" style="margin-top:8px">${esc(a.decision.action)}</div><div class="macro-week-note">${esc(a.decision.reasons.join(" · "))}</div>`;
+  ui.adaptiveEvidenceRows.innerHTML=a.evidence.map(x=>`<div class="engine-v2-row"><div class="engine-v2-row-key">${esc(x.label)}</div><div class="engine-v2-row-value ${adaptiveEvidenceTone(x.status)}">${adaptiveEvidenceSymbol(x.status)} ${esc(x.detail)}</div></div>`).join("")+a.recovery.signals.map(x=>`<div class="engine-v2-row"><div class="engine-v2-row-key">${esc(x.label)}</div><div class="engine-v2-row-value ${adaptiveEvidenceTone(x.status)}">${adaptiveEvidenceSymbol(x.status)} ${esc(x.detail)}</div></div>`).join("");
+  ui.adaptiveOutcomes.innerHTML=a.recentOutcomes.length?a.recentOutcomes.map(o=>`<div class="adaptive-outcome"><div class="adaptive-outcome-main"><div class="adaptive-outcome-title">${esc(o.session.title)}</div><div class="adaptive-outcome-meta">${esc(engineV2DateLabel(o.session.date))}${o.actualDistanceKm?` · ${formatNatural(o.actualDistanceKm,1)} km reales`:""}${o.responseCost==="high"?" · coste alto":""}${o.dateDelta?` · ${o.dateDelta>0?"+":""}${o.dateDelta} d`:""}</div></div><div class="adaptive-outcome-status ${adaptiveStatusTone(o.status)}">${esc(o.status)}</div></div>`).join(""):'<div class="engine-list-empty">Todavía no hay sesiones recientes del plan que evaluar.</div>';
+  ui.adaptiveReading.textContent=a.reading;renderAdaptiveRevision();renderAdaptiveHistory();
+}
+function openAdaptiveEngine(){
+  currentAthleteProfileV2=buildAthleteProfileV2(currentActivities,currentWellness,currentCachedVo2);currentGoalRequirements=buildGoalRequirementsV2(currentEngineV2Goal);currentGoalAssessment=assessGoalV2(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);renderAdaptiveEngineCard();renderAdaptiveEngine();ui.adaptiveEngineDetail.classList.remove("hidden");ui.adaptiveEngineDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";
+}
+function closeAdaptiveEngine(){ui.adaptiveEngineDetail.classList.add("hidden");ui.adaptiveEngineDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";}
 
 /* ===== Plan semanal ===== */
 function mondayOf(input){const d=new Date(input);d.setHours(12,0,0,0);const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d;}
@@ -2604,6 +3186,57 @@ function fitPlanDetailTitle(){
   const max=box.clientWidth-(ui.planDetailIcon?.offsetWidth||0)-8,natural=el.scrollWidth;
   if(natural>max&&max>0){const scale=Math.max(.72,Math.min(1,max/natural));el.style.transform=`scaleX(${scale})`;el.style.width=`${100/scale}%`;}
 }
+
+function publishedPlanSessionForEvent(e){
+  if(currentPlanManifest?.status!=="published"||!currentPlanManifest?.planId||!Array.isArray(currentPlanManifest.sessionSnapshot))return null;const id=String(e?.external_id||"");if(!id.startsWith(planExternalPrefix(currentPlanManifest.planId)))return null;return currentPlanManifest.sessionSnapshot.find(s=>planExternalId(currentPlanManifest.planId,s.logicalId)===id)||null;
+}
+function manualSessionIsHard(s){return["quality","long","race","raceA"].includes(s?.type);}
+function manualSessionIsRun(s){return["easy","quality","long","race","raceA"].includes(s?.type);}
+function manualAvailabilityForDate(date){if(!currentEngineV2Goal)return{ok:false,detail:"Sin objetivo activo"};const week=engineV2Monday(date),a=effectiveAvailabilityForWeek(currentEngineV2Goal,currentAvailabilityExceptions,week),day=engineV2DayNumber(date);return{ok:a.days.includes(day),detail:a.days.includes(day)?"Día disponible":"Día marcado como no disponible",days:a.days};}
+function analyzeManualMove(session,date){
+  if(!session||!date)return{ok:false,tone:"bad",text:"Selecciona una fecha."};const today=fmtDate(new Date());if(date<today)return{ok:false,tone:"bad",text:"No se puede mover una sesión futura al pasado."};if(date>currentEngineV2Goal.date)return{ok:false,tone:"bad",text:"La fecha queda después del objetivo A."};if(date===session.date)return{ok:false,tone:"bad",text:"Selecciona una fecha diferente."};const av=manualAvailabilityForDate(date);if(!av.ok)return{ok:false,tone:"bad",text:av.detail+"."};
+  const others=(currentPlanManifest?.sessionSnapshot||[]).filter(s=>s.logicalId!==session.logicalId),same=others.filter(s=>s.date===date);if(manualSessionIsRun(session)&&same.some(manualSessionIsRun))return{ok:false,tone:"bad",text:"Ya existe otra sesión de carrera ese día."};if(session.type==="strength"&&same.some(manualSessionIsRun))return{ok:false,tone:"bad",text:"La fuerza debe mantenerse en un día sin carrera."};
+  if(manualSessionIsHard(session)){const collision=others.find(s=>manualSessionIsHard(s)&&solverDateDiff(s.date,date)<2);if(collision)return{ok:false,tone:"bad",text:`Quedaría demasiado cerca de ${collision.title} (${engineV2DateLabel(collision.date)}).`};}
+  if(session.type==="strength"){const next=others.find(s=>manualSessionIsHard(s)&&adaptiveDateDelta(s.date,date)===1);if(next)return{ok:false,tone:"bad",text:`La fuerza quedaría justo antes de ${next.title}.`};}
+  return{ok:true,tone:"ok",text:"Cambio compatible. Se conservará la misma identidad en Intervals.icu; no se duplicará la sesión."};
+}
+function manualReplacementOptions(session){
+  if(session?.type==="strength")return[{value:"reduced",label:"Fuerza reducida"},{value:"mobility",label:"Movilidad + core"}];
+  if(session?.type==="easy")return[{value:"reduced",label:"Rodaje fácil reducido"},{value:"easy",label:"Rodaje regenerativo"}];
+  return[{value:"reduced",label:"Versión reducida del mismo estímulo"},{value:"easy",label:"Sustituir por rodaje fácil"}];
+}
+function buildManualReplacement(session,mode){
+  if(mode==="reduced"){
+    if(session.type==="strength")return{...session,title:"Fuerza reducida",structure:`${session.structure||"Fuerza"} · reducir aproximadamente un 30 % el volumen y mantener RPE 6–7`,purpose:"Mantener el estímulo de fuerza con menor fatiga"};
+    return revisionScaleSession(session,.70,"Sustitución manual · versión reducida");
+  }
+  if(mode==="mobility")return{...session,type:"strength",title:"Movilidad + core",distanceKm:null,pace:null,structure:"Movilidad de cadera/tobillo + core · 25–30 min · sin fatiga residual",purpose:"Recuperación activa y mantenimiento del control postural"};
+  const km=sessionRoundKm(sessionClamp((Number(session.distanceKm)||8)*.65,4,8)),m=sessionPaceModel(currentAthleteProfileV2,currentGoalRequirements),pace=sessionRange(m.easyFast,m.easySlow);return{...session,type:"easy",title:`Rodaje fácil · ${formatNatural(km,1)} km`,distanceKm:km,pace,structure:`${formatNatural(km,1)} km continuos @ ${pace}`,purpose:"Sustitución aeróbica de menor coste"};
+}
+function manualImpactForUnavailable(session){if(!session)return{ok:false,tone:"bad",text:"Sesión no disponible."};if(session.type==="easy")return{ok:true,tone:"ok",text:"Se eliminará esta sesión. ATLAS no intentará devolver automáticamente esos kilómetros en otra jornada."};if(session.type==="strength")return{ok:true,tone:"ok",text:"Se omitirá la fuerza y se preservarán las sesiones de carrera prioritarias."};return{ok:true,tone:"warn",text:"Es una sesión clave. Se eliminará sin moverla automáticamente y el Motor Adaptativo reevaluará el estímulo en la siguiente revisión."};}
+function renderPlanManualImpact(){
+  const a=currentPlanManualAction,s=a?.session;if(!a||!s)return;let impact;if(a.mode==="move")impact=analyzeManualMove(s,ui.planManualDate.value);else if(a.mode==="unavailable")impact=manualImpactForUnavailable(s);else{const mode=ui.planManualReplacement.value,rep=buildManualReplacement(s,mode);impact={ok:true,tone:mode==="easy"&&manualSessionIsHard(s)?"warn":"ok",text:mode==="easy"&&manualSessionIsHard(s)?"Se conserva la fecha pero se pierde el estímulo específico; ATLAS lo tendrá en cuenta en la siguiente adaptación.":`Se sustituirá por “${rep.title}” manteniendo el mismo identificador remoto.`};}ui.planManualImpact.className=`plan-manual-impact ${impact.tone}`;ui.planManualImpact.textContent=impact.text;ui.planManualApply.disabled=!impact.ok;return impact;
+}
+function openPlanManualAction(mode){
+  const e=currentPlanEvent,s=publishedPlanSessionForEvent(e);if(!e||!s){toast("⚠️ Esta acción solo está disponible para sesiones del plan publicado.",true);return;}if(["race","raceA"].includes(s.type)){toast("⚠️ Modifica las carreras desde Objetivo y carreras.",true);return;}currentPlanManualAction={mode,event:e,session:revisionClone(s)};const labels={move:"Mover sesión",unavailable:"No puedo realizarla",replace:"Sustituir sesión"};ui.planManualTitle.textContent=labels[mode];ui.planManualSession.textContent=`${s.title} · ${engineV2DateLabel(s.date)}`;ui.planManualMoveFields.classList.toggle("hidden",mode!=="move");ui.planManualReplaceFields.classList.toggle("hidden",mode!=="replace");if(mode==="move"){ui.planManualDate.min=fmtDate(new Date());ui.planManualDate.max=currentEngineV2Goal.date;ui.planManualDate.value="";}if(mode==="replace"){ui.planManualReplacement.innerHTML=manualReplacementOptions(s).map(x=>`<option value="${x.value}">${esc(x.label)}</option>`).join("");}renderPlanManualImpact();ui.planManualDialog.showModal();
+}
+async function commitManualPlanChange(newSessions,entry){
+  const old=currentPlanManifest,revision=(Number(old.revision)||0)+1,remote=await findRemotePlanEvents(old.planId,currentEngineV2Goal),manifest={...old,version:4,revision,status:"published",fingerprint:revisionSessionFingerprint(currentEngineV2Goal,newSessions),verifiedAt:new Date().toISOString(),sessionSnapshot:newSessions.map(x=>revisionClone(x)),events:remote.map(e=>({id:e.id,external_id:e.external_id,date:String(e.start_date_local||"").slice(0,10),type:e.type,name:e.name})),revisions:[...(old.revisions||[]),{...entry,revision,at:new Date().toISOString()}].slice(-25)};currentPlanManifest=manifest;await storePut("meta",{key:"engineV2PlanManifest",value:manifest});await persistRevisionHistory({...entry,revision,at:new Date().toISOString()});await storeDelete("meta","engineV2PlanRevisionDraft");currentPlanRevisionDraft=null;await pushPlanStateCloudBestEffort();return manifest;
+}
+async function applyPlanManualAction(event){
+  if(!event.submitter||event.submitter.value!=="default")return;event.preventDefault();const a=currentPlanManualAction,s=a?.session;if(!a||!s)return;const impact=renderPlanManualImpact();if(!impact?.ok)return;const old=currentPlanManifest;if(old?.status!=="published"){toast("⚠️ El plan publicado ya no está disponible.",true);return;}const externalId=planExternalId(old.planId,s.logicalId),sessions=old.sessionSnapshot.map(revisionClone);ui.planManualApply.disabled=true;
+  try{
+    let entry={id:engineV2Uuid(),status:"accepted",level:1,reason:"Acción manual",action:a.mode,logicalId:s.logicalId,sessionDate:s.date,sessionType:s.type,sessionTitle:s.title,isKey:manualSessionIsHard(s),originalSession:revisionClone(s)};
+    if(a.mode==="move"){
+      const date=ui.planManualDate.value,updated={...s,date,day:engineV2DayNumber(date),_manualAction:"moved"},idx=sessions.findIndex(x=>x.logicalId===s.logicalId);sessions[idx]=updated;const payload=buildPlanPublicationEvents({ok:true,sessions:[updated]},old.planId);await apiRequest("/api/calendar-events-bulk",{method:"POST",body:{events:payload}});const remote=await findRemotePlanEvents(old.planId,currentEngineV2Goal),found=remote.find(e=>String(e.external_id||"")===externalId);if(!found||String(found.start_date_local||"").slice(0,10)!==date)throw new Error("Intervals.icu no confirmó la nueva fecha.");entry={...entry,reason:`Mover ${engineV2DateLabel(s.date)} → ${engineV2DateLabel(date)}`,from:s.date,to:date};
+    }else if(a.mode==="unavailable"){
+      await deletePlanExternalIds([externalId],currentEngineV2Goal);const remote=await findRemotePlanEvents(old.planId,currentEngineV2Goal);if(remote.some(e=>String(e.external_id||"")===externalId))throw new Error("Intervals.icu todavía contiene la sesión.");const idx=sessions.findIndex(x=>x.logicalId===s.logicalId);if(idx>=0)sessions.splice(idx,1);entry={...entry,reason:`No disponible · ${s.title}`,removed:true};
+    }else{
+      const replacement=buildManualReplacement(s,ui.planManualReplacement.value),idx=sessions.findIndex(x=>x.logicalId===s.logicalId);sessions[idx]={...replacement,_manualAction:"replaced",_manualOriginalType:s.type};const payload=buildPlanPublicationEvents({ok:true,sessions:[sessions[idx]]},old.planId);await apiRequest("/api/calendar-events-bulk",{method:"POST",body:{events:payload}});const remote=await findRemotePlanEvents(old.planId,currentEngineV2Goal),found=remote.find(e=>String(e.external_id||"")===externalId);if(!found)throw new Error("Intervals.icu no confirmó la sustitución.");entry={...entry,reason:`Sustituir ${s.title} → ${replacement.title}`,replacement:ui.planManualReplacement.value,replacementType:replacement.type};
+    }
+    await commitManualPlanChange(sessions,entry);ui.planManualDialog.close();closePlanDetail();lastCalendarRefreshAt=Date.now();await syncCalendar(false);currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);renderAdaptiveEngineCard();renderPlanPublicationStatus();toast("✅ Cambio aplicado y verificado en Intervals.icu.");
+  }catch(error){toast(`⚠️ ${error.message}`,true);}finally{ui.planManualApply.disabled=false;currentPlanManualAction=null;}
+}
 async function openPlanDetail(id){
   const idx=currentEvents.findIndex((e,i)=>planEventId(e,i)===String(id));
   if(idx<0)return;
@@ -2619,7 +3252,8 @@ async function openPlanDetail(id){
   }
   const parsed=parsePlanWorkout(e),meta=sportMeta(planEventType(e));
   currentPlanEvent=e;
-  ui.planDetailActions.classList.toggle("hidden",!isAtlasPlanEvent(e));
+  const publishedSession=publishedPlanSessionForEvent(e),outcome=publishedSession?planOutcomeForSession(publishedSession):null,future=planEventDate(e)>=fmtDate(new Date());currentPlanOutcome=outcome;ui.planAdaptiveActions.classList.toggle("hidden",!publishedSession||!future||["race","raceA"].includes(publishedSession.type));ui.planDetailActions.classList.toggle("hidden",!isAtlasPlanEvent(e)||!!publishedSession);
+  ui.planDetailResult.classList.toggle("hidden",!outcome);if(outcome){const tone=planOutcomeTone(outcome);ui.planDetailResultStatus.className=`plan-execution-chip ${tone}`;ui.planDetailResultStatus.textContent=outcome.status;const actual=planOutcomeActualMeta(outcome),moved=outcome.dateDelta?` · realizado ${outcome.dateDelta>0?"+":""}${outcome.dateDelta} d`:"",cost=outcome.responseCost==="high"?" · coste subjetivo alto":"";ui.planDetailResultMeta.textContent=actual?`${actual}${moved}${cost}`:(outcome.status==="Pendiente"?"Todavía no hay actividad vinculada.":"No se ha encontrado una actividad realizada vinculada.");ui.planDetailResultActivity.classList.toggle("hidden",!planOutcomeActivityId(outcome));}
   ui.planDetailIcon.textContent=meta.emoji;
   ui.planDetailTitle.textContent=planEventName(e);
   const date=planEventDate(e),d=date?new Date(`${date}T12:00:00`):null;
@@ -2635,7 +3269,7 @@ async function openPlanDetail(id){
   document.body.style.overflow="hidden";
   requestAnimationFrame(fitPlanDetailTitle);
 }
-function closePlanDetail(){if(!ui.planDetail)return;ui.planDetail.classList.add("hidden");ui.planDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";currentPlanEvent=null;}
+function closePlanDetail(){if(!ui.planDetail)return;ui.planDetail.classList.add("hidden");ui.planDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";currentPlanEvent=null;currentPlanOutcome=null;}
 
 function fitPlanTitles(){
   qsa(".plan-day-main-title").forEach(el=>{
@@ -2651,7 +3285,73 @@ function fitPlanTitles(){
   });
 }
 function planActivityMetaParts(a){const parts=[],d=activityDistanceM(a),t=activityElapsedSec(a),pace=activityPaceSecKm(a);if(d)parts.push(`${formatNatural(d/1000,2)} km`);if(t)parts.push(formatDuration(t));if(isRun(a)&&pace)parts.push(formatPaceSecs(pace));return parts;}function planActivityMeta(a){return planActivityMetaParts(a).join(" · ");}
-function renderPlan(){if(!ui.planDays)return;if(!currentPlanWeekStart)currentPlanWeekStart=mondayOf(new Date());const{start,end,startKey,endKey}=planWeekRange(),today=fmtDate(new Date()),events=currentEvents.filter(e=>{const d=planEventDate(e);return d>=startKey&&d<=endKey;}),activities=currentActivities.filter(a=>{const d=activityDate(a);return d>=startKey&&d<=endKey;});ui.planRange.textContent=planRangeLabel(start,end);ui.planRangeSub.textContent=planWeekSubLabel(start);const plannedKm=events.reduce((s,e)=>s+(planEventDistanceM(e)||0),0)/1000,doneKm=activities.reduce((s,a)=>s+(activityDistanceM(a)||0),0)/1000;ui.planPlannedKm.textContent=formatNatural(plannedKm,1);ui.planDoneKm.textContent=formatNatural(doneKm,1);ui.planSessions.textContent=String(events.length||activities.length);const days=["LUN","MAR","MIÉ","JUE","VIE","SÁB","DOM"],markup=[];for(let i=0;i<7;i++){const d=new Date(start);d.setDate(start.getDate()+i);const key=planDateKey(d),dayEvents=events.filter(e=>planEventDate(e)===key),dayActivities=activities.filter(a=>activityDate(a)===key).sort((a,b)=>activityStamp(a).localeCompare(activityStamp(b))),sessions=[];for(const e of dayEvents){const meta=sportMeta(planEventType(e));sessions.push({kind:"plan",icon:meta.emoji,title:planEventName(e),metaParts:(planEventMeta(e)||meta.label).split(" · "),activityId:null,planEventId:planEventId(e,currentEvents.indexOf(e))});}for(const a of dayActivities){sessions.push({kind:"done",icon:activityIcon(a),title:activityName(a),metaParts:planActivityMetaParts(a),activityId:String(a.id)});}let head="",body="";if(sessions.length===1){const s=sessions[0],tag=(s.activityId||s.planEventId)?"button":"div",attrs=s.activityId?` type="button" data-activity-id="${esc(s.activityId)}"`:s.planEventId?` type="button" data-plan-event-id="${esc(s.planEventId)}"`:"",metaHtml=s.metaParts.filter(Boolean).map((x,idx)=>`${idx?'<span class="activity-mini-sep" aria-hidden="true"></span>':""}<span>${esc(x)}</span>`).join("");head=`<${tag} class="plan-day-head single-session"${attrs}><div class="plan-day-date"><span class="plan-day-weekday">${days[i]}</span><span class="plan-day-number">${d.getDate()}</span></div><span class="plan-day-sep" aria-hidden="true"></span><div class="plan-day-copy"><div class="plan-day-mainline"><span class="plan-day-main-icon">${s.icon}</span><span class="plan-day-main-title">${esc(s.title)}</span></div><div class="plan-day-main-meta">${metaHtml}</div></div></${tag}>`;}else if(sessions.length===0){head=`<div class="plan-day-head"><div class="plan-day-date"><span class="plan-day-weekday">${days[i]}</span><span class="plan-day-number">${d.getDate()}</span></div><span class="plan-day-sep" aria-hidden="true"></span><div class="plan-day-copy"></div></div>`;}else{head=`<div class="plan-day-head"><div class="plan-day-date"><span class="plan-day-weekday">${days[i]}</span><span class="plan-day-number">${d.getDate()}</span></div><span class="plan-day-sep" aria-hidden="true"></span><div class="plan-day-copy"><div class="plan-day-title">${sessions.length} sesiones</div></div></div>`;body=`<div class="plan-items">${sessions.map(s=>{const metaHtml=s.metaParts.filter(Boolean).map((x,idx)=>`${idx?'<span class="activity-mini-sep" aria-hidden="true"></span>':""}<span>${esc(x)}</span>`).join("");return`${s.activityId?`<button class="plan-item" data-activity-id="${esc(s.activityId)}">`:s.planEventId?`<button class="plan-item" data-plan-event-id="${esc(s.planEventId)}">`:`<div class="plan-item">`}<div class="plan-item-icon">${s.icon}</div><div class="plan-item-copy"><div class="plan-item-title">${esc(s.title)}</div><div class="plan-item-meta">${metaHtml}</div></div>${(s.activityId||s.planEventId)?"</button>":"</div>"}`;}).join("")}</div>`;}markup.push(`<section class="plan-day${key===today?" today":""}">${head}${body}</section>`);}ui.planDays.innerHTML=markup.join("");requestAnimationFrame(fitPlanTitles);}
+
+function planOutcomeForSession(session){
+  if(!session||!currentAdaptiveState?.outcomes)return null;
+  return currentAdaptiveState.outcomes.find(o=>o.session?.logicalId===session.logicalId)||null;
+}
+function planOutcomeForEvent(event){
+  const s=publishedPlanSessionForEvent(event);return s?planOutcomeForSession(s):null;
+}
+function planOutcomeTone(outcome){return outcome?adaptiveStatusTone(outcome.status):"pending";}
+function planOutcomeActivityId(outcome){const id=outcome?.activity?.id??outcome?.activity?.activity_id;return id==null?null:String(id);}
+function planOutcomeActualMeta(outcome){
+  if(!outcome?.activity)return"";
+  const parts=planActivityMetaParts(outcome.activity);return parts.join(" · ");
+}
+
+function planDateInsideAtlasPlan(date){
+  if(!date||!currentEngineV2Goal||!currentPlanManifest?.planId)return false;
+  const start=currentEngineV2Goal.startDate||currentPlanManifest?.goalSnapshot?.startDate||null,end=currentEngineV2Goal.date||currentPlanManifest?.goalSnapshot?.date||null;
+  return!!(start&&end&&date>=start&&date<=end);
+}
+function planMatchedActivityIds(){
+  const ids=new Set();for(const o of currentAdaptiveState?.outcomes||[]){const id=planOutcomeActivityId(o);if(id)ids.add(id);}return ids;
+}
+function planCompletedStatus(outcome){return!!outcome&&/^(Cumplido|Superado)/.test(outcome.status);}
+function planLifecycle(){
+  const a=currentAdaptiveState?.race?.primary;
+  if(a?.actualSec)return{status:"finalizado",label:`Finalizado · ${engineV2FormatTime(a.actualSec)}`};
+  const today=fmtDate(new Date());
+  if(currentEngineV2Goal?.date&&today>currentEngineV2Goal.date)return{status:"past",label:"Objetivo finalizado · resultado pendiente"};
+  if(currentEngineV2Goal?.startDate&&today<currentEngineV2Goal.startDate)return{status:"future",label:"Pendiente de inicio"};
+  return{status:"active",label:"En curso"};
+}
+function planExecutionSessionForEvent(e){
+  const meta=sportMeta(planEventType(e)),session=publishedPlanSessionForEvent(e),outcome=session?planOutcomeForSession(session):null,actual=planOutcomeActualMeta(outcome),baseMeta=(planEventMeta(e)||meta.label).split(" · ");
+  return{kind:"plan",icon:meta.emoji,title:planEventName(e),metaParts:baseMeta,planEventId:planEventId(e,currentEvents.indexOf(e)),outcome,status:outcome?.status||null,tone:planOutcomeTone(outcome),actualMeta:actual,activityId:planOutcomeActivityId(outcome)};
+}
+function planSessionMetaHtml(s,large=false){
+  const base=s.metaParts.filter(Boolean).map((x,idx)=>`${idx?'<span class="activity-mini-sep" aria-hidden="true"></span>':""}<span>${esc(x)}</span>`).join("");
+  if(s.kind!=="plan"||!s.outcome)return base;
+  const status=`<span class="plan-execution-chip ${s.tone}">${esc(s.status)}</span>`,actual=s.actualMeta?`<span class="plan-execution-actual">${esc(s.actualMeta)}</span>`:"";
+  return`${base}<span class="plan-execution-meta">${status}${actual}</span>`;
+}
+function renderPlan(){
+  if(!ui.planDays)return;if(!currentPlanWeekStart)currentPlanWeekStart=mondayOf(new Date());
+  const{start,end,startKey,endKey}=planWeekRange(),today=fmtDate(new Date()),events=currentEvents.filter(e=>{const d=planEventDate(e);return d>=startKey&&d<=endKey;}),activities=currentActivities.filter(a=>{const d=activityDate(a);return d>=startKey&&d<=endKey;}),matchedIds=planMatchedActivityIds();
+  ui.planRange.textContent=planRangeLabel(start,end);ui.planRangeSub.textContent=planWeekSubLabel(start);
+  const planEvents=events.filter(e=>publishedPlanSessionForEvent(e)||isAtlasPlanEvent(e)),plannedKm=planEvents.reduce((s,e)=>s+(planEventDistanceM(e)||0),0)/1000,doneKm=activities.reduce((s,a)=>s+(activityDistanceM(a)||0),0)/1000,weekOutcomes=(currentAdaptiveState?.outcomes||[]).filter(o=>o.session.date>=startKey&&o.session.date<=endKey),completed=weekOutcomes.filter(planCompletedStatus).length,totalEvaluable=weekOutcomes.length;
+  ui.planPlannedKm.textContent=formatNatural(plannedKm,1);ui.planDoneKm.textContent=formatNatural(doneKm,1);ui.planSessions.textContent=totalEvaluable?`${completed}/${totalEvaluable}`:"0";
+  const days=["LUN","MAR","MIÉ","JUE","VIE","SÁB","DOM"],markup=[];
+  for(let i=0;i<7;i++){
+    const d=new Date(start);d.setDate(start.getDate()+i);const key=planDateKey(d),dayEvents=events.filter(e=>planEventDate(e)===key),dayActivities=activities.filter(a=>activityDate(a)===key).sort((a,b)=>activityStamp(a).localeCompare(activityStamp(b))),sessions=[];
+    for(const e of dayEvents)sessions.push(planExecutionSessionForEvent(e));
+    for(const a of dayActivities){const id=String(a.id);if(matchedIds.has(id))continue;sessions.push({kind:"extra",icon:activityIcon(a),title:activityName(a),metaParts:planActivityMetaParts(a),activityId:id,tone:"pending",showExtra:planDateInsideAtlasPlan(key)});}
+    let head="",body="";
+    if(sessions.length===1){
+      const s=sessions[0],tag=s.planEventId?"button":s.activityId?"button":"div",attrs=s.planEventId?` type="button" data-plan-event-id="${esc(s.planEventId)}"`:s.activityId?` type="button" data-activity-id="${esc(s.activityId)}"`:"",metaHtml=planSessionMetaHtml(s,true),extra=s.kind==="extra"&&s.showExtra?`<span class="plan-execution-chip pending plan-execution-extra plan-extra-meta-chip">Actividad extra</span>`:"";
+      head=`<${tag} class="plan-day-head single-session"${attrs}><div class="plan-day-date"><span class="plan-day-weekday">${days[i]}</span><span class="plan-day-number">${d.getDate()}</span></div><span class="plan-day-sep" aria-hidden="true"></span><div class="plan-day-copy"><div class="plan-day-mainline"><span class="plan-day-main-icon">${s.icon}</span><span class="plan-day-main-title">${esc(s.title)}</span></div><div class="plan-day-main-meta"><span class="plan-meta-values">${metaHtml}</span>${extra}</div></div></${tag}>`;
+    }else if(sessions.length===0){
+      head=`<div class="plan-day-head"><div class="plan-day-date"><span class="plan-day-weekday">${days[i]}</span><span class="plan-day-number">${d.getDate()}</span></div><span class="plan-day-sep" aria-hidden="true"></span><div class="plan-day-copy"><div class="plan-rest-copy">Descanso</div></div></div>`;
+    }else{
+      head=`<div class="plan-day-head"><div class="plan-day-date"><span class="plan-day-weekday">${days[i]}</span><span class="plan-day-number">${d.getDate()}</span></div><span class="plan-day-sep" aria-hidden="true"></span><div class="plan-day-copy"><div class="plan-day-title">${sessions.length} sesiones</div></div></div>`;
+      body=`<div class="plan-items">${sessions.map(s=>{const metaHtml=planSessionMetaHtml(s),extra=s.kind==="extra"&&s.showExtra?'<span class="plan-execution-chip pending plan-execution-extra plan-extra-meta-chip">Actividad extra</span>':"",state=s.kind!=="extra"&&s.outcome?`<span class="plan-execution-chip ${s.tone}">${esc(s.status)}</span>`:"";return`${s.planEventId?`<button class="plan-item" data-plan-event-id="${esc(s.planEventId)}">`:s.activityId?`<button class="plan-item" data-activity-id="${esc(s.activityId)}">`:`<div class="plan-item">`}<div class="plan-item-icon">${s.icon}</div><div class="plan-item-copy"><div class="plan-item-title">${esc(s.title)}</div><div class="plan-item-meta" style="display:flex;align-items:center;gap:6px"><span class="plan-meta-values">${metaHtml}</span>${extra}</div></div>${state}${(s.planEventId||s.activityId)?"</button>":"</div>"}`;}).join("")}</div>`;
+    }
+    markup.push(`<section class="plan-day${key===today?" today":""}">${head}${body}</section>`);
+  }
+  ui.planDays.innerHTML=markup.join("");requestAnimationFrame(fitPlanTitles);
+}
 
 /* ===== Actividades: normalización, listado y detalle ===== */
 function activityType(a){const type=String(a?.type||""),sport=String(a?.sport||a?.activity_type||""),name=String(a?.name||a?.title||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();const joined=`${type} ${sport}`.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();if(/soccer|football|futbol/.test(joined)||/\bfutbol\b/.test(name))return"Football";return sport||type||"Actividad";}
@@ -2993,6 +3693,14 @@ async function exportDatabase(){try{const data={};for(const s of STORES)data[s]=
 async function importDatabase(e){const file=e.target.files?.[0];e.target.value="";if(!file)return;try{const p=JSON.parse(await file.text()),v=Number(p?.atlas?.schemaVersion);if(![1,2,3,4,5,6,7,8,9].includes(v)||!p?.data)throw new Error("Copia de ɅTLɅS no compatible.");const stores=v===1?["settings","meta","profile","activities","wellness"]:STORES;for(const s of stores){if(!db.objectStoreNames.contains(s))continue;const rec=p.data[s];if(!Array.isArray(rec)||!rec.length)continue;const tx=db.transaction(s,"readwrite"),st=tx.objectStore(s);for(const r of rec){if(s==="settings"&&r?.key==="clientToken")continue;st.put(r);}await txDone(tx);}await refreshAll();toast("✅ JSON importado.");}catch(err){toast(`⚠️ ${err.message}`,true);}}
 async function clearData(){if(!confirm("¿Borrar todos los datos deportivos locales? La conexión se conservará."))return;try{for(const s of DATA_STORES)await storeClear(s);await refreshAll();toast("✅ Base de datos vaciada.");}catch(e){toast(`⚠️ ${e.message}`,true);}}
 })();
+
+
+
+
+
+
+
+
 
 
 
