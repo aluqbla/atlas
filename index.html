@@ -713,7 +713,7 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
       <div class="state-band-row"><span class="state-band-dot" style="background:var(--orange)"></span><span class="state-band-name">Precaución</span><span class="state-band-range">35–54</span></div>
       <div class="state-band-row"><span class="state-band-dot" style="background:var(--red)"></span><span class="state-band-name">Recuperación</span><span class="state-band-range">0–34</span></div>
     </div>
-    <div class="state-detail-explanation"><strong>Estado ɅTLɅS.</strong> Resume tu disponibilidad actual para asimilar entrenamiento combinando VFC, sueño, frecuencia cardiaca en reposo, Frescura y carga reciente. Las métricas disponibles se ponderan automáticamente y una recuperación aguda o un indicador claramente desfavorable puede limitar la puntuación final. No mide tu nivel deportivo: indica cómo de preparado estás hoy para entrenar.</div>
+    <div class="state-detail-explanation"><strong>Estado ɅTLɅS.</strong> Resume tu disponibilidad actual para asimilar entrenamiento combinando VFC, sueño, frecuencia cardiaca en reposo y Frescura. La carga de las actividades recientes no vuelve a contarse como otro factor: actúa únicamente como recuperación aguda temporal. El Motor Adaptativo utiliza estas mismas señales como tendencia, junto con la ejecución del plan. No mide tu nivel deportivo: indica cómo de preparado estás hoy para entrenar.</div>
     <button class="metric-footer-back" id="stateDetailBottomBack">Volver</button>
   </div>
 </section>
@@ -1138,9 +1138,10 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
 
 
 
+
 (()=>{
 "use strict";
-const APP_VERSION="0.64.0",SCHEMA_VERSION=9,DB_NAME="atlas",DB_VERSION=2;
+const APP_VERSION="0.65.0",SCHEMA_VERSION=9,DB_NAME="atlas",DB_VERSION=2;
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -1597,6 +1598,29 @@ function v2EstimateGoalFromRaces(profile,goalDistanceM,anchor){
   const variance=items.reduce((s,x)=>s+x.weight*Math.pow(x.estimate-mean,2),0)/total,sd=Math.sqrt(Math.max(0,variance)),margin=Math.max(mean*.025,sd*.7);
   return{center:mean,low:Math.max(1,mean-margin),high:mean+margin,confidence:anchors.length>=2?"Media-alta":"Media"};
 }
+
+function atlasLatestWellnessMetric(wellness,key,anchor=fmtDate(new Date())){
+  const rows=[...(wellness||[])].filter(r=>v2WellnessDate(r)&&v2WellnessDate(r)<=anchor).sort((a,b)=>v2WellnessDate(b).localeCompare(v2WellnessDate(a)));
+  for(const record of rows){const value=v2WellnessMetric(record,key);if(Number.isFinite(value))return{value,date:v2WellnessDate(record),record};}
+  return null;
+}
+function atlasRecoverySnapshot(activities,wellness,anchor=fmtDate(new Date())){
+  const rows=[...(wellness||[])].filter(r=>v2WellnessDate(r)&&v2WellnessDate(r)<=anchor).sort((a,b)=>v2WellnessDate(b).localeCompare(v2WellnessDate(a)));
+  const healthDate=rows.length?v2WellnessDate(rows[0]):null,wellnessAgeDays=healthDate?Math.max(0,Math.round((new Date(`${anchor}T12:00:00`)-new Date(`${healthDate}T12:00:00`))/86400000)):null;
+  const hrv=atlasLatestWellnessMetric(rows,"hrv",anchor),rhr=atlasLatestWellnessMetric(rows,"rhr",anchor),sleep=atlasLatestWellnessMetric(rows,"sleep",anchor),sleepScore=atlasLatestWellnessMetric(rows,"sleepScore",anchor);
+  const ctl=atlasLatestWellnessMetric(rows,"ctl",anchor)?.value??null,atl=atlasLatestWellnessMetric(rows,"atl",anchor)?.value??null,form=atlasLatestWellnessMetric(rows,"form",anchor)?.value??null;
+  const hrv7=v2MeanWellness(rows,"hrv",anchor,7,3),hrv28=v2MeanWellness(rows,"hrv",anchor,28,10),hrvBaseline=garminLikeHrvBaseline(rows,hrv?.date||healthDate||anchor);
+  const rhr7=v2MeanWellness(rows,"rhr",anchor,7,3),rhr28=v2MeanWellness(rows,"rhr",anchor,28,10),rhrDelta=Number.isFinite(rhr7)&&Number.isFinite(rhr28)?rhr7-rhr28:null;
+  const sleep7=v2MeanWellness(rows,"sleep",anchor,7,3),sleepScore7=v2MeanWellness(rows,"sleepScore",anchor,7,3),latestSleepRecord=sleep?.record||sleepScore?.record||rows[0]||null;
+  const freshness=Number.isFinite(form)?form:(Number.isFinite(ctl)&&Number.isFinite(atl)?ctl-atl:null),acute=acuteRecovery(activities||[]);
+  return{
+    anchor,healthDate,wellnessAgeDays,stale:Number.isFinite(wellnessAgeDays)&&wellnessAgeDays>2,
+    hrvLatest:hrv?.value??null,hrvDate:hrv?.date||null,hrv7,hrv28,hrvBaseline,
+    rhrLatest:rhr?.value??null,rhrDate:rhr?.date||null,rhr7,rhr28,rhrDelta,
+    sleepLatest:sleep?.value??null,sleepDate:sleep?.date||null,sleep7,sleepScoreLatest:sleepScore?.value??null,sleepScore7,latestSleepRecord,
+    ctl,atl,freshness,acute
+  };
+}
 function buildAthleteProfileV2(activities,wellness,cachedVo2,anchor=fmtDate(new Date())){
   const runs=(activities||[]).filter(v2IsRun).filter(a=>{const d=v2ActivityDate(a);return d&&d<=anchor;});
   if(!runs.length)return{version:2,anchor,available:false,reading:"Sin carreras sincronizadas suficientes para construir el perfil."};
@@ -1610,13 +1634,13 @@ function buildAthleteProfileV2(activities,wellness,cachedVo2,anchor=fmtDate(new 
   const demonstratedFreq=Math.max(2,Math.round(Math.max(freq4?.value||0,freq8?.value||0,stableFreq))),launchFreq=Math.max(2,Math.min(demonstratedFreq,Math.round(Math.max(stableFreq,f14))));
   let easyPaces=r84.filter(v2EasyRun).map(v2ActivityPace).filter(p=>Number.isFinite(p)&&p>=180&&p<=600);
   if(easyPaces.length<3)easyPaces=r84.filter(a=>!v2QualityRun(a)&&(v2ActivityDistanceM(a)||0)>=5000).map(v2ActivityPace).filter(p=>Number.isFinite(p)&&p>=180&&p<=600);
-  const raceAnchors=v2RecentRaceAnchors(runs,anchor),exponent=v2PerformanceExponent(raceAnchors),ctl=v2LatestWellness(wellness,"ctl",anchor),atl=v2LatestWellness(wellness,"atl",anchor),form=v2LatestWellness(wellness,"form",anchor);
-  const hrv7=v2MeanWellness(wellness,"hrv",anchor,7,3),hrv28=v2MeanWellness(wellness,"hrv",anchor,28,10),rhr7=v2MeanWellness(wellness,"rhr",anchor,7,3),rhr28=v2MeanWellness(wellness,"rhr",anchor,28,10),sleep7=v2MeanWellness(wellness,"sleep",anchor,7,3),sleepScore7=v2MeanWellness(wellness,"sleepScore",anchor,7,3);
+  const raceAnchors=v2RecentRaceAnchors(runs,anchor),exponent=v2PerformanceExponent(raceAnchors),recoverySnapshot=atlasRecoverySnapshot(activities,wellness,anchor);
+  const{ctl,atl,freshness,hrv7,hrv28,rhr7,rhr28,sleep7,sleepScore7}=recoverySnapshot;
   const profile={version:2,anchor,available:true,
     current:{weeklyKm14:km14,weeklyKm28:km28,weeklyKm56:km56,weeklyKm84:km84,stableWeeklyKm:stableKm,launchWeeklyKm:launchKm,frequency14:f14,frequency28:f28,frequency56:f56,frequency84:f84,stableFrequency:stableFreq,launchFrequency:launchFreq,longest84:v2LongestKm(r84),qualityPerWeek28:quality28/4,easyPace:v2Median(easyPaces),trendRatio:trend},
     historical:{sustainableVolume4:vol4?.value??null,sustainableVolume8:vol8?.value??null,sustainableVolume8End:vol8?.endDate??null,sustainableFrequency4:freq4?.value??null,sustainableFrequency8:freq8?.value??null,demonstratedFrequency:demonstratedFreq,longRunP90:histLong90,longRunP95:histLong95,longRunTrainingMax:histTrainingLongMax,longRunMax:histLongMax,experienceYears:v2ExperienceYears(runs,anchor),runsTotal:runs.length},
     performance:{raceAnchors,exponent,vo2:v2LatestVo2(runs,wellness,cachedVo2,anchor)},
-    recovery:{ctl,atl,freshness:Number.isFinite(form)?form:(Number.isFinite(ctl)&&Number.isFinite(atl)?ctl-atl:null),hrv7,hrv28,rhr7,rhr28,sleep7,sleepScore7},
+    recovery:{...recoverySnapshot,ctl,atl,freshness,hrv7,hrv28,rhr7,rhr28,sleep7,sleepScore7},
     strength:{experience:"Sin configurar",equipment:"Sin configurar"}};
   let confidence=0;if(r84.length>=12)confidence+=2;else if(r84.length>=6)confidence++;if(vol8?.value)confidence+=2;if(raceAnchors.length>=2)confidence+=2;else if(raceAnchors.length)confidence++;if([hrv7,rhr7,sleep7].filter(Number.isFinite).length>=2)confidence++;if(Number.isFinite(ctl))confidence++;
   profile.confidence=confidence>=7?"Alta":confidence>=4?"Media":"Limitada";
@@ -2569,7 +2593,7 @@ function closeSessionGenerator(){ui.sessionGeneratorDetail.classList.add("hidden
 
 
 /* ===== Motor Adaptativo ATLAS ===== */
-const ATLAS_ADAPTIVE_VERSION="1.2";
+const ATLAS_ADAPTIVE_VERSION="1.3";
 function adaptiveIsStrengthActivity(a){const t=String(a?.type||a?.sport||a?.sub_type||"").toLowerCase(),n=String(a?.name||"").toLowerCase();return /weight|strength|gym|fuerza/.test(t)||/fuerza|gimnasio|strength/.test(n);}
 function adaptiveActivityDistanceKm(a){const m=v2ActivityDistanceM(a);return Number.isFinite(m)&&m>0?m/1000:null;}
 function adaptiveManifestMap(manifest){const m=new Map();for(const e of manifest?.events||[]){if(e?.external_id)m.set(String(e.external_id),e);}return m;}
@@ -2604,11 +2628,36 @@ function adaptiveOutcome(s,a,today,method){
 }
 function adaptiveRecoveryEvidence(profile){
   const r=profile?.recovery||{},signals=[];let negatives=0,positives=0;
-  if(Number.isFinite(r.hrv7)&&Number.isFinite(r.hrv28)&&r.hrv28>0){const ratio=r.hrv7/r.hrv28,status=ratio<.92?"negative":ratio>=.98?"positive":"neutral";if(status==="negative")negatives++;if(status==="positive")positives++;signals.push({label:"VFC",status,detail:`7 d ${formatNatural(r.hrv7,1)} · 28 d ${formatNatural(r.hrv28,1)}`});}
-  if(Number.isFinite(r.rhr7)&&Number.isFinite(r.rhr28)&&r.rhr28>0){const ratio=r.rhr7/r.rhr28,status=ratio>1.05?"negative":ratio<=1.02?"positive":"neutral";if(status==="negative")negatives++;if(status==="positive")positives++;signals.push({label:"FC reposo",status,detail:`7 d ${formatNatural(r.rhr7,1)} · 28 d ${formatNatural(r.rhr28,1)}`});}
-  if(Number.isFinite(r.sleep7)){const hours=r.sleep7>1000?r.sleep7/3600:r.sleep7,status=hours<6.25?"negative":hours>=7?"positive":"neutral";if(status==="negative")negatives++;if(status==="positive")positives++;signals.push({label:"Sueño",status,detail:`Media 7 d ${hours.toFixed(1).replace(".",",")} h`});}
-  const loadStress=Number.isFinite(r.ctl)&&Number.isFinite(r.atl)&&r.ctl>8?r.atl/r.ctl:null;if(Number.isFinite(loadStress)){const status=loadStress>1.55?"negative":loadStress<1.2?"positive":"neutral";if(status==="negative")negatives++;if(status==="positive")positives++;signals.push({label:"Carga reciente",status,detail:`ATL/CTL ${formatNatural(loadStress,2)}`});}
-  return{signals,negatives,positives,degraded:negatives>=2,stronglyDegraded:negatives>=3};
+  const push=(label,status,detail,count=true)=>{if(count&&status==="negative")negatives++;if(count&&status==="positive")positives++;signals.push({label,status,detail});};
+  if(Number.isFinite(r.hrv7)&&r.hrvBaseline){
+    const b=r.hrvBaseline;let status="neutral";
+    if(r.hrv7<b.low*.92)status="negative";else if(r.hrv7>=b.low&&r.hrv7<=b.high)status="positive";
+    push("VFC",status,`7 d ${formatNatural(r.hrv7,1)} ms · base ${formatNatural(b.low,0)}–${formatNatural(b.high,0)}`);
+  }else if(Number.isFinite(r.hrv7)&&Number.isFinite(r.hrv28)&&r.hrv28>0){
+    const ratio=r.hrv7/r.hrv28,status=ratio<.92?"negative":ratio>=.98?"positive":"neutral";
+    push("VFC",status,`7 d ${formatNatural(r.hrv7,1)} · 28 d ${formatNatural(r.hrv28,1)}`);
+  }
+  if(Number.isFinite(r.rhrDelta)){
+    const status=r.rhrDelta>=4?"negative":r.rhrDelta<=2?"positive":"neutral";
+    push("FC reposo",status,`7 d vs 28 d · ${signedNatural(r.rhrDelta,1)} ppm`);
+  }
+  if(Number.isFinite(r.sleepScore7)){
+    const status=r.sleepScore7<60?"negative":r.sleepScore7>=80?"positive":"neutral";
+    push("Sueño",status,`Puntuación media 7 d · ${formatNatural(r.sleepScore7,0)}`);
+  }else if(Number.isFinite(r.sleep7)){
+    const hours=r.sleep7>1000?r.sleep7/3600:r.sleep7,status=hours<6.25?"negative":hours>=7?"positive":"neutral";
+    push("Sueño",status,`Media 7 d · ${hours.toFixed(1).replace(".",",")} h`);
+  }
+  if(Number.isFinite(r.freshness)){
+    const status=r.freshness<-30?"negative":r.freshness<=20?"positive":"neutral";
+    push("Frescura",status,`${signedNatural(r.freshness,1)} · ${freshnessZone(r.freshness)?.label||"sin zona"}`);
+  }
+  const acute=Number(r.acute?.penalty)||0;
+  if(acute>=3){
+    const status=acute>=14?"negative":"neutral";
+    push("Recuperación aguda",status,`${r.acute?.activeCount||1} actividad${(r.acute?.activeCount||1)===1?"":"es"} reciente${(r.acute?.activeCount||1)===1?"":"s"} · −${formatNatural(acute,1)} Estado`,true);
+  }
+  return{signals,negatives,positives,degraded:negatives>=2,stronglyDegraded:negatives>=3,acutePenalty:acute};
 }
 
 function adaptiveManualEvidence(manifest,today=fmtDate(new Date())){
@@ -2693,7 +2742,7 @@ function adaptiveDecisionFromEvidence(outcomes,recovery,config,manual,race,today
 function buildAdaptiveStateV1(sessionPlan,manifest,activities,profile,goal,secondary,availability,today=fmtDate(new Date())){
   if(!sessionPlan?.ok||!profile?.available||!goal)return null;const outcomes=adaptiveMatchSessions(sessionPlan,manifest,activities,today),recovery=adaptiveRecoveryEvidence(profile),config=adaptiveConfigurationEvidence(manifest,goal,secondary,availability,sessionPlan),manual=adaptiveManualEvidence(manifest,today),race=adaptiveRaceEvidence(outcomes,manifest,goal,secondary),decision=adaptiveDecisionFromEvidence(outcomes,recovery,config,manual,race,today,goal),past=outcomes.filter(o=>o.session.date<today),completed=past.filter(o=>/^(Cumplido|Superado)/.test(o.status)).length,recent=outcomes.filter(o=>o.session.date<today&&adaptiveDateDelta(today,o.session.date)<=14).sort((a,b)=>b.session.date.localeCompare(a.session.date));
   const costly=recent.filter(o=>o.responseCost==="high").length,evidence=[{label:"Ejecución 14 d",status:decision.outcomeKeyIssues>=2?"negative":decision.outcomeKeyIssues===1?"neutral":"positive",detail:recent.length?`${recent.filter(o=>/^(Cumplido|Superado)/.test(o.status)).length}/${recent.length} sesiones cumplidas · ${decision.outcomeKeyIssues} incidencias clave`:"Sin sesiones evaluables"},{label:"Respuesta al esfuerzo",status:costly>=2?"neutral":"positive",detail:recent.length?`${costly} sesiones con coste subjetivo alto`:"Sin sesiones evaluables"},{label:"Decisiones manuales",status:manual.keyLosses>=2?"negative":manual.keyLosses===1?"neutral":"positive",detail:manual.items.length?`${manual.keyLosses} estímulos clave perdidos · ${manual.moved} movimientos`:"Sin cambios manuales recientes"},{label:"Carrera de control",status:race.pending.length?"neutral":"positive",detail:race.pending.length?adaptiveRaceCheckpointDetail(race.latest):(race.checkpoints.length?"Sin recalibraciones pendientes":"Sin carreras B/C realizadas")},{label:"Recuperación",status:recovery.stronglyDegraded?"negative":recovery.degraded?"neutral":"positive",detail:recovery.signals.length?`${recovery.negatives} señales negativas de ${recovery.signals.length}`:"Datos insuficientes"},{label:"Calendario publicado",status:config.level>=3?"negative":config.changed?"neutral":"positive",detail:config.detail}];
-  return{ok:true,version:ATLAS_ADAPTIVE_VERSION,today,outcomes,recentOutcomes:recent.slice(0,10),recovery,manual,race,config,decision,evidence,completed,pastCount:past.length,reading:`ATLAS distingue cumplimiento, coste de la respuesta y decisiones manuales. No devuelve kilómetros perdidos: solo intenta recuperar un estímulo si sigue siendo necesario y existe un hueco seguro.`};
+  return{ok:true,version:ATLAS_ADAPTIVE_VERSION,today,outcomes,recentOutcomes:recent.slice(0,10),recovery,manual,race,config,decision,evidence,completed,pastCount:past.length,reading:`ATLAS usa las mismas señales de recuperación que Estado, pero como tendencia junto con la ejecución del plan. Una bajada puntual del Estado no obliga por sí sola a modificar el calendario.`};
 }
 
 const ATLAS_REVISION_VERSION="1.0";
@@ -3604,9 +3653,8 @@ function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&l
 function renderToday(activities,wellness,cachedVo2){
  const w=[...wellness].sort((a,b)=>String(b?.id||"").localeCompare(String(a?.id||""))),runs=activities.filter(isRun).sort((a,b)=>activityStamp(b).localeCompare(activityStamp(a))),latestActivities=[...activities].sort((a,b)=>activityStamp(b).localeCompare(activityStamp(a)));
  const forma=latestMetric(w,["ctl","ctlLoad","icu_ctl"]),fatiga=latestMetric(w,["atl","atlLoad","icu_atl"]),vfc=latestMetric(w,["hrv","hrvSDNN","hrv_sdnn"]),rhr=latestMetric(w,["restingHR","resting_hr","restingHr"]),sleep=latestMetric(w,["sleepSecs","sleep_secs","sleep"]),vo2=latestVo2Metric(w,runs,cachedVo2);
- const fresh=Number.isFinite(forma?.value)&&Number.isFinite(fatiga?.value)?forma.value-fatiga.value:null;
- const today=fmtDate(new Date()),start=addDays(today,-6),recent=runs.filter(r=>{const d=activityDate(r);return d&&d>=start&&d<=today;}),dist=recent.reduce((s,r)=>s+num(pick(r,["icu_distance","distance"])),0);
- const hrvRef=garminLikeHrvBaseline(w,vfc?.date||today),rhrMean=rollingMean(w,["restingHR","resting_hr","restingHr"],rhr?.date||today,28),sleepQuality=sleep?sleepQualityInfo(sleep.record):null,freshZone=freshnessZone(fresh);
+ const today=fmtDate(new Date()),recoveryContext=atlasRecoverySnapshot(activities,w,today),fresh=recoveryContext.freshness,start=addDays(today,-6),recent=runs.filter(r=>{const d=activityDate(r);return d&&d>=start&&d<=today;}),dist=recent.reduce((s,r)=>s+num(pick(r,["icu_distance","distance"])),0);
+ const hrvRef=recoveryContext.hrvBaseline,rhrMean=recoveryContext.rhr28,sleepQuality=sleep?sleepQualityInfo(sleep.record):null,freshZone=freshnessZone(fresh);
  ui.sleepValue.innerHTML=sleep?formatSleepHM(sleep.value):"—";setTone(ui.sleepMeta,sleepQuality?.tone);ui.sleepMeta.textContent=sleepQuality?.label||"—";
  ui.hrvValue.innerHTML=vfc?`${formatDec(vfc.value,0)} <span class="metric-unit">ms</span>`:"—";setTone(ui.hrvMeta,null);ui.hrvMeta.textContent=hrvRef?`${formatDec(hrvRef.low,0)}–${formatDec(hrvRef.high,0)}`:"—";
  ui.rhrValue.innerHTML=rhr?`${formatDec(rhr.value,0)} <span class="metric-unit">ppm</span>`:"—";setTone(ui.rhrMeta,null);ui.rhrMeta.textContent=Number.isFinite(rhrMean)?`Media · ${formatDec(rhrMean,0)}`:"Media · —";
@@ -3663,28 +3711,26 @@ function freshnessZone(value){
  return{label:"Transición",tone:"gray"};
 }
 function computeAtlasState({activities,wellness,forma,fatiga,fresh,vfc,rhr,sleep,hrvRef,today}){
- const weights={hrv:25,sleep:20,rhr:15,fresh:25,load:15},parts=[];
- const hrvAnchor=vfc?.date||latestWellnessDate(wellness)||today,hrv7=rollingMean(wellness,["hrv","hrvSDNN","hrv_sdnn"],hrvAnchor,7),hrvScore=scoreHrv(hrv7,hrvRef);
- if(Number.isFinite(hrvScore))parts.push({key:"hrv",score:hrvScore,weight:weights.hrv});
- const rawSleepScore=getSleepScore(sleep?.record),sleepComponent=scoreSleep(rawSleepScore,sleep?.record);
+ const r=atlasRecoverySnapshot(activities,wellness,today),weights={hrv:30,sleep:25,rhr:20,fresh:25},parts=[];
+ if(r.stale)return null;
+ const hrvScore=scoreHrv(r.hrv7,r.hrvBaseline);if(Number.isFinite(hrvScore))parts.push({key:"hrv",score:hrvScore,weight:weights.hrv});
+ const rawSleepScore=Number.isFinite(r.sleepScoreLatest)?r.sleepScoreLatest:getSleepScore(r.latestSleepRecord),sleepComponent=scoreSleep(rawSleepScore,r.latestSleepRecord);
  if(Number.isFinite(sleepComponent))parts.push({key:"sleep",score:sleepComponent,weight:weights.sleep});
- const rhrBase=rhr?.date?rollingMeanBefore(wellness,["restingHR","resting_hr","restingHr"],rhr.date,28):null,rhrDelta=Number.isFinite(rhr?.value)&&Number.isFinite(rhrBase)?rhr.value-rhrBase:null,rhrScore=scoreRestingHr(rhrDelta);
- if(Number.isFinite(rhrScore))parts.push({key:"rhr",score:rhrScore,weight:weights.rhr});
- const freshScore=scoreFreshness(fresh);if(Number.isFinite(freshScore))parts.push({key:"fresh",score:freshScore,weight:weights.fresh});
- const loads=trainingLoadContext(activities,today),loadScore=scoreLoadRatio(loads.ratio);if(Number.isFinite(loadScore))parts.push({key:"load",score:loadScore,weight:weights.load});
- const totalWeight=parts.reduce((s,p)=>s+p.weight,0);if(totalWeight<55||parts.length<3)return null;
- const baseScore=parts.reduce((s,p)=>s+p.score*p.weight,0)/totalWeight;let score=baseScore;
- const recovery=acuteRecovery(activities);score-=recovery.penalty;
+ const rhrScore=scoreRestingHr(r.rhrDelta);if(Number.isFinite(rhrScore))parts.push({key:"rhr",score:rhrScore,weight:weights.rhr});
+ const freshScore=scoreFreshness(r.freshness);if(Number.isFinite(freshScore))parts.push({key:"fresh",score:freshScore,weight:weights.fresh});
+ const totalWeight=parts.reduce((s,p)=>s+p.weight,0);if(totalWeight<60||parts.length<3)return null;
+ const baseScore=parts.reduce((s,p)=>s+p.score*p.weight,0)/totalWeight;let score=baseScore,recovery=r.acute;score-=recovery.penalty;
  const caps=[];
  if(Number.isFinite(rawSleepScore)){if(rawSleepScore<35)caps.push({cap:34,reason:"Sueño muy bajo"});else if(rawSleepScore<50)caps.push({cap:54,reason:"Sueño bajo"});else if(rawSleepScore<60)caps.push({cap:69,reason:"Sueño insuficiente"});}
- if(Number.isFinite(hrv7)&&hrvRef){if(hrv7<hrvRef.low*.88)caps.push({cap:54,reason:"VFC deprimida"});else if(hrv7<hrvRef.low*.95)caps.push({cap:69,reason:"VFC por debajo del rango"});}
- if(Number.isFinite(rhrDelta)){if(rhrDelta>=8)caps.push({cap:34,reason:"Reposo muy elevado"});else if(rhrDelta>=5)caps.push({cap:54,reason:"Reposo elevado"});else if(rhrDelta>=3)caps.push({cap:69,reason:"Reposo por encima de tu media"});}
- if(Number.isFinite(fresh)){if(fresh<-35)caps.push({cap:34,reason:"Fatiga muy alta"});else if(fresh<-30)caps.push({cap:54,reason:"Fatiga elevada"});}
+ if(Number.isFinite(r.hrv7)&&r.hrvBaseline){if(r.hrv7<r.hrvBaseline.low*.88)caps.push({cap:54,reason:"VFC deprimida"});else if(r.hrv7<r.hrvBaseline.low*.95)caps.push({cap:69,reason:"VFC por debajo del rango"});}
+ if(Number.isFinite(r.rhrDelta)){if(r.rhrDelta>=6)caps.push({cap:34,reason:"Reposo muy elevado"});else if(r.rhrDelta>=4)caps.push({cap:54,reason:"Reposo elevado"});else if(r.rhrDelta>=3)caps.push({cap:69,reason:"Reposo por encima de tu media"});}
+ if(Number.isFinite(r.freshness)){if(r.freshness<-35)caps.push({cap:34,reason:"Fatiga muy alta"});else if(r.freshness<-30)caps.push({cap:54,reason:"Fatiga elevada"});}
  if(recovery.penalty>=14)caps.push({cap:69,reason:"Recuperación aguda en curso"});
  let limiter=null;if(caps.length){limiter=caps.sort((a,b)=>a.cap-b.cap)[0];score=Math.min(score,limiter.cap);}
  score=Math.round(clamp(score,0,100));
  const band=atlasBand(score),note=limiter?limiter.reason:recovery.penalty>=3?`Recuperación en curso · −${Math.round(recovery.penalty)}`:band.note;
- return{score,band,note,components:Object.fromEntries(parts.map(p=>[p.key,Math.round(p.score)])),recovery,loadRatio:loads.ratio,hrv7,rhrDelta,baseScore,limiter,sleepScore:rawSleepScore,fresh,totalWeight};
+ const sleepHours=Number.isFinite(r.sleepLatest)?r.sleepLatest/3600:null,sleepQuality=sleepQualityInfo(r.latestSleepRecord);
+ return{score,band,note,components:Object.fromEntries(parts.map(p=>[p.key,Math.round(p.score)])),recovery,hrv7:r.hrv7,hrvBaseline:r.hrvBaseline,rhrDelta:r.rhrDelta,rhr7:r.rhr7,rhr28:r.rhr28,baseScore,limiter,sleepScore:rawSleepScore,sleepHours,sleepQuality,fresh:r.freshness,totalWeight,healthDate:r.healthDate};
 }
 function renderAtlasState(state){currentAtlasState=state;
  if(!state){ui.trainingStateScore.textContent="—";ui.trainingStateBtn.className="training-state";ui.trainingStateCircle.style.setProperty("--score-pct","0%");ui.trainingStateWord.textContent="Sin datos";ui.trainingStateNote.textContent="Necesito más métricas recientes";if(ui.stateDetail?.classList.contains("open"))renderStateDetail();return;}
@@ -3692,7 +3738,19 @@ function renderAtlasState(state){currentAtlasState=state;
 }
 function openStateDetail(){ui.stateDetail.classList.add("open");ui.stateDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";renderStateDetail();}
 function closeStateDetail(){ui.stateDetail.classList.remove("open");ui.stateDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";}
-function renderStateDetail(){const s=currentAtlasState;const today=fmtDate(new Date());if(!s){ui.stateDetailHero.className="state-detail-card";ui.stateDetailRing.style.setProperty("--score-pct","0%");ui.stateDetailScore.textContent="—";ui.stateDetailWord.textContent="Sin datos";ui.stateDetailNote.textContent="Necesito más métricas recientes";ui.stateDetailMeta.textContent=fullTodayDate();ui.stateFactors.innerHTML='<div class="state-factor"><div class="state-factor-context">No hay suficientes métricas recientes para calcular el Estado ɅTLɅS.</div></div>';ui.stateBaseScore.textContent="—";ui.stateRecoveryPenalty.textContent="—";ui.stateLimiter.className="state-limiter";ui.stateLimiter.textContent="";return;}ui.stateDetailHero.className=`state-detail-card state-${s.band.tone}`;ui.stateDetailRing.style.setProperty("--score-pct",`${s.score}%`);ui.stateDetailScore.textContent=String(s.score);ui.stateDetailWord.textContent=s.band.label;ui.stateDetailNote.textContent=s.note;ui.stateDetailMeta.textContent=fullTodayDate();const defs=[{key:"hrv",icon:"🫀",name:"VFC",weight:25,context:()=>Number.isFinite(s.hrv7)?`Media 7 días · ${formatNatural(s.hrv7,1)} ms`:"Sin datos recientes"},{key:"sleep",icon:"💤",name:"Sueño",weight:20,context:()=>Number.isFinite(s.sleepScore)?`Puntuación de sueño · ${formatNatural(s.sleepScore,0)}`:"Sin puntuación reciente"},{key:"rhr",icon:"❤️",name:"Reposo",weight:15,context:()=>Number.isFinite(s.rhrDelta)?`Respecto a tu media · ${signedNatural(s.rhrDelta,1)} ppm`:"Sin referencia suficiente"},{key:"fresh",icon:"⚡",name:"Frescura",weight:25,context:()=>Number.isFinite(s.fresh)?`Frescura actual · ${signedNatural(s.fresh,2)}`:"Sin datos recientes"},{key:"load",icon:"🏃🏻‍♂️",name:"Carga reciente",weight:15,context:()=>Number.isFinite(s.loadRatio)?`Carga 7 d / referencia · ${formatNatural(s.loadRatio,2)}×`:"Sin referencia suficiente"}];ui.stateFactors.innerHTML=defs.map(d=>{const score=s.components?.[d.key],ok=Number.isFinite(score);return`<div class="state-factor"><div class="state-factor-top"><div class="state-factor-name">${d.icon} ${d.name}<span class="state-factor-weight">${d.weight}%</span></div><div class="state-factor-score">${ok?score:"—"}</div></div><div class="state-factor-track"><div class="state-factor-fill" style="width:${ok?clamp(score,0,100):0}%"></div></div><div class="state-factor-context">${d.context()}</div></div>`;}).join("");ui.stateBaseScore.textContent=formatNatural(s.baseScore,1);const penalty=Number(s.recovery?.penalty)||0;ui.stateRecoveryPenalty.textContent=penalty>0?`−${formatNatural(penalty,1)}`:"0";if(s.limiter){ui.stateLimiter.className="state-limiter active";ui.stateLimiter.textContent=`Limitador activo · ${s.limiter.reason} · máximo ${s.limiter.cap}`;}else if(penalty>=3){ui.stateLimiter.className="state-limiter active";ui.stateLimiter.textContent=`Recuperación en curso · penalización dinámica de ${formatNatural(penalty,1)} puntos`;}else{ui.stateLimiter.className="state-limiter";ui.stateLimiter.textContent="";}}
+function renderStateDetail(){const s=currentAtlasState;if(!s){ui.stateDetailHero.className="state-detail-card";ui.stateDetailRing.style.setProperty("--score-pct","0%");ui.stateDetailScore.textContent="—";ui.stateDetailWord.textContent="Sin datos";ui.stateDetailNote.textContent="Necesito métricas de salud recientes";ui.stateDetailMeta.textContent=fullTodayDate();ui.stateFactors.innerHTML='<div class="state-factor"><div class="state-factor-context">No hay suficientes métricas recientes para calcular el Estado ɅTLɅS.</div></div>';ui.stateBaseScore.textContent="—";ui.stateRecoveryPenalty.textContent="—";ui.stateLimiter.className="state-limiter";ui.stateLimiter.textContent="";return;}
+ ui.stateDetailHero.className=`state-detail-card state-${s.band.tone}`;ui.stateDetailRing.style.setProperty("--score-pct",`${s.score}%`);ui.stateDetailScore.textContent=String(s.score);ui.stateDetailWord.textContent=s.band.label;ui.stateDetailNote.textContent=s.note;ui.stateDetailMeta.textContent=fullTodayDate();
+ const sleepContext=()=>{const parts=[];if(Number.isFinite(s.sleepHours))parts.push(formatSleepHM(s.sleepHours*3600));if(s.sleepQuality?.label)parts.push(s.sleepQuality.label);if(Number.isFinite(s.sleepScore))parts.push(`puntuación ${formatNatural(s.sleepScore,0)}`);return parts.length?parts.join(" · "):"Sin datos recientes";};
+ const defs=[
+  {key:"hrv",icon:"🫀",name:"VFC",weight:30,context:()=>Number.isFinite(s.hrv7)?`Media 7 días · ${formatNatural(s.hrv7,1)} ms${s.hrvBaseline?` · base ${formatNatural(s.hrvBaseline.low,0)}–${formatNatural(s.hrvBaseline.high,0)}`:""}`:"Sin datos recientes"},
+  {key:"sleep",icon:"💤",name:"Sueño",weight:25,context:sleepContext},
+  {key:"rhr",icon:"❤️",name:"Reposo",weight:20,context:()=>Number.isFinite(s.rhrDelta)?`Media 7 d vs 28 d · ${signedNatural(s.rhrDelta,1)} ppm`:"Sin referencia suficiente"},
+  {key:"fresh",icon:"⚡",name:"Frescura",weight:25,context:()=>Number.isFinite(s.fresh)?`${signedNatural(s.fresh,2)} · ${freshnessZone(s.fresh)?.label||"—"}`:"Sin datos recientes"}
+ ];
+ ui.stateFactors.innerHTML=defs.map(d=>{const score=s.components?.[d.key],ok=Number.isFinite(score);return`<div class="state-factor"><div class="state-factor-top"><div class="state-factor-name">${d.icon} ${d.name}<span class="state-factor-weight">${d.weight}%</span></div><div class="state-factor-score">${ok?score:"—"}</div></div><div class="state-factor-track"><div class="state-factor-fill" style="width:${ok?clamp(score,0,100):0}%"></div></div><div class="state-factor-context">${d.context()}</div></div>`;}).join("");
+ ui.stateBaseScore.textContent=formatNatural(s.baseScore,1);const penalty=Number(s.recovery?.penalty)||0;ui.stateRecoveryPenalty.textContent=penalty>0?`−${formatNatural(penalty,1)}`:"0";
+ if(s.limiter){ui.stateLimiter.className="state-limiter active";ui.stateLimiter.textContent=`Limitador activo · ${s.limiter.reason} · máximo ${s.limiter.cap}`;}else if(penalty>=3){ui.stateLimiter.className="state-limiter active";ui.stateLimiter.textContent=`Recuperación aguda en curso · −${formatNatural(penalty,1)} puntos. Esta penalización no se vuelve a contar como otro factor.`;}else{ui.stateLimiter.className="state-limiter";ui.stateLimiter.textContent="";}
+}
 function atlasBand(score){if(score>=95)return{label:"Óptimo",tone:"blue",note:"Máxima disponibilidad para entrenar"};if(score>=75)return{label:"Preparado",tone:"green",note:"Buen momento para entrenar"};if(score>=55)return{label:"Moderado",tone:"yellow",note:"Entrena con control"};if(score>=35)return{label:"Precaución",tone:"orange",note:"Conviene moderar la exigencia"};return{label:"Recuperación",tone:"red",note:"Prioriza recuperación"};}
 function scoreHrv(avg7,range){if(!Number.isFinite(avg7)||!range||!Number.isFinite(range.low)||!Number.isFinite(range.high)||range.high<=range.low)return null;const center=(range.low+range.high)/2,half=Math.max(1,(range.high-range.low)/2);if(avg7>=range.low&&avg7<=range.high)return clamp(90+10*(1-Math.abs(avg7-center)/half),0,100);if(avg7<range.low)return clamp(90-45*((range.low-avg7)/half),0,90);return clamp(90-25*((avg7-range.high)/half),45,90);}
 function getSleepScore(record){const raw=pick(record||{},["sleepScore","sleep_score"]),n=Number(raw);return Number.isFinite(n)&&n>=0?n:null;}
@@ -3771,6 +3829,7 @@ async function exportDatabase(){try{const data={};for(const s of STORES)data[s]=
 async function importDatabase(e){const file=e.target.files?.[0];e.target.value="";if(!file)return;try{const p=JSON.parse(await file.text()),v=Number(p?.atlas?.schemaVersion);if(![1,2,3,4,5,6,7,8,9].includes(v)||!p?.data)throw new Error("Copia de ɅTLɅS no compatible.");const stores=v===1?["settings","meta","profile","activities","wellness"]:STORES;for(const s of stores){if(!db.objectStoreNames.contains(s))continue;const rec=p.data[s];if(!Array.isArray(rec)||!rec.length)continue;const tx=db.transaction(s,"readwrite"),st=tx.objectStore(s);for(const r of rec){if(s==="settings"&&r?.key==="clientToken")continue;st.put(r);}await txDone(tx);}await refreshAll();toast("✅ JSON importado.");}catch(err){toast(`⚠️ ${err.message}`,true);}}
 async function clearData(){if(!confirm("¿Borrar todos los datos deportivos locales? La conexión se conservará."))return;try{for(const s of DATA_STORES)await storeClear(s);await refreshAll();toast("✅ Base de datos vaciada.");}catch(e){toast(`⚠️ ${e.message}`,true);}}
 })();
+
 
 
 
