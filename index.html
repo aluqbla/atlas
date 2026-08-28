@@ -250,7 +250,20 @@ button,input{font:inherit}button{cursor:pointer}
 
 .plan-overview-card{appearance:none;width:100%;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,#0e151c,#091016);color:var(--text);display:grid;grid-template-columns:30px minmax(0,1fr) 12px;align-items:center;gap:8px;padding:9px 10px;margin:0 0 9px;text-align:left}
 .plan-overview-card:active{background:#111b24;transform:scale(.995)}
-.plan-overview-icon{font-size:18px;line-height:1;text-align:center}.plan-overview-copy{min-width:0}.plan-overview-title{display:block;font-size:14px;line-height:1.28;font-weight:760;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.plan-overview-meta{display:block;margin-top:2px;font-size:10px;line-height:1.35;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}.plan-overview-arrow{color:var(--blue);font-size:17px;font-weight:800;text-align:right}
+.plan-overview-icon{font-size:18px;line-height:1;text-align:center}.plan-overview-copy{min-width:0}.plan-overview-title{display:block;font-size:17px;line-height:1.28;font-weight:760;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.plan-overview-meta{display:block;margin-top:2px;font-size:10px;line-height:1.35;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}.plan-overview-arrow{color:var(--blue);font-size:17px;font-weight:800;text-align:right}
+
+
+.plan-day-head.multi-session{align-items:stretch}
+.plan-day-head.multi-session .plan-day-date{align-self:stretch;justify-content:center}
+.plan-day-head.multi-session .plan-day-sep{height:auto;min-height:100%}
+.plan-day-multi-list{display:flex;flex-direction:column;min-width:0}
+.plan-day-multi-item{appearance:none;width:100%;border:0;background:transparent;color:#fff;text-align:left;padding:6px 0}
+.plan-day-multi-item+.plan-day-multi-item{border-top:1px solid rgba(255,255,255,.06)}
+.plan-day-multi-title{display:flex;align-items:center;gap:6px;min-width:0;font-size:14.5px;line-height:1.3;font-weight:740}
+.plan-day-multi-title-text{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.plan-day-multi-meta{margin-top:3px;display:flex;align-items:center;gap:6px;min-width:0;color:var(--muted);font-size:11px;line-height:1.35}
+.plan-scroll-top-zone{position:fixed;z-index:6;top:0;left:0;right:0;height:max(env(safe-area-inset-top),1px);background:transparent;border:0;padding:0;margin:0}
+.strength-preview-summary{margin-top:4px;font-size:11.5px;line-height:1.35;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 .plan-control-group+.plan-control-group{margin-top:16px}
 .adaptive-history-item{padding:7px 0;border-top:1px solid rgba(255,255,255,.05)}
@@ -388,6 +401,103 @@ button.plan-item:active{background:#111a22}
 .plan-editor-text:focus,.plan-editor-select:focus,.plan-editor-area:focus{border-color:rgba(29,155,240,.65)}
 .plan-editor-hint{margin-top:6px;color:var(--muted);font-size:9.5px;line-height:1.4}
 
+
+.profile-hero{padding:2px 2px 11px}
+.profile-hero-name{font-size:21px;line-height:1.28;font-weight:760;color:#fff;letter-spacing:-.4px}
+.profile-hero-meta{margin-top:3px;font-size:11px;line-height:1.35;color:var(--muted)}
+.profile-metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line);border-radius:16px;overflow:hidden;background:rgba(255,255,255,.025);margin-bottom:13px}
+.profile-metric{position:relative;text-align:center;padding:9px 3px 8px;min-width:0}
+.profile-metric+.profile-metric::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:1px;background:var(--line)}
+.profile-metric-emoji{font-size:15px;line-height:1.1}
+.profile-metric-value{margin-top:4px;font-size:15px;line-height:1.2;font-weight:730;color:#fff;white-space:nowrap}
+.profile-metric-label{margin-top:2px;font-size:8.8px;line-height:1.25;color:var(--muted2);font-weight:650}
+.profile-section-title{margin:12px 2px 6px;font-size:14px;line-height:1.3;font-weight:740;color:#fff}
+.profile-insight-list{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:rgba(255,255,255,.02)}
+.profile-insight-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 11px;border-top:1px solid var(--line)}
+.profile-insight-row:first-child{border-top:0}
+.profile-insight-key{font-size:11.5px;line-height:1.35;color:var(--muted)}
+.profile-insight-value{font-size:12px;line-height:1.35;color:#fff;font-weight:690;text-align:right}
+.profile-cadence-card{margin-top:9px;padding:10px 11px;border:1px solid rgba(29,155,240,.20);border-radius:14px;background:rgba(29,155,240,.045);font-size:11px;line-height:1.48;color:#cbd6dc}
+.profile-cadence-card strong{color:#fff}
+.evolution-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--line);border-radius:16px;overflow:hidden;background:rgba(255,255,255,.02)}
+.evolution-stat{position:relative;text-align:center;padding:10px 4px 9px}
+.evolution-stat+.evolution-stat::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:1px;background:var(--line)}
+.evolution-value{font-size:16px;line-height:1.2;font-weight:730;color:#fff}
+.evolution-label{margin-top:3px;font-size:8.8px;line-height:1.25;color:var(--muted2)}
+.evolution-chart{height:156px;display:flex;align-items:flex-end;gap:3px;padding:8px 3px 22px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.02);overflow:hidden}
+.evolution-bar-wrap{position:relative;flex:1;height:100%;display:flex;align-items:flex-end;justify-content:center;min-width:0}
+.evolution-bar{width:72%;min-width:5px;border-radius:4px 4px 1px 1px;background:var(--blue);opacity:.82}
+.evolution-bar-value{position:absolute;bottom:calc(var(--bar-h) + 3px);font-size:7.8px;line-height:1;color:#dce5eb;white-space:nowrap}
+.evolution-bar-label{position:absolute;bottom:-16px;font-size:7.5px;line-height:1;color:var(--muted2);white-space:nowrap}
+.evolution-note{margin-top:8px;color:var(--muted);font-size:10.5px;line-height:1.45}
+
+
+.records-list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:17px;overflow:hidden;background:rgba(255,255,255,.02)}
+.record-row{appearance:none;width:100%;border:0;border-top:1px solid var(--line);background:transparent;color:#fff;padding:10px 11px;text-align:left;display:grid;grid-template-columns:60px minmax(0,1fr) auto;gap:9px;align-items:center}
+.record-row:first-child{border-top:0}
+.record-row:disabled{opacity:.65}
+.record-distance{font-size:14px;line-height:1.2;font-weight:780;color:#fff}
+.record-time{font-size:19px;line-height:1.18;font-weight:780;letter-spacing:-.3px;color:#fff;font-variant-numeric:tabular-nums}
+.record-source{margin-top:3px;font-size:10.5px;line-height:1.35;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.record-pace{text-align:right;font-size:11.5px;line-height:1.3;font-weight:720;color:#9ed8fa;white-space:nowrap;font-variant-numeric:tabular-nums}
+.records-note{margin-top:8px;color:var(--muted);font-size:10px;line-height:1.45}
+.records-empty{padding:13px 12px;color:var(--muted);font-size:11px;line-height:1.45}
+.records-loading{display:flex;align-items:center;gap:8px;padding:13px 12px;color:var(--muted);font-size:11px}
+.records-spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.14);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
+.shoes-list{display:flex;flex-direction:column;gap:8px}
+.shoe-card{padding:10px 11px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.02)}
+.shoe-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.shoe-name{min-width:0;font-size:14px;line-height:1.3;font-weight:740;color:#fff}
+.shoe-status{flex:0 0 auto;font-size:9px;line-height:1.25;font-weight:740;color:var(--blue);padding:3px 6px;border:1px solid rgba(29,155,240,.20);border-radius:999px;background:rgba(29,155,240,.04)}
+.shoe-status.retired{color:var(--muted2);border-color:rgba(255,255,255,.08);background:rgba(255,255,255,.02)}
+.shoe-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:9px;border-top:1px solid rgba(255,255,255,.055);padding-top:8px}
+.shoe-stat{text-align:center;min-width:0}
+.shoe-stat-value{font-size:13px;line-height:1.2;font-weight:710;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shoe-stat-label{margin-top:2px;font-size:8.5px;line-height:1.25;color:var(--muted2)}
+.shoe-note{margin-top:7px;font-size:10px;line-height:1.4;color:var(--muted)}
+
+
+.data-native-hero{appearance:none;width:100%;border:1px solid rgba(255,255,255,.09);border-radius:20px;background:rgba(15,23,30,.52);-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%);color:#fff;padding:12px 13px;display:grid;grid-template-columns:42px minmax(0,1fr) 12px;gap:10px;align-items:center;text-align:left}
+.data-native-avatar{width:42px;height:42px;border-radius:14px;background:rgba(29,155,240,.10);display:grid;place-items:center;font-size:23px}
+.data-native-hero-copy,.data-native-row-copy{min-width:0;display:flex;flex-direction:column}
+.data-native-hero-name{font-size:18px;line-height:1.28;font-weight:770;letter-spacing:-.3px}
+.data-native-hero-meta{margin-top:2px;font-size:11px;line-height:1.35;color:var(--muted)}
+.data-native-section-label{margin:17px 3px 6px;font-size:11px;line-height:1.3;font-weight:720;color:var(--muted)}
+.data-native-list{border:1px solid rgba(255,255,255,.09);border-radius:18px;overflow:hidden;background:rgba(15,23,30,.46);-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%)}
+.data-native-row{appearance:none;width:100%;border:0;border-top:1px solid rgba(255,255,255,.065);background:transparent;color:#fff;padding:10px 12px;display:grid;grid-template-columns:30px minmax(0,1fr) 12px;gap:9px;align-items:center;text-align:left}
+.data-native-row:first-child{border-top:0}
+.data-native-icon{font-size:19px;text-align:center}
+.data-native-title{font-size:14.5px;line-height:1.3;font-weight:730}
+.data-native-note{margin-top:2px;font-size:10.5px;line-height:1.35;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.data-native-chevron{font-size:20px;color:var(--muted2);line-height:1}
+.data-detail{position:fixed;z-index:30;inset:0;background:rgba(0,0,0,.94);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:calc(env(safe-area-inset-top) + 8px) 12px calc(env(safe-area-inset-bottom) + 26px);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",system-ui,sans-serif}
+.data-detail.hidden{display:none!important}
+.data-detail-inner{width:min(100%,760px);margin:0 auto}
+.data-detail-subhead{margin:-2px 2px 10px;font-size:11px;line-height:1.35;color:var(--muted)}
+.data-detail-section-title{margin:16px 2px 7px;font-size:15px;line-height:1.32;font-weight:750;color:#fff}
+.data-system-card{border:1px solid rgba(255,255,255,.09);border-radius:18px;background:rgba(15,23,30,.52);-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%);padding:11px}
+.data-system-status{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px;font-size:11px;color:var(--muted)}
+.data-system-status strong{color:#fff;font-size:12px}
+.performance-hero{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid rgba(255,255,255,.09);border-radius:18px;overflow:hidden;background:rgba(15,23,30,.48)}
+.performance-stat{position:relative;text-align:center;padding:11px 4px 10px}
+.performance-stat+.performance-stat::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:1px;background:rgba(255,255,255,.07)}
+.performance-value{font-size:17px;line-height:1.2;font-weight:760;color:#fff;white-space:nowrap}
+.performance-label{margin-top:3px;font-size:8.8px;line-height:1.25;color:var(--muted2)}
+.data-trend-list{border:1px solid rgba(255,255,255,.09);border-radius:18px;overflow:hidden;background:rgba(15,23,30,.42)}
+.data-trend-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 12px;border-top:1px solid rgba(255,255,255,.06)}
+.data-trend-row:first-child{border-top:0}
+.data-trend-title{font-size:12px;line-height:1.35;color:#fff;font-weight:680}
+.data-trend-note{margin-top:2px;font-size:9.5px;line-height:1.3;color:var(--muted)}
+.data-trend-value{text-align:right;font-size:12px;line-height:1.3;font-weight:720;color:#fff;white-space:nowrap}
+.data-trend-value.up{color:#7ddba9}.data-trend-value.down{color:#ff9aa2}.data-trend-value.flat{color:#9ed8fa}
+.profile-threshold-note{margin-top:8px;padding:9px 10px;border:1px solid rgba(255,255,255,.07);border-radius:13px;background:rgba(255,255,255,.025);color:var(--muted);font-size:10.5px;line-height:1.45}
+.shoe-km-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.shoe-km{font-size:18px;line-height:1.2;font-weight:760;color:#fff;white-space:nowrap}
+.shoe-bar{height:7px;margin-top:8px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden}
+.shoe-bar-fill{height:100%;border-radius:inherit;background:var(--blue)}
+.shoe-meta-line{margin-top:7px;font-size:10px;line-height:1.4;color:var(--muted)}
+.plan-rest-blank{min-height:18px}
+
 .data-grid{display:grid;grid-template-columns:1fr;gap:6px}
 .data-tile{appearance:none;border:1px solid var(--line);background:#0b1117;color:var(--text);border-radius:15px;min-height:48px;padding:8px 11px;text-align:left;display:grid;grid-template-columns:30px minmax(0,1fr) auto 12px;align-items:center;gap:8px}
 .data-tile:active{background:#111b24;transform:scale(.992)}
@@ -487,19 +597,28 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
 .activity-chart-line{fill:none;stroke:#1d9bf0;stroke-width:1.25;stroke-linecap:round;stroke-linejoin:round}.activity-chart-fill{fill:rgba(29,155,240,.09);stroke:none}.activity-chart-point{fill:#fff;stroke:#1d9bf0;stroke-width:1.8;vector-effect:non-scaling-stroke}
 .activity-laps{margin-top:11px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:linear-gradient(180deg,#0e151c,#091016)}
 .activity-laps.hidden,.activity-analysis.hidden{display:none}
-.activity-lap-group{padding:9px 6px 11px}.activity-lap-group+.activity-lap-group{padding-top:7px;border-top:1px solid rgba(255,255,255,.06)}
+.activity-lap-bars-card{padding:10px 8px 8px;border-bottom:1px solid rgba(255,255,255,.06)}
+.activity-lap-bars-readout{min-height:20px;margin-bottom:6px;color:#dce5eb;font-size:10.5px;line-height:1.35;font-weight:650;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.activity-lap-bars-scroll{width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:none;touch-action:pan-x pan-y}
+.activity-lap-bars-scroll::-webkit-scrollbar{display:none}
+.activity-lap-bars{height:142px;min-width:100%;display:flex;align-items:flex-end;gap:2px;padding:7px 2px 18px;box-sizing:border-box}
+.activity-lap-bar-wrap{position:relative;flex:1 0 22px;height:100%;display:flex;align-items:flex-end;justify-content:center;cursor:pointer}
+.activity-lap-bar{width:100%;max-width:30px;min-width:8px;border-radius:5px 5px 2px 2px;opacity:.82;transition:opacity .12s ease,transform .12s ease,filter .12s ease}
+.activity-lap-bar-wrap.selected .activity-lap-bar{opacity:1;transform:translateY(-2px);filter:brightness(1.18);outline:2px solid rgba(255,255,255,.82);outline-offset:1px}
+.activity-lap-bar-label{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);font-size:8.4px;line-height:1;color:var(--muted2);font-variant-numeric:tabular-nums}
+.activity-lap-group{padding:8px 7px 10px}.activity-lap-group+.activity-lap-group{padding-top:7px;border-top:1px solid rgba(255,255,255,.06)}
 .activity-lap-group-title{padding:1px 3px 8px;color:#fff;font-size:13px;line-height:1.3;font-weight:740}
 .activity-lap-group-title.hidden{display:none}
-.activity-lap-columns,.activity-lap-row{display:grid;grid-template-columns:34px 42px minmax(118px,1fr) 42px 33px;align-items:center;column-gap:2px}
-.activity-lap-columns{padding:0 0 7px;color:var(--muted2);font-size:9.2px;line-height:1.2;font-weight:700;text-align:center;white-space:nowrap}
-.activity-lap-row{padding:4px 0;font-variant-numeric:tabular-nums}
-.activity-lap-distance,.activity-lap-pace,.activity-lap-elev,.activity-lap-hr{text-align:center;white-space:nowrap;line-height:1.25;font-size:11.2px;font-weight:500;color:#b9c2c8}
+.activity-lap-columns,.activity-lap-row{display:grid;grid-template-columns:24px minmax(52px,.8fr) minmax(60px,1fr) minmax(54px,.8fr) minmax(42px,.7fr);align-items:center;column-gap:3px}
+.activity-lap-columns{padding:0 1px 7px;color:var(--muted2);font-size:9px;line-height:1.2;font-weight:700;text-align:center;white-space:nowrap}
+.activity-lap-row{padding:6px 1px;border-radius:8px;font-variant-numeric:tabular-nums;transition:background .12s ease}
+.activity-lap-row.selected{background:rgba(29,155,240,.12)}
+.activity-lap-index,.activity-lap-distance,.activity-lap-pace,.activity-lap-elev,.activity-lap-hr{text-align:center;white-space:nowrap;line-height:1.25;font-size:11.2px;font-weight:500;color:#b9c2c8}
+.activity-lap-index{color:var(--muted2);font-size:9px}
 .activity-lap-distance,.activity-lap-pace{color:#fff}
 .activity-lap-elev.elev-pos{color:#ff6b73}.activity-lap-elev.elev-neg{color:#39c78a}
-.activity-pace-track{height:12px;width:100%;border-radius:5px;background:#182028;overflow:hidden}
-.activity-pace-fill{height:100%;border-radius:5px;min-width:5px}
+@media(max-width:380px){.activity-lap-columns,.activity-lap-row{grid-template-columns:21px 48px 54px 48px 38px;column-gap:2px}.activity-lap-columns{font-size:8.4px}.activity-lap-index,.activity-lap-distance,.activity-lap-pace,.activity-lap-elev,.activity-lap-hr{font-size:10.4px}}
 
-@media(max-width:380px){.activity-lap-columns,.activity-lap-row{grid-template-columns:32px 40px minmax(104px,1fr) 40px 31px;column-gap:1px}.activity-lap-columns{font-size:8.6px}.activity-lap-distance,.activity-lap-pace,.activity-lap-elev,.activity-lap-hr{font-size:10.6px}}
 @media(min-width:600px){
   body{background:#030507}
   .app{max-width:900px;padding:max(14px,calc(env(safe-area-inset-top) + 10px)) 22px 28px;background:#030507}
@@ -582,7 +701,7 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
 
   <section class="view" id="view-assistant">
     <div class="page-header"><div class="page-title">Ʌ</div><button class="sync-quick global-sync-btn" id="assistantSyncBtn" aria-label="Sincronizar con Intervals.icu" title="Sincronizar">↻</button></div>
-    <div class="card placeholder"><div class="placeholder-icon">Ʌ</div><div class="placeholder-title">Inteligencia artificial</div><div class="placeholder-text">Integración prevista para una versión futura.</div></div>
+    <div class="card placeholder"><div class="placeholder-icon">Ʌ</div><div class="placeholder-title">Habla con ATLAS</div><div class="placeholder-text">Aquí podrás conversar con ATLAS, resolver dudas sobre tus datos, entrenamientos y planificación.</div></div>
   </section>
 
   <section class="view" id="view-plan">
@@ -607,34 +726,122 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
   </section>
 
   <section class="view" id="view-data">
-    <div class="page-header"><div class="page-title">📊 Datos</div><button class="sync-quick global-sync-btn" id="dataSyncBtn" aria-label="Sincronizar con Intervals.icu" title="Sincronizar">↻</button></div>
-    <div class="data-grid">
-      <button class="data-tile data-open" data-panel="profile"><span class="tile-emoji">👤</span><span class="tile-name">Perfil</span><span class="tile-note" id="profileTileNote">Datos deportivos</span><span class="tile-arrow">›</span></button>
-      <button class="data-tile data-open" data-panel="evolution"><span class="tile-emoji">📈</span><span class="tile-name">Evolución</span><span class="tile-note">Tendencias y gráficas</span><span class="tile-arrow">›</span></button>
-      <button class="data-tile data-open" data-panel="records"><span class="tile-emoji">🏅</span><span class="tile-name">Mejores marcas</span><span class="tile-note">1K · 5K · 10K · 21K · 42K</span><span class="tile-arrow">›</span></button>
-      <button class="data-tile data-open" data-panel="shoes"><span class="tile-emoji">👟</span><span class="tile-name">Zapatillas</span><span class="tile-note" id="shoesTileNote">Equipamiento</span><span class="tile-arrow">›</span></button>
-      <button class="data-tile data-open" data-panel="connection"><span class="tile-emoji">🔗</span><span class="tile-name">Conexión</span><span class="tile-note" id="connectionTileNote">Intervals.icu</span><span class="tile-arrow">›</span></button>
-      <button class="data-tile data-open" data-panel="database"><span class="tile-emoji">💾</span><span class="tile-name">Base de datos</span><span class="tile-note">JSON local</span><span class="tile-arrow">›</span></button>
+    <div class="page-header"><div class="page-title">Datos</div><button class="sync-quick global-sync-btn" id="dataSyncBtn" aria-label="Sincronizar con Intervals.icu" title="Sincronizar">↻</button></div>
+
+    <button class="data-native-hero data-page-open" type="button" data-data-page="profile">
+      <div class="data-native-avatar">👤</div>
+      <div class="data-native-hero-copy">
+        <div class="data-native-hero-name" id="dataHomeName">Perfil</div>
+        <div class="data-native-hero-meta" id="profileTileNote">Altura · peso · carrera</div>
+      </div>
+      <span class="data-native-chevron">›</span>
+    </button>
+
+    <div class="data-native-section-label">Rendimiento</div>
+    <div class="data-native-list">
+      <button class="data-native-row data-page-open" type="button" data-data-page="performance">
+        <span class="data-native-icon">🏅</span>
+        <span class="data-native-row-copy"><span class="data-native-title">Rendimiento</span><span class="data-native-note" id="performanceHomeNote">Marcas · carga · continuidad</span></span>
+        <span class="data-native-chevron">›</span>
+      </button>
     </div>
 
-    <div class="card panel" id="panel-profile"><div class="panel-head"><div class="panel-title">👤 Perfil</div><div class="panel-state">Próximamente</div></div><div class="profile-line"><span class="profile-key">Intervals.icu</span><span class="profile-value" id="profileName">—</span></div></div>
-    <div class="card panel" id="panel-evolution"><div class="panel-head"><div class="panel-title">📈 Evolución</div><div class="panel-state">Próximamente</div></div></div>
-    <div class="card panel" id="panel-records"><div class="panel-head"><div class="panel-title">🏅 Mejores marcas</div><div class="panel-state">Próximamente</div></div></div>
-    <div class="card panel" id="panel-shoes"><div class="panel-head"><div class="panel-title">👟 Zapatillas</div><div class="panel-state" id="gearState">—</div></div></div>
-    <div class="card panel" id="panel-connection">
-      <div class="panel-head"><div class="panel-title">🔗 Conexión</div><div class="panel-state" id="connectionState">Sin configurar</div></div>
-      <div class="action-grid"><button class="action primary" id="smartSyncBtn">⚡ Sincronizar</button><button class="action" id="testBtn">🔌 Probar</button><button class="action" id="settingsBtn">⚙️ Ajustes</button></div>
-      <div class="action-grid" style="margin-top:6px"><button class="action" id="fullSyncBtn">🗂️ Rango manual</button></div>
+    <div class="data-native-section-label">Material</div>
+    <div class="data-native-list">
+      <button class="data-native-row data-page-open" type="button" data-data-page="shoes">
+        <span class="data-native-icon">👟</span>
+        <span class="data-native-row-copy"><span class="data-native-title">Zapatillas</span><span class="data-native-note" id="shoesTileNote">Kilómetros y uso</span></span>
+        <span class="data-native-chevron">›</span>
+      </button>
     </div>
-    <div class="card panel" id="panel-database">
-      <div class="panel-head"><div class="panel-title">💾 Base de datos</div><div class="panel-state">IndexedDB</div></div>
-      <div class="action-grid"><button class="action" id="exportBtn">⬆️ Exportar</button><button class="action" id="importBtn">⬇️ Importar</button><button class="action danger" id="clearBtn">🗑️ Borrar</button></div>
-      <input id="fileInput" type="file" accept="application/json,.json">
+
+    <div class="data-native-section-label">ATLAS</div>
+    <div class="data-native-list">
+      <button class="data-native-row data-page-open" type="button" data-data-page="system">
+        <span class="data-native-icon">⚙️</span>
+        <span class="data-native-row-copy"><span class="data-native-title">Conexión y datos</span><span class="data-native-note" id="connectionTileNote">Intervals.icu · copia local</span></span>
+        <span class="data-native-chevron">›</span>
+      </button>
     </div>
   </section>
 </main>
 
 
+
+
+<section class="data-detail hidden" id="dataProfileDetail" aria-hidden="true">
+  <div class="data-detail-inner">
+    <div class="metric-detail-head">
+      <div class="metric-back-row"><button class="metric-back data-detail-back" data-close-data-detail aria-label="Volver">‹</button></div>
+      <div class="metric-title-row"><div class="metric-detail-emoji">👤</div><div class="metric-detail-title">Perfil</div></div>
+    </div>
+    <div class="data-detail-subhead"><span id="profileState">Intervals.icu</span></div>
+    <div class="profile-hero">
+      <div class="profile-hero-name" id="profileName">—</div>
+      <div class="profile-hero-meta" id="profileLocation">—</div>
+    </div>
+    <div class="profile-metric-grid">
+      <div class="profile-metric"><div class="profile-metric-emoji">📏</div><div class="profile-metric-value" id="profileHeight">—</div><div class="profile-metric-label">Altura</div></div>
+      <div class="profile-metric"><div class="profile-metric-emoji">⚖️</div><div class="profile-metric-value" id="profileWeight">—</div><div class="profile-metric-label">Peso</div></div>
+      <div class="profile-metric"><div class="profile-metric-emoji">🫁</div><div class="profile-metric-value" id="profileVo2">—</div><div class="profile-metric-label">VO₂ máx.</div></div>
+      <div class="profile-metric"><div class="profile-metric-emoji">❤️</div><div class="profile-metric-value" id="profileThresholdHr">—</div><div class="profile-metric-label">Umbral FC</div></div>
+    </div>
+    <div class="data-detail-section-title">🏃🏻‍♂️ Carrera</div>
+    <div class="profile-insight-list" id="profileRunningRows"></div>
+    <div class="profile-threshold-note" id="profileThresholdNote"></div>
+    <div class="profile-cadence-card" id="profileCadenceInsight"></div>
+  </div>
+</section>
+
+<section class="data-detail hidden" id="dataPerformanceDetail" aria-hidden="true">
+  <div class="data-detail-inner">
+    <div class="metric-detail-head">
+      <div class="metric-back-row"><button class="metric-back data-detail-back" data-close-data-detail aria-label="Volver">‹</button></div>
+      <div class="metric-title-row"><div class="metric-detail-emoji">🏅</div><div class="metric-detail-title">Rendimiento</div></div>
+    </div>
+    <div class="performance-hero" id="evolutionSummary"></div>
+    <div class="data-detail-section-title">Mejores marcas</div>
+    <div class="records-list" id="recordsList"><div class="records-empty">Calculando mejores fragmentos…</div></div>
+    <div class="records-note" id="recordsNote">5K, 10K, media maratón y maratón: mejor fragmento continuo dentro de cualquier carrera suficientemente larga.</div>
+    <div class="data-detail-section-title">Tendencia</div>
+    <div class="data-trend-list" id="performanceTrendList"></div>
+    <div class="evolution-note" id="evolutionNote"></div>
+    <div class="hidden" id="evolutionChart"></div>
+    <div class="hidden" id="recordsState">Histórico</div>
+  </div>
+</section>
+
+<section class="data-detail hidden" id="dataShoesDetail" aria-hidden="true">
+  <div class="data-detail-inner">
+    <div class="metric-detail-head">
+      <div class="metric-back-row"><button class="metric-back data-detail-back" data-close-data-detail aria-label="Volver">‹</button></div>
+      <div class="metric-title-row"><div class="metric-detail-emoji">👟</div><div class="metric-detail-title">Zapatillas</div></div>
+    </div>
+    <div class="data-detail-subhead" id="gearState">—</div>
+    <div class="shoes-list" id="shoesList"></div>
+  </div>
+</section>
+
+<section class="data-detail hidden" id="dataSystemDetail" aria-hidden="true">
+  <div class="data-detail-inner">
+    <div class="metric-detail-head">
+      <div class="metric-back-row"><button class="metric-back data-detail-back" data-close-data-detail aria-label="Volver">‹</button></div>
+      <div class="metric-title-row"><div class="metric-detail-emoji">⚙️</div><div class="metric-detail-title">Conexión y datos</div></div>
+    </div>
+    <div class="data-detail-section-title">Intervals.icu</div>
+    <div class="data-system-card">
+      <div class="data-system-status"><span>Estado</span><strong id="connectionState">Sin configurar</strong></div>
+      <div class="action-grid"><button class="action primary" id="smartSyncBtn">⚡ Sincronizar</button><button class="action" id="testBtn">🔌 Probar</button><button class="action" id="settingsBtn">⚙️ Ajustes</button></div>
+      <div class="action-grid" style="margin-top:6px"><button class="action" id="fullSyncBtn">🗂️ Rango manual</button></div>
+    </div>
+    <div class="data-detail-section-title">Base de datos</div>
+    <div class="data-system-card">
+      <div class="data-system-status"><span>Copia local</span><strong>IndexedDB</strong></div>
+      <div class="action-grid"><button class="action" id="exportBtn">⬆️ Exportar</button><button class="action" id="importBtn">⬇️ Importar</button><button class="action danger" id="clearBtn">🗑️ Borrar</button></div>
+      <input id="fileInput" type="file" accept="application/json,.json">
+    </div>
+  </div>
+</section>
 
 <section class="activity-detail" id="activityDetail" aria-hidden="true">
   <div class="activity-detail-inner">
@@ -648,6 +855,10 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
     <div class="activity-equipment hidden" id="activityEquipment"></div>
     <div class="activity-primary" id="activityPrimary"></div>
     <div class="activity-laps hidden" id="activityLaps">
+      <div class="activity-lap-bars-card">
+        <div class="activity-lap-bars-readout" id="activityLapReadout">Pulsa una barra para seleccionar una vuelta</div>
+        <div class="activity-lap-bars-scroll" id="activityLapBarsScroll"><div class="activity-lap-bars" id="activityLapBars"></div></div>
+      </div>
       <div id="activityLapsRows"></div>
     </div>
     <div class="activity-analysis hidden" id="activityAnalysis">
@@ -790,26 +1001,6 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
     </button>
     </div>
     <div class="plan-control-group"><div class="plan-control-label">Plan</div>
-    <button class="engine-v2-card hidden" id="engineDiagnosticCard" type="button">
-      <span class="engine-v2-icon">🧠</span>
-      <span class="engine-v2-copy"><span class="engine-v2-title">Análisis del objetivo</span><span class="engine-v2-meta" id="engineDiagnosticMeta">Analizando histórico…</span></span>
-      <span class="engine-v2-arrow">›</span>
-    </button>
-    <button class="macro-card" id="macroTrajectoryCard" type="button">
-      <span class="engine-v2-icon">🗺️</span>
-      <span class="engine-v2-copy"><span class="engine-v2-title">Resumen del plan</span><span class="engine-v2-meta" id="macroTrajectoryMeta">Define un objetivo para calcular la trayectoria</span></span>
-      <span class="engine-v2-arrow">›</span>
-    </button>
-    <button class="weekly-target-card hidden" id="weeklyTargetsCard" type="button">
-      <span class="engine-v2-icon">🎯</span>
-      <span class="engine-v2-copy"><span class="engine-v2-title">Carga semanal</span><span class="engine-v2-meta" id="weeklyTargetsMeta">Pendiente de trayectoria</span></span>
-      <span class="engine-v2-arrow">›</span>
-    </button>
-    <button class="calendar-solver-card hidden" id="calendarSolverCard" type="button">
-      <span class="engine-v2-icon">🧩</span>
-      <span class="engine-v2-copy"><span class="engine-v2-title">Distribución semanal</span><span class="engine-v2-meta" id="calendarSolverMeta">Pendiente de objetivos semanales</span></span>
-      <span class="engine-v2-arrow">›</span>
-    </button>
     <button class="engine-v2-card" id="trainingPacesCard" type="button">
       <span class="engine-v2-icon">⏱️</span>
       <span class="engine-v2-copy"><span class="engine-v2-title">Ritmos de entrenamiento</span><span class="engine-v2-meta" id="trainingPacesMeta">Se calculan con tu perfil y objetivo</span></span>
@@ -1139,9 +1330,12 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
 
 
 
+
+
+
 (()=>{
 "use strict";
-const APP_VERSION="0.65.0",SCHEMA_VERSION=9,DB_NAME="atlas",DB_VERSION=2;
+const APP_VERSION="0.68.0",SCHEMA_VERSION=9,DB_NAME="atlas",DB_VERSION=2;
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -1150,31 +1344,34 @@ function on(target,type,handler,options){if(!target)return false;target.addEvent
 function onAll(selector,type,handler,root=document,options){qsa(selector,root).forEach(el=>on(el,type,handler,options));}
 const ui={
  todayDate:$("todayDate"),stateDateLabel:$("stateDateLabel"),quickSyncBtn:$("quickSyncBtn"),activitySyncBtn:$("activitySyncBtn"),assistantSyncBtn:$("assistantSyncBtn"),planSyncBtn:$("planSyncBtn"),dataSyncBtn:$("dataSyncBtn"),upcomingTrainingList:$("upcomingTrainingList"),trainingStateBtn:$("trainingStateBtn"),trainingStateCircle:$("trainingStateCircle"),trainingStateScore:$("trainingStateScore"),trainingStateWord:$("trainingStateWord"),trainingStateNote:$("trainingStateNote"),sleepValue:$("sleepValue"),sleepMeta:$("sleepMeta"),hrvValue:$("hrvValue"),hrvMeta:$("hrvMeta"),rhrValue:$("rhrValue"),rhrMeta:$("rhrMeta"),vo2Value:$("vo2Value"),vo2Meta:$("vo2Meta"),freshValue:$("freshValue"),freshMeta:$("freshMeta"),volumeValue:$("volumeValue"),volumeMeta:$("volumeMeta"),
- lastActivityBtn:$("lastActivityBtn"),activitySportFilter:$("activitySportFilter"),activityYearFilter:$("activityYearFilter"),activitySearch:$("activitySearch"),activitiesSummary:$("activitiesSummary"),activitiesList:$("activitiesList"),activityDetail:$("activityDetail"),activityDetailBack:$("activityDetailBack"),activityDetailBottomBack:$("activityDetailBottomBack"),activityDetailEmoji:$("activityDetailEmoji"),activityDetailTitle:$("activityDetailTitle"),activityDetailDate:$("activityDetailDate"),activityMap:$("activityMap"),activityDetailLoading:$("activityDetailLoading"),activityPrimary:$("activityPrimary"),activityEquipment:$("activityEquipment"),activityPerception:$("activityPerception"),activityAnalysis:$("activityAnalysis"),activityChartTabs:$("activityChartTabs"),activityChartStats:$("activityChartStats"),activityChartCard:$("activityChartCard"),activityChartScroll:$("activityChartScroll"),activityChart:$("activityChart"),activityChartReadout:$("activityChartReadout"),activityLaps:$("activityLaps"),activityLapsRows:$("activityLapsRows"),activityDescription:$("activityDescription"),
+ lastActivityBtn:$("lastActivityBtn"),activityLapBars:$("activityLapBars"),activityLapBarsScroll:$("activityLapBarsScroll"),activityLapReadout:$("activityLapReadout"),activitySportFilter:$("activitySportFilter"),activityYearFilter:$("activityYearFilter"),activitySearch:$("activitySearch"),activitiesSummary:$("activitiesSummary"),activitiesList:$("activitiesList"),activityDetail:$("activityDetail"),activityDetailBack:$("activityDetailBack"),activityDetailBottomBack:$("activityDetailBottomBack"),activityDetailEmoji:$("activityDetailEmoji"),activityDetailTitle:$("activityDetailTitle"),activityDetailDate:$("activityDetailDate"),activityMap:$("activityMap"),activityDetailLoading:$("activityDetailLoading"),activityPrimary:$("activityPrimary"),activityEquipment:$("activityEquipment"),activityPerception:$("activityPerception"),activityAnalysis:$("activityAnalysis"),activityChartTabs:$("activityChartTabs"),activityChartStats:$("activityChartStats"),activityChartCard:$("activityChartCard"),activityChartScroll:$("activityChartScroll"),activityChart:$("activityChart"),activityChartReadout:$("activityChartReadout"),activityLaps:$("activityLaps"),activityLapsRows:$("activityLapsRows"),activityDescription:$("activityDescription"),
  planDetail:$("planDetail"),planDetailBack:$("planDetailBack"),planDetailBottomBack:$("planDetailBottomBack"),planAdaptiveActions:$("planAdaptiveActions"),planDetailMove:$("planDetailMove"),planDetailUnavailable:$("planDetailUnavailable"),planDetailReplace:$("planDetailReplace"),planManualDialog:$("planManualDialog"),planManualForm:$("planManualForm"),planManualTitle:$("planManualTitle"),planManualSession:$("planManualSession"),planManualMoveFields:$("planManualMoveFields"),planManualDate:$("planManualDate"),planManualReplaceFields:$("planManualReplaceFields"),planManualReplacement:$("planManualReplacement"),planManualImpact:$("planManualImpact"),planManualApply:$("planManualApply"),planDetailActions:$("planDetailActions"),planDetailEdit:$("planDetailEdit"),planDetailDelete:$("planDetailDelete"),planDetailDate:$("planDetailDate"),planDetailIcon:$("planDetailIcon"),planDetailTitle:$("planDetailTitle"),planDetailDistance:$("planDetailDistance"),planDetailDuration:$("planDetailDuration"),planDetailTarget:$("planDetailTarget"),planDetailSteps:$("planDetailSteps"),planDetailPurpose:$("planDetailPurpose"),planDetailRaw:$("planDetailRaw"),planDetailResult:$("planDetailResult"),planDetailResultStatus:$("planDetailResultStatus"),planDetailResultMeta:$("planDetailResultMeta"),planDetailResultActivity:$("planDetailResultActivity"),
  availabilityCard:$("availabilityCard"),availabilityMeta:$("availabilityMeta"),availabilityDialog:$("availabilityDialog"),availabilityForm:$("availabilityForm"),availabilityWeekDate:$("availabilityWeekDate"),availabilityWeekDays:$("availabilityWeekDays"),availabilityNote:$("availabilityNote"),availabilityDelete:$("availabilityDelete"),availabilitySave:$("availabilitySave"),availabilityExceptionsList:$("availabilityExceptionsList"), secondaryGoalAdd:$("secondaryGoalAdd"),secondaryGoalList:$("secondaryGoalList"),secondaryGoalDialog:$("secondaryGoalDialog"),secondaryGoalForm:$("secondaryGoalForm"),secondaryGoalPriority:$("secondaryGoalPriority"),secondaryGoalType:$("secondaryGoalType"),secondaryGoalDate:$("secondaryGoalDate"),secondaryGoalName:$("secondaryGoalName"),secondaryGoalIntention:$("secondaryGoalIntention"),secondaryGoalTime:$("secondaryGoalTime"),secondaryGoalDelete:$("secondaryGoalDelete"),secondaryGoalSave:$("secondaryGoalSave"),
  adaptiveRevisionStatus:$("adaptiveRevisionStatus"),adaptiveRevisionSummary:$("adaptiveRevisionSummary"),adaptiveRevisionDiff:$("adaptiveRevisionDiff"),adaptiveRevisionPrepare:$("adaptiveRevisionPrepare"),adaptiveRevisionActions:$("adaptiveRevisionActions"),adaptiveRevisionReject:$("adaptiveRevisionReject"),adaptiveRevisionApply:$("adaptiveRevisionApply"),
  adaptiveEngineCard:$("adaptiveEngineCard"),adaptiveEngineMeta:$("adaptiveEngineMeta"),adaptiveEngineDetail:$("adaptiveEngineDetail"),adaptiveEngineBack:$("adaptiveEngineBack"),adaptiveEngineBottomBack:$("adaptiveEngineBottomBack"),adaptiveEngineDate:$("adaptiveEngineDate"),adaptiveCompleted:$("adaptiveCompleted"),adaptiveKeyIssues:$("adaptiveKeyIssues"),adaptiveLevel:$("adaptiveLevel"),adaptiveDecision:$("adaptiveDecision"),adaptiveReading:$("adaptiveReading"),adaptiveEvidenceRows:$("adaptiveEvidenceRows"),adaptiveOutcomes:$("adaptiveOutcomes"),adaptiveHistoryCard:$("adaptiveHistoryCard"),adaptiveHistory:$("adaptiveHistory"),
  sessionPublishStatus:$("sessionPublishStatus"),sessionPublishBtn:$("sessionPublishBtn"),
  trainingPacesCard:$("trainingPacesCard"),trainingPacesMeta:$("trainingPacesMeta"),trainingPacesDetail:$("trainingPacesDetail"),trainingPacesBack:$("trainingPacesBack"),trainingPacesBottomBack:$("trainingPacesBottomBack"),trainingPacesList:$("trainingPacesList"),sessionGeneratorCard:$("sessionGeneratorCard"),sessionGeneratorCardTitle:$("sessionGeneratorCardTitle"),sessionGeneratorMeta:$("sessionGeneratorMeta"),sessionGeneratorDetail:$("sessionGeneratorDetail"),sessionGeneratorBack:$("sessionGeneratorBack"),sessionGeneratorBottomBack:$("sessionGeneratorBottomBack"),sessionGeneratorDate:$("sessionGeneratorDate"),sessionGeneratorTitle:$("sessionGeneratorTitle"),sessionGeneratorListTitle:$("sessionGeneratorListTitle"),sessionGeneratorWeeks:$("sessionGeneratorWeeks"),sessionGeneratorRuns:$("sessionGeneratorRuns"),sessionGeneratorStrength:$("sessionGeneratorStrength"),sessionGeneratorAudit:$("sessionGeneratorAudit"),sessionGeneratorList:$("sessionGeneratorList"),sessionGeneratorReading:$("sessionGeneratorReading"),
- calendarSolverCard:$("calendarSolverCard"),calendarSolverMeta:$("calendarSolverMeta"),calendarSolverDetail:$("calendarSolverDetail"),calendarSolverBack:$("calendarSolverBack"),calendarSolverBottomBack:$("calendarSolverBottomBack"),calendarSolverDate:$("calendarSolverDate"),calendarSolverWeeks:$("calendarSolverWeeks"),calendarSolverSessions:$("calendarSolverSessions"),calendarSolverConflicts:$("calendarSolverConflicts"),calendarSolverAudit:$("calendarSolverAudit"),calendarSolverWeeksList:$("calendarSolverWeeksList"),calendarSolverReading:$("calendarSolverReading"),
- weeklyTargetsCard:$("weeklyTargetsCard"),weeklyTargetsMeta:$("weeklyTargetsMeta"),weeklyTargetsDetail:$("weeklyTargetsDetail"),weeklyTargetsBack:$("weeklyTargetsBack"),weeklyTargetsBottomBack:$("weeklyTargetsBottomBack"),weeklyTargetsDate:$("weeklyTargetsDate"),weeklyTargetsWeeks:$("weeklyTargetsWeeks"),weeklyTargetsSpecific:$("weeklyTargetsSpecific"),weeklyTargetsRaces:$("weeklyTargetsRaces"),weeklyTargetsList:$("weeklyTargetsList"),weeklyTargetsReading:$("weeklyTargetsReading"),
- macroTrajectoryCard:$("macroTrajectoryCard"),macroTrajectoryMeta:$("macroTrajectoryMeta"),macroTrajectoryDetail:$("macroTrajectoryDetail"),macroTrajectoryBack:$("macroTrajectoryBack"),macroTrajectoryBottomBack:$("macroTrajectoryBottomBack"),macroTrajectoryDate:$("macroTrajectoryDate"),macroWeeks:$("macroWeeks"),macroPeakVolume:$("macroPeakVolume"),macroPeakLong:$("macroPeakLong"),macroArchitectureRows:$("macroArchitectureRows"),macroAuditRows:$("macroAuditRows"),macroWeeksList:$("macroWeeksList"),macroReading:$("macroReading"),
- engineGoalCard:$("engineGoalCard"),engineGoalTitle:$("engineGoalTitle"),engineGoalMeta:$("engineGoalMeta"),engineDiagnosticCard:$("engineDiagnosticCard"),engineDiagnosticMeta:$("engineDiagnosticMeta"),engineGoalDialog:$("engineGoalDialog"),engineGoalForm:$("engineGoalForm"),engineGoalType:$("engineGoalType"),engineGoalDate:$("engineGoalDate"),engineGoalStartDate:$("engineGoalStartDate"),engineGoalName:$("engineGoalName"),engineGoalTime:$("engineGoalTime"),engineGoalDays:$("engineGoalDays"),engineGoalDelete:$("engineGoalDelete"),engineGoalSave:$("engineGoalSave"),engineDiagnosticDetail:$("engineDiagnosticDetail"),engineDiagnosticBack:$("engineDiagnosticBack"),engineDiagnosticBottomBack:$("engineDiagnosticBottomBack"),engineDiagnosticDate:$("engineDiagnosticDate"),engineDiagCurrentVol:$("engineDiagCurrentVol"),engineDiagHistoricVol:$("engineDiagHistoricVol"),engineDiagWeeks:$("engineDiagWeeks"),engineDiagCurrentRows:$("engineDiagCurrentRows"),engineDiagHistoryRows:$("engineDiagHistoryRows"),engineDiagPerformanceRows:$("engineDiagPerformanceRows"),engineDiagRecoveryRows:$("engineDiagRecoveryRows"),engineDiagRequirementRows:$("engineDiagRequirementRows"),engineDiagGapRows:$("engineDiagGapRows"),engineDiagReading:$("engineDiagReading"),
+ calendarSolverDetail:$("calendarSolverDetail"),calendarSolverBack:$("calendarSolverBack"),calendarSolverBottomBack:$("calendarSolverBottomBack"),calendarSolverDate:$("calendarSolverDate"),calendarSolverWeeks:$("calendarSolverWeeks"),calendarSolverSessions:$("calendarSolverSessions"),calendarSolverConflicts:$("calendarSolverConflicts"),calendarSolverAudit:$("calendarSolverAudit"),calendarSolverWeeksList:$("calendarSolverWeeksList"),calendarSolverReading:$("calendarSolverReading"),
+ weeklyTargetsDetail:$("weeklyTargetsDetail"),weeklyTargetsBack:$("weeklyTargetsBack"),weeklyTargetsBottomBack:$("weeklyTargetsBottomBack"),weeklyTargetsDate:$("weeklyTargetsDate"),weeklyTargetsWeeks:$("weeklyTargetsWeeks"),weeklyTargetsSpecific:$("weeklyTargetsSpecific"),weeklyTargetsRaces:$("weeklyTargetsRaces"),weeklyTargetsList:$("weeklyTargetsList"),weeklyTargetsReading:$("weeklyTargetsReading"),
+ macroTrajectoryDetail:$("macroTrajectoryDetail"),macroTrajectoryBack:$("macroTrajectoryBack"),macroTrajectoryBottomBack:$("macroTrajectoryBottomBack"),macroTrajectoryDate:$("macroTrajectoryDate"),macroWeeks:$("macroWeeks"),macroPeakVolume:$("macroPeakVolume"),macroPeakLong:$("macroPeakLong"),macroArchitectureRows:$("macroArchitectureRows"),macroAuditRows:$("macroAuditRows"),macroWeeksList:$("macroWeeksList"),macroReading:$("macroReading"),
+ engineGoalCard:$("engineGoalCard"),engineGoalTitle:$("engineGoalTitle"),engineGoalMeta:$("engineGoalMeta"),engineGoalDialog:$("engineGoalDialog"),engineGoalForm:$("engineGoalForm"),engineGoalType:$("engineGoalType"),engineGoalDate:$("engineGoalDate"),engineGoalStartDate:$("engineGoalStartDate"),engineGoalName:$("engineGoalName"),engineGoalTime:$("engineGoalTime"),engineGoalDays:$("engineGoalDays"),engineGoalDelete:$("engineGoalDelete"),engineGoalSave:$("engineGoalSave"),engineDiagnosticDetail:$("engineDiagnosticDetail"),engineDiagnosticBack:$("engineDiagnosticBack"),engineDiagnosticBottomBack:$("engineDiagnosticBottomBack"),engineDiagnosticDate:$("engineDiagnosticDate"),engineDiagCurrentVol:$("engineDiagCurrentVol"),engineDiagHistoricVol:$("engineDiagHistoricVol"),engineDiagWeeks:$("engineDiagWeeks"),engineDiagCurrentRows:$("engineDiagCurrentRows"),engineDiagHistoryRows:$("engineDiagHistoryRows"),engineDiagPerformanceRows:$("engineDiagPerformanceRows"),engineDiagRecoveryRows:$("engineDiagRecoveryRows"),engineDiagRequirementRows:$("engineDiagRequirementRows"),engineDiagGapRows:$("engineDiagGapRows"),engineDiagReading:$("engineDiagReading"),
  planAddBtn:$("planAddBtn"),planEditorDialog:$("planEditorDialog"),planEditorForm:$("planEditorForm"),planEditorTitle:$("planEditorTitle"),planEditorDate:$("planEditorDate"),planEditorType:$("planEditorType"),planEditorName:$("planEditorName"),planEditorDescription:$("planEditorDescription"),planEditorSave:$("planEditorSave"),
  planOverviewCard:$("planOverviewCard"),planOverviewTitle:$("planOverviewTitle"),planOverviewMeta:$("planOverviewMeta"),planControlDetail:$("planControlDetail"),planControlBack:$("planControlBack"),planControlBottomBack:$("planControlBottomBack"),
  planPrev:$("planPrev"),planNext:$("planNext"),planToday:$("planToday"),planRange:$("planRange"),planRangeSub:$("planRangeSub"),planPlannedKm:$("planPlannedKm"),planDoneKm:$("planDoneKm"),planSessions:$("planSessions"),planDays:$("planDays"),
- profileTileNote:$("profileTileNote"),shoesTileNote:$("shoesTileNote"),connectionTileNote:$("connectionTileNote"),profileName:$("profileName"),gearState:$("gearState"),connectionState:$("connectionState"),
+ dataHomeName:$("dataHomeName"),performanceHomeNote:$("performanceHomeNote"),dataProfileDetail:$("dataProfileDetail"),dataPerformanceDetail:$("dataPerformanceDetail"),dataShoesDetail:$("dataShoesDetail"),dataSystemDetail:$("dataSystemDetail"),profileTileNote:$("profileTileNote"),shoesTileNote:$("shoesTileNote"),connectionTileNote:$("connectionTileNote"),profileName:$("profileName"),profileState:$("profileState"),profileLocation:$("profileLocation"),profileHeight:$("profileHeight"),profileWeight:$("profileWeight"),profileVo2:$("profileVo2"),profileThresholdHr:$("profileThresholdHr"),profileRunningRows:$("profileRunningRows"),profileThresholdNote:$("profileThresholdNote"),profileCadenceInsight:$("profileCadenceInsight"),evolutionSummary:$("evolutionSummary"),evolutionChart:$("evolutionChart"),evolutionNote:$("evolutionNote"),performanceTrendList:$("performanceTrendList"),recordsState:$("recordsState"),recordsList:$("recordsList"),recordsNote:$("recordsNote"),gearState:$("gearState"),shoesList:$("shoesList"),connectionState:$("connectionState"),
  smartSyncBtn:$("smartSyncBtn"),testBtn:$("testBtn"),settingsBtn:$("settingsBtn"),fullSyncBtn:$("fullSyncBtn"),exportBtn:$("exportBtn"),importBtn:$("importBtn"),clearBtn:$("clearBtn"),fileInput:$("fileInput"),toast:$("toast"),
  settingsDialog:$("settingsDialog"),settingsForm:$("settingsForm"),workerUrl:$("workerUrl"),clientToken:$("clientToken"),oldestDate:$("oldestDate"),newestDate:$("newestDate"),historyStart:$("historyStart"),overlapDays:$("overlapDays"),metricDetail:$("metricDetail"),metricDetailBack:$("metricDetailBack"),metricDetailTitle:$("metricDetailTitle"),metricDetailEmoji:$("metricDetailEmoji"),metricPeriodControl:$("metricPeriodControl"),metricPrev:$("metricPrev"),metricNext:$("metricNext"),metricRangeLabel:$("metricRangeLabel"),metricChartScroll:$("metricChartScroll"),metricChart:$("metricChart"),metricChartReadout:$("metricChartReadout"),chartLegend:$("chartLegend"),detailStatLabel1:$("detailStatLabel1"),detailStatValue1:$("detailStatValue1"),detailStatLabel2:$("detailStatLabel2"),detailStatValue2:$("detailStatValue2"),detailStatLabel3:$("detailStatLabel3"),detailStatValue3:$("detailStatValue3"),detailStatSub1:$("detailStatSub1"),detailStatSub2:$("detailStatSub2"),detailStatSub3:$("detailStatSub3"),metricContext:$("metricContext"),metricDetailBottomBack:$("metricDetailBottomBack"),stateDetail:$("stateDetail"),stateDetailBack:$("stateDetailBack"),stateDetailBottomBack:$("stateDetailBottomBack"),stateDetailHero:$("stateDetailHero"),stateDetailRing:$("stateDetailRing"),stateDetailScore:$("stateDetailScore"),stateDetailWord:$("stateDetailWord"),stateDetailNote:$("stateDetailNote"),stateDetailMeta:$("stateDetailMeta"),stateFactors:$("stateFactors"),stateBaseScore:$("stateBaseScore"),stateRecoveryPenalty:$("stateRecoveryPenalty"),stateLimiter:$("stateLimiter")
 };
-let db,toastTimer,currentActivities=[],currentWellness=[],currentGear=[],currentEvents=[],currentCachedVo2=null,currentEngineV2Goal=null,currentSecondaryGoals=[],currentAvailabilityExceptions=[],currentSecondaryEditId=null,currentAvailabilityEditWeek=null,currentAthleteProfileV2=null,currentGoalRequirements=null,currentGoalAssessment=null,currentMacroTrajectory=null,currentWeeklyTargets=null,currentCalendarSolution=null,currentSessionPlan=null,currentPlanManifest=null,currentPlanCloudMeta=null,currentAdaptiveState=null,currentPlanRevisionDraft=null,currentPlanRevisionHistory=[],currentPlanManualAction=null,currentPlanWeekStart=null,currentPlanEvent=null,currentPlanOutcome=null,currentPlanEditEvent=null,lastCalendarRefreshAt=0,currentActivityDetail=null,currentActivityMap=null,currentActivityStreams=null,currentActivityVo2=null,currentActivityChartKey=null,activityChartZoom=1,activityPinchStartDistance=0,activityPinchStartZoom=1,activityChartPointerStart=null,activityChartReadoutTimer=null,currentMetricDetail=null,currentMetricDays=30,currentMetricEnd=null,currentAtlasState=null,currentChartState=null,chartReadoutTimer=null,chartZoom=1,pinchStartDistance=0,pinchStartZoom=1,chartPointerStart=null;
+let db,toastTimer,currentActivities=[],currentWellness=[],currentGear=[],currentEvents=[],currentCachedVo2=null,currentEngineV2Goal=null,currentSecondaryGoals=[],currentAvailabilityExceptions=[],currentSecondaryEditId=null,currentAvailabilityEditWeek=null,currentAthleteProfileV2=null,currentGoalRequirements=null,currentGoalAssessment=null,currentMacroTrajectory=null,currentWeeklyTargets=null,currentCalendarSolution=null,currentSessionPlan=null,currentPlanManifest=null,currentPlanCloudMeta=null,currentAdaptiveState=null,currentPlanRevisionDraft=null,currentPlanRevisionHistory=[],currentPlanManualAction=null,currentPlanWeekStart=null,currentPlanEvent=null,currentPlanOutcome=null,currentPlanEditEvent=null,lastCalendarRefreshAt=0,currentActivityDetail=null,currentActivityMap=null,currentActivityStreams=null,currentActivityVo2=null,currentActivityChartKey=null,activityChartZoom=1,activityPinchStartDistance=0,activityPinchStartZoom=1,activityChartPointerStart=null,activityChartReadoutTimer=null,activityLapZoom=1,activityLapPinchStartDistance=0,activityLapPinchStartZoom=1,currentActivityLapIndex=null,currentRunningRecords=null,currentRecordsLoading=false,currentMetricDetail=null,currentMetricDays=30,currentMetricEnd=null,currentAtlasState=null,currentChartState=null,chartReadoutTimer=null,chartZoom=1,pinchStartDistance=0,pinchStartZoom=1,chartPointerStart=null;
 window.addEventListener("DOMContentLoaded",()=>init().catch(reportFatalError));
 const CORE_UI_KEYS=["todayDate","lastActivityBtn","activitiesList","activityDetail","metricDetail","stateDetail","toast","settingsDialog"];
 function assertCoreUi(){const missing=CORE_UI_KEYS.filter(key=>!ui[key]);if(missing.length)throw new Error(`Interfaz incompleta: ${missing.join(", ")}`);return true;}
 function reportFatalError(error){console.error("ɅTLɅS · error de arranque",error);const message=`⚠️ ${error?.message||"Error inesperado al iniciar ATLAS."}`;if(ui?.toast){toast(message,true);return;}const box=document.createElement("div");box.style.cssText="position:fixed;left:12px;right:12px;bottom:18px;z-index:9999;padding:12px;border-radius:14px;background:#2a0d11;color:#fff;font:13px -apple-system,BlinkMacSystemFont,system-ui,sans-serif";box.textContent=message;document.body.appendChild(box);}
 async function init(){assertCoreUi();db=await openDb();await cleanupLegacySettings();setDefaultDates();await loadSettingsIntoForm();await syncPlanStateFromCloud({startup:true}).catch(error=>console.warn("ɅTLɅS · plan cloud inicial",error));bindEvents();initializeStaticUi();await refreshAll();startRuntimeRefresh();startupIntervalsSync().catch(error=>console.warn("ɅTLɅS · sincronización inicial",error));}
-function initializeStaticUi(){ui.todayDate.textContent="Hoy";if(ui.stateDateLabel)ui.stateDateLabel.textContent=fullTodayDate();}
+function initializeStaticUi(){ui.todayDate.textContent="Hoy";if(ui.stateDateLabel)ui.stateDateLabel.textContent=fullTodayDate();initializePlanScrollTopZones();}
+function initializePlanScrollTopZones(){
+  qsa(".plan-detail").forEach(detail=>{if(detail.querySelector(".plan-scroll-top-zone"))return;const zone=document.createElement("button");zone.type="button";zone.className="plan-scroll-top-zone";zone.setAttribute("aria-label","Subir al inicio");zone.addEventListener("click",()=>{try{detail.scrollTo({top:0,behavior:"smooth"});}catch{detail.scrollTop=0;}});detail.prepend(zone);});
+}
 function refreshTodayIfLoaded(){if(!(currentActivities.length||currentWellness.length))return;try{renderToday(currentActivities,currentWellness,currentCachedVo2);}catch(error){console.error("ɅTLɅS · actualización de Hoy",error);}}
 function startRuntimeRefresh(){if(navigator.storage?.persist)navigator.storage.persist().catch(()=>{});setInterval(refreshTodayIfLoaded,15*60*1000);on(document,"visibilitychange",()=>{if(!document.hidden){refreshTodayIfLoaded();refreshPlanStateFromCloud(false).catch(error=>console.warn("ɅTLɅS · plan cloud en primer plano",error));refreshCalendarFromCloud(false).catch(error=>console.warn("ɅTLɅS · calendario en primer plano",error));}});}
 function bindEvents(){
@@ -1184,7 +1381,7 @@ function bindEvents(){
  on(ui.activityDetailBack,"click",closeActivityDetail);on(ui.activityDetailBottomBack,"click",closeActivityDetail);
  on(ui.activityChartTabs,"click",e=>{const b=e.target.closest(".activity-chart-tab");if(!b)return;const key=b.dataset.key;currentActivityChartKey=currentActivityChartKey===key?null:key;activityChartZoom=1;if(ui.activityChartScroll)ui.activityChartScroll.scrollLeft=0;hideActivityChartReadout();renderActivityAnalysis();});
  on(ui.activityChart,"pointerdown",e=>{activityChartPointerStart={x:e.clientX,y:e.clientY};});on(ui.activityChart,"pointerup",handleActivityChartPointerUp);
- on(ui.activityChartScroll,"touchstart",handleActivityChartPinchStart,{passive:true});on(ui.activityChartScroll,"touchmove",handleActivityChartPinchMove,{passive:false});on(ui.activityChartScroll,"touchend",handleActivityChartPinchEnd,{passive:true});on(ui.activityChartScroll,"dblclick",()=>setActivityChartZoom(1));
+ on(ui.activityChartScroll,"touchstart",handleActivityChartPinchStart,{passive:true});on(ui.activityChartScroll,"touchmove",handleActivityChartPinchMove,{passive:false});on(ui.activityChartScroll,"touchend",handleActivityChartPinchEnd,{passive:true});on(ui.activityChartScroll,"dblclick",()=>setActivityChartZoom(1));on(ui.activityLapBars,"click",e=>{const b=e.target.closest("[data-lap-index]");if(b)selectActivityLap(b.dataset.lapIndex);});on(ui.activityLapsRows,"click",e=>{const r=e.target.closest("[data-lap-index]");if(r)selectActivityLap(r.dataset.lapIndex);});on(ui.activityLapBarsScroll,"touchstart",handleActivityLapPinchStart,{passive:true});on(ui.activityLapBarsScroll,"touchmove",handleActivityLapPinchMove,{passive:false});on(ui.activityLapBarsScroll,"touchend",handleActivityLapPinchEnd,{passive:true});on(ui.activityLapBarsScroll,"dblclick",()=>setActivityLapZoom(1));
  on(ui.secondaryGoalAdd,"click",()=>openSecondaryGoalDialog());on(ui.secondaryGoalList,"click",e=>{const b=e.target.closest("[data-secondary-goal-id]");if(b)openSecondaryGoalDialog(b.dataset.secondaryGoalId);});on(ui.secondaryGoalForm,"submit",saveSecondaryGoal);on(ui.secondaryGoalDelete,"click",deleteSecondaryGoal);on(ui.availabilityCard,"click",openAvailabilityDialog);on(ui.availabilityForm,"submit",saveAvailabilityException);on(ui.availabilityDelete,"click",deleteAvailabilityException);on(ui.availabilityWeekDate,"change",loadAvailabilityWeekFromInput);on(ui.availabilityExceptionsList,"click",e=>{const b=e.target.closest("[data-availability-week]");if(b)loadAvailabilityException(b.dataset.availabilityWeek);});on(ui.engineGoalCard,"click",openEngineV2GoalDialog);on(ui.engineGoalForm,"submit",saveEngineV2Goal);on(ui.engineGoalDelete,"click",deleteEngineV2Goal);on(ui.adaptiveRevisionPrepare,"click",prepareAdaptiveRevision);on(ui.adaptiveRevisionReject,"click",rejectAdaptiveRevision);on(ui.adaptiveRevisionApply,"click",applyAdaptiveRevision);on(ui.adaptiveEngineCard,"click",openAdaptiveEngine);on(ui.adaptiveEngineBack,"click",closeAdaptiveEngine);on(ui.adaptiveEngineBottomBack,"click",closeAdaptiveEngine);on(ui.sessionPublishBtn,"click",publishCurrentPlan);on(ui.trainingPacesCard,"click",openTrainingPaces);on(ui.trainingPacesBack,"click",closeTrainingPaces);on(ui.trainingPacesBottomBack,"click",closeTrainingPaces);on(ui.sessionGeneratorCard,"click",openSessionGenerator);on(ui.sessionGeneratorBack,"click",closeSessionGenerator);on(ui.sessionGeneratorBottomBack,"click",closeSessionGenerator);on(ui.calendarSolverCard,"click",openCalendarSolver);on(ui.calendarSolverBack,"click",closeCalendarSolver);on(ui.calendarSolverBottomBack,"click",closeCalendarSolver);on(ui.weeklyTargetsCard,"click",openWeeklyTargets);on(ui.weeklyTargetsBack,"click",closeWeeklyTargets);on(ui.weeklyTargetsBottomBack,"click",closeWeeklyTargets);on(ui.macroTrajectoryCard,"click",openMacroTrajectory);on(ui.macroTrajectoryBack,"click",closeMacroTrajectory);on(ui.macroTrajectoryBottomBack,"click",closeMacroTrajectory);on(ui.engineDiagnosticCard,"click",openEngineV2Diagnostic);on(ui.engineDiagnosticBack,"click",closeEngineV2Diagnostic);on(ui.engineDiagnosticBottomBack,"click",closeEngineV2Diagnostic);
  on(ui.planAddBtn,"click",()=>openPlanEditor());on(ui.planEditorForm,"submit",savePlanEditor);on(ui.planDetailEdit,"click",()=>{if(currentPlanEvent)openPlanEditor(currentPlanEvent);});on(ui.planDetailDelete,"click",deleteCurrentPlanEvent);on(ui.planDetailMove,"click",()=>openPlanManualAction("move"));on(ui.planDetailUnavailable,"click",()=>openPlanManualAction("unavailable"));on(ui.planDetailReplace,"click",()=>openPlanManualAction("replace"));on(ui.planManualForm,"submit",applyPlanManualAction);on(ui.planManualDate,"change",renderPlanManualImpact);on(ui.planManualReplacement,"change",renderPlanManualImpact);
  on(ui.planOverviewCard,"click",openPlanControl);on(ui.planControlBack,"click",closePlanControl);on(ui.planControlBottomBack,"click",closePlanControl);on(ui.planPrev,"click",()=>shiftPlanWeek(-1));on(ui.planNext,"click",()=>shiftPlanWeek(1));on(ui.planToday,"click",()=>{currentPlanWeekStart=mondayOf(new Date());renderPlan();});on(ui.planDays,"click",e=>{const activity=e.target.closest("[data-activity-id]");if(activity){openActivityDetail(activity.dataset.activityId);return;}const planned=e.target.closest("[data-plan-event-id]");if(planned)openPlanDetail(planned.dataset.planEventId);});on(ui.planDetailBack,"click",closePlanDetail);on(ui.planDetailBottomBack,"click",closePlanDetail);on(ui.planDetailResultActivity,"click",()=>{const a=currentPlanOutcome?.activity;if(!a?.id)return;const id=String(a.id);closePlanDetail();openActivityDetail(id);});
@@ -1194,7 +1391,7 @@ function bindEvents(){
  on(ui.metricChartScroll,"touchstart",handleChartPinchStart,{passive:true});on(ui.metricChartScroll,"touchmove",handleChartPinchMove,{passive:false});on(ui.metricChartScroll,"touchend",handleChartPinchEnd,{passive:true});on(ui.metricChartScroll,"dblclick",()=>setChartZoom(1));
  if(ui.metricPeriodControl)qsa(".period-btn",ui.metricPeriodControl).forEach(btn=>on(btn,"click",()=>{currentMetricDays=btn.dataset.days==="all"?"all":Number(btn.dataset.days)||7;if(currentMetricDays==="all")currentMetricEnd=fmtDate(new Date());qsa(".period-btn",ui.metricPeriodControl).forEach(x=>x.classList.toggle("active",x===btn));renderMetricDetail();}));
  on(ui.metricPrev,"click",()=>shiftMetricPeriod(-1));on(ui.metricNext,"click",()=>shiftMetricPeriod(1));
- onAll(".data-open","click",e=>togglePanel(e.currentTarget.dataset.panel));
+ onAll(".data-page-open","click",e=>openDataDetail(e.currentTarget.dataset.dataPage));onAll("[data-close-data-detail]","click",closeDataDetail);on(ui.recordsList,"click",e=>{const b=e.target.closest("[data-record-activity-id]");if(b)openActivityDetail(b.dataset.recordActivityId);});
  on(ui.lastActivityBtn,"click",()=>{const latest=[...currentActivities].sort((a,b)=>activityStamp(b).localeCompare(activityStamp(a)))[0];if(latest)openActivityDetail(latest.id);});on(ui.upcomingTrainingList,"click",e=>{const b=e.target.closest("[data-plan-event-id]");if(b)openPlanDetail(b.dataset.planEventId);});
  on(ui.trainingStateBtn,"click",openStateDetail);on(ui.stateDetailBack,"click",closeStateDetail);on(ui.stateDetailBottomBack,"click",closeStateDetail);
  on(ui.settingsBtn,"click",openSettings);on(ui.testBtn,"click",testConnection);on(ui.smartSyncBtn,"click",smartSync);onAll(".global-sync-btn","click",smartSync);on(ui.fullSyncBtn,"click",fullSync);
@@ -1296,7 +1493,17 @@ function formatStatDate(s){const[y,m,d]=s.split("-").map(Number);const month=new
 
 /* ===== Navegación, paneles y persistencia local ===== */
 function showView(tab){document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===`view-${tab}`));document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));if(tab==="activities")renderActivities();if(tab==="plan")renderPlan();window.scrollTo({top:0,behavior:"instant"});}
-function togglePanel(name){const target=$(`panel-${name}`);if(!target)return;const open=!target.classList.contains("active");document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));if(open){target.classList.add("active");setTimeout(()=>target.scrollIntoView({behavior:"smooth",block:"nearest"}),20);}}
+function dataDetailFor(name){return name==="profile"?ui.dataProfileDetail:name==="performance"?ui.dataPerformanceDetail:name==="shoes"?ui.dataShoesDetail:name==="system"?ui.dataSystemDetail:null;}
+function openDataDetail(name){
+  const detail=dataDetailFor(name);if(!detail)return;
+  qsa(".data-detail").forEach(x=>{x.classList.add("hidden");x.setAttribute("aria-hidden","true");});
+  detail.classList.remove("hidden");detail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";detail.scrollTop=0;
+  if(name==="performance")loadRunningRecords().catch(error=>{console.error("ɅTLɅS · mejores marcas",error);renderRunningRecordsError(error);});
+}
+function closeDataDetail(){
+  qsa(".data-detail").forEach(x=>{x.classList.add("hidden");x.setAttribute("aria-hidden","true");});document.body.style.overflow="";
+}
+function togglePanel(name){const target=$(`panel-${name}`);if(!target)return;const open=!target.classList.contains("active");document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));if(open){target.classList.add("active");if(name==="records")loadRunningRecords().catch(error=>{console.error("ɅTLɅS · mejores marcas",error);renderRunningRecordsError(error);});setTimeout(()=>target.scrollIntoView({behavior:"smooth",block:"nearest"}),20);}}
 function toast(message,isError=false){clearTimeout(toastTimer);if(!ui.toast){console[isError?"error":"log"](message);return;}ui.toast.textContent=message;ui.toast.className="toast show"+(isError?" error":"");toastTimer=setTimeout(()=>{if(ui.toast)ui.toast.className="toast";},2600);}
 function openDb(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB_NAME,DB_VERSION);req.onupgradeneeded=()=>{const d=req.result;if(!d.objectStoreNames.contains("settings"))d.createObjectStore("settings",{keyPath:"key"});if(!d.objectStoreNames.contains("meta"))d.createObjectStore("meta",{keyPath:"key"});if(!d.objectStoreNames.contains("profile"))d.createObjectStore("profile",{keyPath:"key"});if(!d.objectStoreNames.contains("athlete"))d.createObjectStore("athlete",{keyPath:"key"});if(!d.objectStoreNames.contains("activities"))d.createObjectStore("activities",{keyPath:"id"});if(!d.objectStoreNames.contains("wellness"))d.createObjectStore("wellness",{keyPath:"id"});if(!d.objectStoreNames.contains("gear"))d.createObjectStore("gear",{keyPath:"id"});if(!d.objectStoreNames.contains("sportSettings"))d.createObjectStore("sportSettings",{keyPath:"id"});if(!d.objectStoreNames.contains("events"))d.createObjectStore("events",{keyPath:"id"});if(!d.objectStoreNames.contains("audits"))d.createObjectStore("audits",{keyPath:"key"});};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}
 function reqP(req){return new Promise((res,rej)=>{req.onsuccess=()=>res(req.result);req.onerror=()=>rej(req.error);});}
@@ -1453,22 +1660,184 @@ async function refreshCalendarFromCloud(force=false){
 
 
 async function loadLocalSnapshot(){
-  const[activities,wellness,gear,events,profile,worker,cachedVo2,engineV2Goal,engineV2SecondaryGoals,engineV2AvailabilityExceptions,engineV2PlanManifest,engineV2PlanRevisionDraft,engineV2PlanRevisionHistory,engineV2PlanCloudMeta]=await Promise.all([
+  const[activities,wellness,gear,events,profile,athlete,worker,cachedVo2,engineV2Goal,engineV2SecondaryGoals,engineV2AvailabilityExceptions,engineV2PlanManifest,engineV2PlanRevisionDraft,engineV2PlanRevisionHistory,engineV2PlanCloudMeta]=await Promise.all([
     storeGetAll("activities"),storeGetAll("wellness"),storeGetAll("gear"),storeGetAll("events"),
-    storeGet("profile","me"),storeGet("settings","workerUrl"),storeGet("meta","latestRunVo2"),storeGet("meta","engineV2Goal"),
+    storeGet("profile","me"),storeGet("athlete","me"),storeGet("settings","workerUrl"),storeGet("meta","latestRunVo2"),storeGet("meta","engineV2Goal"),
     storeGet("meta","engineV2SecondaryGoals"),storeGet("meta","engineV2AvailabilityExceptions"),storeGet("meta","engineV2PlanManifest"),storeGet("meta","engineV2PlanRevisionDraft"),storeGet("meta","engineV2PlanRevisionHistory"),storeGet("meta",PLAN_CLOUD_META_KEY)
   ]);
-  return{activities,wellness,gear,events,profile,worker,cachedVo2,engineV2Goal,engineV2SecondaryGoals,engineV2AvailabilityExceptions,engineV2PlanManifest,engineV2PlanRevisionDraft,engineV2PlanRevisionHistory,engineV2PlanCloudMeta};
+  return{activities,wellness,gear,events,profile,athlete,worker,cachedVo2,engineV2Goal,engineV2SecondaryGoals,engineV2AvailabilityExceptions,engineV2PlanManifest,engineV2PlanRevisionDraft,engineV2PlanRevisionHistory,engineV2PlanCloudMeta};
 }
-function renderDataSummary({gear,profile,worker}){
-  if(ui.profileName)ui.profileName.textContent=profileLabel(profile?.data);
-  if(ui.profileTileNote)ui.profileTileNote.textContent=profile?.data?profileLabel(profile.data):"Datos deportivos";
-  if(ui.shoesTileNote)ui.shoesTileNote.textContent=gear.length?`${gear.length} elementos`:"Equipamiento";
-  if(ui.gearState)ui.gearState.textContent=gear.length?`${gear.length} registrados`:"Sin datos";
+
+
+const RUN_RECORD_DISTANCES=[
+  {key:"5k",label:"5K",meters:5000},
+  {key:"10k",label:"10K",meters:10000},
+  {key:"half",label:"Media",meters:21097.5},
+  {key:"marathon",label:"Maratón",meters:42195}
+];
+const RUN_RECORDS_CACHE_KEY="runningBestRecordsV2";
+function runHistorySignature(){
+  const runs=currentActivities.filter(isRun).sort((a,b)=>activityStamp(a).localeCompare(activityStamp(b)));
+  if(!runs.length)return"none";
+  return`${runs.length}|${runs[0]?.id||""}|${activityStamp(runs[0])}|${runs.at(-1)?.id||""}|${activityStamp(runs.at(-1))}`;
+}
+function runHistoryDateRange(){
+  const dates=currentActivities.filter(isRun).map(activityDate).filter(Boolean).sort();
+  return{oldest:dates[0]||"2018-01-01",newest:fmtDate(new Date())};
+}
+function recordActivityById(id){return id==null?null:currentActivities.find(a=>String(a.id)===String(id))||null;}
+function recordCurveTimes(curve){
+  for(const key of["secs","seconds","times","time"]){const v=curve?.[key];if(Array.isArray(v))return v.map(Number);}
+  return null;
+}
+function recordCurveSpeeds(curve){
+  for(const key of["speed","speeds","mps"]){const v=curve?.[key];if(Array.isArray(v))return v.map(Number);}
+  return null;
+}
+function recordPayloadDistances(response){
+  const raw=response?.payload,values=raw?.distances??raw?.distance??response?.distances;
+  return Array.isArray(values)?values.map(Number):RUN_RECORD_DISTANCES.map(x=>x.meters);
+}
+function recordPayloadCurves(response){
+  const raw=response?.payload;
+  if(Array.isArray(raw))return raw;
+  for(const key of["curves","activities","data","rows"]){if(Array.isArray(raw?.[key]))return raw[key];}
+  return[];
+}
+function recordTimeAtDistance(curve,distances,target){
+  const index=distances.findIndex(d=>Math.abs(Number(d)-target)<Math.max(2,target*.0005));
+  if(index<0)return null;
+  const secs=recordCurveTimes(curve),speeds=recordCurveSpeeds(curve);
+  if(secs&&Number.isFinite(secs[index])&&secs[index]>0)return secs[index];
+  if(speeds&&Number.isFinite(speeds[index])&&speeds[index]>0)return target/speeds[index];
+  const direct=curve?.[String(target)]??curve?.[target];
+  if(Number.isFinite(Number(direct))&&Number(direct)>0)return Number(direct);
+  const points=Array.isArray(curve?.points)?curve.points:[];
+  const point=points.find(p=>Math.abs(Number(p?.distance)-target)<Math.max(2,target*.0005));
+  if(point){
+    const s=Number(point.secs??point.seconds??point.time);if(Number.isFinite(s)&&s>0)return s;
+    const speed=Number(point.speed);if(Number.isFinite(speed)&&speed>0)return target/speed;
+  }
+  return null;
+}
+function normalizeRunningRecords(response){
+  const distances=recordPayloadDistances(response),curves=recordPayloadCurves(response),records=[];
+  for(const def of RUN_RECORD_DISTANCES){
+    let best=null;
+    for(const curve of curves){
+      const secs=recordTimeAtDistance(curve,distances,def.meters);if(!(secs>0))continue;
+      const id=curve?.id??curve?.activity_id??curve?.activityId??curve?.activity?.id??null,date=String(curve?.start_date_local??curve?.startDateLocal??curve?.date??curve?.activity?.start_date_local??"").slice(0,10),activity=recordActivityById(id);
+      if(!activity||!isRun(activity))continue;
+      const candidate={...def,secs,id:String(id),date:date||activityDate(activity),activityName:activityName(activity),activityDistanceM:activityDistanceM(activity)};
+      if(!best||candidate.secs<best.secs)best=candidate;
+    }
+    records.push(best||{...def,secs:null,id:null,date:null,activityName:null,activityDistanceM:null});
+  }
+  return records;
+}
+function recordSourceText(r){
+  if(!(r?.secs>0))return"Sin registro disponible";
+  const bits=[];if(r.activityName)bits.push(r.activityName);if(r.date)bits.push(engineV2DateLabel(r.date));
+  if(Number.isFinite(r.activityDistanceM)&&r.activityDistanceM>r.meters*1.03)bits.push(`fragmento dentro de ${formatNatural(r.activityDistanceM/1000,1)} km`);
+  else bits.push("fragmento continuo");
+  return bits.join(" · ");
+}
+function renderRunningRecords(records=currentRunningRecords){
+  if(!ui.recordsList)return;const list=Array.isArray(records)?records:RUN_RECORD_DISTANCES.map(x=>({...x,secs:null}));
+  ui.recordsState.textContent="Histórico completo";
+  ui.recordsList.innerHTML=list.map(r=>{
+    const has=r.secs>0,pace=has?r.secs/(r.meters/1000):null,tag=has&&r.id?"button":"div",attrs=has&&r.id?` type="button" data-record-activity-id="${esc(r.id)}"`:"";
+    return`<${tag} class="record-row"${attrs}><div class="record-distance">${esc(r.label)}</div><div><div class="record-time">${has?formatDuration(Math.round(r.secs)):"—"}</div><div class="record-source">${esc(recordSourceText(r))}</div></div><div class="record-pace">${has?`${formatPaceValue(pace)} min/km`:""}</div></${tag}>`;
+  }).join("");
+}
+function renderRunningRecordsLoading(){
+  ui.recordsState.textContent="Calculando…";ui.recordsList.innerHTML='<div class="records-loading"><span class="records-spinner"></span><span>Buscando los mejores fragmentos en todo el histórico…</span></div>';
+}
+function renderRunningRecordsError(error){
+  currentRecordsLoading=false;ui.recordsState.textContent="No disponible";const forbidden=Number(error?.status)===403||/403|Access denied/i.test(String(error?.message||""));ui.recordsList.innerHTML=`<div class="records-empty">${forbidden?"Intervals.icu ha rechazado la consulta de curvas. Despliega el Worker v0.7.3 y vuelve a sincronizar.":"No he podido calcular las mejores marcas ahora mismo."}</div>`;
+}
+async function loadRunningRecords(force=false){
+  if(currentRecordsLoading)return;const signature=runHistorySignature(),cached=(await storeGet("meta",RUN_RECORDS_CACHE_KEY))?.value||null;
+  if(!force&&cached?.signature===signature&&Array.isArray(cached.records)){currentRunningRecords=cached.records;renderRunningRecords();return;}
+  const range=runHistoryDateRange();if(signature==="none"){currentRunningRecords=RUN_RECORD_DISTANCES.map(x=>({...x,secs:null}));renderRunningRecords();return;}
+  currentRecordsLoading=true;renderRunningRecordsLoading();
+  try{
+    const response=await api(`/api/running-records?oldest=${encodeURIComponent(range.oldest)}&newest=${encodeURIComponent(range.newest)}`),records=normalizeRunningRecords(response);
+    if(!records.some(r=>r.secs>0))throw new Error("Intervals.icu no devolvió una curva de ritmo utilizable");
+    currentRunningRecords=records;await storePut("meta",{key:RUN_RECORDS_CACHE_KEY,value:{signature,records,updatedAt:new Date().toISOString()}});renderRunningRecords();
+  }finally{currentRecordsLoading=false;}
+}
+function currentAthleteData(snapshotAthlete=null){return snapshotAthlete?.data||null;}
+function runningSportSettings(athlete){return(athlete?.sportSettings||[]).find(s=>(s.types||[]).some(t=>/run/i.test(String(t))))||null;}
+function medianValue(values){const a=values.filter(Number.isFinite).sort((x,y)=>x-y);if(!a.length)return null;const m=Math.floor(a.length/2);return a.length%2?a[m]:(a[m-1]+a[m])/2;}
+function cadenceProfileInsight(activities,heightM){
+  const rows=(activities||[]).filter(isRun).map(a=>({pace:activityPaceSecKm(a),cad:activityCadence(a)})).filter(x=>Number.isFinite(x.pace)&&Number.isFinite(x.cad)&&x.cad>=120&&x.cad<=220);
+  if(rows.length<6)return{label:"Datos insuficientes",detail:"Necesito más carreras con cadencia para valorar tu patrón."};
+  rows.sort((a,b)=>a.pace-b.pace);const half=Math.max(3,Math.floor(rows.length*.35)),fast=rows.slice(0,half),easy=rows.slice(-half),fastCad=medianValue(fast.map(x=>x.cad)),easyCad=medianValue(easy.map(x=>x.cad)),delta=fastCad-easyCad,all=medianValue(rows.map(x=>x.cad)),heightNote=Number.isFinite(heightM)&&heightM>=1.82?" Tu altura favorece naturalmente una zancada algo más larga, por lo que ATLAS no aplica el mito de 180 spm como objetivo universal.":" ATLAS valora la cadencia respecto a tu ritmo y a tu propio historial, no contra 180 spm.";
+  if(delta>=4)return{label:"Patrón coherente",detail:`Cadencia habitual ${formatNatural(all,0)} spm · aumenta ~${formatNatural(delta,0)} spm cuando aceleras.${heightNote}`,easyCad,fastCad,all};
+  if(delta>=1)return{label:"Correcta, mejorable",detail:`Cadencia habitual ${formatNatural(all,0)} spm · solo aumenta ~${formatNatural(delta,0)} spm al correr más rápido. Conviene observar técnica y longitud de paso antes de modificarla.${heightNote}`,easyCad,fastCad,all};
+  return{label:"Conviene observarla",detail:`Cadencia habitual ${formatNatural(all,0)} spm · no aumenta con claridad al acelerar. ATLAS lo tratará como una señal técnica a seguir, no como un defecto aislado.${heightNote}`,easyCad,fastCad,all};
+}
+function sportThresholdPaceSecKm(sport){
+  const n=Number(sport?.threshold_pace);if(!(n>0))return null;
+  if(sport?.pace_units==="MINS_KM"&&n<15)return 1000/n;
+  if(n>=120&&n<=900)return n;
+  return null;
+}
+function profileInsightRow(key,value){return`<div class="profile-insight-row"><div class="profile-insight-key">${esc(key)}</div><div class="profile-insight-value">${esc(value||"—")}</div></div>`;}
+
+function gearIsShoes(g){return /shoe|zapat/i.test(String(g?.type||""))||/zapat|shoe/i.test(String(g?.name||""));}
+function gearDistanceKm(g){const d=Number(g?.distance);if(Number.isFinite(d)&&d>=0)return d/1000;return gearAccumulatedKm(g?.id,g?.name);}
+function gearDateLabel(value){const d=String(value||"").slice(0,10);return /^\d{4}-\d{2}-\d{2}$/.test(d)?engineV2DateLabel(d):"—";}
+function renderShoesPanel(gear=currentGear){
+  if(!ui.shoesList)return;const shoes=(gear||[]).filter(gearIsShoes).sort((a,b)=>Boolean(a.retired)-Boolean(b.retired)||(gearDistanceKm(b)||0)-(gearDistanceKm(a)||0)),active=shoes.filter(g=>!g.retired).length,maxKm=Math.max(1,...shoes.map(gearDistanceKm).filter(Number.isFinite));
+  ui.gearState.textContent=shoes.length?`${active} activas · ${shoes.length} total`:"Sin zapatillas";
+  if(ui.shoesTileNote)ui.shoesTileNote.textContent=shoes.length?`${active} activas · ${formatNatural(shoes.reduce((s,g)=>s+(gearDistanceKm(g)||0),0),0)} km acumulados`:"Sin zapatillas registradas";
+  if(!shoes.length){ui.shoesList.innerHTML='<div class="records-empty">No hay zapatillas registradas en Intervals.icu.</div>';return;}
+  ui.shoesList.innerHTML=shoes.map(g=>{const km=gearDistanceKm(g),acts=Number(g.activities),retired=!!g.retired,note=String(g.notes||"").trim(),pct=Number.isFinite(km)?clamp(km/maxKm*100,4,100):0;return`<div class="shoe-card"><div class="shoe-km-head"><div class="shoe-name">👟 ${esc(g.name||"Zapatillas")}</div><div class="shoe-km">${Number.isFinite(km)?`${formatNatural(km,0)} km`:"—"}</div></div><div class="shoe-bar" aria-label="Uso relativo"><div class="shoe-bar-fill" style="width:${pct.toFixed(1)}%"></div></div><div class="shoe-meta-line">${retired?"Retiradas":"Activas"}${Number.isFinite(acts)?` · ${formatNatural(acts,0)} actividades`:""}${g.purchased?` · desde ${gearDateLabel(g.purchased)}`:""}</div>${note?`<div class="shoe-note">${esc(note)}</div>`:""}</div>`;}).join("");
+}function renderProfilePanel(athlete){
+  const a=athlete||{},height=Number(a.height),weight=Number(a.icu_weight??a.weight),sport=runningSportSettings(a),cad=cadenceProfileInsight(currentActivities,height),thresholdSec=sportThresholdPaceSecKm(sport),vo2=currentCachedVo2?.value;
+  ui.profileName.textContent=a.name||profileLabel(null);ui.profileState.textContent=a.id?"Sincronizado con Intervals.icu":"Sin datos";
+  ui.profileLocation.textContent=[a.city,a.state,a.country].filter(Boolean).join(" · ")||"Perfil deportivo";
+  ui.profileHeight.textContent=Number.isFinite(height)?`${formatNatural(height,2)} m`:"—";ui.profileWeight.textContent=Number.isFinite(weight)?`${formatNatural(weight,1)} kg`:"—";ui.profileVo2.textContent=Number.isFinite(Number(vo2))?formatNatural(Number(vo2),2):"—";ui.profileThresholdHr.textContent=Number.isFinite(Number(sport?.lthr))?`${formatNatural(Number(sport.lthr),0)} ppm`:"—";
+  ui.profileRunningRows.innerHTML=[
+    profileInsightRow("Umbral de ritmo",Number.isFinite(thresholdSec)?`${formatPaceValue(thresholdSec)} min/km`:"—"),
+    profileInsightRow("FC máxima",Number.isFinite(Number(sport?.max_hr))?`${formatNatural(Number(sport.max_hr),0)} ppm`:"—"),
+    profileInsightRow("Cadencia fácil",Number.isFinite(cad.easyCad)?`${formatNatural(cad.easyCad,0)} spm`:"—"),
+    profileInsightRow("Cadencia rápida",Number.isFinite(cad.fastCad)?`${formatNatural(cad.fastCad,0)} spm`:"—")
+  ].join("");
+  ui.profileThresholdNote.textContent=Number.isFinite(thresholdSec)?"El ritmo umbral es el valor configurado en Intervals.icu para tus zonas de carrera. No es una mejor marca ni una estimación directa de lo que podrías sostener en una competición.":"Intervals.icu no tiene un ritmo umbral de carrera utilizable.";
+  ui.profileCadenceInsight.innerHTML=`<strong>Cadencia · ${esc(cad.label)}.</strong> ${esc(cad.detail)}`;
+}function evolutionWindowStats(runs,anchor,days=28){
+  const end=anchor,start=addDays(anchor,-(days-1)),prevEnd=addDays(start,-1),prevStart=addDays(prevEnd,-(days-1)),now=v2RunsBetween(runs,start,end),prev=v2RunsBetween(runs,prevStart,prevEnd);
+  return{km:v2SumKm(now),prevKm:v2SumKm(prev),freq:now.length/(days/7),prevFreq:prev.length/(days/7)};
+}
+function performanceTrendRow(title,note,value,tone="flat"){return`<div class="data-trend-row"><div><div class="data-trend-title">${esc(title)}</div><div class="data-trend-note">${esc(note)}</div></div><div class="data-trend-value ${tone}">${esc(value)}</div></div>`;}
+function renderEvolutionPanel(){
+  const runs=currentActivities.filter(isRun),anchor=fmtDate(new Date()),stats=evolutionWindowStats(runs,anchor,28),long=v2LongestKm(v2RunsBetween(runs,addDays(anchor,-83),anchor)),vo2=Number(currentCachedVo2?.value),recovery=atlasRecoverySnapshot(currentActivities,currentWellness,anchor),kmWeek=stats.km/4,prevKmWeek=stats.prevKm/4,pct=prevKmWeek>0?(kmWeek-prevKmWeek)/prevKmWeek*100:null;
+  ui.evolutionSummary.innerHTML=[
+    `<div class="performance-stat"><div class="performance-value">${formatNatural(kmWeek,1)}</div><div class="performance-label">km/sem · 28 d</div></div>`,
+    `<div class="performance-stat"><div class="performance-value">${formatNatural(stats.freq,1)}</div><div class="performance-label">carreras/sem</div></div>`,
+    `<div class="performance-stat"><div class="performance-value">${Number.isFinite(vo2)?formatNatural(vo2,2):"—"}</div><div class="performance-label">VO₂ máx.</div></div>`
+  ].join("");
+  const kmTone=!Number.isFinite(pct)?"flat":pct>8?"up":pct<-8?"down":"flat",freqDiff=stats.freq-stats.prevFreq,freqTone=freqDiff>.35?"up":freqDiff<-.35?"down":"flat";
+  ui.performanceTrendList.innerHTML=[
+    performanceTrendRow("Volumen",`28 días frente a los 28 anteriores`,Number.isFinite(pct)?`${pct>=0?"+":""}${formatNatural(pct,0)} %`:"—",kmTone),
+    performanceTrendRow("Frecuencia",`${formatNatural(stats.prevFreq,1)} → ${formatNatural(stats.freq,1)} carreras/sem`,`${freqDiff>=0?"+":""}${formatNatural(freqDiff,1)}`,freqTone),
+    performanceTrendRow("Tirada larga",`Mayor distancia de los últimos 84 días`,Number.isFinite(long)?`${formatNatural(long,0)} km`:"—","flat"),
+    performanceTrendRow("Fitness",`CTL actual`,Number.isFinite(recovery.ctl)?formatNatural(recovery.ctl,1):"—","flat"),
+    performanceTrendRow("Frescura",freshnessZone(recovery.freshness)?.label||"Sin zona",Number.isFinite(recovery.freshness)?signedNatural(recovery.freshness,1):"—",Number.isFinite(recovery.freshness)&&recovery.freshness<-30?"down":"flat")
+  ].join("");
+  ui.evolutionNote.textContent="Rendimiento resume cambios relevantes; el detalle diario y mensual de volumen continúa en Hoy → Volumen.";
+  if(ui.performanceHomeNote)ui.performanceHomeNote.textContent=`${formatNatural(kmWeek,1)} km/sem · ${formatNatural(stats.freq,1)} carreras/sem`;
+}function renderDataSummary({gear,profile,athlete,worker}){
+  const a=athlete?.data||null,height=Number(a?.height),weight=Number(a?.icu_weight??a?.weight);
+  if(ui.dataHomeName)ui.dataHomeName.textContent=a?.name||profileLabel(profile?.data);
+  if(ui.profileTileNote)ui.profileTileNote.textContent=a?[Number.isFinite(height)?`${formatNatural(height,2)} m`:null,Number.isFinite(weight)?`${formatNatural(weight,1)} kg`:null,"perfil de carrera"].filter(Boolean).join(" · "):"Datos deportivos";
   if(ui.connectionState)ui.connectionState.textContent=profile?.data?"Conectado":worker?.value?"Pendiente":"Sin configurar";
-  if(ui.connectionTileNote)ui.connectionTileNote.textContent=profile?.data?"Intervals.icu conectado":"Intervals.icu";
-}
-async function refreshAll(){
+  if(ui.connectionTileNote)ui.connectionTileNote.textContent=profile?.data?"Intervals.icu conectado · copia local disponible":"Configura Intervals.icu";
+  renderProfilePanel(a||{});renderEvolutionPanel();renderShoesPanel(gear);
+}async function refreshAll(){
   const snapshot=await loadLocalSnapshot(),{activities,wellness,gear,events,cachedVo2,engineV2Goal,engineV2SecondaryGoals,engineV2AvailabilityExceptions,engineV2PlanManifest,engineV2PlanRevisionDraft,engineV2PlanRevisionHistory,engineV2PlanCloudMeta}=snapshot;
   currentActivities=activities;currentWellness=wellness;currentGear=gear;currentEvents=events;currentCachedVo2=cachedVo2?.value||null;currentEngineV2Goal=engineV2Goal?.value||null;currentPlanManifest=engineV2PlanManifest?.value||null;currentPlanRevisionDraft=engineV2PlanRevisionDraft?.value||null;currentPlanRevisionHistory=Array.isArray(engineV2PlanRevisionHistory?.value)?engineV2PlanRevisionHistory.value:[];currentPlanCloudMeta=engineV2PlanCloudMeta?.value||null;
   currentSecondaryGoals=normalizeSecondaryGoals(engineV2SecondaryGoals?.value||[],currentEngineV2Goal);
@@ -1705,9 +2074,9 @@ function engineV2FormatPace(sec){return Number.isFinite(sec)?`${formatPaceValue(
 function engineV2TrendLabel(r){if(!Number.isFinite(r))return"Sin referencia";return r>1.15?"En aumento":r<.85?"En descenso":"Estable";}
 function engineV2RaceRows(profile){const a=profile?.performance?.raceAnchors||[];if(!a.length)return engineV2Row("Competiciones detectadas","Sin anclas recientes");return a.map(x=>engineV2Row(`${engineV2GoalLabel(x.kind)} · ${engineV2DateLabel(x.date)}`,`${engineV2FormatTime(x.timeSec)} · ${formatNatural(x.distanceM/1000,2)} km`)).join("");}
 function renderEngineV2Cards(){
-  renderPlanOverview();const p=currentAthleteProfileV2,g=currentEngineV2Goal,a=currentGoalAssessment;if(!ui.engineGoalCard||!ui.engineDiagnosticCard)return;
+  renderPlanOverview();const p=currentAthleteProfileV2,g=currentEngineV2Goal,a=currentGoalAssessment;if(!ui.engineGoalCard)return;
   if(!g){ui.engineGoalTitle.textContent="Definir objetivo A";ui.engineGoalMeta.textContent="Objetivo principal + carreras B/C";}else{ui.engineGoalTitle.textContent=`A · ${g.name||engineV2GoalLabel(g.type)}`;const second=currentSecondaryGoals.length?` · ${currentSecondaryGoals.length} ${currentSecondaryGoals.length===1?"secundaria":"secundarias"}`:"";ui.engineGoalMeta.textContent=`Inicio ${engineV2DateLabel(g.startDate||engineV2DefaultPlanStart())} · Carrera ${engineV2DateLabel(g.date)} · ${engineV2FormatTime(g.targetTimeSec)}${second}`;}
-  if(!p?.available){ui.engineDiagnosticMeta.textContent="Sin datos de carrera suficientes";return;}ui.engineDiagnosticMeta.textContent=[a?.status||"Perfil disponible",`${formatNatural(p.current.stableWeeklyKm,1)} km/sem actuales`,`${formatNatural(p.historical.sustainableVolume8,1)} históricos`].join(" · ");
+  if(!ui.engineDiagnosticMeta)return;if(!p?.available){ui.engineDiagnosticMeta.textContent="Sin datos de carrera suficientes";return;}ui.engineDiagnosticMeta.textContent=[a?.status||"Perfil disponible",`${formatNatural(p.current.stableWeeklyKm,1)} km/sem actuales`,`${formatNatural(p.historical.sustainableVolume8,1)} históricos`].join(" · ");
 }
 function renderEngineV2Diagnostic(){
   const p=currentAthleteProfileV2,g=currentEngineV2Goal,r=currentGoalRequirements,a=currentGoalAssessment;ui.engineDiagnosticDate.textContent="Modelo deportivo";
@@ -2268,9 +2637,9 @@ function closeCalendarSolver(){ui.calendarSolverDetail.classList.add("hidden");u
 
 
 /* ===== Session Generator ATLAS ===== */
-const ATLAS_SESSION_GENERATOR_VERSION="1.1";
+const ATLAS_SESSION_GENERATOR_VERSION="1.2";
 function sessionClamp(n,min,max){return Math.max(min,Math.min(max,n));}
-function sessionRoundKm(n){return Math.round(n*2)/2;}
+function sessionRoundKm(n){return Math.round(n*2)/2;}function sessionRoundTotalKm(n){return Math.max(1,Math.round(Number(n)||0));}
 function sessionKmFromText(text){const m=String(text||"").replace(",",".").match(/(\d+(?:\.\d+)?)\s*km/i);return m?Number(m[1]):0;}
 function sessionRange(a,b){const fast=Math.round(Math.min(a,b)),slow=Math.round(Math.max(a,b));return`${formatPaceValue(fast)}–${formatPaceValue(slow)} min/km`;}
 function sessionEstimatePace(profile,distanceM){
@@ -2320,15 +2689,17 @@ function sessionQualityDesiredKm(slot,week,profile,req){
   return sessionClamp((work*60)/(pace||260)/1000+4.5,7,14);
 }
 function sessionAllocateWeek(week,solved,profile,req){
-  const runSlots=solved.days.flatMap(d=>d.slots.map(s=>({...s}))).filter(s=>["easy","quality","long"].includes(s.type)),easy=runSlots.filter(s=>s.type==="easy"),quality=runSlots.filter(s=>s.type==="quality"),long=runSlots.find(s=>s.type==="long"),total=Number(week.trainingVolume)||0,longKm=long?sessionKmFromText(long.meta):0;
-  const minEasy=total>=55?7:total>=40?6:5,desired=quality.map(s=>sessionQualityDesiredKm(s,week,profile,req)),reserveEasy=easy.length*minEasy,availableQ=Math.max(0,total-longKm-reserveEasy);
+  const runSlots=solved.days.flatMap(d=>d.slots.map(s=>({...s}))).filter(s=>["easy","quality","long"].includes(s.type)),easy=runSlots.filter(s=>s.type==="easy"),quality=runSlots.filter(s=>s.type==="quality"),long=runSlots.find(s=>s.type==="long"),targetTotal=Number(week.trainingVolume)||0,total=sessionRoundTotalKm(targetTotal),longKm=long?sessionRoundTotalKm(sessionKmFromText(long.meta)):0;
+  const minEasy=total>=55?7:total>=40?6:5,desired=quality.map(s=>sessionRoundTotalKm(sessionQualityDesiredKm(s,week,profile,req))),reserveEasy=easy.length*minEasy,availableQ=Math.max(0,total-longKm-reserveEasy);
   let qTotals=[...desired],qSum=qTotals.reduce((a,b)=>a+b,0);
-  if(qSum>availableQ&&qSum>0){const factor=Math.max(.55,availableQ/qSum);qTotals=qTotals.map(x=>sessionRoundKm(x*factor));}
+  if(qSum>availableQ&&qSum>0){const factor=Math.max(.55,availableQ/qSum);qTotals=qTotals.map(x=>Math.max(5,sessionRoundTotalKm(x*factor)));}
   qSum=qTotals.reduce((a,b)=>a+b,0);let remaining=Math.max(0,total-longKm-qSum),easyTotals=[];
-  if(easy.length){const base=remaining/easy.length;for(let i=0;i<easy.length;i++)easyTotals.push(sessionRoundKm(i===easy.length-1?remaining-easyTotals.reduce((a,b)=>a+b,0):base));}
-  else if(quality.length&&remaining>0){qTotals[qTotals.length-1]=sessionRoundKm((qTotals.at(-1)||0)+remaining);remaining=0;}
+  if(easy.length){
+    for(let i=0;i<easy.length;i++){const slotsLeft=easy.length-i,share=sessionRoundTotalKm(remaining/slotsLeft);easyTotals.push(Math.max(minEasy,share));remaining-=easyTotals.at(-1);}
+    const diff=total-longKm-qSum-easyTotals.reduce((a,b)=>a+b,0);if(easyTotals.length&&diff)easyTotals[easyTotals.length-1]=Math.max(minEasy,easyTotals.at(-1)+diff);
+  }else if(quality.length&&remaining>0){qTotals[qTotals.length-1]=sessionRoundTotalKm((qTotals.at(-1)||0)+remaining);remaining=0;}
   const map=new Map();if(long)map.set(`${long.date}|${long.type}`,longKm);
-  quality.forEach((s,i)=>map.set(`${s.date}|${s.type}|${s.title}`,qTotals[i]||sessionRoundKm(desired[i]||7)));
+  quality.forEach((s,i)=>map.set(`${s.date}|${s.type}|${s.title}`,qTotals[i]||sessionRoundTotalKm(desired[i]||7)));
   easy.forEach((s,i)=>map.set(`${s.date}|${s.type}`,easyTotals[i]||minEasy));
   return map;
 }
@@ -2336,19 +2707,24 @@ function sessionFloorStep(n,step=.5){return Math.floor((Number(n)||0)/step+1e-9)
 function sessionSumSegments(segments){return Number((segments||[]).reduce((sum,x)=>sum+(Number(x.distanceKm)||0),0).toFixed(2));}
 function sessionSegment(kind,distanceKm,pace,label){return{kind,distanceKm:Number(distanceKm),pace:pace||null,label:label||kind};}
 function sessionRepeatPrescription(totalKm,paceText,easyText,{preferredReps,minRepKm,recKm,step=.5,wuKm=2,cdMinKm=1.5}){
-  const total=sessionRoundKm(totalKm);let wu=Math.min(wuKm,Math.max(1,sessionRoundKm(total*.28))),cdMin=Math.min(cdMinKm,Math.max(1,sessionRoundKm(total*.22))),reps=preferredReps,rep=0;
-  while(reps>=1){const room=total-wu-cdMin-recKm*Math.max(0,reps-1),candidate=sessionFloorStep(room/reps,step);if(candidate>=minRepKm){rep=candidate;break;}reps--;}
-  if(reps<1||rep<=0){reps=1;rep=Math.max(step,sessionFloorStep(total-wu-cdMin,step));}
-  const recCount=Math.max(0,reps-1),used=wu+rep*reps+recKm*recCount,cd=Number(Math.max(.5,total-used).toFixed(2)),segments=[sessionSegment("warmup",wu,easyText,"WU")];
-  for(let i=0;i<reps;i++){segments.push(sessionSegment("work",rep,paceText,"Trabajo"));if(i<reps-1)segments.push(sessionSegment("recovery",recKm,easyText,"Recuperación"));}
-  segments.push(sessionSegment("cooldown",cd,easyText,"CD"));return{total:sessionSumSegments(segments),reps,repKm:rep,recKm,wuKm:wu,cdKm:cd,segments};
+  const total=sessionRoundTotalKm(totalKm);let wu=Math.max(1,sessionFloorStep(Math.min(wuKm,Math.max(1,total*.28)),.5)),cdMin=Math.max(1,sessionFloorStep(Math.min(cdMinKm,Math.max(1,total*.22)),.5)),reps=preferredReps,rep=0;
+  while(reps>=1){
+    const room=total-wu-cdMin-recKm*reps,candidate=sessionFloorStep(room/reps,step);
+    if(candidate>=minRepKm){rep=candidate;break;}reps--;
+  }
+  if(reps<1||rep<=0){reps=1;rep=Math.max(step,sessionFloorStep(total-wu-cdMin-recKm,step));}
+  const used=wu+(rep+recKm)*reps,cd=Math.max(.5,Number((total-used).toFixed(2))),segments=[sessionSegment("warmup",wu,easyText,"WU")];
+  for(let i=0;i<reps;i++){segments.push(sessionSegment("work",rep,paceText,"Trabajo"));segments.push(sessionSegment("recovery",recKm,easyText,"Recuperación"));}
+  segments.push(sessionSegment("cooldown",cd,easyText,"CD"));
+  return{total,reps,repKm:rep,recKm,wuKm:wu,cdKm:cd,segments};
 }
 function sessionQualityPrescription(slot,totalKm,week,profile,req){
-  const title=String(slot.title||""),l=title.toLowerCase(),m=sessionPaceModel(profile,req),pace=sessionStimulusPace(slot,week,profile,req),paceText=sessionRange(pace-4,pace+4),easyText=sessionRange(m.easyFast,m.easySlow),total=sessionRoundKm(totalKm);
-  if(/strides|cuestas/.test(l))return{segments:[sessionSegment("easy",total,easyText,"Rodaje")],structure:`${formatNatural(total,1)}K fácil @ ${easyText} + 6–8 x 20\" progresivos · recuperación completa`,mainPace:easyText};
-  if(week?.phase==="Taper"||/ritmo específico breve/.test(l)){
+  const title=String(slot.title||""),l=title.toLowerCase(),m=sessionPaceModel(profile,req),pace=sessionStimulusPace(slot,week,profile,req),paceText=sessionRange(pace-4,pace+4),easyText=sessionRange(m.easyFast,m.easySlow),total=sessionRoundTotalKm(totalKm),km=x=>`${formatNatural(x,2)} km`;
+  if(/strides|cuestas/.test(l))return{segments:[sessionSegment("easy",total,easyText,"Rodaje")],structure:`${km(total)} @ ${easyText} + 6–8 × (20" progresivos · recuperación completa)`,mainPace:easyText};
+  const taperSpecific=week?.phase==="Taper"||/ritmo específico breve/.test(l);
+  if(taperSpecific){
     const wu=total>=7?2:1.5,cdMin=total>=7?1.5:1,desired=req?.type==="MARATHON"?Math.min(6,Math.max(2,Math.round(total*.45))):req?.type==="HALF"?Math.min(5,Math.max(2,Math.round(total*.40))):Math.min(4,Math.max(1.5,sessionFloorStep(total*.35,.5))),work=Math.min(desired,Math.max(1,total-wu-cdMin)),cd=Number((total-wu-work).toFixed(2)),segments=[sessionSegment("warmup",wu,easyText,"WU"),sessionSegment("work",work,paceText,"Específico"),sessionSegment("cooldown",cd,easyText,"CD")];
-    return{segments,structure:`${formatNatural(wu,1)}K WU + ${formatNatural(work,1)}K @ ${paceText} + ${formatNatural(cd,1)}K CD`,mainPace:paceText};
+    return{segments,structure:`${km(wu)} WU + ${km(work)} @ ${paceText} + ${km(cd)} CD`,mainPace:paceText};
   }
   let p;
   if(/media/.test(l))p=sessionRepeatPrescription(total,paceText,easyText,{preferredReps:3,minRepKm:1,recKm:.5,step:.5});
@@ -2356,27 +2732,31 @@ function sessionQualityPrescription(slot,totalKm,week,profile,req){
   else if(/5k|vo₂|vo2/.test(l))p=sessionRepeatPrescription(total,paceText,easyText,{preferredReps:6,minRepKm:.5,recKm:.4,step:.1});
   else if(/umbral/.test(l))p=sessionRepeatPrescription(total,paceText,easyText,{preferredReps:2,minRepKm:1.5,recKm:.5,step:.5});
   else if(/maratón|maraton|rcm/.test(l)){
-    const wu=total>=8?2:1.5,cdMin=total>=8?1.5:1,work=Math.max(2,sessionFloorStep(total-wu-cdMin,.5)),cd=Number((total-wu-work).toFixed(2)),segments=[sessionSegment("warmup",wu,easyText,"WU"),sessionSegment("work",work,paceText,"RCM"),sessionSegment("cooldown",cd,easyText,"CD")];return{segments,structure:`${formatNatural(wu,1)}K WU + ${formatNatural(work,1)}K @ ${paceText} + ${formatNatural(cd,1)}K CD`,mainPace:paceText};
-  } else {
-    const wu=total>=7?2:1.5,cd=total>=7?1.5:1,work=Number((total-wu-cd).toFixed(2)),segments=[sessionSegment("warmup",wu,easyText,"WU"),sessionSegment("work",work,paceText,"Bloque"),sessionSegment("cooldown",cd,easyText,"CD")];return{segments,structure:`${formatNatural(wu,1)}K WU + ${formatNatural(work,1)}K @ ${paceText} + ${formatNatural(cd,1)}K CD`,mainPace:paceText};
+    const wu=total>=8?2:1.5,cdMin=total>=8?1.5:1,work=Math.max(2,Math.min(Math.max(2,total-wu-cdMin),Math.round((total-wu-cdMin)*2)/2)),cd=Number((total-wu-work).toFixed(2)),segments=[sessionSegment("warmup",wu,easyText,"WU"),sessionSegment("work",work,paceText,"RCM"),sessionSegment("cooldown",cd,easyText,"CD")];
+    return{segments,structure:`${km(wu)} WU + ${km(work)} @ ${paceText} + ${km(cd)} CD`,mainPace:paceText};
+  }else{
+    const wu=total>=7?2:1.5,cd=total>=7?1.5:1,work=Number((total-wu-cd).toFixed(2)),segments=[sessionSegment("warmup",wu,easyText,"WU"),sessionSegment("work",work,paceText,"Bloque"),sessionSegment("cooldown",cd,easyText,"CD")];
+    return{segments,structure:`${km(wu)} WU + ${km(work)} @ ${paceText} + ${km(cd)} CD`,mainPace:paceText};
   }
-  const between=p.reps>1?` · R${formatNatural(p.recKm,1)}K fácil entre repeticiones`:"";return{segments:p.segments,structure:`${formatNatural(p.wuKm,1)}K WU + ${p.reps} x ${formatNatural(p.repKm,1)}K @ ${paceText}${between} + ${formatNatural(p.cdKm,1)}K CD`,mainPace:paceText};
+  return{segments:p.segments,structure:`${km(p.wuKm)} WU + ${p.reps} × (${km(p.repKm)} @ ${paceText} R${km(p.recKm)} fácil) + ${km(p.cdKm)} CD`,mainPace:paceText};
 }
 function sessionQualityStructure(slot,totalKm,week,profile,req){return sessionQualityPrescription(slot,totalKm,week,profile,req).structure;}
 function sessionLongStructure(totalKm,text,profile,req){
-  const t=String(text||"").toLowerCase(),m=sessionPaceModel(profile,req),easy=sessionRange(m.easyFast,m.easySlow),total=macroLongRound(totalKm);
-  if(/bloques rcm/.test(t)){const work=Math.min(total-4,total>=28?10:total>=24?8:6),first=Math.max(2,total-work-2),last=2;return`${formatNatural(first,0)}K fácil @ ${easy} + ${formatNatural(work,0)}K @ ${sessionRange(m.marathon-5,m.marathon+5)} + ${formatNatural(last,0)}K fácil`;}
-  if(/rhm/.test(t)){const block=Math.min(6,Math.max(3,Math.round(total*.25)));return`${formatNatural(total-block,0)}K fácil @ ${easy} + ${formatNatural(block,0)}K @ ${sessionRange(m.half-5,m.half+7)}`;}
-  if(/progresiva/.test(t)){const finish=Math.min(8,Math.max(4,Math.round(total*.25)));return`${formatNatural(total-finish,0)}K fácil @ ${easy} + ${formatNatural(finish,0)}K progresivos @ ${sessionRange(m.steadySlow,m.steadyFast)}`;}
-  return`${formatNatural(total,0)}K continuos @ ${easy}`;
+  const t=String(text||"").toLowerCase(),m=sessionPaceModel(profile,req),easy=sessionRange(m.easyFast,m.easySlow),total=macroLongRound(totalKm),km=x=>`${formatNatural(x,0)} km`;
+  if(/bloques rcm/.test(t)){const work=Math.min(total-4,total>=28?10:total>=24?8:6),pre=Math.max(2,total-work-2),post=2;return`${km(pre)} @ ${easy} + ${km(work)} @ ${sessionRange(m.marathon-5,m.marathon+5)} + ${km(post)} fácil`;}
+  if(/rhm/.test(t)){const block=Math.min(6,Math.max(3,Math.round(total*.25)));return`${km(total-block)} @ ${easy} + ${km(block)} @ ${sessionRange(m.half-5,m.half+7)}`;}
+  if(/progresiva/.test(t)){const finish=Math.min(8,Math.max(4,Math.round(total*.25)));return`${km(total-finish)} @ ${easy} + ${km(finish)} progresivos @ ${sessionRange(m.steadySlow,m.steadyFast)}`;}
+  return`${km(total)} @ ${easy}`;
 }
-function sessionStrengthStructure(week){
+function sessionStrengthPrescription(week){
   const p=week.phase;
-  if(p==="Taper")return`Movilidad + sentadilla/zancada + gemelo/sóleo + core · 1–2 × 6–8 · RPE 5–6 · sin fatiga residual`;
-  if(p==="Específica")return`Sentadilla o prensa 2–3 × 5–6 · unilateral 2 × 6–8/lado · bisagra 2 × 6–8 · gemelo y sóleo 3 × 10–12 · core 2–3 series · RPE 6–7`;
-  if(p==="Construcción")return`Sentadilla/prensa 3 × 5–7 · búlgara/zancada 3 × 6–8/lado · peso muerto rumano 3 × 6–8 · gemelo y sóleo 3 × 10–15 · core 3 series · RPE 7–8`;
-  return`Sentadilla 3 × 6–8 · zancada/búlgara 3 × 8/lado · bisagra 3 × 6–8 · gemelo y sóleo 3 × 12–15 · puente de glúteo 2–3 × 8–12 · core 3 series · RPE 6–7`;
+  if(p==="Taper")return{summary:"Movilidad + fuerza ligera + core · RPE 5–6",items:["Movilidad: 6–8 min","Sentadilla o zancada: 1–2 × 6–8","Gemelo y sóleo: 2 × 10–12","Core: 2 series","Intensidad: RPE 5–6 · sin fatiga residual"]};
+  if(p==="Específica")return{summary:"Pierna + cadena posterior + gemelos + core · RPE 6–7",items:["Sentadilla o prensa: 2–3 × 5–6","Unilateral: 2 × 6–8/lado","Bisagra de cadera: 2 × 6–8","Gemelo y sóleo: 3 × 10–12","Core: 2–3 series","Intensidad: RPE 6–7"]};
+  if(p==="Construcción")return{summary:"Fuerza completa de pierna + core · RPE 7–8",items:["Sentadilla o prensa: 3 × 5–7","Búlgara o zancada: 3 × 6–8/lado","Peso muerto rumano: 3 × 6–8","Gemelo y sóleo: 3 × 10–15","Core: 3 series","Intensidad: RPE 7–8"]};
+  return{summary:"Fuerza general de pierna + core · RPE 6–7",items:["Sentadilla: 3 × 6–8","Zancada o búlgara: 3 × 8/lado","Bisagra de cadera: 3 × 6–8","Gemelo y sóleo: 3 × 12–15","Puente de glúteo: 2–3 × 8–12","Core: 3 series","Intensidad: RPE 6–7"]};
 }
+function sessionStrengthStructure(week){const p=sessionStrengthPrescription(week);return p.items.map(x=>`- ${x}`).join("\n");}
+
 
 function planStableHash(text){
   let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619);}return(h>>>0).toString(16).padStart(8,"0");
@@ -2393,10 +2773,10 @@ function buildSessionPlanV1(calendar,weekly,profile,req,goal){
     const wt=wtMap.get(sw.weekIndex);if(!wt)continue;const alloc=sessionAllocateWeek(wt,sw,profile,req),sessions=[],logicalCounters={};
     for(const day of sw.days){for(const slot of day.slots){
       let x={weekIndex:sw.weekIndex,date:day.date,day:day.day,type:slot.type,title:slot.title,phase:wt.phase,role:wt.role,distanceKm:null,pace:null,structure:"",purpose:wt.primaryAdaptation};
-      if(slot.type==="easy"){const km=alloc.get(`${slot.date}|easy`)||5,m=sessionPaceModel(profile,req);x.distanceKm=km;x.pace=sessionRange(m.easyFast,m.easySlow);x.title=`Rodaje fácil · ${formatNatural(km,1)} km`;x.structure=`${formatNatural(km,1)} km continuos @ ${x.pace}`;}
-      else if(slot.type==="quality"){const km=alloc.get(`${slot.date}|quality|${slot.title}`)||8,p=sessionStimulusPace(slot,wt,profile,req),prescription=sessionQualityPrescription(slot,km,wt,profile,req);x.distanceKm=sessionSumSegments(prescription.segments);x.pace=sessionRange(p-4,p+4);x.segments=prescription.segments;x.title=`${slot.title} · ${formatNatural(x.distanceKm,1)} km`;x.structure=prescription.structure;}
+      if(slot.type==="easy"){const km=alloc.get(`${slot.date}|easy`)||5,m=sessionPaceModel(profile,req);x.distanceKm=sessionRoundTotalKm(km);x.pace=sessionRange(m.easyFast,m.easySlow);x.title=`Rodaje fácil · ${formatNatural(x.distanceKm,0)} km`;x.structure=`${formatNatural(x.distanceKm,0)} km @ ${x.pace}`;}
+      else if(slot.type==="quality"){const km=alloc.get(`${slot.date}|quality|${slot.title}`)||8,p=sessionStimulusPace(slot,wt,profile,req),prescription=sessionQualityPrescription(slot,km,wt,profile,req);x.distanceKm=sessionSumSegments(prescription.segments);x.pace=sessionRange(p-4,p+4);x.segments=prescription.segments;x.title=`${slot.title} · ${formatNatural(x.distanceKm,0)} km`;x.structure=prescription.structure;}
       else if(slot.type==="long"){const km=macroLongRound(alloc.get(`${slot.date}|long`)||sessionKmFromText(slot.meta)),m=sessionPaceModel(profile,req);x.distanceKm=km;x.pace=/rcm|maratón|maraton|progresiva|rhm/i.test(slot.meta)?`${sessionRange(m.easyFast,m.easySlow)} + específico`:sessionRange(m.easyFast,m.easySlow);x.title=`Tirada larga · ${formatNatural(km,0)} km`;x.structure=sessionLongStructure(km,slot.meta,profile,req);}
-      else if(slot.type==="strength"){x.title="Fuerza";x.structure=sessionStrengthStructure(wt);x.purpose="Fuerza específica para corredor · sesión independiente";}
+      else if(slot.type==="strength"){const strength=sessionStrengthPrescription(wt);x.title="Fuerza";x.strengthSummary=strength.summary;x.strengthItems=strength.items;x.structure=sessionStrengthStructure(wt);x.purpose="Fuerza específica para corredor · sesión independiente";}
       else if(slot.type==="race"||slot.type==="raceA"){const race=slot.type==="raceA"?goal:(wt.secondaryRaces||[]).find(r=>r.date===slot.date),d=engineV2GoalDistance(race?.type||goal.type),pace=race?.targetTimeSec&&d?race.targetTimeSec/(d/1000):null;x.distanceKm=d?d/1000:null;x.pace=pace?engineV2FormatPace(pace):"Ritmo de competición";x.structure=`Competición · ${x.distanceKm?formatNatural(x.distanceKm,2)+" km":""}${pace?` @ ${engineV2FormatPace(pace)}`:""}`;x.purpose=slot.type==="raceA"?"Objetivo principal":`Carrera ${race?.priority||"B/C"} integrada en la preparación`;}
       const ordinal=(logicalCounters[x.type]=(logicalCounters[x.type]||0)+1);x.logicalId=`w${String(sw.weekIndex).padStart(2,"0")}-${x.type}-${String(ordinal).padStart(2,"0")}`;
       sessions.push(x);all.push(x);
@@ -2441,19 +2821,17 @@ function sessionIntervalsDescription(s,sessionPlan){
     return structure;
   }
   if(s.type==="long"){
-    let m=structure.match(/^([\d.,]+)\s*km:\s*primeros\s*([\d.,]+)\s*km\s+([0-9:]+-[0-9:]+)\s*min\/km\s*\+\s*últimos\s*([\d.,]+)\s*km\s*progresivos\s*([0-9:]+-[0-9:]+)\s*min\/km/i);
-    if(m)return`- ${m[2].replace(",",".")}km ${m[3]}/km Pace\n- ${m[4].replace(",",".")}km ${m[5]}/km Pace`;
-    m=structure.match(/^([\d.,]+)\s*km:\s*inicio fácil\s*([0-9:]+-[0-9:]+)\s*min\/km\s*\+\s*2\s*×\s*([\d.,]+)\s*km\s*@\s*([0-9:]+-[0-9:]+)\s*min\/km\s*·\s*2\s*km fácil/i);
-    if(m){
-      const total=Number(m[1].replace(",",".")),block=Number(m[3].replace(",",".")),pre=Math.max(1,total-2*block-2);
-      return`- ${formatNatural(pre,1)}km ${m[2]}/km Pace\n- ${formatNatural(block,1)}km ${m[4]}/km Pace intensity=interval\n- 2km ${m[2]}/km Pace intensity=recovery\n- ${formatNatural(block,1)}km ${m[4]}/km Pace intensity=interval`;
-    }
-    m=structure.match(/^([\d.,]+)\s*km continuos\s*([0-9:]+-[0-9:]+)\s*min\/km/i);
+    let m=structure.match(/^([\d.,]+)\s*km\s*@\s*([0-9:]+-[0-9:]+)\s*min\/km$/i);
     if(m)return`- ${m[1].replace(",",".")}km ${m[2]}/km Pace`;
+    m=structure.match(/^([\d.,]+)\s*km\s*@\s*([0-9:]+-[0-9:]+)\s*min\/km\s*\+\s*([\d.,]+)\s*km\s*@\s*([0-9:]+-[0-9:]+)\s*min\/km\s*\+\s*([\d.,]+)\s*km\s*fácil/i);
+    if(m)return`- ${m[1].replace(",",".")}km ${m[2]}/km Pace\n- ${m[3].replace(",",".")}km ${m[4]}/km Pace intensity=interval\n- ${m[5].replace(",",".")}km ${m[2]}/km Pace intensity=cooldown`;
+    m=structure.match(/^([\d.,]+)\s*km\s*@\s*([0-9:]+-[0-9:]+)\s*min\/km\s*\+\s*([\d.,]+)\s*km\s*progresivos\s*@\s*([0-9:]+-[0-9:]+)\s*min\/km/i);
+    if(m)return`- ${m[1].replace(",",".")}km ${m[2]}/km Pace\n- ${m[3].replace(",",".")}km ${m[4]}/km Pace intensity=interval`;
     return structure;
   }
   return structure;
 }
+
 function publicationEventType(s){return s.type==="strength"?"WeightTraining":"Run";}
 function buildPlanPublicationEvents(sessionPlan,planId){
   if(!sessionPlan?.ok||!planId)return[];
@@ -2573,7 +2951,7 @@ function renderSessionPreviewWeekDays(w){
   let html='<div class="plan-week-calendar">';
   for(let day=1;day<=7;day++){
     const date=addDays(w.start,day-1),n=new Date(`${date}T12:00:00`).getDate(),items=byDay.get(day)||[];
-    const content=items.length?items.map(s=>`<div class="plan-week-calendar-session"><div class="plan-week-calendar-mainline"><span class="plan-week-calendar-icon">${sessionPreviewIcon(s.type)}</span><span class="plan-week-calendar-title">${esc(s.title)}</span></div>${s.structure?`<div class="plan-week-calendar-structure">${esc(s.structure)}</div>`:""}</div>`).join(""):`<div class="plan-week-calendar-rest"><span>🛌</span><span>Descanso</span></div>`;
+    const content=items.length?items.map(s=>`<div class="plan-week-calendar-session"><div class="plan-week-calendar-mainline"><span class="plan-week-calendar-icon">${sessionPreviewIcon(s.type)}</span><span class="plan-week-calendar-title">${esc(s.title)}</span></div>${s.type==="strength"?`<div class="strength-preview-summary">${esc(s.strengthSummary||"Fuerza general · sesión independiente")}</div>`:s.structure?`<div class="plan-week-calendar-structure">${esc(s.structure)}</div>`:""}</div>`).join(""):`<div class="plan-week-calendar-rest"><span>🛌</span><span>Descanso</span></div>`;
     html+=`<div class="plan-week-calendar-day"><div class="plan-week-calendar-head"><div class="plan-week-calendar-date"><span class="plan-week-calendar-weekday">${SOLVER_DAY_LABELS[day]}</span><span class="plan-week-calendar-number">${n}</span></div><span class="plan-week-calendar-sep"></span><div class="plan-week-calendar-copy">${content}</div></div></div>`;
   }
   return html+"</div>";
@@ -2593,7 +2971,7 @@ function closeSessionGenerator(){ui.sessionGeneratorDetail.classList.add("hidden
 
 
 /* ===== Motor Adaptativo ATLAS ===== */
-const ATLAS_ADAPTIVE_VERSION="1.3";
+const ATLAS_ADAPTIVE_VERSION="1.4";
 function adaptiveIsStrengthActivity(a){const t=String(a?.type||a?.sport||a?.sub_type||"").toLowerCase(),n=String(a?.name||"").toLowerCase();return /weight|strength|gym|fuerza/.test(t)||/fuerza|gimnasio|strength/.test(n);}
 function adaptiveActivityDistanceKm(a){const m=v2ActivityDistanceM(a);return Number.isFinite(m)&&m>0?m/1000:null;}
 function adaptiveManifestMap(manifest){const m=new Map();for(const e of manifest?.events||[]){if(e?.external_id)m.set(String(e.external_id),e);}return m;}
@@ -3223,6 +3601,11 @@ function parsePlanWorkoutDoc(e){
 
 function parsePlanWorkout(e){
   const structured=parsePlanWorkoutDoc(e);if(structured)return structured;
+  const eventType=String(planEventType(e)||"").toLowerCase(),strengthEvent=/weight|strength/.test(eventType);
+  if(strengthEvent){
+    const raw=String(e?.description||""),lines=raw.split(/\n+/).map(x=>x.replace(/^\s*[-•·]\s*/,"").trim()).filter(Boolean),steps=lines.map((line,i)=>{const parts=line.split(/:\s*/);return{icon:i===lines.length-1&&/rpe|intensidad/i.test(line)?"🎯":"🏋🏻‍♂️",title:parts[0]||"Ejercicio",meta:parts.slice(1).join(": ")||""};});
+    return{raw,steps:steps.length?steps:[{icon:"🏋🏻‍♂️",title:"Fuerza",meta:"Completar la sesión prevista"}],totalDistance:null,totalDuration:planEventDurationSec(e),target:"Fuerza",purpose:"Desarrollar fuerza útil para correr con mínima interferencia sobre las sesiones clave."};
+  }
   const raw=String(e?.description||planEventName(e)),name=planEventName(e);
   const shorthand=parseAtlasIntervalShorthand(name,"Run")||parseAtlasIntervalShorthand(raw,"Run");
   if(shorthand){
@@ -3448,22 +3831,24 @@ function renderPlan(){
   const planEvents=events.filter(e=>publishedPlanSessionForEvent(e)||isAtlasPlanEvent(e)),plannedKm=planEvents.reduce((s,e)=>s+(planEventDistanceM(e)||0),0)/1000,doneKm=activities.reduce((s,a)=>s+(activityDistanceM(a)||0),0)/1000,weekOutcomes=(currentAdaptiveState?.outcomes||[]).filter(o=>o.session.date>=startKey&&o.session.date<=endKey),completed=weekOutcomes.filter(planCompletedStatus).length,totalEvaluable=weekOutcomes.length;
   ui.planPlannedKm.textContent=formatNatural(plannedKm,1);ui.planDoneKm.textContent=formatNatural(doneKm,1);ui.planSessions.textContent=totalEvaluable?`${completed}/${totalEvaluable}`:"0";
   const days=["LUN","MAR","MIÉ","JUE","VIE","SÁB","DOM"],markup=[];
+  const renderMultiItem=s=>{const metaHtml=planSessionMetaHtml(s),extra=s.kind==="extra"&&s.showExtra?'<span class="plan-execution-chip pending plan-execution-extra plan-extra-meta-chip">Actividad extra</span>':"",attrs=s.planEventId?`data-plan-event-id="${esc(s.planEventId)}"`:s.activityId?`data-activity-id="${esc(s.activityId)}"`:"";return`<button class="plan-day-multi-item" type="button" ${attrs}><div class="plan-day-multi-title"><span>${s.icon}</span><span class="plan-day-multi-title-text">${esc(s.title)}</span></div><div class="plan-day-multi-meta"><span class="plan-meta-values">${metaHtml}</span>${extra}${s.kind!=="extra"&&s.outcome?`<span class="plan-execution-chip ${s.tone}">${esc(s.status)}</span>`:""}</div></button>`;};
   for(let i=0;i<7;i++){
     const d=new Date(start);d.setDate(start.getDate()+i);const key=planDateKey(d),dayEvents=events.filter(e=>planEventDate(e)===key),dayActivities=activities.filter(a=>activityDate(a)===key).sort((a,b)=>activityStamp(a).localeCompare(activityStamp(b))),sessions=[];
     for(const e of dayEvents)sessions.push(planExecutionSessionForEvent(e));
     for(const a of dayActivities){const id=String(a.id);if(matchedIds.has(id))continue;sessions.push({kind:"extra",icon:activityIcon(a),title:activityName(a),metaParts:planActivityMetaParts(a),activityId:id,tone:"pending",showExtra:planDateInsideAtlasPlan(key)});}
-    let head="",body="";
+    let head="";
     if(sessions.length===1){
       const s=sessions[0],tag=s.planEventId?"button":s.activityId?"button":"div",attrs=s.planEventId?` type="button" data-plan-event-id="${esc(s.planEventId)}"`:s.activityId?` type="button" data-activity-id="${esc(s.activityId)}"`:"",metaHtml=planSessionMetaHtml(s,true),extra=s.kind==="extra"&&s.showExtra?`<span class="plan-execution-chip pending plan-execution-extra plan-extra-meta-chip">Actividad extra</span>`:"";
       head=`<${tag} class="plan-day-head single-session"${attrs}><div class="plan-day-date"><span class="plan-day-weekday">${days[i]}</span><span class="plan-day-number">${d.getDate()}</span></div><span class="plan-day-sep" aria-hidden="true"></span><div class="plan-day-copy"><div class="plan-day-mainline"><span class="plan-day-main-icon">${s.icon}</span><span class="plan-day-main-title">${esc(s.title)}</span></div><div class="plan-day-main-meta"><span class="plan-meta-values">${metaHtml}</span>${extra}</div></div></${tag}>`;
     }else if(sessions.length===0){
-      head=`<div class="plan-day-head"><div class="plan-day-date"><span class="plan-day-weekday">${days[i]}</span><span class="plan-day-number">${d.getDate()}</span></div><span class="plan-day-sep" aria-hidden="true"></span><div class="plan-day-copy"><div class="plan-rest-copy">Descanso</div></div></div>`;
+      const rest=planDateInsideAtlasPlan(key)?'<div class="plan-rest-copy">🛌 Descanso</div>':'<div class="plan-rest-copy plan-rest-blank" aria-hidden="true">&nbsp;</div>';
+      head=`<div class="plan-day-head"><div class="plan-day-date"><span class="plan-day-weekday">${days[i]}</span><span class="plan-day-number">${d.getDate()}</span></div><span class="plan-day-sep" aria-hidden="true"></span><div class="plan-day-copy">${rest}</div></div>`;
     }else{
-      head=`<div class="plan-day-head"><div class="plan-day-date"><span class="plan-day-weekday">${days[i]}</span><span class="plan-day-number">${d.getDate()}</span></div><span class="plan-day-sep" aria-hidden="true"></span><div class="plan-day-copy"><div class="plan-day-title">${sessions.length} sesiones</div></div></div>`;
-      body=`<div class="plan-items">${sessions.map(s=>{const metaHtml=planSessionMetaHtml(s),extra=s.kind==="extra"&&s.showExtra?'<span class="plan-execution-chip pending plan-execution-extra plan-extra-meta-chip">Actividad extra</span>':"",state=s.kind!=="extra"&&s.outcome?`<span class="plan-execution-chip ${s.tone}">${esc(s.status)}</span>`:"";return`${s.planEventId?`<button class="plan-item" data-plan-event-id="${esc(s.planEventId)}">`:s.activityId?`<button class="plan-item" data-activity-id="${esc(s.activityId)}">`:`<div class="plan-item">`}<div class="plan-item-icon">${s.icon}</div><div class="plan-item-copy"><div class="plan-item-title">${esc(s.title)}</div><div class="plan-item-meta" style="display:flex;align-items:center;gap:6px"><span class="plan-meta-values">${metaHtml}</span>${extra}</div></div>${state}${(s.planEventId||s.activityId)?"</button>":"</div>"}`;}).join("")}</div>`;
+      head=`<div class="plan-day-head multi-session"><div class="plan-day-date"><span class="plan-day-weekday">${days[i]}</span><span class="plan-day-number">${d.getDate()}</span></div><span class="plan-day-sep" aria-hidden="true"></span><div class="plan-day-copy"><div class="plan-day-multi-list">${sessions.map(renderMultiItem).join("")}</div></div></div>`;
     }
-    markup.push(`<section class="plan-day${key===today?" today":""}">${head}${body}</section>`);
+    markup.push(`<section class="plan-day${key===today?" today":""}">${head}</section>`);
   }
+  if(!markup.length)markup.push('<div class="card activity-empty">No hay entrenamientos en esta semana.</div>');
   ui.planDays.innerHTML=markup.join("");requestAnimationFrame(fitPlanTitles);
 }
 
@@ -3534,8 +3919,8 @@ function initActivityFilters(){const sports=[...new Set(currentActivities.map(ac
 function renderActivities(){if(!ui.activitiesList)return;const sport=ui.activitySportFilter.value||"all",year=ui.activityYearFilter.value||"all",q=(ui.activitySearch.value||"").trim().toLocaleLowerCase("es"),items=[...currentActivities].filter(a=>(sport==="all"||activityType(a)===sport)&&(year==="all"||activityDate(a).startsWith(year))&&(!q||activityName(a).toLocaleLowerCase("es").includes(q))).sort((a,b)=>activityStamp(b).localeCompare(activityStamp(a)));const dist=items.reduce((s,a)=>s+(activityDistanceM(a)||0),0);ui.activitiesSummary.textContent=`${items.length} actividades${dist>0?` · ${formatNatural(dist/1000,1)} km`:""}`;if(!items.length){ui.activitiesList.innerHTML='<div class="card activity-empty">No hay actividades con estos filtros.</div>';return;}const groups=new Map();for(const a of items){const d=activityDate(a),key=d?d.slice(0,7):"Sin fecha";if(!groups.has(key))groups.set(key,[]);groups.get(key).push(a);}ui.activitiesList.innerHTML=[...groups.entries()].map(([key,arr])=>{const km=arr.reduce((s,a)=>s+(activityDistanceM(a)||0),0)/1000;return`<section class="activity-month"><div class="activity-month-head"><div class="activity-month-title">${key==="Sin fecha"?"Sin fecha":monthLabel(key)}</div><div class="activity-month-meta">${arr.length} ${arr.length===1?"actividad":"actividades"}${km?` · ${formatNatural(km,1)} km`:""}</div></div><div class="activity-list">${arr.map(activityRowHtml).join("")}</div></section>`;}).join("");requestAnimationFrame(fitActivityTitles);}
 function activityRowContent(a){const d=activityDate(a),dp=compactActivityDate(d),dist=activityDistanceM(a),elapsed=activityElapsedSec(a),pace=activityPaceSecKm(a),speed=Number(pick(a,["average_speed"])??a?.speed?.averageMps),stats=[dist?`${formatNatural(dist/1000,2)} km`:null,elapsed?formatDuration(elapsed):null,isRun(a)&&pace?formatPaceSecs(pace):(!isRun(a)&&Number.isFinite(speed)&&speed>0?`${formatNatural(speed*3.6,1)} km/h`:null)].filter(Boolean);return`<div class="activity-row-date"><span class="activity-row-month">${dp.month}</span><span class="activity-row-day">${dp.day}</span></div><span class="activity-row-sep" aria-hidden="true"></span><div class="activity-row-copy"><div class="activity-row-title"><span class="activity-row-title-emoji">${activityIcon(a)}</span><span class="activity-row-title-text">${esc(activityName(a))}</span></div><div class="activity-row-main">${stats.length?stats.map(s=>`<span class="activity-row-stat">${s}</span>`).join(""):`<span class="activity-row-stat">${esc(activitySportLabel(a))}</span>`}</div></div>`;}
 function activityRowHtml(a){return`<button class="activity-row" data-id="${esc(String(a.id))}">${activityRowContent(a)}</button>`;}
-async function openActivityDetail(id){const a=currentActivities.find(x=>String(x.id)===String(id));if(!a)return;currentActivityDetail=a;currentActivityStreams=null;currentActivityVo2=null;currentActivityChartKey=null;activityChartZoom=1;ui.activityDetail.classList.add("open");ui.activityDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";renderActivityDetail(a);ui.activityDetailLoading.classList.add("active");try{const detailPromise=api(`/api/activity?id=${encodeURIComponent(id)}`).catch(()=>null),streamsPromise=sportTypicallyGps(a)||isRun(a)?api(`/api/activity-streams?id=${encodeURIComponent(id)}&types=latlng,time,distance,heartrate,cadence,altitude,velocity_smooth,moving`).catch(()=>null):Promise.resolve(null),vo2Promise=isRun(a)?api(`/api/activity-vo2max?id=${encodeURIComponent(id)}`).catch(()=>null):Promise.resolve(null);const[detail,streams,vo2]=await Promise.all([detailPromise,streamsPromise,vo2Promise]);if(!currentActivityDetail||String(currentActivityDetail.id)!==String(id))return;const merged=detail?.activity?{...a,...detail.activity}:a;currentActivityDetail=merged;currentActivityStreams=streams;const v=Number(vo2?.vo2max);currentActivityVo2=Number.isFinite(v)&&v>0?v:null;renderActivityDetail(merged);renderActivityMap(streams,merged);renderActivityLaps();renderActivityAnalysis();}finally{ui.activityDetailLoading.classList.remove("active");}}
-function closeActivityDetail(){ui.activityDetail.classList.remove("open");ui.activityDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";currentActivityDetail=null;currentActivityStreams=null;currentActivityVo2=null;currentActivityChartKey=null;activityChartZoom=1;hideActivityChartReadout();if(currentActivityMap){currentActivityMap.remove();currentActivityMap=null;}ui.activityMap.classList.remove("hidden");ui.activityMap.innerHTML='<div class="activity-map-empty">Cargando recorrido…</div>';}
+async function openActivityDetail(id){const a=currentActivities.find(x=>String(x.id)===String(id));if(!a)return;currentActivityDetail=a;currentActivityStreams=null;currentActivityVo2=null;currentActivityChartKey=null;activityChartZoom=1;activityLapZoom=1;currentActivityLapIndex=null;ui.activityDetail.classList.add("open");ui.activityDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";renderActivityDetail(a);ui.activityDetailLoading.classList.add("active");try{const detailPromise=api(`/api/activity?id=${encodeURIComponent(id)}`).catch(()=>null),streamsPromise=sportTypicallyGps(a)||isRun(a)?api(`/api/activity-streams?id=${encodeURIComponent(id)}&types=latlng,time,distance,heartrate,cadence,altitude,velocity_smooth,moving`).catch(()=>null):Promise.resolve(null),vo2Promise=isRun(a)?api(`/api/activity-vo2max?id=${encodeURIComponent(id)}`).catch(()=>null):Promise.resolve(null);const[detail,streams,vo2]=await Promise.all([detailPromise,streamsPromise,vo2Promise]);if(!currentActivityDetail||String(currentActivityDetail.id)!==String(id))return;const merged=detail?.activity?{...a,...detail.activity}:a;currentActivityDetail=merged;currentActivityStreams=streams;const v=Number(vo2?.vo2max);currentActivityVo2=Number.isFinite(v)&&v>0?v:null;renderActivityDetail(merged);renderActivityMap(streams,merged);renderActivityLaps();renderActivityAnalysis();}finally{ui.activityDetailLoading.classList.remove("active");}}
+function closeActivityDetail(){ui.activityDetail.classList.remove("open");ui.activityDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";currentActivityDetail=null;currentActivityStreams=null;currentActivityVo2=null;currentActivityChartKey=null;activityChartZoom=1;activityLapZoom=1;currentActivityLapIndex=null;hideActivityChartReadout();if(currentActivityMap){currentActivityMap.remove();currentActivityMap=null;}ui.activityMap.classList.remove("hidden");ui.activityMap.innerHTML='<div class="activity-map-empty">Cargando recorrido…</div>';}
 function activityPower(a){const n=Number(pick(a,["average_watts","icu_average_watts"])??a?.power?.averageWatts??a?.power?.weightedAverageWatts);return Number.isFinite(n)&&n>0?n:null;}
 function activityTemperature(a){const n=Number(pick(a,["average_temperature","average_temp","avg_temp","temperature"])??a?.temperature?.averageC);return Number.isFinite(n)?n:null;}
 function activityVo2(a){if(Number.isFinite(currentActivityVo2)&&currentActivityVo2>0)return currentActivityVo2;const direct=findVo2InActivity(a);if(direct?.value)return direct.value;for(const raw of [a?.vo2max,a?.vo2Max,a?.vo2_max,a?.icu_vo2max]){const n=Number(raw?.value??raw);if(Number.isFinite(n)&&n>0)return n;}if(currentCachedVo2?.activityId&&String(currentCachedVo2.activityId)===String(a?.id)){const n=Number(currentCachedVo2.value);if(Number.isFinite(n)&&n>0)return n;}return null;}
@@ -3586,7 +3971,21 @@ function activityChartSummary(key,series){const vals=series.map(x=>Number(x.valu
 function fitActivityChartStatsCommon(charts){if(!ui.activityChartStats||!charts?.length||!currentActivityChartKey)return;const current=currentActivityChartKey,texts=charts.map(c=>activityChartSummary(c.key,activityStreamSeries(c.key))).filter(Boolean);if(!texts.length)return;let size=14.6;ui.activityChartStats.style.fontSize=`${size}px`;while(size>8.5){let fits=true;for(const t of texts){ui.activityChartStats.textContent=t;if(ui.activityChartStats.scrollWidth>ui.activityChartStats.clientWidth+.5){fits=false;break;}}if(fits)break;size-=.2;ui.activityChartStats.style.fontSize=`${size.toFixed(1)}px`;}ui.activityChartStats.textContent=activityChartSummary(current,activityStreamSeries(current));}
 function renderActivityAnalysis(){const charts=availableActivityCharts();ui.activityAnalysis.classList.toggle("hidden",!charts.length);if(!charts.length){ui.activityChartTabs.innerHTML="";ui.activityChartStats.textContent="";ui.activityChartStats.classList.add("hidden");ui.activityChartCard.classList.add("hidden");ui.activityChart.innerHTML="";return;}if(currentActivityChartKey&&!charts.some(x=>x.key===currentActivityChartKey))currentActivityChartKey=null;ui.activityChartTabs.style.setProperty("--activity-chart-count",String(charts.length));ui.activityChartTabs.innerHTML=charts.map(c=>`<button class="activity-chart-tab${c.key===currentActivityChartKey?" active":""}" data-key="${c.key}">${c.label}</button>`).join("");requestAnimationFrame(fitActivityChartTabs);const open=!!currentActivityChartKey;ui.activityChartStats.classList.toggle("hidden",!open);ui.activityChartCard.classList.toggle("hidden",!open);if(!open){ui.activityChartStats.textContent="";ui.activityChart.innerHTML="";return;}const series=activityStreamSeries(currentActivityChartKey);ui.activityChartStats.textContent=activityChartSummary(currentActivityChartKey,series);requestAnimationFrame(()=>fitActivityChartStatsCommon(charts));renderActivityChart();}
 function chooseNiceStep(range,target,candidates){const desired=Math.max(0,range)/Math.max(2,target-1);for(const c of candidates)if(c>=desired)return c;return candidates[candidates.length-1];}
-function activityChartDomain(series,key){let vals=series.map(x=>x.value).filter(Number.isFinite);if(!vals.length)return{min:0,max:1,ticks:[0,1]};vals.sort((a,b)=>a-b);const q=p=>vals[Math.min(vals.length-1,Math.max(0,Math.floor((vals.length-1)*p)))],lo=q(.02),hi=q(.98),range=Math.max(1,hi-lo);let step;if(key==="pace")step=chooseNiceStep(range,9,[5,10,15,20,30,45,60,90,120]);else if(key==="hr")step=chooseNiceStep(range,9,[1,2,5,10,20,25,50]);else if(key==="cadence")step=chooseNiceStep(range,9,[1,2,5,10,20,25,50]);else step=chooseNiceStep(range,9,[1,2,5,10,20,25,50,100,200]);let min=Math.floor((lo-step*.5)/step)*step,max=Math.ceil((hi+step*.5)/step)*step;if(key==="pace"){min=Math.max(60,min);max=Math.min(1800,max);}else if(key==="hr")min=Math.max(30,min);else if(key==="cadence")min=Math.max(0,min);if(max<=min)max=min+step;const ticks=[];for(let v=min,i=0;v<=max+step*.05&&i<30;v+=step,i++)ticks.push(Number(v.toFixed(6)));return{min,max,ticks,step};}
+function activityChartDomain(series,key){
+  let vals=series.map(x=>x.value).filter(Number.isFinite);if(!vals.length)return{min:0,max:1,ticks:[0,1]};vals.sort((a,b)=>a-b);
+  const q=p=>vals[Math.min(vals.length-1,Math.max(0,Math.floor((vals.length-1)*p)))],lo=q(.02),hi=q(.98),actualMin=vals[0],actualMax=vals.at(-1),range=Math.max(1,hi-lo);
+  let step,min,max;
+  if(key==="hr"){
+    min=Math.min(100,Math.floor(actualMin/10)*10);max=Math.max(200,Math.ceil(actualMax/10)*10);step=max-min>125?25:20;
+  }else if(key==="cadence"){
+    const pad=Math.max(12,(actualMax-actualMin)*.65);min=Math.max(0,Math.floor((actualMin-pad)/5)*5);max=Math.ceil((actualMax+pad)/5)*5;if(max-min<40){const mid=(max+min)/2;min=Math.max(0,Math.floor((mid-20)/5)*5);max=Math.ceil((mid+20)/5)*5;}step=5;
+  }else{
+    if(key==="pace")step=chooseNiceStep(range,9,[5,10,15,20,30,45,60,90,120]);else step=chooseNiceStep(range,9,[1,2,5,10,20,25,50,100,200]);
+    min=Math.floor((lo-step*.5)/step)*step;max=Math.ceil((hi+step*.5)/step)*step;
+    if(key==="pace"){min=Math.max(60,min);max=Math.min(1800,max);}
+  }
+  if(max<=min)max=min+step;const ticks=[];for(let v=min,i=0;v<=max+step*.05&&i<40;v+=step,i++)ticks.push(Number(v.toFixed(6)));return{min,max,ticks,step};
+}
 function downsampleSeries(series,maxPoints=900){if(series.length<=maxPoints)return series;const step=series.length/maxPoints,out=[];for(let i=0;i<maxPoints;i++)out.push(series[Math.min(series.length-1,Math.floor(i*step))]);return out;}
 function integerKmTicks(totalM){const totalKm=Math.max(0,(Number(totalM)||0)/1000),target=activityChartZoom>=4?12:activityChartZoom>=2?8:5,desired=totalKm/Math.max(1,target),steps=[1,2,5,10,20,50,100,200],step=steps.find(s=>s>=desired)||steps.at(-1),ticks=[];for(let km=0;km<=Math.floor(totalKm/step)*step+1e-9;km+=step)ticks.push(km);if(totalKm>=1&&ticks.length===1)ticks.push(Math.floor(totalKm));return{step,ticks,totalKm};}
 function renderActivityChart(){if(!currentActivityChartKey)return;hideActivityChartReadout();const cfg=activityChartConfig()[currentActivityChartKey],raw=activityStreamSeries(currentActivityChartKey),series=downsampleSeries(raw),svg=ui.activityChart,H=220,L=38,R=7,T=14,B=30,W=360*activityChartZoom,plotX0=L+5,plotW=W-plotX0-R,plotH=H-T-B;if(!series.length){svg.innerHTML='<text class="chart-empty" x="180" y="110" text-anchor="middle">Sin datos</text>';return;}const dom=activityChartDomain(series,currentActivityChartKey),min=dom.min,max=dom.max,invert=currentActivityChartKey==="pace",y=v=>invert?T+(v-min)/(max-min)*plotH:T+(max-v)/(max-min)*plotH,streamTotal=Math.max(1,...series.map(x=>Number(x.distance)||0)),knownTotal=activityDistanceM(currentActivityDetail),totalDist=Number.isFinite(knownTotal)&&knownTotal>0?knownTotal:streamTotal,x=d=>plotX0+((Number(d.distance)||((d.i/(Math.max(1,series.length-1)))*totalDist))/totalDist)*plotW;svg.setAttribute("viewBox",`0 0 ${W} ${H}`);svg.style.width=`${activityChartZoom*100}%`;let markup="";for(const val of dom.ticks){const yy=y(val),lab=currentActivityChartKey==="pace"?formatPaceValue(val):formatNatural(val,0);markup+=`<line class="chart-grid" x1="${plotX0}" y1="${yy}" x2="${W-R}" y2="${yy}"/><text class="chart-label" x="${L-1}" y="${yy+3}" text-anchor="end">${lab}</text>`;}const kmAxis=integerKmTicks(totalDist);for(let i=0;i<kmAxis.ticks.length;i++){const km=kmAxis.ticks[i],xx=plotX0+((km*1000)/totalDist)*plotW;markup+=`<line class="chart-grid" x1="${xx}" y1="${T}" x2="${xx}" y2="${T+plotH}" opacity=".35"/><text class="chart-label" x="${xx}" y="${H-8}" text-anchor="${i===0?"start":i===kmAxis.ticks.length-1?"end":"middle"}">${km} km</text>`;}const pts=series.map(d=>`${x(d)},${y(d.value)}`).join(" ");markup+=`<polyline class="activity-chart-line" points="${pts}"/>`;svg.innerHTML=markup;svg.dataset.chartMin=String(min);svg.dataset.chartMax=String(max);svg.dataset.chartInvert=invert?"1":"0";svg.dataset.plotX0=String(plotX0);svg.dataset.plotW=String(plotW);svg.dataset.totalDist=String(totalDist);svg.dataset.top=String(T);svg.dataset.plotH=String(plotH);svg.dataset.width=String(W);svg.dataset.unit=cfg.unit;}
@@ -3644,7 +4043,47 @@ function inferIntervalPhases(rows){const phases=new Array(rows.length).fill(null
 function elevationClass(v){return!Number.isFinite(v)||Math.round(v)===0?"":v>0?"elev-pos":"elev-neg";}
 function signedElevation(v){if(!Number.isFinite(v))return"—";const n=Math.round(v);return`${n>0?"+":n<0?"−":""}${Math.abs(n)}`;}
 function phaseEmoji(phase){return phase==="Calentamiento"?"🔥":phase==="Bloque principal"?"⚡":phase==="Enfriamiento"?"❄️":"";}
-function renderActivityLaps(){let source=rawActivityLaps(currentActivityDetail);const hasReal=source.length>0;if(!source.length&&isRun(currentActivityDetail))source=syntheticKmLaps();let rows=source.map((l,i)=>{const rawDistance=lapDistance(l),d=snapIntervalDistance(rawDistance),t=lapTime(l);return{raw:l,index:i,rawDistance,d,t,p:lapPace(l,d),hr:lapHr(l),elev:lapNetElevation(l)};}).filter(x=>(x.d||x.t)&&(!hasReal||((x.rawDistance||0)>=30||(x.t||0)>=10)));ui.activityLaps.classList.toggle("hidden",!rows.length);if(!rows.length){ui.activityLapsRows.innerHTML="";return;}const phasePlan=hasReal?inferIntervalPhases(rows):{quality:false,phases:new Array(rows.length).fill(null)},quality=!!phasePlan.quality,barStats=paceVisualStats(rows),groups=[];if(quality){for(const phase of["Calentamiento","Bloque principal","Enfriamiento"]){const part=rows.filter((_,i)=>phasePlan.phases[i]===phase);if(part.length)groups.push({phase,rows:part});}}else groups.push({phase:null,rows});let lapNumber=0;ui.activityLapsRows.innerHTML=groups.map(group=>`<div class="activity-lap-group"><div class="activity-lap-group-title${group.phase?"":" hidden"}">${group.phase?`${phaseEmoji(group.phase)} ${group.phase}`:""}</div><div class="activity-lap-columns"><span>${quality?"Distancia":"Km"}</span><span>Ritmo</span><span></span><span>Desnivel</span><span>FC</span></div>${group.rows.map(row=>{lapNumber++;const visual=activityPaceVisual(row.p,barStats),eClass=elevationClass(row.elev),left=quality?formatIntervalDistance(row.d):((row===rows[rows.length-1]&&Number.isFinite(row.d)&&row.d<950)?formatNatural(row.d/1000,2):String(lapNumber));return`<div class="activity-lap-row"><div class="activity-lap-distance">${left}</div><div class="activity-lap-pace">${row.p?formatPaceValue(row.p):"—"}</div><div class="activity-pace-track"><div class="activity-pace-fill" style="width:${visual.width.toFixed(1)}%;background:${visual.color}"></div></div><div class="activity-lap-elev ${eClass}">${signedElevation(row.elev)}</div><div class="activity-lap-hr">${row.hr?formatNatural(row.hr,0):"—"}</div></div>`;}).join("")}</div>`).join("");}
+function activityLapRows(){
+  let source=rawActivityLaps(currentActivityDetail);const hasReal=source.length>0;if(!source.length&&isRun(currentActivityDetail))source=syntheticKmLaps();
+  const rows=source.map((l,i)=>{const rawDistance=lapDistance(l),d=snapIntervalDistance(rawDistance),t=lapTime(l);return{raw:l,index:i,rawDistance,d,t,p:lapPace(l,d),hr:lapHr(l),elev:lapNetElevation(l)};}).filter(x=>(x.d||x.t)&&(!hasReal||((x.rawDistance||0)>=30||(x.t||0)>=10)));
+  return{rows,hasReal};
+}
+function lapBarHeight(p,rows){
+  const paces=rows.map(x=>x.p).filter(Number.isFinite);if(!paces.length||!Number.isFinite(p))return 18;const speeds=paces.map(x=>3600/x),speed=3600/p,min=Math.min(...speeds),max=Math.max(...speeds);if(max-min<.05)return 72;return 30+70*((speed-min)/(max-min));
+}
+function renderActivityLapBars(rows){
+  if(!ui.activityLapBars)return;const barStats=paceVisualStats(rows),width=Math.max(100,rows.length*26*activityLapZoom);
+  ui.activityLapBars.style.width=`max(100%, ${width}px)`;
+  ui.activityLapBars.innerHTML=rows.map((row,i)=>{const visual=activityPaceVisual(row.p,barStats),h=lapBarHeight(row.p,rows),selected=currentActivityLapIndex===row.index?" selected":"";return`<div class="activity-lap-bar-wrap${selected}" data-lap-index="${row.index}"><div class="activity-lap-bar" style="height:${h.toFixed(1)}%;background:${visual.color}"></div><div class="activity-lap-bar-label">${i+1}</div></div>`;}).join("");
+  updateActivityLapSelection(rows);
+}
+function updateActivityLapSelection(rows=null){
+  const data=rows||activityLapRows().rows,selected=data.find(x=>x.index===currentActivityLapIndex)||null;
+  qsa(".activity-lap-bar-wrap",ui.activityLapBars).forEach(x=>x.classList.toggle("selected",Number(x.dataset.lapIndex)===currentActivityLapIndex));
+  qsa(".activity-lap-row",ui.activityLapsRows).forEach(x=>x.classList.toggle("selected",Number(x.dataset.lapIndex)===currentActivityLapIndex));
+  if(!ui.activityLapReadout)return;
+  if(!selected){ui.activityLapReadout.textContent="Pulsa una barra para seleccionar una vuelta";return;}
+  ui.activityLapReadout.textContent=`Vuelta ${data.findIndex(x=>x.index===selected.index)+1} · ${formatIntervalDistance(selected.d)} · ${selected.p?formatPaceValue(selected.p):"—"}${selected.hr?` · ${formatNatural(selected.hr,0)} ppm`:""}`;
+}
+function selectActivityLap(index){
+  currentActivityLapIndex=Number(index);const rows=activityLapRows().rows;updateActivityLapSelection(rows);
+  const row=ui.activityLapsRows?.querySelector?.(`[data-lap-index="${currentActivityLapIndex}"]`);if(row?.scrollIntoView)row.scrollIntoView({block:"nearest",behavior:"smooth"});
+}
+function activityLapTouchDistance(touches){if(!touches||touches.length<2)return 0;return Math.hypot(touches[0].clientX-touches[1].clientX,touches[0].clientY-touches[1].clientY);}
+function setActivityLapZoom(next,anchorX=null){
+  const sc=ui.activityLapBarsScroll;if(!sc)return;const oldW=Math.max(sc.clientWidth,ui.activityLapBars?.scrollWidth||sc.clientWidth),local=Number.isFinite(anchorX)?anchorX:sc.clientWidth/2,ratio=oldW>0?(sc.scrollLeft+local)/oldW:.5;activityLapZoom=clamp(Number(next)||1,1,8);renderActivityLapBars(activityLapRows().rows);requestAnimationFrame(()=>{const nw=Math.max(sc.clientWidth,ui.activityLapBars?.scrollWidth||sc.clientWidth);sc.scrollLeft=Math.max(0,Math.min(sc.scrollWidth-sc.clientWidth,ratio*nw-local));});
+}
+function handleActivityLapPinchStart(e){if(e.touches?.length===2){activityLapPinchStartDistance=activityLapTouchDistance(e.touches);activityLapPinchStartZoom=activityLapZoom;}}
+function handleActivityLapPinchMove(e){if(e.touches?.length!==2||!activityLapPinchStartDistance)return;e.preventDefault();const d=activityLapTouchDistance(e.touches);if(!d)return;const rect=ui.activityLapBarsScroll.getBoundingClientRect(),mid=(e.touches[0].clientX+e.touches[1].clientX)/2-rect.left;setActivityLapZoom(clamp(activityLapPinchStartZoom*(d/activityLapPinchStartDistance),1,8),mid);}
+function handleActivityLapPinchEnd(e){if(!e.touches||e.touches.length<2)activityLapPinchStartDistance=0;}
+function renderActivityLaps(){
+  const{rows,hasReal}=activityLapRows();ui.activityLaps.classList.toggle("hidden",!rows.length);if(!rows.length){ui.activityLapsRows.innerHTML="";if(ui.activityLapBars)ui.activityLapBars.innerHTML="";return;}
+  if(currentActivityLapIndex!=null&&!rows.some(x=>x.index===currentActivityLapIndex))currentActivityLapIndex=null;
+  const phasePlan=hasReal?inferIntervalPhases(rows):{quality:false,phases:new Array(rows.length).fill(null)},quality=!!phasePlan.quality,groups=[];if(quality){for(const phase of["Calentamiento","Bloque principal","Enfriamiento"]){const part=rows.filter((_,i)=>phasePlan.phases[i]===phase);if(part.length)groups.push({phase,rows:part});}}else groups.push({phase:null,rows});
+  renderActivityLapBars(rows);
+  ui.activityLapsRows.innerHTML=groups.map(group=>`<div class="activity-lap-group"><div class="activity-lap-group-title${group.phase?"":" hidden"}">${group.phase?`${phaseEmoji(group.phase)} ${group.phase}`:""}</div><div class="activity-lap-columns"><span>#</span><span>Distancia</span><span>Ritmo</span><span>Desnivel</span><span>FC</span></div>${group.rows.map(row=>{const globalIndex=rows.findIndex(x=>x.index===row.index)+1,eClass=elevationClass(row.elev);return`<div class="activity-lap-row${currentActivityLapIndex===row.index?" selected":""}" data-lap-index="${row.index}"><div class="activity-lap-index">${globalIndex}</div><div class="activity-lap-distance">${formatIntervalDistance(row.d)}</div><div class="activity-lap-pace">${row.p?formatPaceValue(row.p):"—"}</div><div class="activity-lap-elev ${eClass}">${signedElevation(row.elev)}</div><div class="activity-lap-hr">${row.hr?formatNatural(row.hr,0):"—"}</div></div>`;}).join("")}</div>`).join("");
+  updateActivityLapSelection(rows);
+}
 function normalizeLatLngStreams(payload){const raw=payload?.streams??payload?.data??payload;if(!raw)return[];let lat=null,lng=null;if(Array.isArray(raw)){const s=raw.find(x=>String(x?.type||x?.name||"").toLowerCase()==="latlng");if(s){lat=s.data||s.values||null;lng=s.data2||s.values2||null;}}else if(raw.latlng){if(Array.isArray(raw.latlng)&&Array.isArray(raw.latlng[0]))return raw.latlng.filter(p=>Array.isArray(p)&&Number.isFinite(Number(p[0]))&&Number.isFinite(Number(p[1]))).map(p=>[Number(p[0]),Number(p[1])]);lat=raw.latlng.data||raw.latlng.latitude||null;lng=raw.latlng.data2||raw.latlng.longitude||null;}if(Array.isArray(lat)&&Array.isArray(lng))return lat.map((v,i)=>[Number(v),Number(lng[i])]).filter(p=>Number.isFinite(p[0])&&Number.isFinite(p[1])&&Math.abs(p[0])<=90&&Math.abs(p[1])<=180&&(p[0]!==0||p[1]!==0));return[];}
 function renderActivityMap(payload,a=currentActivityDetail){if(currentActivityMap){currentActivityMap.remove();currentActivityMap=null;}if(!a||!sportTypicallyGps(a)){ui.activityMap.classList.add("hidden");ui.activityMap.innerHTML="";return;}ui.activityMap.classList.remove("hidden");const pts=normalizeLatLngStreams(payload);if(pts.length<2){ui.activityMap.innerHTML='<div class="activity-map-empty">Recorrido no disponible para esta actividad.</div>';return;}if(!window.L){ui.activityMap.innerHTML='<div class="activity-map-empty">No se ha podido cargar el mapa.</div>';return;}ui.activityMap.innerHTML="";currentActivityMap=L.map(ui.activityMap,{zoomControl:false,attributionControl:true});L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"&copy; OpenStreetMap"}).addTo(currentActivityMap);const route=L.polyline(pts,{weight:4.5,opacity:.9,color:"#ff453a",lineCap:"round",lineJoin:"round"}).addTo(currentActivityMap),startIcon=L.divIcon({className:"atlas-map-icon",html:'<div class="atlas-route-pin atlas-route-start">▶</div>',iconSize:[27,27],iconAnchor:[13.5,13.5]}),finishIcon=L.divIcon({className:"atlas-map-icon",html:'<div class="atlas-route-pin atlas-route-finish">🏁</div>',iconSize:[27,27],iconAnchor:[13.5,13.5]});L.marker(pts[0],{icon:startIcon,title:"Inicio"}).addTo(currentActivityMap);L.marker(pts[pts.length-1],{icon:finishIcon,title:"Final"}).addTo(currentActivityMap);currentActivityMap.fitBounds(route.getBounds(),{padding:[18,18]});setTimeout(()=>currentActivityMap?.invalidateSize(),80);}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
@@ -3759,7 +4198,17 @@ function scoreRestingHr(delta){if(!Number.isFinite(delta))return null;if(delta<=
 function scoreFreshness(v){if(!Number.isFinite(v))return null;if(v<=-40)return 10;if(v<-30)return 10+(v+40)*3;if(v<-20)return 40+(v+30)*2.5;if(v<-10)return 65+(v+20)*2.5;if(v<=5)return 90+(v+10)*(10/15);if(v<=15)return 100-(v-5)*1.2;if(v<=30)return 88-(v-15)*1.2;return clamp(70-(v-30)*.8,45,70);}
 function trainingLoadContext(activities,anchor){const loads=activities.map(a=>({date:activityDate(a),load:Number(pick(a,["icu_training_load","training_load"]))})).filter(x=>x.date&&Number.isFinite(x.load)&&x.load>=0);const start7=addDays(anchor,-6),start28=addDays(anchor,-27),load7=loads.filter(x=>x.date>=start7&&x.date<=anchor).reduce((s,x)=>s+x.load,0),load28=loads.filter(x=>x.date>=start28&&x.date<=anchor).reduce((s,x)=>s+x.load,0),weekly=load28/4;return{load7,load28,ratio:weekly>=10?load7/weekly:null};}
 function scoreLoadRatio(r){if(!Number.isFinite(r))return null;if(r<.45)return 92;if(r<=.9)return 92+(r-.45)*(8/.45);if(r<=1.1)return 100;if(r<=1.3)return 100-(r-1.1)*75;if(r<=1.6)return 85-(r-1.3)*100;if(r<=2)return 55-(r-1.6)*87.5;return clamp(20-(r-2)*10,5,20);}
-function acuteRecovery(activities){const now=Date.now(),candidates=activities.map(a=>({load:Number(pick(a,["icu_training_load","training_load"])),end:activityEndMs(a)})).filter(x=>Number.isFinite(x.load)&&x.load>0&&Number.isFinite(x.end)&&x.end<=now).sort((a,b)=>b.end-a.end),active=[];for(const x of candidates){const hoursSince=(now-x.end)/36e5;if(hoursSince>96)break;const recoveryHours=clamp(24+x.load*.8,24,96);if(hoursSince>=recoveryHours)continue;const maxPenalty=clamp(2+x.load*.14,3,20),remaining=clamp(1-hoursSince/recoveryHours,0,1),penalty=maxPenalty*Math.pow(remaining,1.2);if(penalty>.15)active.push({...x,hoursSince,recoveryHours,penalty});}if(!active.length)return{penalty:0,hoursSince:null,recoveryHours:0,activeCount:0};const last=active[0],penalty=clamp(active.reduce((s,x)=>s+x.penalty,0),0,28);return{penalty,hoursSince:last.hoursSince,recoveryHours:last.recoveryHours,load:last.load,activeCount:active.length};}
+function acuteRecovery(activities){
+  const now=Date.now(),candidates=activities.map(a=>({load:Number(pick(a,["icu_training_load","training_load"])),end:activityEndMs(a),durationSec:Number(pick(a,["elapsed_time","moving_time","timer_time","duration"]))||0})).filter(x=>Number.isFinite(x.load)&&x.load>0&&Number.isFinite(x.end)&&x.end<=now).sort((a,b)=>b.end-a.end),active=[];
+  for(const x of candidates){
+    const hoursSince=(now-x.end)/36e5;if(hoursSince>96)break;
+    const durationH=Math.max(0,x.durationSec/3600),recoveryHours=clamp(18+x.load*.78+durationH*10,18,96);if(hoursSince>=recoveryHours)continue;
+    const maxPenalty=clamp(4+x.load*.22+durationH*4,5,24),remaining=clamp(1-hoursSince/recoveryHours,0,1),fastDecay=Math.exp(-hoursSince/8),slowDecay=Math.pow(remaining,1.08),penalty=maxPenalty*(.60*fastDecay+.40*slowDecay);
+    if(penalty>.15)active.push({...x,hoursSince,recoveryHours,maxPenalty,penalty});
+  }
+  if(!active.length)return{penalty:0,hoursSince:null,recoveryHours:0,activeCount:0};
+  const last=active[0],penalty=clamp(active.reduce((s,x)=>s+x.penalty,0),0,32);return{penalty,hoursSince:last.hoursSince,recoveryHours:last.recoveryHours,load:last.load,activeCount:active.length,maxPenalty:last.maxPenalty};
+}
 function activityEndMs(a){const raw=a?.start_date_local||a?.start_date||a?.date;if(!raw)return NaN;const start=new Date(raw).getTime();if(!Number.isFinite(start))return NaN;const seconds=Number(pick(a,["elapsed_time","moving_time","timer_time","duration"]));return start+(Number.isFinite(seconds)&&seconds>0?seconds*1000:0);}
 function rollingMeanBefore(records,fields,anchor,days){if(!anchor)return null;const end=addDays(anchor,-1),start=addDays(end,-(days-1)),vals=[];for(const r of records){const d=String(r?.id||"").slice(0,10);if(!d||d<start||d>end)continue;const n=Number(pick(r,fields));if(Number.isFinite(n)&&n>0)vals.push(n);}return vals.length>=7?vals.reduce((a,b)=>a+b,0)/vals.length:null;}
 function latestWellnessDate(records){for(const r of records){const d=String(r?.id||"").slice(0,10);if(d)return d;}return null;}
@@ -3829,6 +4278,9 @@ async function exportDatabase(){try{const data={};for(const s of STORES)data[s]=
 async function importDatabase(e){const file=e.target.files?.[0];e.target.value="";if(!file)return;try{const p=JSON.parse(await file.text()),v=Number(p?.atlas?.schemaVersion);if(![1,2,3,4,5,6,7,8,9].includes(v)||!p?.data)throw new Error("Copia de ɅTLɅS no compatible.");const stores=v===1?["settings","meta","profile","activities","wellness"]:STORES;for(const s of stores){if(!db.objectStoreNames.contains(s))continue;const rec=p.data[s];if(!Array.isArray(rec)||!rec.length)continue;const tx=db.transaction(s,"readwrite"),st=tx.objectStore(s);for(const r of rec){if(s==="settings"&&r?.key==="clientToken")continue;st.put(r);}await txDone(tx);}await refreshAll();toast("✅ JSON importado.");}catch(err){toast(`⚠️ ${err.message}`,true);}}
 async function clearData(){if(!confirm("¿Borrar todos los datos deportivos locales? La conexión se conservará."))return;try{for(const s of DATA_STORES)await storeClear(s);await refreshAll();toast("✅ Base de datos vaciada.");}catch(e){toast(`⚠️ ${e.message}`,true);}}
 })();
+
+
+
 
 
 
