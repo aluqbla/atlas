@@ -1475,7 +1475,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{margin:0;padding:0;width:1
 
 (()=>{
 "use strict";
-const APP_VERSION="0.70.0",SCHEMA_VERSION=9,DB_NAME="atlas",DB_VERSION=2;
+const APP_VERSION="0.70.1",SCHEMA_VERSION=9,DB_NAME="atlas",DB_VERSION=2;
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -3023,6 +3023,11 @@ async function publishCurrentPlan(){
   }finally{ui.sessionPublishBtn.disabled=false;renderPlanPublicationStatus();}
 }
 function renderSessionGenerator(){const s=currentSessionPlan,state=currentPlanPublishState(),published=["published","dirty","error"].includes(state),title=published?"Sesiones del plan":"Sesiones propuestas";ui.sessionGeneratorDate.textContent="";if(ui.sessionGeneratorTitle)ui.sessionGeneratorTitle.textContent=title;if(ui.sessionGeneratorListTitle)ui.sessionGeneratorListTitle.textContent="";if(!s?.ok){ui.sessionGeneratorWeeks.textContent="—";ui.sessionGeneratorRuns.textContent="—";ui.sessionGeneratorStrength.textContent="—";ui.sessionGeneratorAudit.innerHTML="";ui.sessionGeneratorList.innerHTML='<div class="engine-list-empty">No hay distribución suficiente para generar sesiones.</div>';ui.sessionGeneratorReading.textContent="";return;}ui.sessionGeneratorWeeks.textContent=String(s.weeks.length);ui.sessionGeneratorRuns.textContent=String(s.runCount);ui.sessionGeneratorStrength.textContent=String(s.strengthCount);ui.sessionGeneratorAudit.innerHTML="";ui.sessionGeneratorList.innerHTML=s.weeks.map(w=>`<div class="session-preview-week"><div class="session-preview-head"><div class="session-preview-date">${esc(sessionWeekCompactRange(w.start,w.end))}</div><div class="session-preview-title">Semana ${w.weekIndex} · ${esc(w.phase)} · ${esc(w.role)}</div>${w.secondaryFocus?`<span class="secondary-focus-chip">🏁 ${esc(secondaryFocusLabel(w.secondaryFocus))} · ${w.secondaryFocus.weeksToRace} sem</span>`:""}</div>${renderSessionPreviewWeekDays(w)}</div>`).join("");ui.sessionGeneratorReading.textContent="";renderPlanPublicationStatus();requestAnimationFrame(fitSessionPreviewHeadings);}
+function renderSessionGeneratorCard(){
+  const state=currentPlanPublishState(),published=["published","dirty","error"].includes(state);
+  if(ui.sessionGeneratorCardTitle)ui.sessionGeneratorCardTitle.textContent=published?"Sesiones del plan":"Sesiones propuestas";
+  if(ui.sessionGeneratorMeta)ui.sessionGeneratorMeta.textContent="";
+}
 function sessionPreviewIcon(type){
   if(type==="strength")return"🏋🏻";
   if(type==="race"||type==="raceA")return"🏁";
