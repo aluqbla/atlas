@@ -1682,7 +1682,7 @@ html,body{overscroll-behavior-y:none}
 
 (()=>{
 "use strict";
-const APP_VERSION="0.76.0",SCHEMA_VERSION=9,DB_NAME="atlas",DB_VERSION=2;
+const APP_VERSION="0.77.0",SCHEMA_VERSION=9,DB_NAME="atlas",DB_VERSION=2;
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -4255,7 +4255,24 @@ function paceVisualStats(rows){const p=rows.map(x=>x.p).filter(Number.isFinite).
 function activityPaceVisual(p,stats){
   const pace=Number(p);
   if(!Number.isFinite(pace)||pace<=0)return{color:"#8fc9ee",width:24};
-  return{color:"#8fc9ee",width:absolutePaceWidth(pace)};
+  const stops=[
+    [180,[3,21,36]],[195,[4,32,54]],[210,[4,47,79]],[225,[5,63,104]],
+    [240,[6,82,135]],[255,[8,103,165]],[270,[10,124,194]],[285,[14,143,220]],
+    [300,[29,155,240]],[315,[52,170,243]],[330,[78,185,246]],[345,[104,199,248]],
+    [360,[132,211,250]],[375,[156,221,251]],[390,[178,229,252]],[405,[197,235,253]],
+    [420,[214,240,253]],[450,[228,246,254]],[480,[237,249,255]]
+  ];
+  let a=stops[0],b=stops[stops.length-1];
+  if(pace<=a[0])b=a;
+  else if(pace>=b[0])a=b;
+  else{
+    for(let i=1;i<stops.length;i++){
+      if(pace<=stops[i][0]){a=stops[i-1];b=stops[i];break;}
+    }
+  }
+  const t=a[0]===b[0]?0:clamp((pace-a[0])/(b[0]-a[0]),0,1);
+  const rgb=a[1].map((v,i)=>Math.round(v+(b[1][i]-v)*t));
+  return{color:rgbHex(rgb),width:absolutePaceWidth(pace)};
 }
 function snapIntervalDistance(d){const n=Number(d);if(!(n>0))return null;const targets=[100,200,300,400,500,600,800,1000,1200,1500,1600,2000,3000,5000,10000];let best=n,bestDiff=Infinity;for(const t of targets){const diff=Math.abs(n-t),tol=Math.max(8,t*.035);if(diff<=tol&&diff<bestDiff){best=t;bestDiff=diff;}}return best;}
 function formatIntervalDistance(d){if(!(d>0))return"—";if(d<1000)return`${Math.round(d)} m`;const km=d/1000;return`${formatNatural(km,Math.abs(km-Math.round(km))<.001?0:2)} km`;}
@@ -5452,6 +5469,43 @@ body.profile-detail-open .nav{display:none!important}
     right:13px!important
   }
   .activity-lap-bar-label{font-size:9.4px!important}
+}
+</style>
+
+
+<style id="atlas-v077-style">
+html{min-height:100%!important;overflow-x:hidden!important;overflow-y:auto!important}
+body{
+  min-height:100dvh!important;overflow-x:hidden!important;overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;overscroll-behavior-y:auto!important;
+  padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 20px)!important
+}
+.app{min-height:100dvh!important;overflow:visible!important}
+.view{overflow:visible!important;min-height:0!important}
+.metric-detail,.state-detail,.activity-detail,.plan-detail,.data-detail{
+  overflow-x:hidden!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;
+  overscroll-behavior-y:auto!important
+}
+.nav{
+  position:fixed!important;left:50%!important;top:auto!important;
+  bottom:calc(8px + env(safe-area-inset-bottom))!important;
+  transform:translate3d(-50%,0,0)!important;margin:0!important;z-index:90!important
+}
+body.profile-detail-open .nav{display:none!important}
+@media (min-width:600px) and (max-width:999px){
+  body{background:#000!important}
+  .app{width:100%!important;max-width:820px!important;margin:0 auto!important;padding-left:24px!important;padding-right:24px!important}
+  .atlas-header{max-width:760px!important;margin-left:auto!important;margin-right:auto!important}
+  .metric-strip,.training-state,.activity-list,.plan-days,.data-native-hero,.data-native-list{max-width:760px!important;margin-left:auto!important;margin-right:auto!important}
+  .page-header,.section-bar,.activities-toolbar,.activities-summary,.plan-toolbar,.plan-summary,.plan-today-btn{max-width:760px!important;margin-left:auto!important;margin-right:auto!important}
+  .activity-detail-inner,.metric-detail-inner,.state-detail-inner,.plan-detail-shell,.data-detail-inner{width:min(100%,760px)!important}
+  .activity-map{height:300px!important}.activity-chart{height:280px!important}.metric-chart{height:280px!important}.activity-lap-bars{min-height:230px!important}
+  .nav{width:min(700px,calc(100% - 36px))!important}
+}
+@media (min-width:900px) and (max-width:1199px) and (orientation:landscape){
+  .app{max-width:900px!important;padding-left:32px!important;padding-right:32px!important}
+  .activity-detail-inner,.metric-detail-inner,.state-detail-inner,.plan-detail-shell,.data-detail-inner{max-width:820px!important}
+  .activity-map{height:340px!important}.nav{width:min(740px,calc(100% - 48px))!important}
 }
 </style>
 
