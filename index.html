@@ -1073,35 +1073,35 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
   <div class="plan-detail-shell">
     <div class="plan-detail-top"><button class="plan-detail-back" id="planControlBack" aria-label="Volver">‹</button><div class="plan-detail-date">Plan</div></div>
     <div class="plan-detail-title-wrap"><div class="plan-detail-icon">🏁</div><div class="plan-detail-title">Plan de entrenamiento</div></div>
-    <div class="plan-control-group"><div class="plan-control-label">Configuración</div>
-    <button class="engine-v2-card goal" id="engineGoalCard" type="button">
-      <span class="engine-v2-copy"><span class="engine-v2-title" id="engineGoalTitle">Definir objetivo principal</span><span class="engine-v2-meta" id="engineGoalMeta"></span><span class="plan-goal-summary" id="planGoalSummary"></span></span>
-      <span class="engine-v2-arrow">›</span>
-    </button>
-    <button class="availability-card" id="availabilityCard" type="button">
-      <span class="engine-v2-icon">📅</span>
-      <span class="engine-v2-copy"><span class="engine-v2-title">Disponibilidad</span><span class="engine-v2-meta" id="availabilityMeta">Sin excepciones semanales</span></span>
-      <span class="engine-v2-arrow">›</span>
-    </button>
+
+    <div class="plan-goal-area">
+      <button class="engine-v2-card goal" id="engineGoalCard" type="button">
+        <span class="engine-v2-copy"><span class="engine-v2-title" id="engineGoalTitle">Definir objetivo principal</span><span class="engine-v2-meta" id="engineGoalMeta"></span><span class="plan-goal-summary" id="planGoalSummary"></span></span>
+        <span class="engine-v2-arrow">›</span>
+      </button>
     </div>
-    <div class="plan-control-group"><div class="plan-control-label">Plan</div>
-    <button class="engine-v2-card" id="trainingPacesCard" type="button">
-      <span class="engine-v2-icon">⏱️</span>
-      <span class="engine-v2-copy"><span class="engine-v2-title">Ritmos de entrenamiento</span><span class="engine-v2-meta" id="trainingPacesMeta">Se calculan con tu perfil y objetivo</span></span>
-      <span class="engine-v2-arrow">›</span>
-    </button>
-    <button class="session-generator-card" id="sessionGeneratorCard" type="button">
-      <span class="engine-v2-icon">📝</span>
-      <span class="engine-v2-copy"><span class="engine-v2-title" id="sessionGeneratorCardTitle">Sesiones propuestas</span><span class="engine-v2-meta" id="sessionGeneratorMeta">Pendiente de distribución semanal</span></span>
-      <span class="engine-v2-arrow">›</span>
-    </button>
-    </div>
-    <div class="plan-control-group"><div class="plan-control-label">Seguimiento</div>
-    <button class="adaptive-card" id="adaptiveEngineCard" type="button">
-      <span class="engine-v2-icon">🔄</span>
-      <span class="engine-v2-copy"><span class="engine-v2-title">Adaptación</span><span class="engine-v2-meta" id="adaptiveEngineMeta">Pendiente de inicio del plan</span></span>
-      <span class="engine-v2-arrow">›</span>
-    </button>
+
+    <div class="plan-home-links">
+      <button class="availability-card" id="availabilityCard" type="button">
+        <span class="engine-v2-icon">📅</span>
+        <span class="engine-v2-copy"><span class="engine-v2-title">Disponibilidad</span><span class="engine-v2-meta" id="availabilityMeta">Sin excepciones semanales</span></span>
+        <span class="engine-v2-arrow">›</span>
+      </button>
+      <button class="engine-v2-card" id="trainingPacesCard" type="button">
+        <span class="engine-v2-icon">⏱️</span>
+        <span class="engine-v2-copy"><span class="engine-v2-title">Ritmos de entrenamiento</span><span class="engine-v2-meta" id="trainingPacesMeta">Se calculan con tu perfil y objetivo</span></span>
+        <span class="engine-v2-arrow">›</span>
+      </button>
+      <button class="session-generator-card" id="sessionGeneratorCard" type="button">
+        <span class="engine-v2-icon">📝</span>
+        <span class="engine-v2-copy"><span class="engine-v2-title" id="sessionGeneratorCardTitle">Sesiones propuestas</span><span class="engine-v2-meta" id="sessionGeneratorMeta">Pendiente de distribución semanal</span></span>
+        <span class="engine-v2-arrow">›</span>
+      </button>
+      <button class="adaptive-card" id="adaptiveEngineCard" type="button">
+        <span class="engine-v2-icon">🔄</span>
+        <span class="engine-v2-copy"><span class="engine-v2-title">Adaptación</span><span class="engine-v2-meta" id="adaptiveEngineMeta">Pendiente de inicio del plan</span></span>
+        <span class="engine-v2-arrow">›</span>
+      </button>
     </div>
     <button class="metric-footer-back plan-detail-bottom" id="planControlBottomBack">Volver</button>
   </div>
@@ -1682,7 +1682,7 @@ html,body{overscroll-behavior-y:none}
 
 (()=>{
 "use strict";
-const APP_VERSION="0.72.0",SCHEMA_VERSION=9,DB_NAME="atlas",DB_VERSION=2;
+const APP_VERSION="0.75.0",SCHEMA_VERSION=9,DB_NAME="atlas",DB_VERSION=2;
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -1855,11 +1855,16 @@ function dataDetailFor(name){return name==="profile"?ui.dataProfileDetail:name==
 function openDataDetail(name){
   const detail=dataDetailFor(name);if(!detail)return;
   qsa(".data-detail").forEach(x=>{x.classList.add("hidden");x.setAttribute("aria-hidden","true");});
-  detail.classList.remove("hidden");detail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";detail.scrollTop=0;
+  detail.classList.remove("hidden");detail.setAttribute("aria-hidden","false");
+  document.body.classList.add("profile-detail-open");
+  document.body.style.overflow="hidden";
+  detail.scrollTop=0;
   if(name==="records")loadRunningRecords().catch(error=>{console.error("ɅTLɅS · mejores marcas",error);renderRunningRecordsError(error);});
 }
 function closeDataDetail(){
-  qsa(".data-detail").forEach(x=>{x.classList.add("hidden");x.setAttribute("aria-hidden","true");});document.body.style.overflow="";
+  qsa(".data-detail").forEach(x=>{x.classList.add("hidden");x.setAttribute("aria-hidden","true");});
+  document.body.classList.remove("profile-detail-open");
+  document.body.style.overflow="";
 }
 function togglePanel(name){const target=$(`panel-${name}`);if(!target)return;const open=!target.classList.contains("active");document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));if(open){target.classList.add("active");if(name==="records")loadRunningRecords().catch(error=>{console.error("ɅTLɅS · mejores marcas",error);renderRunningRecordsError(error);});setTimeout(()=>target.scrollIntoView({behavior:"smooth",block:"nearest"}),20);}}
 function toast(message,isError=false){clearTimeout(toastTimer);if(!ui.toast){console[isError?"error":"log"](message);return;}ui.toast.textContent=message;ui.toast.className="toast show"+(isError?" error":"");toastTimer=setTimeout(()=>{if(ui.toast)ui.toast.className="toast";},2600);}
@@ -2088,7 +2093,7 @@ function recordMedal(i){return["🥇","🥈","🥉"][i]||`${i+1}.`;}
 function renderRunningRecords(records=currentRunningRecords){
   if(!ui.recordsList)return;const base=Array.isArray(records)?records:RUN_RECORD_DISTANCES.map(x=>({...x,top:[]})),runs=currentActivities.filter(isRun),longestCandidates=runs.map(a=>({key:"longest",label:"Distancia más larga",meters:activityDistanceM(a),secs:activityElapsedSec(a),id:String(a.id),date:activityDate(a),activityName:activityName(a),activityDistanceM:activityDistanceM(a)})).filter(x=>Number.isFinite(x.meters)&&x.meters>0).sort((a,b)=>b.meters-a.meters).slice(0,3),list=[...base,{key:"longest",label:"Distancia más larga",top:longestCandidates}];if(ui.recordsState)ui.recordsState.textContent="";
   const emojis={"1k":"⚡","5k":"🏃🏻‍♂️","10k":"🔥",half:"🎯",marathon:"🏁",longest:"🗺️"};
-  ui.recordsList.innerHTML=list.map(section=>{const top=Array.isArray(section.top)?section.top.filter(x=>x&&(x.secs>0||section.key==="longest")):[];return`<section class="record-podium"><div class="record-podium-head"><div class="record-podium-title">${esc(section.label)}</div><div class="record-podium-emoji">${emojis[section.key]||"🏅"}</div></div><div class="record-podium-list">${top.length?top.map((r,i)=>{const isLongest=section.key==="longest",pace=r.secs>0&&r.meters>0?r.secs/(r.meters/1000):null,main=isLongest?`${formatNatural(r.meters/1000,2)} km`:formatDuration(Math.round(r.secs)),sub=isLongest&&r.secs>0?formatDuration(Math.round(r.secs)):(r.date?engineV2DateLabel(r.date):""),paceText=Number.isFinite(pace)?`${formatPaceValue(pace)} min/km`:"—";return`<button class="record-podium-row" type="button" data-record-activity-id="${esc(r.id)}"><span class="record-rank">${recordMedal(i)}</span><span><span class="record-podium-time">${esc(main)}</span><span class="record-podium-sub">${esc(sub)}</span></span><span class="record-podium-pace">${esc(paceText)}</span></button>`;}).join(""):'<div class="record-podium-empty">Sin registro disponible</div>'}</div></section>`;}).join("");
+  ui.recordsList.innerHTML=list.map(section=>{const top=Array.isArray(section.top)?section.top.filter(x=>x&&(x.secs>0||section.key==="longest")):[];return`<section class="record-podium"><div class="record-podium-head"><div class="record-podium-title">${esc(section.label)}</div><div class="record-podium-emoji">${emojis[section.key]||"🏅"}</div></div><div class="record-podium-list">${top.length?top.map((r,i)=>{const isLongest=section.key==="longest",pace=r.secs>0&&r.meters>0?r.secs/(r.meters/1000):null,main=isLongest?`${formatNatural(r.meters/1000,2)} km`:formatDuration(Math.round(r.secs)),sub=r.date?engineV2DateLabel(r.date):"",paceText=Number.isFinite(pace)?`${formatPaceValue(pace)} min/km`:"—";return`<button class="record-podium-row" type="button" data-record-activity-id="${esc(r.id)}"><span class="record-rank">${recordMedal(i)}</span><span class="record-podium-value">${esc(main)}</span><span class="record-podium-value record-podium-pace">${esc(paceText)}</span><span class="record-podium-value record-podium-date">${esc(sub)}</span></button>`;}).join(""):'<div class="record-podium-empty">Sin registro disponible</div>'}</div></section>`;}).join("");
 }
 function renderRunningRecordsLoading(){ui.recordsState.textContent="Calculando…";ui.recordsList.innerHTML='<div class="records-loading"><span class="records-spinner"></span><span>Calculando mejores marcas del histórico…</span></div>';}
 function renderRunningRecordsError(error){
@@ -2157,7 +2162,7 @@ function profileZoneRows(sport){
   const thresholdSec=sportThresholdPaceSecKm(sport),lthr=Number(sport?.lthr),maxHr=Number(sport?.max_hr),pace=atlasPaceZones(thresholdSec),hr=atlasHrZones(lthr,maxHr);
   return{pace,hr,thresholdSec};
 }
-function renderProfilePanel(athlete){const a=athlete||{},height=Number(a.height),weight=Number(a.icu_weight??a.weight),sport=runningSportSettings(a),thresholdSec=sportThresholdPaceSecKm(sport),name=a.name||profileLabel(null),location=[a.city,a.state,a.country].filter(Boolean).join(" · ")||"—";if(ui.dataHomeName)ui.dataHomeName.textContent=name;if(ui.profileTileNote)ui.profileTileNote.textContent=location;const hh=$("profileHomeHeight"),hw=$("profileHomeWeight");if(hh)hh.textContent=Number.isFinite(height)?`${formatNatural(height,2)} m`:"—";if(hw)hw.textContent=Number.isFinite(weight)?`${formatNatural(weight,1)} kg`:"—";if(ui.profileName)ui.profileName.textContent=name;if(ui.profileState)ui.profileState.textContent=a.id?"Sincronizado con Intervals.icu":"Sin datos";if(ui.profileLocation)ui.profileLocation.textContent=location;if(ui.profileHeight)ui.profileHeight.textContent=Number.isFinite(height)?`${formatNatural(height,2)} m`:"—";if(ui.profileWeight)ui.profileWeight.textContent=Number.isFinite(weight)?`${formatNatural(weight,1)} kg`:"—";const rows=[profileInsightRow("Umbral de lactato",Number.isFinite(thresholdSec)?`${formatPaceValue(thresholdSec)} min/km`:"—"),profileInsightRow("FC umbral",Number.isFinite(Number(sport?.lthr))?`${formatNatural(Number(sport.lthr),0)} ppm`:"—"),profileInsightRow("FC máxima",Number.isFinite(Number(sport?.max_hr))?`${formatNatural(Number(sport.max_hr),0)} ppm`:"—")].join("");if(ui.profileRunningRows)ui.profileRunningRows.innerHTML=rows;const pr=$("performanceRunningRows");if(pr)pr.innerHTML=rows;const zones=profileZoneRows(sport),zoneBox=$("performanceZones");if(zoneBox){const sections=[];if(zones.pace.length)sections.push(`<div class="profile-zone-section"><div class="profile-zone-title">Ritmo · ATLAS</div>${zones.pace.map(z=>`<div class="profile-zone-row"><span class="profile-zone-name">${esc(z.name)}</span><span class="profile-zone-value">${esc(z.value)}</span></div>`).join("")}</div>`);if(zones.hr.length)sections.push(`<div class="profile-zone-section"><div class="profile-zone-title">Frecuencia cardiaca · ATLAS</div>${zones.hr.map(z=>`<div class="profile-zone-row"><span class="profile-zone-name">${esc(z.name)}</span><span class="profile-zone-value">${esc(z.value)}</span></div>`).join("")}</div>`);zoneBox.innerHTML=sections.join("")||'<div class="records-empty">No hay todavía un umbral de ritmo o frecuencia cardiaca suficiente para calcular zonas ATLAS.</div>';zoneBox.classList.remove("hidden");}if($("performanceCadenceInsight"))$("performanceCadenceInsight").innerHTML="";if(ui.profileCadenceInsight)ui.profileCadenceInsight.innerHTML="";}function evolutionWindowStats(runs,anchor,days=28){
+function renderProfilePanel(athlete){const a=athlete||{},height=Number(a.height),weight=Number(a.icu_weight??a.weight),sport=runningSportSettings(a),thresholdSec=sportThresholdPaceSecKm(sport),name=a.name||profileLabel(null),location=[a.city,a.state,a.country].filter(Boolean).join(" · ")||"—";if(ui.dataHomeName)ui.dataHomeName.textContent=name;if(ui.profileTileNote)ui.profileTileNote.textContent=location;const hh=$("profileHomeHeight"),hw=$("profileHomeWeight");if(hh)hh.textContent=Number.isFinite(height)?`${formatNatural(height,2)} m`:"—";if(hw)hw.textContent=Number.isFinite(weight)?`${formatNatural(weight,1)} kg`:"—";if(ui.profileName)ui.profileName.textContent=name;if(ui.profileState)ui.profileState.textContent=a.id?"Sincronizado con Intervals.icu":"Sin datos";if(ui.profileLocation)ui.profileLocation.textContent=location;if(ui.profileHeight)ui.profileHeight.textContent=Number.isFinite(height)?`${formatNatural(height,2)} m`:"—";if(ui.profileWeight)ui.profileWeight.textContent=Number.isFinite(weight)?`${formatNatural(weight,1)} kg`:"—";const rows=[profileInsightRow("Umbral de lactato",Number.isFinite(thresholdSec)?`${formatPaceValue(thresholdSec)} min/km`:"—"),profileInsightRow("FC umbral",Number.isFinite(Number(sport?.lthr))?`${formatNatural(Number(sport.lthr),0)} ppm`:"—"),profileInsightRow("FC máxima",Number.isFinite(Number(sport?.max_hr))?`${formatNatural(Number(sport.max_hr),0)} ppm`:"—")].join("");if(ui.profileRunningRows)ui.profileRunningRows.innerHTML=rows;const pr=$("performanceRunningRows");if(pr)pr.innerHTML=rows;const zones=profileZoneRows(sport),zoneBox=$("performanceZones");if(zoneBox){const sections=[];if(zones.pace.length)sections.push(`<div class="profile-zone-section"><div class="profile-zone-title">🏃🏻‍♂️ Zonas de ritmo</div>${zones.pace.map(z=>`<div class="profile-zone-row"><span class="profile-zone-name">${esc(z.name)}</span><span class="profile-zone-value">${esc(z.value)}</span></div>`).join("")}</div>`);if(zones.hr.length)sections.push(`<div class="profile-zone-section"><div class="profile-zone-title">❤️ Zonas de frecuencia cardiaca</div>${zones.hr.map(z=>`<div class="profile-zone-row"><span class="profile-zone-name">${esc(z.name)}</span><span class="profile-zone-value">${esc(z.value)}</span></div>`).join("")}</div>`);zoneBox.innerHTML=sections.join("")||'<div class="records-empty">No hay todavía datos suficientes para calcular las zonas.</div>';zoneBox.classList.remove("hidden");}if($("performanceCadenceInsight"))$("performanceCadenceInsight").innerHTML="";if(ui.profileCadenceInsight)ui.profileCadenceInsight.innerHTML="";}function evolutionWindowStats(runs,anchor,days=28){
   const end=anchor,start=addDays(anchor,-(days-1)),prevEnd=addDays(start,-1),prevStart=addDays(prevEnd,-(days-1)),now=v2RunsBetween(runs,start,end),prev=v2RunsBetween(runs,prevStart,prevEnd);
   return{km:v2SumKm(now),prevKm:v2SumKm(prev),freq:now.length/(days/7),prevFreq:prev.length/(days/7)};
 }
@@ -4248,12 +4253,37 @@ function paceToKmh(p){const n=Number(p);return Number.isFinite(n)&&n>0?3600/n:nu
 function absolutePaceWidth(p){const kmh=paceToKmh(p);if(!Number.isFinite(kmh))return 24;const n=clamp((kmh-ATLAS_PACE_SLOW_KMH)/(ATLAS_PACE_FAST_KMH-ATLAS_PACE_SLOW_KMH),0,1);return 6+94*n;}
 function paceVisualStats(rows){const p=rows.map(x=>x.p).filter(Number.isFinite).sort((a,b)=>a-b);if(!p.length)return null;const q=x=>p[Math.min(p.length-1,Math.max(0,Math.round((p.length-1)*x)))],fast=q(.05),slow=q(.95),span=Math.max(25,slow-fast);return{fast,slow,span};}
 function activityPaceVisual(p,stats){
-  const base=absolutePaceWidth(p);if(!Number.isFinite(p)||!stats)return{color:"#9bdcff",width:base};
-  const fast=stats.fast,slow=stats.slow,span=Math.max(20,slow-fast),speed=clamp((slow-Number(p))/span,0,1);
-  const stops=[[0,[188,229,255]],[.18,[151,211,249]],[.36,[108,187,236]],[.54,[67,155,218]],[.72,[30,118,189]],[.86,[10,82,145]],[1,[2,48,92]]];
-  let a=stops[0],b=stops.at(-1);for(let i=1;i<stops.length;i++){if(speed<=stops[i][0]){a=stops[i-1];b=stops[i];break;}}
-  const t=clamp((speed-a[0])/Math.max(.001,b[0]-a[0]),0,1),rgb=a[1].map((v,i)=>v+(b[1][i]-v)*t),adjust=(speed-.5)*8;
-  return{color:rgbHex(rgb),width:clamp(base+adjust,5,100)};
+  const pace=Number(p);
+  if(!Number.isFinite(pace)||pace<=0)return{color:"#9bdcff",width:24};
+  const stops=[
+    [180,[0,19,37]],
+    [195,[0,31,58]],
+    [210,[0,48,88]],
+    [225,[0,67,119]],
+    [240,[0,88,151]],
+    [255,[0,111,184]],
+    [270,[0,132,211]],
+    [285,[12,151,232]],
+    [300,[29,155,240]],
+    [315,[61,174,244]],
+    [330,[91,193,248]],
+    [345,[120,207,250]],
+    [360,[149,219,252]],
+    [390,[186,233,255]],
+    [420,[216,243,255]],
+    [480,[232,248,255]]
+  ];
+  let a=stops[0],b=stops[stops.length-1];
+  if(pace<=stops[0][0]){a=b=stops[0];}
+  else if(pace>=stops[stops.length-1][0]){a=b=stops[stops.length-1];}
+  else{
+    for(let i=1;i<stops.length;i++){
+      if(pace<=stops[i][0]){a=stops[i-1];b=stops[i];break;}
+    }
+  }
+  const t=a[0]===b[0]?0:clamp((pace-a[0])/(b[0]-a[0]),0,1);
+  const rgb=a[1].map((v,i)=>v+(b[1][i]-v)*t);
+  return{color:rgbHex(rgb),width:absolutePaceWidth(pace)};
 }
 function snapIntervalDistance(d){const n=Number(d);if(!(n>0))return null;const targets=[100,200,300,400,500,600,800,1000,1200,1500,1600,2000,3000,5000,10000];let best=n,bestDiff=Infinity;for(const t of targets){const diff=Math.abs(n-t),tol=Math.max(8,t*.035);if(diff<=tol&&diff<bestDiff){best=t;bestDiff=diff;}}return best;}
 function formatIntervalDistance(d){if(!(d>0))return"—";if(d<1000)return`${Math.round(d)} m`;const km=d/1000;return`${formatNatural(km,Math.abs(km-Math.round(km))<.001?0:2)} km`;}
@@ -4351,18 +4381,125 @@ function activityLapRows(){
   return{rows,hasReal};
 }
 function activityLapPaceScale(rows){
-  const paces=rows.map(x=>Number(x.p)).filter(v=>Number.isFinite(v)&&v>0).sort((a,b)=>a-b);if(!paces.length)return null;
-  const fast=paces[0],slow=paces.at(-1),type=String(activityType(currentActivityDetail)||""),name=String(activityName(currentActivityDetail)||""),isWalk=/walk/i.test(type)||/caminar|caminata|paseo/i.test(name),slowDisplay=isWalk?slow:Math.min(slow,420),visibleSpan=Math.max(12,slowDisplay-fast),stepChoices=[10,15];
-  const chooseStep=()=>{let best=15,bestScore=Infinity;for(const s of stepChoices){const marginFast=clamp(visibleSpan*.06,7,15),marginSlow=clamp(visibleSpan*.08,7,18),lo=Math.floor((fast-marginFast)/s)*s,hi=Math.ceil((slowDisplay+marginSlow)/s)*s,count=Math.floor((hi-lo)/s)+1,penalty=(count<4?(4-count)*4:count>9?(count-9)*3:0)+Math.abs(count-6);if(penalty<bestScore){bestScore=penalty;best=s;}}return best;};
-  const step=chooseStep(),marginFast=clamp(visibleSpan*.06,7,15),marginSlow=clamp(visibleSpan*.08,7,18),fastBound=Math.max(60,Math.floor((fast-marginFast)/step)*step);let slowBound=Math.ceil((slowDisplay+marginSlow)/step)*step;if(!isWalk&&slow>420)slowBound=Math.min(420,slowBound);if(slowBound<=fastBound)slowBound=fastBound+step*3;
-  const ticks=[];for(let v=fastBound,i=0;v<=slowBound+.1&&i<12;v+=step,i++)ticks.push(v);
-  const stats=paceVisualStats(rows),height=p=>{const visual=activityPaceVisual(Number(p),stats);return clamp(visual.width,6,96);},top=p=>100-height(p);
-  return{fast,slow,fastBound,slowBound,step,ticks,height,top,isWalk,stats};
+  const paces=rows.map(x=>Number(x.p)).filter(v=>Number.isFinite(v)&&v>0).sort((a,b)=>a-b);
+  if(!paces.length)return null;
+  const percentile=p=>{
+    const pos=(paces.length-1)*clamp(p,0,1),lo=Math.floor(pos),hi=Math.ceil(pos),t=pos-lo;
+    return paces[lo]+(paces[hi]-paces[lo])*t;
+  };
+  const fast=paces[0],slow=paces[paces.length-1],median=percentile(.5),p10=percentile(.10),p90=percentile(.90);
+  const phasePlan=inferIntervalPhases(rows);
+  let coreFast=p10,coreSlow=p90;
+
+  // En intervalos, el eje incluye trabajo y recuperación normal, pero una recuperación
+  // excepcionalmente lenta (andar/pararse) no estira toda la gráfica.
+  if(phasePlan?.quality){
+    const mainRows=rows.filter((_,i)=>phasePlan.phases[i]==="Bloque principal");
+    if(mainRows.length>=3){
+      const roles=classifyMainLaps(mainRows);
+      const runP=mainRows.filter(r=>roles.get(r.index)==="run").map(r=>Number(r.p)).filter(Number.isFinite).sort((a,b)=>a-b);
+      const recP=mainRows.filter(r=>roles.get(r.index)==="recovery").map(r=>Number(r.p)).filter(Number.isFinite).sort((a,b)=>a-b);
+      const pct=(arr,p)=>{
+        if(!arr.length)return null;
+        const pos=(arr.length-1)*p,lo=Math.floor(pos),hi=Math.ceil(pos),t=pos-lo;
+        return arr[lo]+(arr[hi]-arr[lo])*t;
+      };
+      if(runP.length){
+        coreFast=Math.min(coreFast,pct(runP,.10));
+        const runSlow=pct(runP,.90);
+        coreSlow=Math.max(coreFast+45,runSlow+45);
+        if(recP.length){
+          const recMedian=pct(recP,.50);
+          // Recuperaciones hasta ~3 min/km más lentas que el trabajo todavía forman parte
+          // de la escala; por encima de eso se dibujan como barras muy pequeñas.
+          const runMedian=pct(runP,.50);
+          const usableRecovery=Math.min(recMedian,runMedian+180);
+          coreSlow=Math.max(coreSlow,usableRecovery+25);
+        }
+      }
+    }
+  }
+
+  // Para rodajes normales usamos un rango robusto y un mínimo visual amplio para que
+  // diferencias pequeñas sean visibles sin convertirse en saltos exagerados.
+  const minSpan=phasePlan?.quality?165:150;
+  const observed=Math.max(30,coreSlow-coreFast);
+  const marginFast=clamp(observed*.12,10,22);
+  const marginSlow=clamp(observed*.16,12,30);
+  let desiredFast=Math.max(135,coreFast-marginFast);
+  let desiredSlow=coreSlow+marginSlow;
+  let span=desiredSlow-desiredFast;
+  if(span<minSpan){
+    const center=(desiredFast+desiredSlow)/2;
+    desiredFast=Math.max(135,center-minSpan/2);
+    desiredSlow=desiredFast+minSpan;
+  }
+
+  // Elegimos una cadencia de referencias limpia (objetivo: 5–7 etiquetas).
+  const candidates=[10,15,20,30,45,60,90,120];
+  let best=null;
+  for(const step of candidates){
+    let lo=Math.floor(desiredFast/step)*step,hi=Math.ceil(desiredSlow/step)*step;
+    if(hi<=lo)hi=lo+step*4;
+    const count=Math.round((hi-lo)/step)+1;
+    const score=Math.abs(count-6)+(count<4?20:0)+(count>8?(count-8)*7:0);
+    if(!best||score<best.score)best={step,lo,hi,count,score};
+  }
+  let {step,lo,hi}=best;
+  const ticks=[];
+  for(let v=lo,i=0;v<=hi+.01&&i<14;v+=step,i++)ticks.push(v);
+
+  // Una única transformación para barras, etiquetas y grid. Usamos velocidad para mantener
+  // la proporcionalidad histórica de las barras horizontales.
+  const fastSpeed=3600/lo,slowSpeed=3600/hi;
+  const fraction=p=>{
+    const pace=Number(p);
+    if(!Number.isFinite(pace)||pace<=0)return 0;
+    const speed=3600/pace;
+    return clamp((speed-slowSpeed)/(fastSpeed-slowSpeed),0,1);
+  };
+  const minHeight=5,maxHeight=94;
+  const height=p=>minHeight+fraction(p)*(maxHeight-minHeight);
+  const top=p=>100-height(p);
+
+  const chartHeight=clamp(184+(ticks.length-6)*4,184,208);
+  return{fast,slow,median,p10,p90,height,top,fraction,fastBound:lo,slowBound:hi,step,ticks,chartHeight};
 }
-function lapBarHeight(p,rows){const scale=activityLapPaceScale(rows);return scale&&Number.isFinite(Number(p))?scale.height(Number(p)):18;}
-function renderActivityLapBars(rows){if(!ui.activityLapBars)return;const barStats=paceVisualStats(rows),distances=rows.map(row=>Number(row.rawDistance)||Number(row.d)||1),totalDistance=Math.max(1,distances.reduce((a,b)=>a+Math.max(0,b),0)),scale=activityLapPaceScale(rows);ui.activityLapBars.style.width=`${activityLapZoom*100}%`;ui.activityLapBars.style.minWidth="100%";if(scale){const span=scale.slowBound-scale.fastBound;ui.activityLapBars.style.height=`${clamp(150+span*.12,150,178)}px`;}
- ui.activityLapBars.innerHTML=rows.map((row,i)=>{const visual=activityPaceVisual(row.p,barStats),h=lapBarHeight(row.p,rows),selected=currentActivityLapIndex===row.index?" selected":"",share=Math.max(0,distances[i])/totalDistance*100,showLabel=share*activityLapZoom>=2.6;return`<div class="activity-lap-bar-wrap${selected}" data-lap-index="${row.index}" style="flex-basis:${share.toFixed(5)}%"><div class="activity-lap-bar" style="height:${h.toFixed(1)}%;background:${visual.color}"></div>${showLabel?`<div class="activity-lap-bar-label">${i+1}</div>`:""}</div>`;}).join("");
- const axis=$("activityLapPaceAxis"),grid=$("activityLapPaceGrid");if(axis&&grid&&scale){axis.innerHTML=scale.ticks.map(v=>`<span class="activity-lap-pace-tick" style="top:${scale.top(v).toFixed(1)}%">${formatPaceValue(v)}</span>`).join("");grid.innerHTML=scale.ticks.map(v=>`<span class="activity-lap-pace-grid-line" style="top:${scale.top(v).toFixed(1)}%"></span>`).join("");}else{if(axis)axis.innerHTML="";if(grid)grid.innerHTML="";}updateActivityLapSelection(rows);}
+function lapBarHeight(p,rows){
+  const scale=activityLapPaceScale(rows);
+  return scale&&Number.isFinite(Number(p))?scale.height(Number(p)):5;
+}
+function renderActivityLapBars(rows){
+  if(!ui.activityLapBars)return;
+  const distances=rows.map(row=>Number(row.rawDistance)||Number(row.d)||1);
+  const totalDistance=Math.max(1,distances.reduce((a,b)=>a+Math.max(0,b),0));
+  const scale=activityLapPaceScale(rows);
+  ui.activityLapBars.style.width=`${activityLapZoom*100}%`;
+  ui.activityLapBars.style.minWidth="100%";
+  ui.activityLapBars.style.height=`${scale?.chartHeight||188}px`;
+
+  ui.activityLapBars.innerHTML=rows.map((row,i)=>{
+    const visual=activityPaceVisual(row.p,null);
+    const h=scale&&Number.isFinite(Number(row.p))?scale.height(Number(row.p)):5;
+    const selected=currentActivityLapIndex===row.index?" selected":"";
+    const share=Math.max(0,distances[i])/totalDistance*100;
+    const showLabel=share*activityLapZoom>=2.5;
+    return`<div class="activity-lap-bar-wrap${selected}" data-lap-index="${row.index}" style="flex-basis:${share.toFixed(5)}%">
+      <div class="activity-lap-bar" style="height:${h.toFixed(1)}%;background:${visual.color}"></div>
+      ${showLabel?`<div class="activity-lap-bar-label">${i+1}</div>`:""}
+    </div>`;
+  }).join("");
+
+  const axis=$("activityLapPaceAxis"),grid=$("activityLapPaceGrid");
+  if(axis&&grid&&scale){
+    axis.innerHTML=scale.ticks.map(v=>`<span class="activity-lap-pace-tick" style="top:${scale.top(v).toFixed(2)}%">${formatPaceValue(v)}</span>`).join("");
+    grid.innerHTML=scale.ticks.map(v=>`<span class="activity-lap-pace-grid-line" style="top:${scale.top(v).toFixed(2)}%"></span>`).join("");
+  }else{
+    if(axis)axis.innerHTML="";
+    if(grid)grid.innerHTML="";
+  }
+  updateActivityLapSelection(rows);
+}
 function updateActivityLapSelection(rows=null){
   const data=rows||activityLapRows().rows,selected=data.find(x=>x.index===currentActivityLapIndex)||null;
   qsa(".activity-lap-bar-wrap",ui.activityLapBars).forEach(x=>x.classList.toggle("selected",Number(x.dataset.lapIndex)===currentActivityLapIndex));
@@ -4384,8 +4521,96 @@ function setActivityLapZoom(next,anchorX=null){
 function handleActivityLapPinchStart(e){if(e.touches?.length===2){activityLapPinchStartDistance=activityLapTouchDistance(e.touches);activityLapPinchStartZoom=activityLapZoom;}}
 function handleActivityLapPinchMove(e){if(e.touches?.length!==2||!activityLapPinchStartDistance)return;e.preventDefault();const d=activityLapTouchDistance(e.touches);if(!d)return;const rect=ui.activityLapBarsScroll.getBoundingClientRect(),mid=(e.touches[0].clientX+e.touches[1].clientX)/2-rect.left,ratio=d/activityLapPinchStartDistance;setActivityLapZoom(clamp(activityLapPinchStartZoom*Math.pow(ratio,2),1,8),mid);}
 function handleActivityLapPinchEnd(e){if(!e.touches||e.touches.length<2){activityLapPinchStartDistance=0;activityLapPinchStartZoom=activityLapZoom;}}
-function activityMainLapRole(row,rows){const type=lapType(row.raw);if(type==="RECOVERY")return"recovery";if(type==="WORK")return"run";const plan=workoutPlanFromName();if(looksLikePlannedWork(row,plan))return"run";const paces=rows.map(r=>Number(r.p)).filter(Number.isFinite).sort((a,b)=>a-b);if(!Number.isFinite(Number(row.p))||paces.length<3)return"run";const med=paces[Math.floor(paces.length/2)],gap=Math.max(18,med*.065);return Number(row.p)>med+gap?"recovery":"run";}
-function filteredMainLaps(rows){if(activityLapMainFilter==="all")return rows;return rows.filter(r=>activityMainLapRole(r,rows)===(activityLapMainFilter==="recovery"?"recovery":"run"));}
+
+function classifyMainLaps(rows){
+  const result=new Map();
+  if(!Array.isArray(rows)||!rows.length)return result;
+  const plan=workoutPlanFromName();
+
+  // 1) Etiquetas explícitas fiables.
+  rows.forEach(r=>{
+    const type=lapType(r.raw),txt=lapText(r.raw);
+    if(type==="RECOVERY"||type==="REST"||/recovery|recover|rest|descanso|recuper|easy|off\b/.test(txt))result.set(r.index,"recovery");
+    else if(type==="WORK"||type==="INTERVAL"||type==="REPEAT"||/\bwork\b|interval|serie|repet|rapido|fast|\bon\b/.test(txt))result.set(r.index,"run");
+  });
+
+  // 2) Si el nombre del entrenamiento declara la distancia de las repeticiones,
+  // esa geometría manda: repeticiones cercanas al objetivo = Carrera; tramos claramente
+  // más cortos entre ellas = Recuperación.
+  if(Number.isFinite(plan.targetDistance)){
+    const tol=Math.max(35,plan.targetDistance*.16);
+    const near=rows.filter(r=>Number.isFinite(r.d)&&Math.abs(r.d-plan.targetDistance)<=tol);
+    if(near.length>=2){
+      near.forEach(r=>result.set(r.index,"run"));
+      rows.forEach(r=>{
+        if(result.has(r.index)||!Number.isFinite(r.d))return;
+        if(r.d<plan.targetDistance*.78)result.set(r.index,"recovery");
+      });
+    }
+  }
+
+  // 3) Cluster global de ritmo. Es la vía principal cuando Intervals no etiqueta WORK/RECOVERY.
+  const paceRows=rows.filter(r=>Number.isFinite(Number(r.p)));
+  if(paceRows.length>=4){
+    let cFast=Math.min(...paceRows.map(r=>Number(r.p))),cSlow=Math.max(...paceRows.map(r=>Number(r.p)));
+    for(let k=0;k<12;k++){
+      const fast=[],slow=[];
+      for(const r of paceRows){
+        const p=Number(r.p);
+        (Math.abs(p-cFast)<=Math.abs(p-cSlow)?fast:slow).push(p);
+      }
+      if(fast.length)cFast=fast.reduce((a,b)=>a+b,0)/fast.length;
+      if(slow.length)cSlow=slow.reduce((a,b)=>a+b,0)/slow.length;
+    }
+    if(cFast>cSlow)[cFast,cSlow]=[cSlow,cFast];
+    const threshold=(cFast+cSlow)/2,separation=cSlow-cFast;
+    const fastCount=paceRows.filter(r=>Number(r.p)<=threshold).length;
+    const slowCount=paceRows.length-fastCount;
+    if(separation>=12&&fastCount>=2&&slowCount>=2){
+      paceRows.forEach(r=>{
+        // Las etiquetas explícitas de recuperación siguen mandando.
+        if(result.get(r.index)==="recovery")return;
+        result.set(r.index,Number(r.p)<=threshold?"run":"recovery");
+      });
+    }
+  }
+
+  // 4) Cluster de distancia como respaldo: en 4×1 km + 500 m, el grupo largo es trabajo.
+  const dRows=rows.filter(r=>Number.isFinite(Number(r.d))&&Number(r.d)>0);
+  if(dRows.length>=4){
+    let cShort=Math.min(...dRows.map(r=>Number(r.d))),cLong=Math.max(...dRows.map(r=>Number(r.d)));
+    for(let k=0;k<10;k++){
+      const short=[],long=[];
+      for(const r of dRows){
+        const d=Number(r.d);
+        (Math.abs(d-cShort)<=Math.abs(d-cLong)?short:long).push(d);
+      }
+      if(short.length)cShort=short.reduce((a,b)=>a+b,0)/short.length;
+      if(long.length)cLong=long.reduce((a,b)=>a+b,0)/long.length;
+    }
+    if(cShort>cLong)[cShort,cLong]=[cLong,cShort];
+    if(cLong>=cShort*1.28){
+      const threshold=(cShort+cLong)/2;
+      dRows.forEach(r=>{
+        if(result.has(r.index))return;
+        result.set(r.index,Number(r.d)>=threshold?"run":"recovery");
+      });
+    }
+  }
+
+  // 5) Las vueltas sin clasificar quedan como Carrera: en un tempo continuo no debe
+  // desaparecer el bloque al seleccionar "Carrera".
+  rows.forEach(r=>{if(!result.has(r.index))result.set(r.index,"run");});
+  return result;
+}
+function activityMainLapRole(row,rows){
+  return classifyMainLaps(rows).get(row.index)||"run";
+}
+function filteredMainLaps(rows){
+  if(activityLapMainFilter==="all")return rows;
+  const roles=classifyMainLaps(rows),wanted=activityLapMainFilter==="recovery"?"recovery":"run";
+  return rows.filter(r=>roles.get(r.index)===wanted);
+}
 function renderActivityLaps(){
   const{rows,hasReal}=activityLapRows();ui.activityLaps.classList.toggle("hidden",!rows.length);if(!rows.length){ui.activityLapsRows.innerHTML="";if(ui.activityLapBars)ui.activityLapBars.innerHTML="";return;}
   if(currentActivityLapIndex!=null&&!rows.some(x=>x.index===currentActivityLapIndex))currentActivityLapIndex=null;
@@ -4393,7 +4618,7 @@ function renderActivityLaps(){
   renderActivityLapBars(rows);
   ui.activityLapsRows.innerHTML=groups.map(group=>{const visible=group.phase==="Bloque principal"?filteredMainLaps(group.rows):group.rows,filter=group.phase==="Bloque principal"?`<select class="activity-lap-filter" id="activityLapMainFilter" aria-label="Filtrar bloque principal"><option value="all"${activityLapMainFilter==="all"?" selected":""}>Todo</option><option value="run"${activityLapMainFilter==="run"?" selected":""}>Carrera</option><option value="recovery"${activityLapMainFilter==="recovery"?" selected":""}>Recuperación</option></select>`:"",head=group.phase?`<div class="activity-lap-group-head"><div class="activity-lap-group-title">${phaseEmoji(group.phase)} ${group.phase}</div>${filter}</div>`:"";
     return`<div class="activity-lap-group">${head}<div class="activity-lap-columns"><span>Vuelta</span><span>Distancia</span><span>Tiempo</span><span>Ritmo</span><span>FC</span><span>Desnivel</span></div>${visible.map(row=>{const globalIndex=rows.findIndex(x=>x.index===row.index)+1,eClass=elevationClass(row.elev);return`<div class="activity-lap-row${currentActivityLapIndex===row.index?" selected":""}" data-lap-index="${row.index}"><div class="activity-lap-index">${globalIndex}</div><div class="activity-lap-distance">${formatIntervalDistance(row.d)}</div><div class="activity-lap-time">${row.t?formatDuration(Math.round(row.t)):"—"}</div><div class="activity-lap-pace">${row.p?`${formatPaceValue(row.p)}<span class="activity-lap-inline-unit">min/km</span>`:"—"}</div><div class="activity-lap-hr">${row.hr?`${formatNatural(row.hr,0)}<span class="activity-lap-inline-unit">ppm</span>`:"—"}</div><div class="activity-lap-elev ${eClass}">${signedElevation(row.elev)}</div></div>`;}).join("")}</div>`;}).join("");
-  const filter=$("activityLapMainFilter");if(filter)on(filter,"change",()=>{activityLapMainFilter=filter.value;renderActivityLaps();});
+  const filter=$("activityLapMainFilter");if(filter){const applyLapFilter=()=>{const next=filter.value;if(next===activityLapMainFilter)return;activityLapMainFilter=next;renderActivityLaps();};filter.addEventListener("input",applyLapFilter,{once:true});filter.addEventListener("change",applyLapFilter,{once:true});}
   requestAnimationFrame(fitActivityLapTableText);updateActivityLapSelection(rows);
 }
 function normalizeLatLngStreams(payload){const raw=payload?.streams??payload?.data??payload;if(!raw)return[];let lat=null,lng=null;if(Array.isArray(raw)){const s=raw.find(x=>String(x?.type||x?.name||"").toLowerCase()==="latlng");if(s){lat=s.data||s.values||null;lng=s.data2||s.values2||null;}}else if(raw.latlng){if(Array.isArray(raw.latlng)&&Array.isArray(raw.latlng[0]))return raw.latlng.filter(p=>Array.isArray(p)&&Number.isFinite(Number(p[0]))&&Number.isFinite(Number(p[1]))).map(p=>[Number(p[0]),Number(p[1])]);lat=raw.latlng.data||raw.latlng.latitude||null;lng=raw.latlng.data2||raw.latlng.longitude||null;}if(Array.isArray(lat)&&Array.isArray(lng))return lat.map((v,i)=>[Number(v),Number(lng[i])]).filter(p=>Number.isFinite(p[0])&&Number.isFinite(p[1])&&Math.abs(p[0])<=90&&Math.abs(p[1])<=180&&(p[0]!==0||p[1]!==0));return[];}
@@ -4641,5 +4866,405 @@ async function clearData(){if(!confirm("¿Borrar todos los datos deportivos loca
 
 
 </script>
+
+<style id="atlas-v073-style">
+/* ===== ɅTLɅS v0.73 · coherencia visual + navegación + barras reconstruidas ===== */
+
+/* Barra inferior: anclaje estricto al viewport. */
+.nav{
+  position:fixed!important;
+  top:auto!important;
+  bottom:calc(8px + env(safe-area-inset-bottom))!important;
+  transform:translate3d(-50%,0,0)!important;
+  margin:0!important;
+  will-change:transform!important;
+}
+body.profile-detail-open .nav{display:none!important}
+body.profile-detail-open .data-detail{z-index:75!important}
+
+/* Los cuatro accesos del Plan usan exactamente la jerarquía de Perfil. */
+#availabilityCard,#trainingPacesCard,#sessionGeneratorCard,#adaptiveEngineCard{
+  min-height:58px!important;
+  padding:11px 13px!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  grid-template-columns:34px minmax(0,1fr) 14px!important;
+  gap:9px!important;
+  box-shadow:none!important;
+}
+#availabilityCard+#trainingPacesCard,
+#trainingPacesCard+#sessionGeneratorCard,
+#sessionGeneratorCard+#adaptiveEngineCard{border-top:1px solid var(--line)!important}
+#availabilityCard .engine-v2-icon,#trainingPacesCard .engine-v2-icon,
+#sessionGeneratorCard .engine-v2-icon,#adaptiveEngineCard .engine-v2-icon{
+  font-size:21px!important;text-align:center!important
+}
+#availabilityCard .engine-v2-title,#trainingPacesCard .engine-v2-title,
+#sessionGeneratorCard .engine-v2-title,#adaptiveEngineCard .engine-v2-title{
+  font-size:17.5px!important;line-height:1.28!important;font-weight:750!important
+}
+#availabilityCard .engine-v2-arrow,#trainingPacesCard .engine-v2-arrow,
+#sessionGeneratorCard .engine-v2-arrow,#adaptiveEngineCard .engine-v2-arrow{
+  color:var(--muted2)!important;font-size:20px!important
+}
+#planControlDetail .plan-control-group{
+  border:1px solid var(--line);
+  border-radius:18px;
+  overflow:hidden;
+  background:linear-gradient(180deg,var(--panel2),var(--panel));
+  margin:0 0 10px!important
+}
+#planControlDetail .plan-control-group:first-of-type{
+  border:0!important;background:transparent!important;overflow:visible!important
+}
+
+/* Lista de accesos del Plan: idéntica a Perfil. */
+.plan-home-links{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:linear-gradient(180deg,var(--panel2),var(--panel));margin-bottom:10px}
+.plan-home-links>button+button{border-top:1px solid var(--line)!important}
+
+/* Objetivo principal sin "recuadro dentro de recuadro". */
+#engineGoalCard{
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  padding:2px 2px 11px!important;
+  margin:0!important;
+  grid-template-columns:minmax(0,1fr) 14px!important;
+  box-shadow:none!important
+}
+#engineGoalCard .engine-v2-title{
+  font-size:23px!important;line-height:1.28!important;font-weight:780!important
+}
+#engineGoalCard .engine-v2-arrow{align-self:start;margin-top:4px;color:var(--muted2)!important}
+.plan-goal-summary{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:0!important;
+  margin-top:12px!important;
+  width:100%!important;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+.plan-goal-summary-item{
+  position:relative!important;
+  min-width:0!important;
+  padding:9px 4px 8px!important;
+  text-align:center!important
+}
+.plan-goal-summary-item:not(:nth-child(4n+1))::before{
+  content:"";position:absolute;left:0;top:8px;bottom:8px;width:1px;background:var(--line)
+}
+.plan-goal-summary-item:nth-child(-n+4)::after{
+  content:"";position:absolute;left:8px;right:8px;bottom:0;height:1px;background:var(--line)
+}
+.plan-goal-summary-key{font-size:9.6px!important;line-height:1.2!important;color:var(--muted2)!important}
+.plan-goal-summary-value{
+  margin-top:3px!important;font-size:13.2px!important;line-height:1.22!important;
+  font-weight:740!important;white-space:nowrap!important
+}
+
+/* Una sola gramática para Hoy, Actividades, Plan y Sesiones propuestas. */
+.activity-list,.plan-days,#sessionGeneratorList .plan-week-calendar{
+  border:1px solid var(--line)!important;
+  border-radius:18px!important;
+  overflow:hidden!important;
+  background:linear-gradient(180deg,#0e151c,#091016)!important;
+  gap:0!important
+}
+.plan-day,#sessionGeneratorList .plan-week-calendar-day{
+  border:0!important;border-radius:0!important;background:transparent!important;margin:0!important
+}
+.plan-day+.plan-day,
+#sessionGeneratorList .plan-week-calendar-day+.plan-week-calendar-day{
+  border-top:1px solid var(--line)!important
+}
+.plan-day.today{background:rgba(29,155,240,.055)!important;box-shadow:none!important}
+.activity-row,.plan-day-head,#sessionGeneratorList .plan-week-calendar-head{
+  grid-template-columns:31px 1px minmax(0,1fr)!important;
+  gap:7px!important;
+  min-height:58px!important;
+  padding:6px 8px!important;
+  align-items:stretch!important
+}
+.plan-day-head:not(.multi-session){min-height:58px!important}
+.plan-day-date,#sessionGeneratorList .plan-week-calendar-date,.activity-row-date{
+  justify-content:center!important
+}
+.plan-day-weekday,#sessionGeneratorList .plan-week-calendar-weekday,.activity-row-month{
+  font-size:8.5px!important;line-height:1.05!important;font-weight:780!important;letter-spacing:.25px!important
+}
+.plan-day-number,#sessionGeneratorList .plan-week-calendar-number,.activity-row-day{
+  margin-top:2px!important;font-size:19px!important;line-height:1!important;font-weight:760!important
+}
+.plan-day-sep,#sessionGeneratorList .plan-week-calendar-sep,.activity-row-sep{
+  width:1px!important;height:auto!important;min-height:34px!important;
+  margin:4px 0!important;background:rgba(255,255,255,.10)!important
+}
+.plan-day-copy,#sessionGeneratorList .plan-week-calendar-copy,.activity-row-copy{
+  display:flex!important;flex-direction:column!important;justify-content:center!important
+}
+.plan-day-main-title,#sessionGeneratorList .plan-week-calendar-title,.activity-row-title-text{
+  font-size:15.5px!important;line-height:1.25!important;font-weight:740!important
+}
+.plan-day-main-meta,#sessionGeneratorList .plan-week-calendar-meta,.activity-row-main{
+  margin-top:4px!important;font-size:13.3px!important;line-height:1.3!important;font-weight:570!important
+}
+.plan-day-sub,#sessionGeneratorList .plan-week-calendar-rest{
+  margin-top:0!important;font-size:13.3px!important;line-height:1.3!important
+}
+.plan-day-multi-item{padding:5px 0!important}
+.plan-day-multi-title{font-size:15.5px!important}.plan-day-multi-meta{font-size:13.3px!important}
+.plan-days{margin-bottom:4px}
+
+/* Sesiones propuestas conserva encabezado semanal, pero sus días son idénticos al Plan. */
+.session-preview-week{padding:13px 0 12px!important}
+.session-preview-head{margin-bottom:8px!important}
+#sessionGeneratorList .plan-week-calendar{margin-top:0!important}
+
+/* Barras de ritmo reconstruidas. */
+.activity-lap-bars-card{
+  padding:10px 8px 9px 46px!important;
+  background:linear-gradient(180deg,#0e151c,#091016)!important
+}
+.activity-lap-bars{padding:7px 2px 18px!important;gap:0!important}
+.activity-lap-bar-wrap{min-width:0!important}
+.activity-lap-bar{
+  width:calc(100% - 2px)!important;
+  margin:0 1px!important;
+  min-width:0!important;
+  max-width:none!important;
+  border-radius:3px 3px 1px 1px!important;
+  opacity:.92!important;
+  transition:opacity .12s ease,filter .12s ease!important
+}
+.activity-lap-bar-wrap.selected .activity-lap-bar{
+  transform:none!important;outline:1px solid rgba(255,255,255,.92)!important;outline-offset:-1px!important;
+  filter:brightness(1.08)!important
+}
+.activity-lap-pace-axis{
+  left:4px!important;top:42px!important;bottom:26px!important;width:39px!important;
+  font-size:8.6px!important;color:#aab3ba!important
+}
+.activity-lap-pace-axis::after{right:0!important;background:rgba(255,255,255,.10)!important}
+.activity-lap-pace-tick{right:5px!important;white-space:nowrap!important}
+.activity-lap-pace-grid{left:43px!important;right:8px!important;top:42px!important;bottom:26px!important}
+.activity-lap-pace-grid-line{background:rgba(255,255,255,.065)!important}
+@media(max-width:380px){
+  .activity-lap-bars-card{padding-left:43px!important}
+  .activity-lap-pace-axis{width:36px!important;font-size:8px!important}
+  .activity-lap-pace-grid{left:40px!important}
+}
+
+/* Zonas. */
+.profile-zone-title{font-size:16px!important;padding:12px 13px 9px!important}
+
+/* Mejores marcas: podio en una sola línea: marca | ritmo | fecha. */
+.records-list{gap:9px!important}
+.record-podium{border-radius:18px!important}
+.record-podium-head{padding:11px 13px!important}
+.record-podium-row{
+  grid-template-columns:32px minmax(0,1.05fr) minmax(0,1fr) minmax(0,1.1fr)!important;
+  gap:0!important;
+  padding:10px 10px!important
+}
+.record-rank{font-size:18px!important}
+.record-podium-value{
+  position:relative;min-width:0;text-align:center;white-space:nowrap;
+  font-size:12.2px;line-height:1.3;font-weight:680;color:#fff;
+  font-variant-numeric:tabular-nums;padding:0 8px
+}
+.record-podium-value+.record-podium-value::before{
+  content:"";position:absolute;left:0;top:2px;bottom:2px;width:1px;background:rgba(255,255,255,.13)
+}
+.record-podium-pace{color:#9ed8fa!important;font-size:12.2px!important}
+.record-podium-date{color:var(--muted2)!important;font-size:11.7px!important}
+.record-podium-sub{display:none!important}
+
+/* Conexión y datos: mayor legibilidad. */
+#dataSystemDetail .data-detail-section-title{font-size:20px!important;margin:18px 2px 9px!important}
+#dataSystemDetail .data-system-card{padding:14px!important}
+#dataSystemDetail .data-system-status{font-size:14px!important;line-height:1.35!important;margin-bottom:13px!important}
+#dataSystemDetail .data-system-status strong{font-size:15px!important}
+#dataSystemDetail .action{min-height:46px!important;font-size:13px!important;border-radius:13px!important}
+#dataSystemDetail .metric-detail-title{font-size:32px!important}
+
+/* Primera adaptación específica a iPad: conservar jerarquía, aumentar aire lateral, no escalar arbitrariamente tipografías. */
+@media(min-width:600px){
+  .app{max-width:860px!important;padding-left:24px!important;padding-right:24px!important}
+  .nav{width:min(690px,calc(100% - 32px))!important}
+  .plan-goal-summary-key{font-size:10.5px!important}.plan-goal-summary-value{font-size:14.5px!important}
+  .activity-list,.plan-days,#sessionGeneratorList .plan-week-calendar{border-radius:20px!important}
+  .data-detail-inner,.plan-detail-shell,.activity-detail-inner,.metric-detail-inner,.state-detail-inner{max-width:760px!important}
+}
+</style>
+
+
+<style id="atlas-v074-style">
+/* ===== ɅTLɅS v0.74 · barras de ritmo + filtro + auditoría iPad ===== */
+
+/* Tabla del objetivo principal centrada como bloque. */
+.plan-goal-summary{
+  width:min(100%,680px)!important;
+  margin:12px auto 0!important;
+  justify-self:center!important;
+  align-self:center!important;
+}
+
+/* Eje y barras: más aire vertical y etiquetas intermedias legibles. */
+.activity-lap-bars-card{padding-top:11px!important}
+.activity-lap-pace-axis{top:42px!important;bottom:26px!important}
+.activity-lap-pace-grid{top:42px!important;bottom:26px!important}
+.activity-lap-pace-tick{font-size:8.8px!important;line-height:1!important}
+.activity-lap-bar{min-height:2px!important}
+
+/* iPad: segunda pasada específica. Mantener la gramática iPhone, usando el ancho extra sin estirar en exceso. */
+@media (min-width:600px) and (max-width:999px){
+  .app{width:100%!important;max-width:860px!important;padding-left:24px!important;padding-right:24px!important}
+  .atlas-header{max-width:760px!important;margin-left:auto!important;margin-right:auto!important}
+  .metric-strip,.training-state,.activity-list,.plan-days,.plan-summary,.data-native-list,.data-native-hero{max-width:820px!important;margin-left:auto!important;margin-right:auto!important}
+  .activity-detail-inner,.metric-detail-inner,.state-detail-inner,.data-detail-inner,.plan-detail-shell{width:min(100%,800px)!important;max-width:800px!important}
+  .activity-map{height:300px!important}
+  .activity-chart{height:270px!important}
+  .metric-chart{height:278px!important}
+  .activity-lap-bars-card{padding-left:52px!important;padding-right:12px!important}
+  .activity-lap-pace-axis{width:44px!important;font-size:9.2px!important}
+  .activity-lap-pace-grid{left:49px!important;right:12px!important}
+  .activity-lap-columns,.activity-lap-row{font-size:inherit!important}
+  .record-podium,.shoe-card,.profile-insight-list,.profile-zone-section,.data-system-card{max-width:800px!important;margin-left:auto!important;margin-right:auto!important}
+  .plan-goal-summary{max-width:720px!important}
+}
+</style>
+
+
+<style id="atlas-v075-style">
+/* ===== ɅTLɅS v0.75 · Pace Laps rebuilt + iPad audit ===== */
+
+/* Gráfica de vueltas: limpia, plana y coherente con el resto de ATLAS. */
+.activity-lap-bars-card{
+  --lap-axis-width:42px;
+  position:relative!important;
+  padding:10px 8px 8px calc(var(--lap-axis-width) + 10px)!important;
+  background:linear-gradient(180deg,#0d141b,#091016)!important;
+  border-bottom:1px solid var(--line)!important;
+}
+.activity-lap-bars-readout{
+  min-height:24px!important;
+  margin:0 0 6px!important;
+  color:#dce5eb!important;
+  font-size:10.8px!important;
+  font-weight:680!important;
+}
+.activity-lap-bars-scroll{position:relative!important}
+.activity-lap-bars{
+  align-items:flex-end!important;
+  gap:0!important;
+  padding:8px 0 18px!important;
+  box-sizing:border-box!important
+}
+.activity-lap-bar-wrap{
+  min-width:0!important;
+  justify-content:stretch!important
+}
+.activity-lap-bar{
+  width:calc(100% - 2px)!important;
+  margin:0 1px!important;
+  min-width:0!important;
+  max-width:none!important;
+  min-height:3px!important;
+  border-radius:3px 3px 0 0!important;
+  opacity:.96!important;
+  box-shadow:none!important
+}
+.activity-lap-bar-wrap.selected .activity-lap-bar{
+  transform:none!important;
+  outline:1px solid rgba(255,255,255,.95)!important;
+  outline-offset:-1px!important;
+  filter:brightness(1.04)!important
+}
+.activity-lap-bar-label{
+  bottom:-15px!important;
+  color:#89939a!important;
+  font-size:8px!important;
+  font-weight:650!important
+}
+
+/* Eje y grid comparten exactamente la misma escala que las barras. */
+.activity-lap-pace-axis{
+  position:absolute!important;
+  z-index:3!important;
+  left:7px!important;
+  top:43px!important;
+  bottom:28px!important;
+  width:var(--lap-axis-width)!important;
+  pointer-events:none!important;
+  color:#929da4!important;
+  font-size:8.7px!important;
+  line-height:1!important;
+  font-variant-numeric:tabular-nums!important
+}
+.activity-lap-pace-axis::after{display:none!important}
+.activity-lap-pace-tick{
+  position:absolute!important;
+  right:7px!important;
+  transform:translateY(-50%)!important;
+  white-space:nowrap!important;
+  font-size:inherit!important;
+  font-weight:620!important;
+  letter-spacing:-.08px!important
+}
+.activity-lap-pace-grid{
+  position:absolute!important;
+  z-index:1!important;
+  left:calc(var(--lap-axis-width) + 10px)!important;
+  right:8px!important;
+  top:43px!important;
+  bottom:28px!important;
+  pointer-events:none!important
+}
+.activity-lap-pace-grid-line{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  height:1px!important;
+  background:rgba(255,255,255,.065)!important
+}
+
+/* La tabla empieza visualmente después de la gráfica, sin duplicar bordes ni ruido. */
+.activity-lap-group{padding-top:9px!important}
+.activity-lap-columns{color:#8f9aa1!important}
+
+/* El filtro se comporta como control segmentado compacto de Apple. */
+.activity-lap-filter{
+  height:30px!important;
+  min-width:108px!important;
+  border-color:rgba(255,255,255,.11)!important;
+  background:#0c1319!important;
+  font-size:11px!important;
+  font-weight:700!important;
+  padding-left:10px!important
+}
+
+/* Continuación de la auditoría iPad: el gráfico gana altura útil y el eje no se estira. */
+@media (min-width:600px) and (max-width:999px){
+  .activity-lap-bars-card{
+    --lap-axis-width:48px;
+    padding-left:calc(var(--lap-axis-width) + 12px)!important;
+    padding-right:12px!important
+  }
+  .activity-lap-pace-axis{
+    left:8px!important;
+    width:var(--lap-axis-width)!important;
+    font-size:9.5px!important
+  }
+  .activity-lap-pace-grid{
+    left:calc(var(--lap-axis-width) + 12px)!important;
+    right:12px!important
+  }
+  .activity-lap-bars-readout{font-size:11.5px!important}
+}
+</style>
+
 </body>
 </html>
