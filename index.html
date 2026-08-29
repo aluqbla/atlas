@@ -1682,7 +1682,7 @@ html,body{overscroll-behavior-y:none}
 
 (()=>{
 "use strict";
-const APP_VERSION="0.75.0",SCHEMA_VERSION=9,DB_NAME="atlas",DB_VERSION=2;
+const APP_VERSION="0.76.0",SCHEMA_VERSION=9,DB_NAME="atlas",DB_VERSION=2;
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -4254,36 +4254,8 @@ function absolutePaceWidth(p){const kmh=paceToKmh(p);if(!Number.isFinite(kmh))re
 function paceVisualStats(rows){const p=rows.map(x=>x.p).filter(Number.isFinite).sort((a,b)=>a-b);if(!p.length)return null;const q=x=>p[Math.min(p.length-1,Math.max(0,Math.round((p.length-1)*x)))],fast=q(.05),slow=q(.95),span=Math.max(25,slow-fast);return{fast,slow,span};}
 function activityPaceVisual(p,stats){
   const pace=Number(p);
-  if(!Number.isFinite(pace)||pace<=0)return{color:"#9bdcff",width:24};
-  const stops=[
-    [180,[0,19,37]],
-    [195,[0,31,58]],
-    [210,[0,48,88]],
-    [225,[0,67,119]],
-    [240,[0,88,151]],
-    [255,[0,111,184]],
-    [270,[0,132,211]],
-    [285,[12,151,232]],
-    [300,[29,155,240]],
-    [315,[61,174,244]],
-    [330,[91,193,248]],
-    [345,[120,207,250]],
-    [360,[149,219,252]],
-    [390,[186,233,255]],
-    [420,[216,243,255]],
-    [480,[232,248,255]]
-  ];
-  let a=stops[0],b=stops[stops.length-1];
-  if(pace<=stops[0][0]){a=b=stops[0];}
-  else if(pace>=stops[stops.length-1][0]){a=b=stops[stops.length-1];}
-  else{
-    for(let i=1;i<stops.length;i++){
-      if(pace<=stops[i][0]){a=stops[i-1];b=stops[i];break;}
-    }
-  }
-  const t=a[0]===b[0]?0:clamp((pace-a[0])/(b[0]-a[0]),0,1);
-  const rgb=a[1].map((v,i)=>v+(b[1][i]-v)*t);
-  return{color:rgbHex(rgb),width:absolutePaceWidth(pace)};
+  if(!Number.isFinite(pace)||pace<=0)return{color:"#8fc9ee",width:24};
+  return{color:"#8fc9ee",width:absolutePaceWidth(pace)};
 }
 function snapIntervalDistance(d){const n=Number(d);if(!(n>0))return null;const targets=[100,200,300,400,500,600,800,1000,1200,1500,1600,2000,3000,5000,10000];let best=n,bestDiff=Infinity;for(const t of targets){const diff=Math.abs(n-t),tol=Math.max(8,t*.035);if(diff<=tol&&diff<bestDiff){best=t;bestDiff=diff;}}return best;}
 function formatIntervalDistance(d){if(!(d>0))return"—";if(d<1000)return`${Math.round(d)} m`;const km=d/1000;return`${formatNatural(km,Math.abs(km-Math.round(km))<.001?0:2)} km`;}
@@ -4383,87 +4355,105 @@ function activityLapRows(){
 function activityLapPaceScale(rows){
   const paces=rows.map(x=>Number(x.p)).filter(v=>Number.isFinite(v)&&v>0).sort((a,b)=>a-b);
   if(!paces.length)return null;
-  const percentile=p=>{
-    const pos=(paces.length-1)*clamp(p,0,1),lo=Math.floor(pos),hi=Math.ceil(pos),t=pos-lo;
-    return paces[lo]+(paces[hi]-paces[lo])*t;
-  };
-  const fast=paces[0],slow=paces[paces.length-1],median=percentile(.5),p10=percentile(.10),p90=percentile(.90);
-  const phasePlan=inferIntervalPhases(rows);
-  let coreFast=p10,coreSlow=p90;
 
-  // En intervalos, el eje incluye trabajo y recuperación normal, pero una recuperación
-  // excepcionalmente lenta (andar/pararse) no estira toda la gráfica.
+  const quantile=(arr,q)=>{
+    if(!arr.length)return null;
+    const pos=(arr.length-1)*clamp(q,0,1),lo=Math.floor(pos),hi=Math.ceil(pos),t=pos-lo;
+    return arr[lo]+(arr[hi]-arr[lo])*t;
+  };
+  const median=quantile(paces,.5);
+  const deviations=paces.map(v=>Math.abs(v-median)).sort((a,b)=>a-b);
+  const mad=quantile(deviations,.5)||0;
+  const fast=paces[0],rawSlow=paces[paces.length-1];
+
+  // Strava-like: la ventana se construye alrededor del rango representativo.
+  // Un único descanso andando no debe convertir una gráfica de series en una gráfica de 4:00–10:00.
+  let usefulSlow=rawSlow;
+  if(paces.length>=5){
+    const robustLimit=median+Math.max(50,mad*3.2);
+    const outliers=paces.filter(v=>v>robustLimit);
+    const maxAllowedOutliers=Math.max(1,Math.floor(paces.length*.20));
+    if(outliers.length>0&&outliers.length<=maxAllowedOutliers){
+      const normal=paces.filter(v=>v<=robustLimit);
+      if(normal.length>=3)usefulSlow=normal[normal.length-1];
+    }
+  }
+
+  // En un bloque de intervalos aprovechamos la clasificación de trabajo/recuperación si existe.
+  // Incluimos las recuperaciones normales; solo quedan fuera las excepcionalmente lentas.
+  const phasePlan=inferIntervalPhases(rows);
   if(phasePlan?.quality){
     const mainRows=rows.filter((_,i)=>phasePlan.phases[i]==="Bloque principal");
     if(mainRows.length>=3){
       const roles=classifyMainLaps(mainRows);
-      const runP=mainRows.filter(r=>roles.get(r.index)==="run").map(r=>Number(r.p)).filter(Number.isFinite).sort((a,b)=>a-b);
-      const recP=mainRows.filter(r=>roles.get(r.index)==="recovery").map(r=>Number(r.p)).filter(Number.isFinite).sort((a,b)=>a-b);
-      const pct=(arr,p)=>{
-        if(!arr.length)return null;
-        const pos=(arr.length-1)*p,lo=Math.floor(pos),hi=Math.ceil(pos),t=pos-lo;
-        return arr[lo]+(arr[hi]-arr[lo])*t;
-      };
-      if(runP.length){
-        coreFast=Math.min(coreFast,pct(runP,.10));
-        const runSlow=pct(runP,.90);
-        coreSlow=Math.max(coreFast+45,runSlow+45);
-        if(recP.length){
-          const recMedian=pct(recP,.50);
-          // Recuperaciones hasta ~3 min/km más lentas que el trabajo todavía forman parte
-          // de la escala; por encima de eso se dibujan como barras muy pequeñas.
-          const runMedian=pct(runP,.50);
-          const usableRecovery=Math.min(recMedian,runMedian+180);
-          coreSlow=Math.max(coreSlow,usableRecovery+25);
-        }
+      const mainP=mainRows.map(r=>Number(r.p)).filter(Number.isFinite).sort((a,b)=>a-b);
+      const recP=mainRows.filter(r=>roles.get(r.index)==="recovery")
+        .map(r=>Number(r.p)).filter(Number.isFinite).sort((a,b)=>a-b);
+      if(mainP.length){
+        const mainMedian=quantile(mainP,.5);
+        const mainDev=mainP.map(v=>Math.abs(v-mainMedian)).sort((a,b)=>a-b);
+        const mainMad=quantile(mainDev,.5)||0;
+        const mainLimit=mainMedian+Math.max(55,mainMad*3.4);
+        const normalMain=mainP.filter(v=>v<=mainLimit);
+        if(normalMain.length>=3)usefulSlow=Math.max(usefulSlow>mainLimit?0:usefulSlow,normalMain[normalMain.length-1]);
+      }
+      if(recP.length){
+        const recMedian=quantile(recP,.5);
+        // Una recuperación típica sí forma parte de la gráfica.
+        if(Number.isFinite(recMedian)&&recMedian<median+150)usefulSlow=Math.max(usefulSlow,recMedian);
       }
     }
   }
 
-  // Para rodajes normales usamos un rango robusto y un mínimo visual amplio para que
-  // diferencias pequeñas sean visibles sin convertirse en saltos exagerados.
-  const minSpan=phasePlan?.quality?165:150;
-  const observed=Math.max(30,coreSlow-coreFast);
-  const marginFast=clamp(observed*.12,10,22);
-  const marginSlow=clamp(observed*.16,12,30);
-  let desiredFast=Math.max(135,coreFast-marginFast);
-  let desiredSlow=coreSlow+marginSlow;
-  let span=desiredSlow-desiredFast;
-  if(span<minSpan){
-    const center=(desiredFast+desiredSlow)/2;
-    desiredFast=Math.max(135,center-minSpan/2);
-    desiredSlow=desiredFast+minSpan;
+  if(!Number.isFinite(usefulSlow)||usefulSlow<fast)usefulSlow=rawSlow;
+  const coreSpan=Math.max(1,usefulSlow-fast);
+
+  // Igual que en las capturas de Strava:
+  // 15 s cuando el rango es compacto; 30 s cuando el rango es amplio.
+  // Solo escalamos a 60 s en actividades realmente extremas.
+  let step=coreSpan<=78?15:coreSpan<=205?30:60;
+
+  // Evitamos demasiadas o demasiado pocas referencias.
+  const buildBounds=s=>{
+    const top=Math.floor((fast-s*.25)/s)*s;
+    let bottom=Math.ceil((usefulSlow+s*.25)/s)*s;
+    if(bottom<=top+s*2)bottom=top+s*3;
+    return{top:Math.max(120,top),bottom};
+  };
+  let bounds=buildBounds(step);
+  let tickCount=Math.round((bounds.bottom-bounds.top)/step); // no contamos el bound inferior: ahí va /km
+  if(tickCount>7&&step<60){
+    step=step===15?30:60;
+    bounds=buildBounds(step);
+    tickCount=Math.round((bounds.bottom-bounds.top)/step);
+  }
+  if(tickCount<3&&step>15){
+    step=step===60?30:15;
+    bounds=buildBounds(step);
+    tickCount=Math.round((bounds.bottom-bounds.top)/step);
   }
 
-  // Elegimos una cadencia de referencias limpia (objetivo: 5–7 etiquetas).
-  const candidates=[10,15,20,30,45,60,90,120];
-  let best=null;
-  for(const step of candidates){
-    let lo=Math.floor(desiredFast/step)*step,hi=Math.ceil(desiredSlow/step)*step;
-    if(hi<=lo)hi=lo+step*4;
-    const count=Math.round((hi-lo)/step)+1;
-    const score=Math.abs(count-6)+(count<4?20:0)+(count>8?(count-8)*7:0);
-    if(!best||score<best.score)best={step,lo,hi,count,score};
-  }
-  let {step,lo,hi}=best;
+  const topBound=bounds.top,bottomBound=bounds.bottom;
   const ticks=[];
-  for(let v=lo,i=0;v<=hi+.01&&i<14;v+=step,i++)ticks.push(v);
+  for(let v=topBound;v<bottomBound-.1;v+=step)ticks.push(v);
 
-  // Una única transformación para barras, etiquetas y grid. Usamos velocidad para mantener
-  // la proporcionalidad histórica de las barras horizontales.
-  const fastSpeed=3600/lo,slowSpeed=3600/hi;
+  // Escala LINEAL de ritmo: la altura de las barras coincide exactamente con el eje.
   const fraction=p=>{
     const pace=Number(p);
     if(!Number.isFinite(pace)||pace<=0)return 0;
-    const speed=3600/pace;
-    return clamp((speed-slowSpeed)/(fastSpeed-slowSpeed),0,1);
+    return clamp((bottomBound-pace)/(bottomBound-topBound),0,1);
   };
-  const minHeight=5,maxHeight=94;
-  const height=p=>minHeight+fraction(p)*(maxHeight-minHeight);
-  const top=p=>100-height(p);
+  const height=p=>Math.max(1.8,fraction(p)*100);
+  const top=p=>100-fraction(p)*100;
 
-  const chartHeight=clamp(184+(ticks.length-6)*4,184,208);
-  return{fast,slow,median,p10,p90,height,top,fraction,fastBound:lo,slowBound:hi,step,ticks,chartHeight};
+  // Altura limpia tipo Strava. Con más líneas, ganamos algo de espacio.
+  const chartHeight=clamp(208+Math.max(0,ticks.length-5)*8,208,240);
+
+  return{
+    fast,slow:rawSlow,usefulSlow,median,mad,
+    topBound,bottomBound,step,ticks,chartHeight,
+    fraction,height,top
+  };
 }
 function lapBarHeight(p,rows){
   const scale=activityLapPaceScale(rows);
@@ -4476,23 +4466,25 @@ function renderActivityLapBars(rows){
   const scale=activityLapPaceScale(rows);
   ui.activityLapBars.style.width=`${activityLapZoom*100}%`;
   ui.activityLapBars.style.minWidth="100%";
-  ui.activityLapBars.style.height=`${scale?.chartHeight||188}px`;
+  ui.activityLapBars.style.height=`${scale?.chartHeight||216}px`;
 
   ui.activityLapBars.innerHTML=rows.map((row,i)=>{
     const visual=activityPaceVisual(row.p,null);
-    const h=scale&&Number.isFinite(Number(row.p))?scale.height(Number(row.p)):5;
+    const h=scale&&Number.isFinite(Number(row.p))?scale.height(Number(row.p)):2;
     const selected=currentActivityLapIndex===row.index?" selected":"";
     const share=Math.max(0,distances[i])/totalDistance*100;
     const showLabel=share*activityLapZoom>=2.5;
     return`<div class="activity-lap-bar-wrap${selected}" data-lap-index="${row.index}" style="flex-basis:${share.toFixed(5)}%">
-      <div class="activity-lap-bar" style="height:${h.toFixed(1)}%;background:${visual.color}"></div>
+      <div class="activity-lap-bar" style="height:${h.toFixed(2)}%;background:${visual.color}"></div>
       ${showLabel?`<div class="activity-lap-bar-label">${i+1}</div>`:""}
     </div>`;
   }).join("");
 
   const axis=$("activityLapPaceAxis"),grid=$("activityLapPaceGrid");
   if(axis&&grid&&scale){
-    axis.innerHTML=scale.ticks.map(v=>`<span class="activity-lap-pace-tick" style="top:${scale.top(v).toFixed(2)}%">${formatPaceValue(v)}</span>`).join("");
+    axis.innerHTML=
+      scale.ticks.map(v=>`<span class="activity-lap-pace-tick" style="top:${scale.top(v).toFixed(2)}%">${formatPaceValue(v)}</span>`).join("")+
+      `<span class="activity-lap-pace-unit">/km</span>`;
     grid.innerHTML=scale.ticks.map(v=>`<span class="activity-lap-pace-grid-line" style="top:${scale.top(v).toFixed(2)}%"></span>`).join("");
   }else{
     if(axis)axis.innerHTML="";
@@ -5263,6 +5255,203 @@ body.profile-detail-open .data-detail{z-index:75!important}
     right:12px!important
   }
   .activity-lap-bars-readout{font-size:11.5px!important}
+}
+</style>
+
+
+<style id="atlas-v076-style">
+/* ===== ɅTLɅS v0.76 · Parciales estilo Strava + scroll iPhone nativo ===== */
+
+/* Scroll vertical nativo en toda la aplicación.
+   Un píxel extra permite conservar el rebote iOS incluso en vistas casi exactas al viewport. */
+html{
+  min-height:100%!important;
+  overflow-y:auto!important;
+  overscroll-behavior-y:auto!important;
+}
+body{
+  min-height:calc(100dvh + 1px)!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+  padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 24px)!important;
+}
+.app{
+  min-height:calc(100dvh + 1px)!important;
+  overflow:visible!important;
+  overscroll-behavior-y:auto!important;
+}
+.view{
+  overflow:visible!important;
+  overscroll-behavior-y:auto!important;
+}
+.metric-detail,.state-detail,.activity-detail,.plan-detail,.data-detail{
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+  touch-action:pan-y!important;
+}
+dialog{
+  max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 20px)!important;
+  overflow-y:auto!important;
+  overscroll-behavior-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+
+/* La barra de pestañas pertenece al viewport, no al documento. */
+.nav{
+  position:fixed!important;
+  left:50%!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:calc(8px + env(safe-area-inset-bottom))!important;
+  transform:translate3d(-50%,0,0)!important;
+  margin:0!important;
+  z-index:90!important;
+  contain:layout paint!important;
+  backface-visibility:hidden!important;
+  -webkit-backface-visibility:hidden!important;
+}
+body.profile-detail-open .nav{display:none!important}
+
+/* ===== Gráfica de parciales reconstruida desde cero ===== */
+.activity-lap-bars-card{
+  --lap-axis-width:47px;
+  position:relative!important;
+  padding:10px 8px 9px calc(var(--lap-axis-width) + 11px)!important;
+  background:#0b1015!important;
+  border-bottom:1px solid rgba(255,255,255,.07)!important;
+}
+.activity-lap-bars-readout{
+  min-height:25px!important;
+  margin:0 0 7px!important;
+  color:#edf3f7!important;
+  font-size:10.8px!important;
+  line-height:1.3!important;
+  font-weight:680!important;
+}
+.activity-lap-bars-scroll{
+  position:relative!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  overscroll-behavior-x:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+.activity-lap-bars{
+  position:relative!important;
+  align-items:flex-end!important;
+  gap:0!important;
+  padding:8px 0 20px!important;
+  box-sizing:border-box!important;
+}
+.activity-lap-bar-wrap{
+  min-width:0!important;
+  height:100%!important;
+  align-items:flex-end!important;
+  justify-content:stretch!important;
+  padding:0!important;
+}
+.activity-lap-bar{
+  width:calc(100% - 2px)!important;
+  margin:0 1px!important;
+  min-width:0!important;
+  max-width:none!important;
+  min-height:2px!important;
+  border-radius:6px 6px 2px 2px!important;
+  opacity:.94!important;
+  box-shadow:none!important;
+  transition:opacity .12s ease,filter .12s ease!important;
+}
+.activity-lap-bar-wrap.selected .activity-lap-bar{
+  transform:none!important;
+  opacity:1!important;
+  filter:brightness(.90)!important;
+  outline:1px solid rgba(255,255,255,.92)!important;
+  outline-offset:-1px!important;
+}
+.activity-lap-bar-label{
+  bottom:-17px!important;
+  color:#aeb8bf!important;
+  font-size:8.8px!important;
+  line-height:1!important;
+  font-weight:600!important;
+}
+
+/* Eje Y estilo Strava: limpio, separado y con /km en la base. */
+.activity-lap-pace-axis{
+  position:absolute!important;
+  z-index:4!important;
+  left:5px!important;
+  top:45px!important;
+  bottom:30px!important;
+  width:var(--lap-axis-width)!important;
+  pointer-events:none!important;
+  color:#d5dde2!important;
+  font-size:9.1px!important;
+  line-height:1!important;
+  font-variant-numeric:tabular-nums!important;
+}
+.activity-lap-pace-axis::after{display:none!important}
+.activity-lap-pace-tick{
+  position:absolute!important;
+  right:7px!important;
+  transform:translateY(-50%)!important;
+  white-space:nowrap!important;
+  font-size:inherit!important;
+  font-weight:570!important;
+  letter-spacing:-.08px!important;
+}
+.activity-lap-pace-unit{
+  position:absolute!important;
+  right:7px!important;
+  bottom:0!important;
+  transform:translateY(35%)!important;
+  color:#d5dde2!important;
+  font-size:9.2px!important;
+  font-weight:570!important;
+  white-space:nowrap!important;
+}
+.activity-lap-pace-grid{
+  position:absolute!important;
+  z-index:1!important;
+  left:calc(var(--lap-axis-width) + 11px)!important;
+  right:8px!important;
+  top:45px!important;
+  bottom:30px!important;
+  pointer-events:none!important;
+}
+.activity-lap-pace-grid-line{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  height:1px!important;
+  background:rgba(255,255,255,.055)!important;
+}
+
+/* La gráfica no necesita marcos o ruido adicional dentro del bloque. */
+.activity-lap-bars-card + .activity-lap-group,
+.activity-lap-group{background:#0b1015!important}
+.activity-lap-columns{color:#9aa5ac!important}
+
+/* iPad: misma proporción que iPhone, solo más espacio horizontal. */
+@media (min-width:600px) and (max-width:999px){
+  .activity-lap-bars-card{
+    --lap-axis-width:52px;
+    padding-left:calc(var(--lap-axis-width) + 13px)!important;
+    padding-right:13px!important
+  }
+  .activity-lap-pace-axis{
+    left:7px!important;
+    width:var(--lap-axis-width)!important;
+    font-size:10px!important
+  }
+  .activity-lap-pace-grid{
+    left:calc(var(--lap-axis-width) + 13px)!important;
+    right:13px!important
+  }
+  .activity-lap-bar-label{font-size:9.4px!important}
 }
 </style>
 
