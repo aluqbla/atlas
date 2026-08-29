@@ -764,8 +764,29 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
     <div id="activitiesList"></div>
   </section>
 
-  <section class="view" id="view-assistant" aria-label="ATLAS Chat">
-    <div class="assistant-chat-canvas" id="assistantChatCanvas" aria-hidden="true"></div>
+  <section class="view" id="view-assistant" aria-label="Ʌ·ChatBot">
+    <div class="assistant-chat-canvas" id="assistantChatCanvas" aria-hidden="false">
+      <div class="assistant-chat-toolbar">
+        <button class="assistant-icon-btn" id="assistantHistoryBtn" type="button" aria-label="Conversaciones" title="Conversaciones">☰</button>
+        <span class="assistant-toolbar-spacer"></span>
+        <button class="assistant-icon-btn" id="assistantNewBtn" type="button" aria-label="Nueva conversación" title="Nueva conversación">＋</button>
+      </div>
+      <div class="assistant-messages" id="assistantMessages" aria-live="polite">
+        <div class="assistant-empty" id="assistantEmpty" aria-hidden="true">Ʌ</div>
+      </div>
+      <form class="assistant-composer" id="assistantComposer" autocomplete="off">
+        <textarea class="assistant-input" id="assistantInput" rows="1" maxlength="6000" placeholder="Mensaje" aria-label="Mensaje para ATLAS"></textarea>
+        <button class="assistant-send" id="assistantSend" type="submit" aria-label="Enviar">↑</button>
+      </form>
+      <div class="assistant-history-panel" id="assistantHistoryPanel" aria-hidden="true">
+        <div class="assistant-history-head">
+          <button class="assistant-history-back" id="assistantHistoryClose" type="button" aria-label="Cerrar conversaciones">‹</button>
+          <div class="assistant-history-title">Conversaciones</div>
+          <button class="assistant-history-new" id="assistantHistoryNew" type="button" aria-label="Nueva conversación">＋</button>
+        </div>
+        <div class="assistant-history-list" id="assistantHistoryList"></div>
+      </div>
+    </div>
   </section>
 
   <section class="view" id="view-plan">
@@ -1682,14 +1703,15 @@ html,body{overscroll-behavior-y:none}
 
 (()=>{
 "use strict";
-const APP_VERSION="0.77.0",SCHEMA_VERSION=9,DB_NAME="atlas",DB_VERSION=2;
-const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
+const APP_VERSION="0.82.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits","chats"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
 const qsa=(selector,root=document)=>[...root.querySelectorAll(selector)];
 function on(target,type,handler,options){if(!target)return false;target.addEventListener(type,handler,options);return true;}
 function onAll(selector,type,handler,root=document,options){qsa(selector,root).forEach(el=>on(el,type,handler,options));}
 const ui={
+ assistantChatCanvas:$("assistantChatCanvas"),assistantMessages:$("assistantMessages"),assistantEmpty:$("assistantEmpty"),assistantComposer:$("assistantComposer"),assistantInput:$("assistantInput"),assistantSend:$("assistantSend"),assistantNewBtn:$("assistantNewBtn"),assistantHistoryBtn:$("assistantHistoryBtn"),assistantHistoryPanel:$("assistantHistoryPanel"),assistantHistoryList:$("assistantHistoryList"),assistantHistoryClose:$("assistantHistoryClose"),assistantHistoryNew:$("assistantHistoryNew"),
  todayDate:$("todayDate"),stateDateLabel:$("stateDateLabel"),quickSyncBtn:$("quickSyncBtn"),activitySyncBtn:$("activitySyncBtn"),planSyncBtn:$("planSyncBtn"),dataSyncBtn:$("dataSyncBtn"),upcomingTrainingList:$("upcomingTrainingList"),trainingStateBtn:$("trainingStateBtn"),trainingStateCircle:$("trainingStateCircle"),trainingStateScore:$("trainingStateScore"),trainingStateWord:$("trainingStateWord"),trainingStateNote:$("trainingStateNote"),sleepValue:$("sleepValue"),sleepMeta:$("sleepMeta"),hrvValue:$("hrvValue"),hrvMeta:$("hrvMeta"),rhrValue:$("rhrValue"),rhrMeta:$("rhrMeta"),vo2Value:$("vo2Value"),vo2Meta:$("vo2Meta"),freshValue:$("freshValue"),freshMeta:$("freshMeta"),volumeValue:$("volumeValue"),volumeMeta:$("volumeMeta"),
  lastActivityBtn:$("lastActivityBtn"),activityLapBars:$("activityLapBars"),activityLapBarsScroll:$("activityLapBarsScroll"),activityLapReadout:$("activityLapReadout"),activitySportFilter:$("activitySportFilter"),activityYearFilter:$("activityYearFilter"),activitySearch:$("activitySearch"),activitiesSummary:$("activitiesSummary"),activitiesList:$("activitiesList"),activityDetail:$("activityDetail"),activityDetailBack:$("activityDetailBack"),activityDetailBottomBack:$("activityDetailBottomBack"),activityDetailEmoji:$("activityDetailEmoji"),activityDetailTitle:$("activityDetailTitle"),activityDetailDate:$("activityDetailDate"),activityMap:$("activityMap"),activityDetailLoading:$("activityDetailLoading"),activityPrimary:$("activityPrimary"),activityEquipment:$("activityEquipment"),activityPerception:$("activityPerception"),activityAnalysis:$("activityAnalysis"),activityChartTabs:$("activityChartTabs"),activityChartStats:$("activityChartStats"),activityChartCard:$("activityChartCard"),activityChartScroll:$("activityChartScroll"),activityChart:$("activityChart"),activityChartReadout:$("activityChartReadout"),activityLaps:$("activityLaps"),activityLapsRows:$("activityLapsRows"),activityDescription:$("activityDescription"),
  planDetail:$("planDetail"),planDetailBack:$("planDetailBack"),planDetailBottomBack:$("planDetailBottomBack"),planAdaptiveActions:$("planAdaptiveActions"),planDetailMove:$("planDetailMove"),planDetailUnavailable:$("planDetailUnavailable"),planDetailReplace:$("planDetailReplace"),planManualDialog:$("planManualDialog"),planManualForm:$("planManualForm"),planManualTitle:$("planManualTitle"),planManualSession:$("planManualSession"),planManualMoveFields:$("planManualMoveFields"),planManualDate:$("planManualDate"),planManualReplaceFields:$("planManualReplaceFields"),planManualReplacement:$("planManualReplacement"),planManualImpact:$("planManualImpact"),planManualApply:$("planManualApply"),planDetailActions:$("planDetailActions"),planDetailEdit:$("planDetailEdit"),planDetailDelete:$("planDetailDelete"),planDetailDate:$("planDetailDate"),planDetailIcon:$("planDetailIcon"),planDetailTitle:$("planDetailTitle"),planDetailDistance:$("planDetailDistance"),planDetailDuration:$("planDetailDuration"),planDetailTarget:$("planDetailTarget"),planDetailSteps:$("planDetailSteps"),planDetailPurpose:$("planDetailPurpose"),planDetailRaw:$("planDetailRaw"),planDetailResult:$("planDetailResult"),planDetailResultStatus:$("planDetailResultStatus"),planDetailResultMeta:$("planDetailResultMeta"),planDetailResultActivity:$("planDetailResultActivity"),
@@ -1709,24 +1731,210 @@ const ui={
  smartSyncBtn:$("smartSyncBtn"),testBtn:$("testBtn"),settingsBtn:$("settingsBtn"),fullSyncBtn:$("fullSyncBtn"),exportBtn:$("exportBtn"),importBtn:$("importBtn"),clearBtn:$("clearBtn"),fileInput:$("fileInput"),toast:$("toast"),
  settingsDialog:$("settingsDialog"),settingsForm:$("settingsForm"),workerUrl:$("workerUrl"),clientToken:$("clientToken"),oldestDate:$("oldestDate"),newestDate:$("newestDate"),historyStart:$("historyStart"),overlapDays:$("overlapDays"),metricDetail:$("metricDetail"),metricDetailBack:$("metricDetailBack"),metricDetailTitle:$("metricDetailTitle"),metricDetailEmoji:$("metricDetailEmoji"),metricPeriodControl:$("metricPeriodControl"),metricPrev:$("metricPrev"),metricNext:$("metricNext"),metricRangeLabel:$("metricRangeLabel"),metricChartScroll:$("metricChartScroll"),metricChart:$("metricChart"),metricChartReadout:$("metricChartReadout"),chartLegend:$("chartLegend"),detailStatLabel1:$("detailStatLabel1"),detailStatValue1:$("detailStatValue1"),detailStatLabel2:$("detailStatLabel2"),detailStatValue2:$("detailStatValue2"),detailStatLabel3:$("detailStatLabel3"),detailStatValue3:$("detailStatValue3"),detailStatSub1:$("detailStatSub1"),detailStatSub2:$("detailStatSub2"),detailStatSub3:$("detailStatSub3"),metricContext:$("metricContext"),metricDetailBottomBack:$("metricDetailBottomBack"),stateDetail:$("stateDetail"),stateDetailBack:$("stateDetailBack"),stateDetailBottomBack:$("stateDetailBottomBack"),stateDetailHero:$("stateDetailHero"),stateDetailRing:$("stateDetailRing"),stateDetailScore:$("stateDetailScore"),stateDetailWord:$("stateDetailWord"),stateDetailNote:$("stateDetailNote"),stateDetailMeta:$("stateDetailMeta"),stateFactors:$("stateFactors"),stateBaseScore:$("stateBaseScore"),stateRecoveryPenalty:$("stateRecoveryPenalty"),stateLimiter:$("stateLimiter")
 };
-let db,toastTimer,currentActivities=[],currentWellness=[],currentGear=[],currentEvents=[],currentCachedVo2=null,currentEngineV2Goal=null,currentSecondaryGoals=[],currentAvailabilityExceptions=[],currentSecondaryEditId=null,currentAvailabilityEditWeek=null,currentAthleteProfileV2=null,currentGoalRequirements=null,currentGoalAssessment=null,currentMacroTrajectory=null,currentWeeklyTargets=null,currentCalendarSolution=null,currentSessionPlan=null,currentPlanManifest=null,currentPlanCloudMeta=null,currentAdaptiveState=null,currentPlanRevisionDraft=null,currentPlanRevisionHistory=[],currentPlanManualAction=null,currentPlanWeekStart=null,currentPlanEvent=null,currentPlanOutcome=null,currentPlanEditEvent=null,lastCalendarRefreshAt=0,currentActivityDetail=null,currentActivityMap=null,currentActivityStreams=null,currentActivityVo2=null,currentActivityChartKey=null,activityChartZoom=1,activityPinchStartDistance=0,activityPinchStartZoom=1,activityChartPointerStart=null,activityChartReadoutTimer=null,activityLapZoom=1,activityLapPinchStartDistance=0,activityLapPinchStartZoom=1,currentActivityLapIndex=null,activityLapMainFilter="all",currentRunningRecords=null,currentRecordsLoading=false,currentMetricDetail=null,currentMetricDays=30,currentMetricEnd=null,currentAtlasState=null,currentChartState=null,chartReadoutTimer=null,chartZoom=1,pinchStartDistance=0,pinchStartZoom=1,chartPointerStart=null,metricZoomRaf=0,metricZoomPending=null,activityZoomRaf=0,activityZoomPending=null;
-window.addEventListener("DOMContentLoaded",()=>init().catch(reportFatalError));
+let db,dbOpenPromise=null,toastTimer,currentActivities=[],currentWellness=[],currentGear=[],currentEvents=[],currentCachedVo2=null,currentEngineV2Goal=null,currentSecondaryGoals=[],currentAvailabilityExceptions=[],currentSecondaryEditId=null,currentAvailabilityEditWeek=null,currentAthleteProfileV2=null,currentGoalRequirements=null,currentGoalAssessment=null,currentMacroTrajectory=null,currentWeeklyTargets=null,currentCalendarSolution=null,currentSessionPlan=null,currentPlanManifest=null,currentPlanCloudMeta=null,currentAdaptiveState=null,currentPlanRevisionDraft=null,currentPlanRevisionHistory=[],currentPlanManualAction=null,currentPlanWeekStart=null,currentPlanEvent=null,currentPlanOutcome=null,currentPlanEditEvent=null,lastCalendarRefreshAt=0,currentActivityDetail=null,currentActivityMap=null,currentActivityStreams=null,currentActivityVo2=null,currentActivityChartKey=null,activityChartZoom=1,activityPinchStartDistance=0,activityPinchStartZoom=1,activityChartPointerStart=null,activityChartReadoutTimer=null,activityLapZoom=1,activityLapPinchStartDistance=0,activityLapPinchStartZoom=1,currentActivityLapIndex=null,activityLapMainFilter="all",currentRunningRecords=null,currentRecordsLoading=false,currentMetricDetail=null,currentMetricDays=30,currentMetricEnd=null,currentAtlasState=null,currentChartState=null,chartReadoutTimer=null,chartZoom=1,pinchStartDistance=0,pinchStartZoom=1,chartPointerStart=null,metricZoomRaf=0,metricZoomPending=null,activityZoomRaf=0,activityZoomPending=null,dataSyncPromise=null,calendarSyncPromise=null,planCloudSyncPromise=null,foregroundRefreshPromise=null,runtimeRefreshStarted=false,runtimeGuardsInstalled=false,initStarted=false,initCompleted=false,currentActivityRequestToken=0,assistantChats=[],currentAssistantChatId=null,assistantSending=false,assistantPendingError="",assistantScrollRaf=0;
+window.addEventListener("DOMContentLoaded",()=>bootstrapAtlas().catch(reportFatalError));
 const CORE_UI_KEYS=["todayDate","lastActivityBtn","activitiesList","activityDetail","metricDetail","stateDetail","toast","settingsDialog"];
 function assertCoreUi(){const missing=CORE_UI_KEYS.filter(key=>!ui[key]);if(missing.length)throw new Error(`Interfaz incompleta: ${missing.join(", ")}`);return true;}
-function reportFatalError(error){console.error("ɅTLɅS · error de arranque",error);const message=`⚠️ ${error?.message||"Error inesperado al iniciar ATLAS."}`;if(ui?.toast){toast(message,true);return;}const box=document.createElement("div");box.style.cssText="position:fixed;left:12px;right:12px;bottom:18px;z-index:9999;padding:12px;border-radius:14px;background:#2a0d11;color:#fff;font:13px -apple-system,BlinkMacSystemFont,system-ui,sans-serif";box.textContent=message;document.body.appendChild(box);}
-async function init(){assertCoreUi();ensureMainTabHeaders();db=await openDb();await cleanupLegacySettings();setDefaultDates();await loadSettingsIntoForm();await syncPlanStateFromCloud({startup:true}).catch(error=>console.warn("ɅTLɅS · plan cloud inicial",error));bindEvents();initializeStaticUi();await refreshAll();startRuntimeRefresh();startupIntervalsSync().catch(error=>console.warn("ɅTLɅS · sincronización inicial",error));}
+function reportFatalError(error){
+  console.error("ɅTLɅS · error de arranque",error);
+  const message=error?.message||"Error inesperado al iniciar ATLAS.";
+  let box=document.getElementById("atlasFatalRecovery");
+  if(!box){
+    box=document.createElement("div");
+    box.id="atlasFatalRecovery";
+    box.style.cssText="position:fixed;left:12px;right:12px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:9999;padding:12px 13px;border:1px solid rgba(244,33,46,.42);border-radius:16px;background:rgba(42,13,17,.97);color:#fff;font:13px/1.4 -apple-system,BlinkMacSystemFont,system-ui,sans-serif;box-shadow:0 12px 38px rgba(0,0,0,.45)";
+    box.innerHTML='<div id="atlasFatalText"></div><button id="atlasFatalRetry" type="button" style="margin-top:9px;min-height:36px;padding:0 13px;border:1px solid rgba(255,255,255,.14);border-radius:11px;background:#111820;color:#fff;font:700 12px -apple-system,BlinkMacSystemFont,system-ui,sans-serif">Reintentar</button>';
+    document.body.appendChild(box);
+    box.querySelector("#atlasFatalRetry")?.addEventListener("click",()=>location.reload());
+  }
+  const text=box.querySelector("#atlasFatalText");
+  if(text)text.textContent=`ATLAS no ha podido iniciar correctamente: ${message}`;
+  recordRuntimeAudit("fatal-startup",error).catch(()=>{});
+}
+
+function waitMs(ms){return new Promise(resolve=>setTimeout(resolve,ms));}
+function atlasOnline(){return navigator.onLine!==false;}
+function hasAtlasConnectionConfig(){return!!String(ui.workerUrl?.value||"").trim()&&!!String(ui.clientToken?.value||"").trim();}
+function isRecoverableDbError(error){return["InvalidStateError","TransactionInactiveError","UnknownError"].includes(String(error?.name||""));}
+function isRetryableHttpStatus(status){return[408,425,429,500,502,503,504].includes(Number(status));}
+
+async function recordRuntimeAudit(kind,error,context={}){
+  try{
+    const d=await ensureDb();
+    const tx=d.transaction("audits","readwrite"),st=tx.objectStore("audits");
+    const now=new Date().toISOString(),key=`${now}|${Math.random().toString(36).slice(2,8)}`;
+    st.put({key,kind,at:now,message:String(error?.message||error||""),name:String(error?.name||""),status:Number(error?.status)||null,context});
+    await txDone(tx);
+    const all=await storeGetAll("audits");
+    if(all.length>50){
+      const excess=all.sort((a,b)=>String(a.key).localeCompare(String(b.key))).slice(0,all.length-50);
+      for(const row of excess)await storeDelete("audits",row.key);
+    }
+  }catch{}
+}
+
+function installRuntimeGuards(){
+  if(runtimeGuardsInstalled)return;
+  runtimeGuardsInstalled=true;
+
+  window.addEventListener("error",event=>{
+    const error=event.error||new Error(event.message||"Error de ejecución");
+    recordRuntimeAudit("runtime-error",error,{source:event.filename||"",line:event.lineno||0,column:event.colno||0}).catch(()=>{});
+  });
+
+  window.addEventListener("unhandledrejection",event=>{
+    const error=event.reason instanceof Error?event.reason:new Error(String(event.reason||"Promesa rechazada"));
+    recordRuntimeAudit("unhandled-rejection",error).catch(()=>{});
+  });
+
+  window.addEventListener("offline",()=>{
+    if(ui.connectionState)ui.connectionState.textContent="Sin conexión";
+    setGlobalSyncing(false);
+  });
+
+  window.addEventListener("online",()=>{
+    if(ui.connectionState)ui.connectionState.textContent="Conectando…";
+    scheduleForegroundRefresh(true).catch(error=>console.warn("ɅTLɅS · recuperación de conexión",error));
+  });
+
+  window.addEventListener("pageshow",event=>{
+    if(!initCompleted)return;
+    ensureDb()
+      .then(()=>refreshAll())
+      .then(()=>scheduleForegroundRefresh(Boolean(event.persisted)))
+      .catch(error=>{
+        console.warn("ɅTLɅS · reanudación",error);
+        recordRuntimeAudit("pageshow-resume",error,{persisted:Boolean(event.persisted)}).catch(()=>{});
+      })
+      .finally(scheduleAtlasScrollAudit);
+  });
+
+  window.addEventListener("pagehide",event=>{
+    setGlobalSyncing(false);
+    if(!event.persisted){
+      dataSyncPromise=null;
+      calendarSyncPromise=null;
+      planCloudSyncPromise=null;
+      foregroundRefreshPromise=null;
+    }
+  });
+}
+
+async function bootstrapAtlas(){
+  if(initCompleted||initStarted)return;
+  initStarted=true;
+  installRuntimeGuards();
+  try{
+    await init();
+    initCompleted=true;
+  }catch(error){
+    initStarted=false;
+    throw error;
+  }
+}
+
+function safeUiRender(label,fn){
+  try{return fn();}
+  catch(error){
+    console.error(`ɅTLɅS · render ${label}`,error);
+    recordRuntimeAudit("render-error",error,{label}).catch(()=>{});
+    return null;
+  }
+}
+
+async function scheduleForegroundRefresh(force=false){
+  refreshTodayIfLoaded();
+  scheduleAtlasScrollAudit();
+  if(!atlasOnline()||!hasAtlasConnectionConfig())return false;
+  if(foregroundRefreshPromise)return foregroundRefreshPromise;
+  foregroundRefreshPromise=(async()=>{
+    const tasks=[
+      refreshPlanStateFromCloud(false).catch(error=>{console.warn("ɅTLɅS · plan cloud en primer plano",error);return false;}),
+      refreshCalendarFromCloud(force).catch(error=>{console.warn("ɅTLɅS · calendario en primer plano",error);return false;})
+    ];
+    await Promise.allSettled(tasks);
+    return true;
+  })();
+  try{return await foregroundRefreshPromise;}
+  finally{foregroundRefreshPromise=null;}
+}
+
+async function init(){
+  assertCoreUi();
+  ensureMainTabHeaders();
+  bindEvents();
+  initializeStaticUi();
+
+  db=await openDb();
+  await cleanupLegacySettings().catch(error=>{
+    console.warn("ɅTLɅS · limpieza de ajustes",error);
+    recordRuntimeAudit("db-cleanup",error).catch(()=>{});
+  });
+
+  setDefaultDates();
+  await loadSettingsIntoForm().catch(error=>{
+    console.warn("ɅTLɅS · ajustes locales",error);
+    recordRuntimeAudit("settings-load",error).catch(()=>{});
+  });
+
+  await refreshAll();
+  await initializeAssistantChat();
+  startRuntimeRefresh();
+  scheduleAtlasScrollAudit();
+
+  queueMicrotask(async()=>{
+    try{
+      if(atlasOnline()&&hasAtlasConnectionConfig()){
+        const changed=await syncPlanStateFromCloud({startup:true}).catch(error=>{
+          console.warn("ɅTLɅS · plan cloud inicial",error);
+          recordRuntimeAudit("startup-plan-cloud",error).catch(()=>{});
+          return false;
+        });
+        if(changed)await refreshAll();
+        await startupIntervalsSync().catch(error=>{
+          console.warn("ɅTLɅS · sincronización inicial",error);
+          recordRuntimeAudit("startup-sync",error).catch(()=>{});
+        });
+      }
+    }finally{
+      scheduleAtlasScrollAudit();
+    }
+  });
+}
 function ensureMainTabHeaders(){
   const source=document.querySelector("#view-today > .atlas-header");if(!source)return;
   for(const id of["view-activities","view-assistant","view-plan","view-data"]){const view=$(id);if(!view||view.querySelector(":scope > .atlas-header"))continue;const clone=source.cloneNode(true);clone.classList.add("atlas-header-clone");qsa("[id]",clone).forEach(el=>el.removeAttribute("id"));view.insertBefore(clone,view.firstChild);}
 }
-function initializeStaticUi(){ensureMainTabHeaders();ui.todayDate.textContent="Hoy";if(ui.stateDateLabel)ui.stateDateLabel.textContent=fullTodayDate();initializePlanScrollTopZones();}
+function initializeStaticUi(){
+  ensureMainTabHeaders();
+  ui.todayDate.textContent="Hoy";
+  if(ui.stateDateLabel)ui.stateDateLabel.textContent=fullTodayDate();
+  if(ui.connectionState&&!atlasOnline())ui.connectionState.textContent="Sin conexión";
+  initializePlanScrollTopZones();
+}
 function initializePlanScrollTopZones(){
   qsa(".plan-detail").forEach(detail=>{if(detail.querySelector(".plan-scroll-top-zone"))return;const zone=document.createElement("button");zone.type="button";zone.className="plan-scroll-top-zone";zone.setAttribute("aria-label","Subir al inicio");zone.addEventListener("click",()=>{try{detail.scrollTo({top:0,behavior:"smooth"});}catch{detail.scrollTop=0;}});detail.prepend(zone);});
 }
 function refreshTodayIfLoaded(){if(!(currentActivities.length||currentWellness.length))return;try{renderToday(currentActivities,currentWellness,currentCachedVo2);}catch(error){console.error("ɅTLɅS · actualización de Hoy",error);}}
-function startRuntimeRefresh(){if(navigator.storage?.persist)navigator.storage.persist().catch(()=>{});setInterval(refreshTodayIfLoaded,15*60*1000);on(document,"visibilitychange",()=>{if(!document.hidden){refreshTodayIfLoaded();refreshPlanStateFromCloud(false).catch(error=>console.warn("ɅTLɅS · plan cloud en primer plano",error));refreshCalendarFromCloud(false).catch(error=>console.warn("ɅTLɅS · calendario en primer plano",error));}});}
+function startRuntimeRefresh(){
+  if(runtimeRefreshStarted)return;
+  runtimeRefreshStarted=true;
+  if(navigator.storage?.persist)navigator.storage.persist().catch(()=>{});
+  setInterval(refreshTodayIfLoaded,15*60*1000);
+  on(document,"visibilitychange",()=>{
+    if(!document.hidden)scheduleForegroundRefresh(false).catch(error=>console.warn("ɅTLɅS · primer plano",error));
+  });
+}
 function bindEvents(){
  onAll(".nav-btn","click",e=>showView(e.currentTarget.dataset.tab));
+ on(ui.assistantComposer,"submit",sendAssistantMessage);
+ on(ui.assistantNewBtn,"click",newAssistantConversation);
+ on(ui.assistantHistoryBtn,"click",openAssistantHistory);
+ on(ui.assistantHistoryClose,"click",closeAssistantHistory);
+ on(ui.assistantHistoryNew,"click",()=>{closeAssistantHistory();newAssistantConversation();});
+ on(ui.assistantHistoryList,"click",handleAssistantHistoryClick);
+ on(ui.assistantInput,"input",resizeAssistantInput);
+ on(ui.assistantInput,"keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();ui.assistantComposer?.requestSubmit();}});
  on(ui.activitySportFilter,"change",renderActivities);on(ui.activityYearFilter,"change",renderActivities);on(ui.activitySearch,"input",renderActivities);
  on(ui.activitiesList,"click",e=>{const btn=e.target.closest(".activity-row");if(btn)openActivityDetail(btn.dataset.id);});
  on(ui.activityDetailBack,"click",closeActivityDetail);on(ui.activityDetailBottomBack,"click",closeActivityDetail);
@@ -1750,6 +1958,34 @@ function bindEvents(){
  on(ui.settingsForm,"submit",async e=>{const s=e.submitter;if(!s||s.value!=="default")return;e.preventDefault();try{await saveSettings();ui.settingsDialog?.close();await refreshAll();toast("✅ Conexión guardada.");}catch(err){toast(`⚠️ ${err.message}`,true);}});
 }
 
+
+/* ===== Ʌ·ChatBot ===== */
+function assistantId(){try{return crypto.randomUUID();}catch{return`chat-${Date.now()}-${Math.random().toString(36).slice(2,10)}`;}}
+function assistantDateLabel(value){const d=new Date(value||Date.now());if(Number.isNaN(d.getTime()))return"";const t=new Date(),same=t.toDateString()===d.toDateString();return same?new Intl.DateTimeFormat("es-ES",{hour:"2-digit",minute:"2-digit"}).format(d):new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short"}).format(d).replace(".","");}
+function assistantChatTitle(text){const clean=String(text||"").replace(/\s+/g," ").trim();if(!clean)return"Nueva conversación";return clean.length>48?`${clean.slice(0,47).trim()}…`:clean;}
+function currentAssistantChat(){return assistantChats.find(x=>x.id===currentAssistantChatId)||null;}
+async function initializeAssistantChat(){try{assistantChats=(await storeGetAll("chats")).filter(x=>x&&x.id&&Array.isArray(x.messages)).sort((a,b)=>String(b.updatedAt||"").localeCompare(String(a.updatedAt||"")));currentAssistantChatId=assistantChats[0]?.id||null;}catch(error){console.warn("ɅTLɅS · conversaciones",error);recordRuntimeAudit("chat-load",error).catch(()=>{});assistantChats=[];currentAssistantChatId=null;}renderAssistantChat();renderAssistantHistory();}
+function newAssistantConversation(){if(assistantSending)return;currentAssistantChatId=null;assistantPendingError="";closeAssistantHistory();renderAssistantChat();ui.assistantInput?.focus();}
+async function persistAssistantChat(chat){if(!chat?.id)return;chat.updatedAt=new Date().toISOString();await storePut("chats",chat);const idx=assistantChats.findIndex(x=>x.id===chat.id);if(idx>=0)assistantChats.splice(idx,1,chat);else assistantChats.push(chat);assistantChats.sort((a,b)=>String(b.updatedAt||"").localeCompare(String(a.updatedAt||"")));renderAssistantHistory();}
+async function deleteAssistantConversation(id){if(!id)return;try{await storeDelete("chats",id);assistantChats=assistantChats.filter(x=>x.id!==id);if(currentAssistantChatId===id)currentAssistantChatId=assistantChats[0]?.id||null;renderAssistantHistory();renderAssistantChat();}catch(error){recordRuntimeAudit("chat-delete",error).catch(()=>{});toast(`⚠️ ${error.message}`,true);}}
+function openAssistantHistory(){if(!ui.assistantHistoryPanel)return;renderAssistantHistory();ui.assistantHistoryPanel.classList.add("open");ui.assistantHistoryPanel.setAttribute("aria-hidden","false");}
+function closeAssistantHistory(){if(!ui.assistantHistoryPanel)return;ui.assistantHistoryPanel.classList.remove("open");ui.assistantHistoryPanel.setAttribute("aria-hidden","true");}
+function handleAssistantHistoryClick(event){const del=event.target.closest("[data-chat-delete]");if(del){event.stopPropagation();deleteAssistantConversation(del.dataset.chatDelete);return;}const row=event.target.closest("[data-chat-id]");if(!row)return;currentAssistantChatId=row.dataset.chatId;assistantPendingError="";closeAssistantHistory();renderAssistantChat();requestAnimationFrame(()=>scrollAssistantToBottom(false));}
+function renderAssistantHistory(){if(!ui.assistantHistoryList)return;if(!assistantChats.length){ui.assistantHistoryList.innerHTML='<div class="assistant-history-empty">Sin conversaciones guardadas</div>';return;}ui.assistantHistoryList.innerHTML=assistantChats.map(chat=>`<button class="assistant-history-row${chat.id===currentAssistantChatId?" active":""}" type="button" data-chat-id="${esc(chat.id)}"><span class="assistant-history-copy"><span class="assistant-history-name">${esc(chat.title||"Conversación")}</span><span class="assistant-history-date">${esc(assistantDateLabel(chat.updatedAt))}</span></span><span class="assistant-history-delete" role="button" aria-label="Eliminar conversación" data-chat-delete="${esc(chat.id)}">✕</span></button>`).join("");}
+function assistantMessageNode(message){const row=document.createElement("div");row.className=`assistant-message-row ${message.role==="user"?"user":"assistant"}`;const bubble=document.createElement("div");bubble.className="assistant-message";bubble.textContent=String(message.content||"");row.appendChild(bubble);return row;}
+function assistantTypingNode(){const row=document.createElement("div");row.className="assistant-message-row assistant";row.id="assistantTyping";const bubble=document.createElement("div");bubble.className="assistant-message assistant-typing";bubble.innerHTML="<span></span><span></span><span></span>";row.appendChild(bubble);return row;}
+function renderAssistantChat(){if(!ui.assistantMessages)return;const chat=currentAssistantChat(),messages=Array.isArray(chat?.messages)?chat.messages:[];ui.assistantMessages.innerHTML="";if(!messages.length&&!assistantSending&&!assistantPendingError){const empty=document.createElement("div");empty.className="assistant-empty";empty.setAttribute("aria-hidden","true");empty.textContent="Ʌ";ui.assistantMessages.appendChild(empty);}for(const message of messages)ui.assistantMessages.appendChild(assistantMessageNode(message));if(assistantSending)ui.assistantMessages.appendChild(assistantTypingNode());if(assistantPendingError){const row=document.createElement("div");row.className="assistant-message-row assistant";const bubble=document.createElement("div");bubble.className="assistant-message assistant-error";bubble.textContent=assistantPendingError;row.appendChild(bubble);ui.assistantMessages.appendChild(row);}if(ui.assistantSend)ui.assistantSend.disabled=assistantSending;if(ui.assistantInput)ui.assistantInput.disabled=assistantSending;auditAssistantMessageScroll();}
+function resizeAssistantInput(){const el=ui.assistantInput;if(!el)return;el.style.height="auto";el.style.height=`${Math.min(120,Math.max(24,el.scrollHeight))}px`;}
+function auditAssistantMessageScroll(){if(!ui.assistantMessages)return;if(assistantScrollRaf)cancelAnimationFrame(assistantScrollRaf);assistantScrollRaf=requestAnimationFrame(()=>{assistantScrollRaf=0;const needs=ui.assistantMessages.scrollHeight>ui.assistantMessages.clientHeight+2;ui.assistantMessages.classList.toggle("scrollable",needs);if(!needs)ui.assistantMessages.scrollTop=0;});}
+function scrollAssistantToBottom(smooth=true){if(!ui.assistantMessages)return;const top=Math.max(0,ui.assistantMessages.scrollHeight-ui.assistantMessages.clientHeight);try{ui.assistantMessages.scrollTo({top,behavior:smooth?"smooth":"auto"});}catch{ui.assistantMessages.scrollTop=top;}}
+function assistantMetricText(valueEl,metaEl){const value=String(valueEl?.textContent||"").replace(/\s+/g," ").trim(),meta=String(metaEl?.textContent||"").replace(/\s+/g," ").trim();return[value,meta].filter(x=>x&&x!=="—").join(" · ")||null;}
+function assistantActivitySummary(a){const pace=activityPaceSecKm(a),distance=activityDistanceM(a),hr=Number(pick(a,["average_heartrate","average_hr"])),cadence=Number(pick(a,["average_cadence","cadence"])),gain=Number(pick(a,["total_elevation_gain","elevation_gain"])),load=Number(pick(a,["icu_training_load","training_load"])),duration=Number(pick(a,["moving_time","elapsed_time","duration"]));return{id:String(a?.id||""),date:activityDate(a)||null,name:activityName(a),type:activityType(a),distanceKm:Number.isFinite(distance)?Math.round(distance/10)/100:null,duration:Number.isFinite(duration)&&duration>0?formatDuration(duration):null,pace:Number.isFinite(pace)?`${formatPaceValue(pace)} min/km`:null,averageHr:Number.isFinite(hr)&&hr>0?Math.round(hr):null,cadence:Number.isFinite(cadence)&&cadence>0?Math.round(cadence):null,elevationGain:Number.isFinite(gain)?Math.round(gain):null,trainingLoad:Number.isFinite(load)?Math.round(load*10)/10:null};}
+function assistantWellnessSummary(row){const date=String(row?.id||"").slice(0,10),hrv=Number(pick(row,["hrv","hrvSDNN","hrv_sdnn"])),rhr=Number(pick(row,["restingHR","resting_hr","restingHr"])),sleep=Number(pick(row,["sleepSecs","sleep_secs","sleep"])),sleepScore=Number(pick(row,["sleepScore","sleep_score"])),ctl=Number(pick(row,["ctl","ctlLoad","icu_ctl"])),atl=Number(pick(row,["atl","atlLoad","icu_atl"]));return{date:date||null,hrv:Number.isFinite(hrv)&&hrv>0?Math.round(hrv*10)/10:null,restingHr:Number.isFinite(rhr)&&rhr>0?Math.round(rhr):null,sleep:Number.isFinite(sleep)&&sleep>0?formatSleepHM(sleep):null,sleepScore:Number.isFinite(sleepScore)&&sleepScore>=0?Math.round(sleepScore):null,ctl:Number.isFinite(ctl)?Math.round(ctl*10)/10:null,atl:Number.isFinite(atl)?Math.round(atl*10)/10:null,freshness:Number.isFinite(ctl)&&Number.isFinite(atl)?Math.round((ctl-atl)*10)/10:null};}
+function assistantSessionSummary(s){if(!s)return null;return{date:s.date||null,type:s.type||null,title:s.title||s.name||null,distanceKm:Number.isFinite(Number(s.distanceKm))?Math.round(Number(s.distanceKm)*10)/10:null,pace:s.pace||null,structure:s.structure||null,purpose:s.purpose||null};}
+async function buildAssistantContext(){const athleteRecord=await storeGet("athlete","me").catch(()=>null),athlete=athleteRecord?.data||athleteRecord||{},sport=runningSportSettings(athlete)||{},zones=profileZoneRows(sport),activities=[...currentActivities].sort((a,b)=>activityStamp(b).localeCompare(activityStamp(a))),runs=activities.filter(isRun),runKm=runs.reduce((sum,a)=>sum+(activityDistanceM(a)||0),0)/1000,wellness=[...currentWellness].sort((a,b)=>String(b?.id||"").localeCompare(String(a?.id||""))),today=fmtDate(new Date()),futureSessions=(currentPlanManifest?.sessionSnapshot||[]).filter(s=>s?.date&&s.date>=today).sort((a,b)=>String(a.date).localeCompare(String(b.date))).slice(0,20).map(assistantSessionSummary).filter(Boolean),shoes=(currentGear||[]).filter(gearIsShoes).map(g=>({name:g.name||"Zapatillas",km:Number.isFinite(gearDistanceKm(g))?Math.round(gearDistanceKm(g)):null,activities:Number.isFinite(Number(g.activities))?Number(g.activities):null,retired:Boolean(g.retired)})).slice(0,12),state=currentAtlasState?{score:currentAtlasState.score,status:currentAtlasState.band?.label||null,note:currentAtlasState.note||null,baseScore:currentAtlasState.baseScore,components:currentAtlasState.components||null,recoveryPenalty:currentAtlasState.recovery?.penalty||0,limiter:currentAtlasState.limiter||null,hrv7:currentAtlasState.hrv7,hrvBaseline:currentAtlasState.hrvBaseline,rhrDelta:currentAtlasState.rhrDelta,freshness:currentAtlasState.fresh,sleepHours:currentAtlasState.sleepHours,sleepQuality:currentAtlasState.sleepQuality?.label||null}:null;return{generatedAt:new Date().toISOString(),appVersion:APP_VERSION,state,todayMetrics:{sleep:assistantMetricText(ui.sleepValue,ui.sleepMeta),hrv:assistantMetricText(ui.hrvValue,ui.hrvMeta),restingHr:assistantMetricText(ui.rhrValue,ui.rhrMeta),vo2max:assistantMetricText(ui.vo2Value,ui.vo2Meta),freshness:assistantMetricText(ui.freshValue,ui.freshMeta),volume7d:assistantMetricText(ui.volumeValue,ui.volumeMeta)},profile:{name:athlete?.name||null,height:Number.isFinite(Number(athlete?.height))?Number(athlete.height):null,weight:Number.isFinite(Number(athlete?.icu_weight??athlete?.weight))?Number(athlete.icu_weight??athlete.weight):null,runner:currentAthleteProfileV2||null,zones:{pace:zones.pace||[],heartRate:zones.hr||[]},shoes},activities:{total:activities.length,runs:runs.length,runDistanceKm:Math.round(runKm*10)/10,oldest:activities.length?activityDate(activities[activities.length-1]):null,newest:activities.length?activityDate(activities[0]):null,recent:activities.slice(0,60).map(assistantActivitySummary)},wellnessRecent:wellness.slice(0,60).map(assistantWellnessSummary),plan:{goal:currentEngineV2Goal||null,secondaryGoals:currentSecondaryGoals||[],assessment:currentGoalAssessment||null,availabilityExceptions:currentAvailabilityExceptions||[],upcoming:futureSessions,adaptive:currentAdaptiveState?{level:currentAdaptiveState.level||null,decision:currentAdaptiveState.decision||null,reading:currentAdaptiveState.reading||null,keyIssues:currentAdaptiveState.keyIssues||null}:null}};}
+async function sendAssistantMessage(event){event?.preventDefault();if(assistantSending)return;const text=String(ui.assistantInput?.value||"").trim();if(!text)return;assistantPendingError="";let chat=currentAssistantChat();if(!chat){const now=new Date().toISOString();chat={id:assistantId(),title:assistantChatTitle(text),createdAt:now,updatedAt:now,messages:[]};currentAssistantChatId=chat.id;assistantChats.unshift(chat);}chat.messages.push({role:"user",content:text,at:new Date().toISOString()});chat.title=chat.messages.filter(m=>m.role==="user").length===1?assistantChatTitle(text):(chat.title||assistantChatTitle(text));if(ui.assistantInput){ui.assistantInput.value="";resizeAssistantInput();}await persistAssistantChat(chat);assistantSending=true;renderAssistantChat();requestAnimationFrame(()=>scrollAssistantToBottom(true));try{const context=await buildAssistantContext(),history=chat.messages.filter(m=>m&&["user","assistant"].includes(m.role)&&String(m.content||"").trim()).slice(-20).map(m=>({role:m.role,content:String(m.content).slice(0,8000)})),result=await apiRequest("/api/chat",{method:"POST",body:{messages:history,context},timeoutMs:90000,retries:0}),reply=String(result?.reply||"").trim();if(!reply)throw new Error("ATLAS no ha recibido una respuesta válida del modelo.");chat.messages.push({role:"assistant",content:reply,at:new Date().toISOString()});await persistAssistantChat(chat);}catch(error){console.error("ɅTLɅS · ChatBot",error);recordRuntimeAudit("assistant-chat",error).catch(()=>{});assistantPendingError=error?.status===503?"El ChatBot todavía no está conectado en el Worker.":`No he podido responder: ${error?.message||"error de conexión"}`;}finally{assistantSending=false;renderAssistantChat();requestAnimationFrame(()=>scrollAssistantToBottom(true));ui.assistantInput?.focus();}}
+
+
 /* ===== Detalle de métricas / gráficas de Hoy ===== */
 const METRIC_DETAIL_CONFIG={
  "Sueño":{emoji:"💤",key:"sleep",title:"Sueño"},
@@ -1759,8 +1995,8 @@ const METRIC_DETAIL_CONFIG={
  "Frescura":{emoji:"⚡",key:"fresh",title:"Estado de forma"},
  "Volumen":{emoji:"🏃🏻‍♂️",key:"volume",title:"Volumen"}
 };
-function openMetricDetail(name){if(!METRIC_DETAIL_CONFIG[name])return;currentMetricDetail=name;currentMetricDays=7;currentMetricEnd=fmtDate(new Date());resetChartZoom();ui.metricPeriodControl.querySelectorAll(".period-btn").forEach(x=>x.classList.toggle("active",x.dataset.days==="7"));ui.metricDetail.classList.add("open");ui.metricDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";renderMetricDetail();}
-function closeMetricDetail(){ui.metricDetail.classList.remove("open");ui.metricDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";currentMetricDetail=null;currentMetricEnd=null;currentChartState=null;hideChartReadout();resetChartZoom();}
+function openMetricDetail(name){if(!METRIC_DETAIL_CONFIG[name])return;currentMetricDetail=name;currentMetricDays=7;currentMetricEnd=fmtDate(new Date());resetChartZoom();ui.metricPeriodControl.querySelectorAll(".period-btn").forEach(x=>x.classList.toggle("active",x.dataset.days==="7"));ui.metricDetail.classList.add("open");ui.metricDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";renderMetricDetail();scheduleAtlasScrollAudit();}
+function closeMetricDetail(){ui.metricDetail.classList.remove("open");ui.metricDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";currentMetricDetail=null;currentMetricEnd=null;currentChartState=null;hideChartReadout();resetChartZoom();scheduleAtlasScrollAudit();}
 function startOfMonthISO(s){return String(s).slice(0,7)+"-01";}
 function startOfYearISO(s){return String(s).slice(0,4)+"-01-01";}
 function endOfMonthISO(s){const[y,m]=String(s).slice(0,7).split("-").map(Number);return new Date(Date.UTC(y,m,0)).toISOString().slice(0,10);}
@@ -1849,8 +2085,112 @@ function formatRangeDate(s){const[y,m,d]=s.split("-").map(Number);return new Int
 function formatStatDate(s){const[y,m,d]=s.split("-").map(Number);const month=new Intl.DateTimeFormat("es-ES",{month:"long"}).format(new Date(y,m-1,d));return `${d} de ${month} de ${y}`;}
 
 /* ===== Navegación, paneles y persistencia local ===== */
-function closeOpenSectionsForTabSwitch(){if(ui.metricDetail?.classList.contains("open"))closeMetricDetail();if(ui.stateDetail?.classList.contains("open"))closeStateDetail();if(ui.activityDetail?.classList.contains("open"))closeActivityDetail();closeDataDetail();qsa(".plan-detail").forEach(x=>{x.classList.add("hidden");x.setAttribute("aria-hidden","true");});qsa("dialog[open]").forEach(d=>{try{d.close();}catch{}});document.body.style.overflow="";}
-function showView(tab){closeOpenSectionsForTabSwitch();document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===`view-${tab}`));document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));if(tab==="activities")renderActivities();if(tab==="plan")renderPlan();window.scrollTo({top:0,behavior:"instant"});}
+
+let atlasScrollAuditFrame=0;
+
+function atlasOpenOverlay(){
+  if(ui.activityDetail?.classList.contains("open"))return ui.activityDetail;
+  const data=qsa(".data-detail").find(x=>!x.classList.contains("hidden"));
+  if(data)return data;
+  const plan=qsa(".plan-detail").find(x=>!x.classList.contains("hidden"));
+  if(plan)return plan;
+  if(ui.stateDetail?.classList.contains("open"))return ui.stateDetail;
+  if(ui.metricDetail?.classList.contains("open"))return ui.metricDetail;
+  return null;
+}
+
+function atlasSetOverflowClass(el,needsScroll){
+  if(!el)return;
+  el.classList.toggle("atlas-scrollable",Boolean(needsScroll));
+  el.classList.toggle("atlas-scroll-locked",!needsScroll);
+  if(!needsScroll&&el.scrollTop)el.scrollTop=0;
+}
+
+function auditAtlasScrollState(){
+  atlasScrollAuditFrame=0;
+  const root=document.documentElement;
+  const overlay=atlasOpenOverlay();
+
+  if(overlay){
+    root.classList.remove("atlas-main-scroll-locked");
+    document.body.classList.remove("atlas-main-scroll-locked");
+    document.body.style.overflow="hidden";
+
+    qsa(".metric-detail,.state-detail,.activity-detail,.plan-detail,.data-detail")
+      .filter(x=>x!==overlay)
+      .forEach(x=>x.classList.remove("atlas-scrollable","atlas-scroll-locked"));
+
+    overlay.classList.remove("atlas-scroll-locked");
+    overlay.classList.add("atlas-scrollable");
+
+    requestAnimationFrame(()=>{
+      const needs=overlay.scrollHeight>overlay.clientHeight+2;
+      atlasSetOverflowClass(overlay,needs);
+    });
+    return;
+  }
+
+  document.body.style.overflow="";
+  root.classList.remove("atlas-main-scroll-locked");
+  document.body.classList.remove("atlas-main-scroll-locked");
+
+  requestAnimationFrame(()=>{
+    const scrolling=document.scrollingElement||root;
+    const needs=scrolling.scrollHeight>window.innerHeight+2;
+    root.classList.toggle("atlas-main-scroll-locked",!needs);
+    document.body.classList.toggle("atlas-main-scroll-locked",!needs);
+    if(!needs&&scrolling.scrollTop)scrolling.scrollTop=0;
+  });
+}
+
+function scheduleAtlasScrollAudit(){
+  if(atlasScrollAuditFrame)return;
+  atlasScrollAuditFrame=requestAnimationFrame(auditAtlasScrollState);
+}
+
+function installAtlasScrollAudit(){
+  scheduleAtlasScrollAudit();
+  window.addEventListener("resize",scheduleAtlasScrollAudit,{passive:true});
+  window.addEventListener("orientationchange",scheduleAtlasScrollAudit,{passive:true});
+
+  if("ResizeObserver" in window){
+    const ro=new ResizeObserver(scheduleAtlasScrollAudit);
+    [
+      document.querySelector(".app"),
+      ...qsa(".metric-detail-inner,.state-detail-inner,.activity-detail-inner,.plan-detail-shell,.data-detail-inner")
+    ].filter(Boolean).forEach(x=>ro.observe(x));
+  }
+
+  const mo=new MutationObserver(scheduleAtlasScrollAudit);
+  mo.observe(document.body,{
+    subtree:true,
+    childList:true,
+    characterData:true,
+    attributes:true,
+    attributeFilter:["class","aria-hidden"]
+  });
+}
+
+function closeOpenSectionsForTabSwitch(){
+  if(ui.metricDetail?.classList.contains("open"))closeMetricDetail();
+  if(ui.stateDetail?.classList.contains("open"))closeStateDetail();
+  if(ui.activityDetail?.classList.contains("open"))closeActivityDetail();
+  closeDataDetail();
+  closeAssistantHistory();
+  qsa(".plan-detail").forEach(x=>{x.classList.add("hidden");x.setAttribute("aria-hidden","true");});
+  qsa("dialog[open]").forEach(d=>{try{d.close();}catch{}});
+  document.body.style.overflow="";
+}
+function showView(tab){
+  closeOpenSectionsForTabSwitch();
+  document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===`view-${tab}`));
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
+  if(tab==="activities")renderActivities();
+  if(tab==="plan")renderPlan();
+  if(tab==="assistant"){renderAssistantChat();requestAnimationFrame(()=>scrollAssistantToBottom(false));}
+  window.scrollTo({top:0,behavior:"instant"});
+  scheduleAtlasScrollAudit();
+}
 function dataDetailFor(name){return name==="profile"?ui.dataProfileDetail:name==="performance"?ui.dataPerformanceDetail:name==="records"?ui.dataRecordsDetail:name==="shoes"?ui.dataShoesDetail:name==="system"?ui.dataSystemDetail:null;}
 function openDataDetail(name){
   const detail=dataDetailFor(name);if(!detail)return;
@@ -1860,39 +2200,188 @@ function openDataDetail(name){
   document.body.style.overflow="hidden";
   detail.scrollTop=0;
   if(name==="records")loadRunningRecords().catch(error=>{console.error("ɅTLɅS · mejores marcas",error);renderRunningRecordsError(error);});
+  scheduleAtlasScrollAudit();
 }
 function closeDataDetail(){
   qsa(".data-detail").forEach(x=>{x.classList.add("hidden");x.setAttribute("aria-hidden","true");});
   document.body.classList.remove("profile-detail-open");
   document.body.style.overflow="";
+  scheduleAtlasScrollAudit();
 }
 function togglePanel(name){const target=$(`panel-${name}`);if(!target)return;const open=!target.classList.contains("active");document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));if(open){target.classList.add("active");if(name==="records")loadRunningRecords().catch(error=>{console.error("ɅTLɅS · mejores marcas",error);renderRunningRecordsError(error);});setTimeout(()=>target.scrollIntoView({behavior:"smooth",block:"nearest"}),20);}}
 function toast(message,isError=false){clearTimeout(toastTimer);if(!ui.toast){console[isError?"error":"log"](message);return;}ui.toast.textContent=message;ui.toast.className="toast show"+(isError?" error":"");toastTimer=setTimeout(()=>{if(ui.toast)ui.toast.className="toast";},2600);}
-function openDb(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB_NAME,DB_VERSION);req.onupgradeneeded=()=>{const d=req.result;if(!d.objectStoreNames.contains("settings"))d.createObjectStore("settings",{keyPath:"key"});if(!d.objectStoreNames.contains("meta"))d.createObjectStore("meta",{keyPath:"key"});if(!d.objectStoreNames.contains("profile"))d.createObjectStore("profile",{keyPath:"key"});if(!d.objectStoreNames.contains("athlete"))d.createObjectStore("athlete",{keyPath:"key"});if(!d.objectStoreNames.contains("activities"))d.createObjectStore("activities",{keyPath:"id"});if(!d.objectStoreNames.contains("wellness"))d.createObjectStore("wellness",{keyPath:"id"});if(!d.objectStoreNames.contains("gear"))d.createObjectStore("gear",{keyPath:"id"});if(!d.objectStoreNames.contains("sportSettings"))d.createObjectStore("sportSettings",{keyPath:"id"});if(!d.objectStoreNames.contains("events"))d.createObjectStore("events",{keyPath:"id"});if(!d.objectStoreNames.contains("audits"))d.createObjectStore("audits",{keyPath:"key"});};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}
+function openDb({timeoutMs=8000}={}){
+  if(db)return Promise.resolve(db);
+  if(dbOpenPromise)return dbOpenPromise;
+
+  dbOpenPromise=new Promise((resolve,reject)=>{
+    let settled=false;
+    let timer=null;
+    const fail=error=>{
+      if(settled)return;
+      settled=true;
+      if(timer)clearTimeout(timer);
+      reject(error instanceof Error?error:new Error(String(error||"No se ha podido abrir IndexedDB.")));
+    };
+    timer=setTimeout(()=>fail(new Error("La base de datos local está tardando demasiado en abrirse.")),timeoutMs);
+
+    let req;
+    try{req=indexedDB.open(DB_NAME,DB_VERSION);}
+    catch(error){fail(error);return;}
+
+    req.onupgradeneeded=()=>{
+      const d=req.result;
+      if(!d.objectStoreNames.contains("settings"))d.createObjectStore("settings",{keyPath:"key"});
+      if(!d.objectStoreNames.contains("meta"))d.createObjectStore("meta",{keyPath:"key"});
+      if(!d.objectStoreNames.contains("profile"))d.createObjectStore("profile",{keyPath:"key"});
+      if(!d.objectStoreNames.contains("athlete"))d.createObjectStore("athlete",{keyPath:"key"});
+      if(!d.objectStoreNames.contains("activities"))d.createObjectStore("activities",{keyPath:"id"});
+      if(!d.objectStoreNames.contains("wellness"))d.createObjectStore("wellness",{keyPath:"id"});
+      if(!d.objectStoreNames.contains("gear"))d.createObjectStore("gear",{keyPath:"id"});
+      if(!d.objectStoreNames.contains("sportSettings"))d.createObjectStore("sportSettings",{keyPath:"id"});
+      if(!d.objectStoreNames.contains("events"))d.createObjectStore("events",{keyPath:"id"});
+      if(!d.objectStoreNames.contains("audits"))d.createObjectStore("audits",{keyPath:"key"});
+      if(!d.objectStoreNames.contains("chats"))d.createObjectStore("chats",{keyPath:"id"});
+    };
+    req.onblocked=()=>console.warn("ɅTLɅS · IndexedDB bloqueada por otra instancia.");
+    req.onerror=()=>fail(req.error||new Error("No se ha podido abrir la base de datos local."));
+    req.onsuccess=()=>{
+      const d=req.result;
+      if(settled){try{d.close();}catch{}return;}
+      settled=true;
+      if(timer)clearTimeout(timer);
+      db=d;
+      d.onversionchange=()=>{
+        try{d.close();}catch{}
+        if(db===d)db=null;
+      };
+      d.onclose=()=>{if(db===d)db=null;};
+      resolve(d);
+    };
+  }).finally(()=>{dbOpenPromise=null;});
+  return dbOpenPromise;
+}
+
+async function ensureDb(){
+  if(db)return db;
+  return openDb();
+}
+async function withDbRetry(task){
+  let lastError=null;
+  for(let attempt=0;attempt<2;attempt++){
+    try{
+      const d=await ensureDb();
+      return await task(d);
+    }catch(error){
+      lastError=error;
+      if(attempt===0&&isRecoverableDbError(error)){
+        try{db?.close();}catch{}
+        db=null;
+        await waitMs(60);
+        continue;
+      }
+      throw error;
+    }
+  }
+  throw lastError||new Error("Error en la base de datos local.");
+}
+
 function reqP(req){return new Promise((res,rej)=>{req.onsuccess=()=>res(req.result);req.onerror=()=>rej(req.error);});}
 function txDone(tx){return new Promise((res,rej)=>{tx.oncomplete=res;tx.onerror=()=>rej(tx.error);tx.onabort=()=>rej(tx.error||new Error("Transacción cancelada"));});}
-async function storeGet(s,k){const tx=db.transaction(s,"readonly");return reqP(tx.objectStore(s).get(k));}
-async function storeGetAll(s){const tx=db.transaction(s,"readonly");return reqP(tx.objectStore(s).getAll());}
-async function storePut(s,v){const tx=db.transaction(s,"readwrite");tx.objectStore(s).put(v);await txDone(tx);}
-async function storeDelete(s,k){const tx=db.transaction(s,"readwrite");tx.objectStore(s).delete(k);await txDone(tx);}
+async function storeGet(s,k){return withDbRetry(async d=>{const tx=d.transaction(s,"readonly");return reqP(tx.objectStore(s).get(k));});}
+async function storeGetAll(s){return withDbRetry(async d=>{const tx=d.transaction(s,"readonly");return reqP(tx.objectStore(s).getAll());});}
+async function storePut(s,v){return withDbRetry(async d=>{const tx=d.transaction(s,"readwrite");tx.objectStore(s).put(v);await txDone(tx);});}
+async function storeDelete(s,k){return withDbRetry(async d=>{const tx=d.transaction(s,"readwrite");tx.objectStore(s).delete(k);await txDone(tx);});}
 async function cleanupLegacySettings(){for(const k of ["hrvGarminLow","hrvGarminHigh"])await storeDelete("settings",k);}
-async function storeClear(s){const tx=db.transaction(s,"readwrite");tx.objectStore(s).clear();await txDone(tx);}
-async function bulkUpsert(s,records){if(!Array.isArray(records)||!records.length)return;const tx=db.transaction(s,"readwrite"),st=tx.objectStore(s);for(const r of records)if(r&&r.id!=null)st.put(r);await txDone(tx);}
-async function replaceStore(s,records){const tx=db.transaction(s,"readwrite"),st=tx.objectStore(s);st.clear();for(const r of(records||[]))if(r&&r.id!=null)st.put(r);await txDone(tx);}
+async function storeClear(s){return withDbRetry(async d=>{const tx=d.transaction(s,"readwrite");tx.objectStore(s).clear();await txDone(tx);});}
+async function bulkUpsert(s,records){if(!Array.isArray(records)||!records.length)return;return withDbRetry(async d=>{const tx=d.transaction(s,"readwrite"),st=tx.objectStore(s);for(const r of records)if(r&&r.id!=null)st.put(r);await txDone(tx);});}
+async function replaceStore(s,records){return withDbRetry(async d=>{const tx=d.transaction(s,"readwrite"),st=tx.objectStore(s);st.clear();for(const r of(records||[]))if(r&&r.id!=null)st.put(r);await txDone(tx);});}
 function setDefaultDates(){const t=new Date(),o=new Date(t);o.setDate(o.getDate()-41);ui.newestDate.value=fmtDate(t);ui.oldestDate.value=fmtDate(o);ui.historyStart.value="2018-01-01";ui.overlapDays.value="21";}
 async function loadSettingsIntoForm(){const keys=["workerUrl","clientToken","manualOldest","manualNewest","historyStart","overlapDays"],[vals,lastRange]=await Promise.all([Promise.all(keys.map(k=>storeGet("settings",k))),storeGet("meta","lastSyncRange")]);const m=Object.fromEntries(vals.filter(Boolean).map(x=>[x.key,x.value]));if(m.workerUrl)ui.workerUrl.value=m.workerUrl;if(m.clientToken)ui.clientToken.value=m.clientToken;if(m.manualOldest)ui.oldestDate.value=m.manualOldest;else if(lastRange?.value?.oldest)ui.oldestDate.value=lastRange.value.oldest;if(m.manualNewest)ui.newestDate.value=m.manualNewest;else if(lastRange?.value?.newest)ui.newestDate.value=lastRange.value.newest;if(m.historyStart)ui.historyStart.value=m.historyStart;else if(lastRange?.value?.oldest)ui.historyStart.value=lastRange.value.oldest;if(m.overlapDays)ui.overlapDays.value=String(m.overlapDays);}
 async function openSettings(){await loadSettingsIntoForm();ui.settingsDialog.showModal();}
-async function saveSettings(){const workerUrl=normalizeWorkerUrl(ui.workerUrl.value),clientToken=ui.clientToken.value.trim(),overlapDays=Number(ui.overlapDays.value||21);if(!workerUrl)throw new Error("URL del Worker no válida.");if(!clientToken)throw new Error("Falta el token privado.");if(!ui.historyStart.value)throw new Error("Falta el inicio del histórico.");if(!Number.isInteger(overlapDays)||overlapDays<3||overlapDays>90)throw new Error("Solapamiento entre 3 y 90 días.");for(const[k,v]of Object.entries({workerUrl,clientToken,manualOldest:ui.oldestDate.value,manualNewest:ui.newestDate.value,historyStart:ui.historyStart.value,overlapDays}))await storePut("settings",{key:k,value:v});}
+async function saveSettings(){
+  const workerUrl=normalizeWorkerUrl(ui.workerUrl.value),
+    clientToken=ui.clientToken.value.trim(),
+    overlapDays=Number(ui.overlapDays.value||21);
+
+  if(!workerUrl)throw new Error("URL del Worker no válida.");
+  if(!clientToken)throw new Error("Falta el token privado.");
+  if(!ui.historyStart.value)throw new Error("Falta el inicio del histórico.");
+  if(!Number.isInteger(overlapDays)||overlapDays<3||overlapDays>90)throw new Error("Solapamiento entre 3 y 90 días.");
+
+  await writeSettingsAtomically({
+    workerUrl,
+    clientToken,
+    manualOldest:ui.oldestDate.value,
+    manualNewest:ui.newestDate.value,
+    historyStart:ui.historyStart.value,
+    overlapDays
+  });
+}
 function normalizeWorkerUrl(v){try{const u=new URL(v.trim());if(u.protocol!=="https:"&&u.hostname!=="localhost")return null;return u.origin;}catch{return null;}}
 async function apiConfig(){const w=await storeGet("settings","workerUrl"),t=await storeGet("settings","clientToken");if(!w?.value||!t?.value)throw new Error("Configura primero la conexión.");return{workerUrl:w.value,clientToken:t.value};}
-async function apiRequest(path,{method="GET",body=null}={}){
+async function apiRequest(path,{method="GET",body=null,timeoutMs=null,retries=null}={}){
+  if(!atlasOnline()){
+    const error=new Error("Sin conexión a Internet.");
+    error.name="NetworkError";
+    throw error;
+  }
   const{workerUrl,clientToken}=await apiConfig();
+  const verb=String(method||"GET").toUpperCase();
+  const maxRetries=Number.isInteger(retries)?Math.max(0,retries):(verb==="GET"?2:0);
+  const timeout=Number(timeoutMs)||((verb==="GET")?25000:40000);
   const headers={Authorization:`Bearer ${clientToken}`,Accept:"application/json"};
   if(body!=null)headers["Content-Type"]="application/json";
-  const r=await fetch(`${workerUrl}${path}`,{method,headers,body:body==null?undefined:JSON.stringify(body),cache:"no-store"});
-  let p;try{p=await r.json();}catch{throw new Error(`Respuesta no válida (${r.status}).`);}
-  if(!r.ok||p?.ok===false)throw new Error(p?.error||`Error HTTP ${r.status}`);
-  return p;
+
+  let lastError=null;
+  for(let attempt=0;attempt<=maxRetries;attempt++){
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),timeout);
+    try{
+      const r=await fetch(`${workerUrl}${path}`,{
+        method:verb,headers,
+        body:body==null?undefined:JSON.stringify(body),
+        cache:"no-store",signal:controller.signal
+      });
+      clearTimeout(timer);
+      const text=await r.text();
+      let p={};
+      if(text){
+        try{p=JSON.parse(text);}
+        catch{
+          const error=new Error(`Respuesta no válida del servidor (${r.status}).`);
+          error.status=r.status;
+          throw error;
+        }
+      }
+      if(!r.ok||p?.ok===false){
+        let message=p?.error||`Error HTTP ${r.status}`;
+        if(r.status===401)message="Token privado no válido.";
+        else if(r.status===403)message=p?.error||"Acceso rechazado por el servidor.";
+        else if(r.status===429)message="Demasiadas solicitudes. ATLAS volverá a intentarlo.";
+        const error=new Error(message);
+        error.status=r.status;
+        if(attempt<maxRetries&&verb==="GET"&&isRetryableHttpStatus(r.status)){
+          lastError=error;
+          await waitMs(300*(attempt+1)*(attempt+1));
+          continue;
+        }
+        throw error;
+      }
+      return p;
+    }catch(error){
+      clearTimeout(timer);
+      const normalized=error?.name==="AbortError"?Object.assign(new Error("La conexión ha tardado demasiado en responder."),{name:"TimeoutError"}):error;
+      lastError=normalized;
+      const networkFailure=!Number(normalized?.status)&&["TypeError","NetworkError","TimeoutError"].includes(String(normalized?.name||""));
+      if(attempt<maxRetries&&verb==="GET"&&networkFailure){
+        await waitMs(300*(attempt+1)*(attempt+1));
+        continue;
+      }
+      throw normalized;
+    }
+  }
+  throw lastError||new Error("No se ha podido completar la solicitud.");
 }
 async function api(path){return apiRequest(path);}
 
@@ -1968,17 +2457,49 @@ async function deletePlanStateCloud(){
   return res;
 }
 async function syncPlanStateFromCloud({startup=false}={}){
-  const local=await readLocalPlanCloudState(),remote=await api("/api/plan-state"),decision=planCloudDecision(local.meta,remote,local.state);
-  if(decision==="delete"){await applyCloudPlanDeletion(remote);return true;}
-  if(decision==="pull"){await applyCloudPlanState(remote.state||{},remote);return true;}
-  if(decision==="push"){
-    const res=await apiRequest("/api/plan-state",{method:"PUT",body:{baseRevision:Number(local.meta?.revision)||Number(remote?.revision)||0,state:local.state}});
-    await storePlanCloudMeta({revision:Number(res.revision)||0,updatedAt:res.updatedAt||new Date().toISOString(),dirty:false});return false;
+  if(planCloudSyncPromise)return planCloudSyncPromise;
+
+  planCloudSyncPromise=(async()=>{
+    if(!atlasOnline()||!hasAtlasConnectionConfig())return false;
+
+    const local=await readLocalPlanCloudState();
+    const remote=await api("/api/plan-state");
+    const decision=planCloudDecision(local.meta,remote,local.state);
+
+    if(decision==="delete"){
+      await applyCloudPlanDeletion(remote);
+      return true;
+    }
+    if(decision==="pull"){
+      await applyCloudPlanState(remote.state||{},remote);
+      return true;
+    }
+    if(decision==="push"){
+      const res=await apiRequest("/api/plan-state",{
+        method:"PUT",
+        body:{baseRevision:Number(local.meta?.revision)||Number(remote?.revision)||0,state:local.state}
+      });
+      await storePlanCloudMeta({
+        revision:Number(res.revision)||0,
+        updatedAt:res.updatedAt||new Date().toISOString(),
+        dirty:false
+      });
+      return false;
+    }
+
+    if(remote?.exists&&Number(remote.revision)===Number(local.meta?.revision)&&local.meta?.dirty){
+      await storePlanCloudMeta({...local.meta,dirty:false,updatedAt:remote.updatedAt||local.meta.updatedAt});
+    }
+    return false;
+  })();
+
+  try{return await planCloudSyncPromise;}
+  catch(error){
+    recordRuntimeAudit(startup?"startup-plan-cloud":"plan-cloud-sync",error).catch(()=>{});
+    throw error;
+  }finally{
+    planCloudSyncPromise=null;
   }
-  if(remote?.exists&&Number(remote.revision)===Number(local.meta?.revision)&&local.meta?.dirty){
-    await storePlanCloudMeta({...local.meta,dirty:false,updatedAt:remote.updatedAt||local.meta.updatedAt});
-  }
-  return false;
 }
 async function refreshPlanStateFromCloud(showToast=false){
   const changed=await syncPlanStateFromCloud({startup:false});
@@ -1987,30 +2508,129 @@ async function refreshPlanStateFromCloud(showToast=false){
 }
 
 
-async function testConnection(){await busy(async()=>{try{const status=await api("/api/status"),pp=await api("/api/profile");await storePut("profile",{key:"me",data:pp.profile,updatedAt:new Date().toISOString()});await storePut("meta",{key:"gatewayVersion",value:status.version});toast("✅ Intervals.icu conectado.");await refreshAll();}catch(e){toast(`⚠️ ${e.message}`,true);}});}
-async function smartSyncCore(showToast=true){await busy(async()=>{setGlobalSyncing(true);try{const r=await smartRange();await performSync(r.oldest,r.newest,"incremental");if(showToast)toast("✅ Datos actualizados.");}catch(e){if(showToast)toast(`⚠️ ${e.message}`,true);else throw e;}finally{setGlobalSyncing(false);}});}
+async function testConnection(){
+  await busy(async()=>{
+    try{
+      const status=await apiRequest("/api/status",{timeoutMs:10000,retries:1});
+      const pp=await apiRequest("/api/profile",{timeoutMs:12000,retries:1});
+      if(!pp?.profile)throw new Error("El Worker no ha devuelto un perfil válido.");
+      await storePut("profile",{key:"me",data:pp.profile,updatedAt:new Date().toISOString()});
+      await storePut("meta",{key:"gatewayVersion",value:status.version});
+      if(ui.connectionState)ui.connectionState.textContent="Conectado";
+      toast("✅ Intervals.icu conectado.");
+      await refreshAll();
+    }catch(error){
+      if(ui.connectionState)ui.connectionState.textContent=atlasOnline()?"Error de conexión":"Sin conexión";
+      recordRuntimeAudit("connection-test",error).catch(()=>{});
+      toast(`⚠️ ${error.message}`,true);
+    }
+  });
+}
+async function smartSyncCore(showToast=true){
+  if(dataSyncPromise){
+    if(showToast)toast("↻ Sincronización en curso.");
+    return dataSyncPromise;
+  }
+  dataSyncPromise=busy(async()=>{
+    setGlobalSyncing(true);
+    try{
+      const r=await smartRange();
+      await performSync(r.oldest,r.newest,"incremental");
+      if(showToast)toast("✅ Datos actualizados.");
+      return true;
+    }catch(error){
+      recordRuntimeAudit("data-sync",error).catch(()=>{});
+      if(showToast)toast(`⚠️ ${error.message}`,true);
+      else throw error;
+      return false;
+    }finally{
+      setGlobalSyncing(false);
+    }
+  });
+  try{return await dataSyncPromise;}
+  finally{dataSyncPromise=null;}
+}
 async function smartSync(){return smartSyncCore(true);}
-async function startupIntervalsSync(){if(!String(ui.workerUrl?.value||"").trim()||!String(ui.clientToken?.value||"").trim())return false;await smartSyncCore(false);return true;}
-async function fullSync(){await busy(async()=>{try{const oldest=ui.oldestDate.value,newest=ui.newestDate.value;validateRange(oldest,newest);await storePut("settings",{key:"manualOldest",value:oldest});await storePut("settings",{key:"manualNewest",value:newest});await performSync(oldest,newest,"manual");toast("✅ Rango actualizado.");}catch(e){toast(`⚠️ ${e.message}`,true);}});}
-async function performSync(oldest,newest,mode){validateRange(oldest,newest);const p=await api(`/api/sync?oldest=${encodeURIComponent(oldest)}&newest=${encodeURIComponent(newest)}`);await bulkUpsert("activities",p.activities);await bulkUpsert("wellness",p.wellness);try{const b=await api("/api/bootstrap");await storePut("athlete",{key:"me",data:b.athlete,updatedAt:b.syncedAt||new Date().toISOString()});await replaceStore("gear",b.gear||[]);await replaceStore("sportSettings",b.sportSettings||[]);}catch(error){console.warn("ɅTLɅS · bootstrap",error);}await syncCalendar(false);await syncPlanStateFromCloud({startup:false}).catch(error=>console.warn("ɅTLɅS · plan cloud durante sync",error));const at=p.syncedAt||new Date().toISOString();await storePut("meta",{key:"lastSync",value:at});await storePut("meta",{key:"lastSyncRange",value:{oldest,newest}});await storePut("meta",{key:"lastSyncMode",value:mode});await refreshAll();}
+async function startupIntervalsSync(){
+  if(!hasAtlasConnectionConfig()||!atlasOnline())return false;
+  return smartSyncCore(false);
+}
+async function fullSync(){await busy(async()=>{try{const oldest=ui.oldestDate.value,newest=ui.newestDate.value;validateRange(oldest,newest);await writeSettingsAtomically({manualOldest:oldest,manualNewest:newest});await performSync(oldest,newest,"manual");toast("✅ Rango actualizado.");}catch(e){toast(`⚠️ ${e.message}`,true);}});}
+
+function validateSyncPayload(payload){
+  if(!payload||typeof payload!=="object")throw new Error("La sincronización no ha devuelto datos válidos.");
+  if(!Array.isArray(payload.activities))throw new Error("La sincronización no incluye actividades válidas.");
+  if(!Array.isArray(payload.wellness))throw new Error("La sincronización no incluye wellness válido.");
+  return payload;
+}
+function validBootstrapPayload(payload){
+  return!!(payload&&typeof payload==="object"&&payload.athlete&&Array.isArray(payload.gear)&&Array.isArray(payload.sportSettings));
+}
+async function commitSyncPayload(payload,bootstrap,{oldest,newest,mode}){
+  const p=validateSyncPayload(payload),b=validBootstrapPayload(bootstrap)?bootstrap:null;
+  const stores=["activities","wellness","meta",...(b?["athlete","gear","sportSettings"]:[])];
+  const d=await ensureDb();
+  const tx=d.transaction(stores,"readwrite");
+  const activities=tx.objectStore("activities"),wellness=tx.objectStore("wellness"),meta=tx.objectStore("meta");
+  for(const row of p.activities)if(row&&row.id!=null)activities.put(row);
+  for(const row of p.wellness)if(row&&row.id!=null)wellness.put(row);
+  if(b){
+    tx.objectStore("athlete").put({key:"me",data:b.athlete,updatedAt:b.syncedAt||new Date().toISOString()});
+    const gear=tx.objectStore("gear");gear.clear();for(const row of b.gear)if(row&&row.id!=null)gear.put(row);
+    const sports=tx.objectStore("sportSettings");sports.clear();for(const row of b.sportSettings)if(row&&row.id!=null)sports.put(row);
+  }
+  const at=p.syncedAt||new Date().toISOString();
+  meta.put({key:"lastSync",value:at});
+  meta.put({key:"lastSyncRange",value:{oldest,newest}});
+  meta.put({key:"lastSyncMode",value:mode});
+  await txDone(tx);
+  return{at,bootstrapApplied:Boolean(b)};
+}
+
+async function performSync(oldest,newest,mode){
+  validateRange(oldest,newest);
+  const syncPayload=validateSyncPayload(await api(`/api/sync?oldest=${encodeURIComponent(oldest)}&newest=${encodeURIComponent(newest)}`));
+  let bootstrap=null;
+  try{
+    const candidate=await api("/api/bootstrap");
+    if(validBootstrapPayload(candidate))bootstrap=candidate;
+    else console.warn("ɅTLɅS · bootstrap incompleto; se conserva la copia local.");
+  }catch(error){
+    console.warn("ɅTLɅS · bootstrap",error);
+    recordRuntimeAudit("bootstrap-sync",error).catch(()=>{});
+  }
+  await commitSyncPayload(syncPayload,bootstrap,{oldest,newest,mode});
+  await syncCalendar(false);
+  await syncPlanStateFromCloud({startup:false}).catch(error=>{
+    console.warn("ɅTLɅS · plan cloud durante sync",error);
+    recordRuntimeAudit("plan-cloud-sync",error).catch(()=>{});
+  });
+  await refreshAll();
+}
 async function smartRange(){const today=fmtDate(new Date()),[last,h,o]=await Promise.all([storeGet("meta","lastSyncRange"),storeGet("settings","historyStart"),storeGet("settings","overlapDays")]);const start=h?.value||ui.historyStart.value||"2018-01-01",days=Math.max(3,Math.min(90,Number(o?.value||ui.overlapDays.value||21)));if(!last?.value?.newest)return{oldest:start,newest:today};const anchor=last.value.newest>today?today:last.value.newest;return{oldest:maxDate(start,addDays(anchor,-(days-1))),newest:today};}
 function calendarRange(){const t=fmtDate(new Date()),base=addDays(t,120),goal=currentEngineV2Goal?.date?addDays(currentEngineV2Goal.date,7):base;return{oldest:addDays(t,-30),newest:goal>base?goal:base};}
 
 async function syncCalendar(showToast=false){
+  if(calendarSyncPromise)return calendarSyncPromise;
   const range=calendarRange();
-  try{
-    const cal=await api(`/api/calendar?oldest=${encodeURIComponent(range.oldest)}&newest=${encodeURIComponent(range.newest)}`);
-    const events=Array.isArray(cal.events)?cal.events:[];
-    await replaceStore("events",events);
-    currentEvents=events;
-    renderPlan();
-    if(showToast)toast(events.length?`✅ Calendario sincronizado · ${events.length} sesiones.`:"✅ Calendario sincronizado.");
-    return{ok:true,events};
-  }catch(error){
-    console.warn("ɅTLɅS · calendario",error);
-    if(showToast)toast(`⚠️ Calendario: ${error.message}`,true);
-    return{ok:false,error};
-  }
+  calendarSyncPromise=(async()=>{
+    try{
+      const cal=await api(`/api/calendar?oldest=${encodeURIComponent(range.oldest)}&newest=${encodeURIComponent(range.newest)}`);
+      const events=Array.isArray(cal.events)?cal.events:[];
+      await replaceStore("events",events);
+      currentEvents=events;
+      safeUiRender("plan",()=>renderPlan());
+      if(showToast)toast(events.length?`✅ Calendario sincronizado · ${events.length} sesiones.`:"✅ Calendario sincronizado.");
+      return{ok:true,events};
+    }catch(error){
+      console.warn("ɅTLɅS · calendario",error);
+      recordRuntimeAudit("calendar-sync",error).catch(()=>{});
+      if(showToast)toast(`⚠️ Calendario: ${error.message}`,true);
+      return{ok:false,error};
+    }
+  })();
+  try{return await calendarSyncPromise;}
+  finally{calendarSyncPromise=null;}
 }
 async function refreshCalendarFromCloud(force=false){
   if(!force&&Date.now()-lastCalendarRefreshAt<5*60*1000)return;
@@ -2193,30 +2813,64 @@ function renderEvolutionPanel(){
   if(ui.performanceHomeNote)ui.performanceHomeNote.textContent="Perfil de corredor · mejores marcas";
 }
 async function refreshAll(){
-  const snapshot=await loadLocalSnapshot(),{activities,wellness,gear,events,cachedVo2,engineV2Goal,engineV2SecondaryGoals,engineV2AvailabilityExceptions,engineV2PlanManifest,engineV2PlanRevisionDraft,engineV2PlanRevisionHistory,engineV2PlanCloudMeta}=snapshot;
-  currentActivities=activities;currentWellness=wellness;currentGear=gear;currentEvents=events;currentCachedVo2=cachedVo2?.value||null;currentEngineV2Goal=engineV2Goal?.value||null;currentPlanManifest=engineV2PlanManifest?.value||null;currentPlanRevisionDraft=engineV2PlanRevisionDraft?.value||null;currentPlanRevisionHistory=Array.isArray(engineV2PlanRevisionHistory?.value)?engineV2PlanRevisionHistory.value:[];currentPlanCloudMeta=engineV2PlanCloudMeta?.value||null;
+  const snapshot=await loadLocalSnapshot(),
+    {activities,wellness,gear,events,cachedVo2,engineV2Goal,engineV2SecondaryGoals,engineV2AvailabilityExceptions,engineV2PlanManifest,engineV2PlanRevisionDraft,engineV2PlanRevisionHistory,engineV2PlanCloudMeta}=snapshot;
+
+  currentActivities=activities;currentWellness=wellness;currentGear=gear;currentEvents=events;currentCachedVo2=cachedVo2?.value||null;
+  currentEngineV2Goal=engineV2Goal?.value||null;currentPlanManifest=engineV2PlanManifest?.value||null;
+  currentPlanRevisionDraft=engineV2PlanRevisionDraft?.value||null;
+  currentPlanRevisionHistory=Array.isArray(engineV2PlanRevisionHistory?.value)?engineV2PlanRevisionHistory.value:[];
+  currentPlanCloudMeta=engineV2PlanCloudMeta?.value||null;
   currentSecondaryGoals=normalizeSecondaryGoals(engineV2SecondaryGoals?.value||[],currentEngineV2Goal);
   currentAvailabilityExceptions=normalizeAvailabilityExceptions(engineV2AvailabilityExceptions?.value||[],currentEngineV2Goal);
-  currentAthleteProfileV2=buildAthleteProfileV2(activities,wellness,currentCachedVo2);
-  currentGoalRequirements=buildGoalRequirementsV2(currentEngineV2Goal);
-  currentGoalAssessment=assessGoalV2(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);
-  currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);
-  currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);
-  currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);
-  currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);
-  currentPlanManifest=await backfillManifestSessionSnapshot(currentPlanManifest,currentSessionPlan);
-  currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);
+
+  try{
+    currentAthleteProfileV2=buildAthleteProfileV2(activities,wellness,currentCachedVo2);
+    currentGoalRequirements=buildGoalRequirementsV2(currentEngineV2Goal);
+    currentGoalAssessment=assessGoalV2(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);
+    currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);
+    currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);
+    currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);
+    currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);
+    currentPlanManifest=await backfillManifestSessionSnapshot(currentPlanManifest,currentSessionPlan);
+    currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);
+  }catch(error){
+    console.error("ɅTLɅS · motor de entrenamiento",error);
+    recordRuntimeAudit("training-engine",error).catch(()=>{});
+    currentGoalAssessment=null;currentMacroTrajectory=null;currentWeeklyTargets=null;currentCalendarSolution=null;currentSessionPlan=null;currentAdaptiveState=null;
+  }
+
   if(!currentPlanWeekStart)currentPlanWeekStart=mondayOf(new Date());
-  initActivityFilters();renderActivities();renderToday(activities,wellness,currentCachedVo2);renderEngineV2Cards();renderAvailabilityCard();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderTrainingPacesCard();renderAdaptiveEngineCard();renderPlanOverview();renderPlan();renderDataSummary(snapshot);
+  safeUiRender("filtros actividades",()=>initActivityFilters());
+  safeUiRender("actividades",()=>renderActivities());
+  safeUiRender("hoy",()=>renderToday(activities,wellness,currentCachedVo2));
+  safeUiRender("objetivo",()=>renderEngineV2Cards());
+  safeUiRender("disponibilidad",()=>renderAvailabilityCard());
+  safeUiRender("macro",()=>renderMacroTrajectoryCard());
+  safeUiRender("objetivos semanales",()=>renderWeeklyTargetsCard());
+  safeUiRender("calendario solver",()=>renderCalendarSolverCard());
+  safeUiRender("sesiones",()=>renderSessionGeneratorCard());
+  safeUiRender("ritmos",()=>renderTrainingPacesCard());
+  safeUiRender("adaptación",()=>renderAdaptiveEngineCard());
+  safeUiRender("resumen plan",()=>renderPlanOverview());
+  safeUiRender("plan",()=>renderPlan());
+  safeUiRender("perfil",()=>renderDataSummary(snapshot));
+
   const latestRun=activities.filter(isRun).sort((a,b)=>activityStamp(b).localeCompare(activityStamp(a)))[0]||null;
-  if(latestRun?.id&&currentCachedVo2?.activityId!==latestRun.id)refreshLatestRunVo2(latestRun).catch(error=>console.warn("ɅTLɅS · VO₂ máx.",error));
+  if(latestRun?.id&&currentCachedVo2?.activityId!==latestRun.id){
+    refreshLatestRunVo2(latestRun).catch(error=>{
+      console.warn("ɅTLɅS · VO₂ máx.",error);
+      recordRuntimeAudit("vo2-refresh",error).catch(()=>{});
+    });
+  }
+  scheduleAtlasScrollAudit();
 }
 
 
 
 function renderPlanOverview(){if(!ui.planOverviewTitle||!ui.planOverviewMeta)return;const g=currentEngineV2Goal,summary=$("planGoalSummary");if(!g){ui.planOverviewTitle.textContent="Configurar plan";ui.planOverviewMeta.textContent="Objetivo, carreras y disponibilidad";if(ui.engineGoalTitle)ui.engineGoalTitle.textContent="Definir objetivo principal";if(summary)summary.innerHTML="";return;}const title=g.name||engineV2GoalLabel(g.type);ui.planOverviewTitle.textContent=title;const lifecycle=planLifecycle(),secondary=currentSecondaryGoals.length?` · ${currentSecondaryGoals.length} B/C`:"";ui.planOverviewMeta.textContent=`${engineV2DateLabel(g.date)} · ${engineV2FormatTime(g.targetTimeSec)} · ${lifecycle.label}${secondary}`;if(ui.engineGoalTitle)ui.engineGoalTitle.textContent=title;if(summary){const dist=engineV2GoalDistance(g.type),days=Array.isArray(g.availableDays)&&g.availableDays.length?g.availableDays.length:7,weeks=currentSessionPlan?.weeks?.length||currentMacroTrajectory?.weeks?.length||Math.max(0,Math.ceil(dateDiff(g.startDate||engineV2DefaultPlanStart(),g.date)/7)),runs=currentSessionPlan?.runCount,strength=currentSessionPlan?.strengthCount,items=[["Inicio",engineV2DateLabel(g.startDate||engineV2DefaultPlanStart())],["Carrera",engineV2DateLabel(g.date)],["Distancia",dist?`${formatNatural(dist/1000,dist%1000?1:0)} km`:"—"],["Objetivo",engineV2FormatTime(g.targetTimeSec)],["Disponibilidad",`${days} días/sem`],["Duración",`${weeks} semanas`],["Sesiones carrera",Number.isFinite(runs)?String(runs):"—"],["Sesiones fuerza",Number.isFinite(strength)?String(strength):"—"]];summary.innerHTML=items.map(([k,v])=>`<span class="plan-goal-summary-item"><span class="plan-goal-summary-key">${esc(k)}</span><span class="plan-goal-summary-value">${esc(v)}</span></span>`).join("");}}
-function openPlanControl(){renderPlanOverview();ui.planControlDetail.classList.remove("hidden");ui.planControlDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";}
-function closePlanControl(){ui.planControlDetail.classList.add("hidden");ui.planControlDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";}
+function openPlanControl(){renderPlanOverview();ui.planControlDetail.classList.remove("hidden");ui.planControlDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";scheduleAtlasScrollAudit();}
+function closePlanControl(){ui.planControlDetail.classList.add("hidden");ui.planControlDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";scheduleAtlasScrollAudit();}
 
 /* ===== Training Engine ATLAS v2 · Fase 1 diagnóstica ===== */
 const ATLAS_SPORTS_MODEL={
@@ -4231,8 +4885,82 @@ function initActivityFilters(){const sports=[...new Set(currentActivities.map(ac
 function renderActivities(){if(!ui.activitiesList)return;const sport=ui.activitySportFilter.value||"all",year=ui.activityYearFilter.value||"all",q=(ui.activitySearch.value||"").trim().toLocaleLowerCase("es"),items=[...currentActivities].filter(a=>(sport==="all"||activityType(a)===sport)&&(year==="all"||activityDate(a).startsWith(year))&&(!q||activityName(a).toLocaleLowerCase("es").includes(q))).sort((a,b)=>activityStamp(b).localeCompare(activityStamp(a)));const dist=items.reduce((s,a)=>s+(activityDistanceM(a)||0),0);ui.activitiesSummary.textContent=`${items.length} actividades${dist>0?` · ${formatNatural(dist/1000,1)} km`:""}`;if(!items.length){ui.activitiesList.innerHTML='<div class="card activity-empty">No hay actividades con estos filtros.</div>';return;}const groups=new Map();for(const a of items){const d=activityDate(a),key=d?d.slice(0,7):"Sin fecha";if(!groups.has(key))groups.set(key,[]);groups.get(key).push(a);}ui.activitiesList.innerHTML=[...groups.entries()].map(([key,arr])=>{const km=arr.reduce((s,a)=>s+(activityDistanceM(a)||0),0)/1000;return`<section class="activity-month"><div class="activity-month-head"><div class="activity-month-title">${key==="Sin fecha"?"Sin fecha":monthLabel(key)}</div><div class="activity-month-meta">${arr.length} ${arr.length===1?"actividad":"actividades"}${km?` · ${formatNatural(km,1)} km`:""}</div></div><div class="activity-list">${arr.map(activityRowHtml).join("")}</div></section>`;}).join("");requestAnimationFrame(fitActivityTitles);}
 function activityRowContent(a){const d=activityDate(a),dp=compactActivityDate(d),dist=activityDistanceM(a),elapsed=activityElapsedSec(a),pace=activityPaceSecKm(a),speed=Number(pick(a,["average_speed"])??a?.speed?.averageMps),stats=[dist?`${formatNatural(dist/1000,2)} km`:null,elapsed?formatDuration(elapsed):null,isRun(a)&&pace?formatPaceSecs(pace):(!isRun(a)&&Number.isFinite(speed)&&speed>0?`${formatNatural(speed*3.6,1)} km/h`:null)].filter(Boolean);return`<div class="activity-row-date"><span class="activity-row-month">${dp.month}</span><span class="activity-row-day">${dp.day}</span></div><span class="activity-row-sep" aria-hidden="true"></span><div class="activity-row-copy"><div class="activity-row-title"><span class="activity-row-title-emoji">${activityIcon(a)}</span><span class="activity-row-title-text">${esc(activityName(a))}</span></div><div class="activity-row-main">${stats.length?stats.map(s=>`<span class="activity-row-stat">${s}</span>`).join(""):`<span class="activity-row-stat">${esc(activitySportLabel(a))}</span>`}</div></div>`;}
 function activityRowHtml(a){return`<button class="activity-row" data-id="${esc(String(a.id))}">${activityRowContent(a)}</button>`;}
-async function openActivityDetail(id){const a=currentActivities.find(x=>String(x.id)===String(id));if(!a)return;currentActivityDetail=a;currentActivityStreams=null;currentActivityVo2=null;currentActivityChartKey=null;activityChartZoom=1;activityLapZoom=1;activityLapMainFilter="all";currentActivityLapIndex=null;ui.activityDetail.classList.add("open");ui.activityDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";renderActivityDetail(a);ui.activityDetailLoading.classList.add("active");try{const detailPromise=api(`/api/activity?id=${encodeURIComponent(id)}`).catch(()=>null),streamsPromise=sportTypicallyGps(a)||isRun(a)?api(`/api/activity-streams?id=${encodeURIComponent(id)}&types=latlng,time,distance,heartrate,cadence,altitude,velocity_smooth,moving`).catch(()=>null):Promise.resolve(null),vo2Promise=isRun(a)?api(`/api/activity-vo2max?id=${encodeURIComponent(id)}`).catch(()=>null):Promise.resolve(null);const[detail,streams,vo2]=await Promise.all([detailPromise,streamsPromise,vo2Promise]);if(!currentActivityDetail||String(currentActivityDetail.id)!==String(id))return;const merged=detail?.activity?{...a,...detail.activity}:a;currentActivityDetail=merged;currentActivityStreams=streams;const v=Number(vo2?.vo2max);currentActivityVo2=Number.isFinite(v)&&v>0?v:null;renderActivityDetail(merged);renderActivityMap(streams,merged);renderActivityLaps();renderActivityAnalysis();}finally{ui.activityDetailLoading.classList.remove("active");}}
-function closeActivityDetail(){ui.activityDetail.classList.remove("open");ui.activityDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";currentActivityDetail=null;currentActivityStreams=null;currentActivityVo2=null;currentActivityChartKey=null;activityChartZoom=1;activityLapZoom=1;activityLapMainFilter="all";currentActivityLapIndex=null;hideActivityChartReadout();if(currentActivityMap){currentActivityMap.remove();currentActivityMap=null;}ui.activityMap.classList.remove("hidden");ui.activityMap.innerHTML='<div class="activity-map-empty">Cargando recorrido…</div>';}
+async function openActivityDetail(id){
+  const a=currentActivities.find(x=>String(x.id)===String(id));
+  if(!a)return;
+
+  const requestToken=++currentActivityRequestToken;
+  currentActivityDetail=a;
+  currentActivityStreams=null;
+  currentActivityVo2=null;
+  currentActivityChartKey=null;
+  activityChartZoom=1;
+  activityLapZoom=1;
+  activityLapMainFilter="all";
+  currentActivityLapIndex=null;
+
+  ui.activityDetail.classList.add("open");
+  ui.activityDetail.setAttribute("aria-hidden","false");
+  document.body.style.overflow="hidden";
+  renderActivityDetail(a);
+  scheduleAtlasScrollAudit();
+  ui.activityDetailLoading.classList.add("active");
+
+  try{
+    const detailPromise=api(`/api/activity?id=${encodeURIComponent(id)}`).catch(()=>null);
+    const streamsPromise=sportTypicallyGps(a)||isRun(a)
+      ?api(`/api/activity-streams?id=${encodeURIComponent(id)}&types=latlng,time,distance,heartrate,cadence,altitude,velocity_smooth,moving`).catch(()=>null)
+      :Promise.resolve(null);
+    const vo2Promise=isRun(a)
+      ?api(`/api/activity-vo2max?id=${encodeURIComponent(id)}`).catch(()=>null)
+      :Promise.resolve(null);
+
+    const[detail,streams,vo2]=await Promise.all([detailPromise,streamsPromise,vo2Promise]);
+
+    if(requestToken!==currentActivityRequestToken)return;
+    if(!currentActivityDetail||String(currentActivityDetail.id)!==String(id))return;
+
+    const merged=detail?.activity?{...a,...detail.activity}:a;
+    currentActivityDetail=merged;
+    currentActivityStreams=streams;
+    const v=Number(vo2?.vo2max);
+    currentActivityVo2=Number.isFinite(v)&&v>0?v:null;
+
+    renderActivityDetail(merged);
+    renderActivityMap(streams,merged);
+    renderActivityLaps();
+    renderActivityAnalysis();
+    scheduleAtlasScrollAudit();
+  }finally{
+    if(requestToken===currentActivityRequestToken){
+      ui.activityDetailLoading.classList.remove("active");
+      scheduleAtlasScrollAudit();
+    }
+  }
+}
+function closeActivityDetail(){
+  currentActivityRequestToken++;
+  ui.activityDetail.classList.remove("open");
+  ui.activityDetail.setAttribute("aria-hidden","true");
+  document.body.style.overflow="";
+  currentActivityDetail=null;
+  currentActivityStreams=null;
+  currentActivityVo2=null;
+  currentActivityChartKey=null;
+  activityChartZoom=1;
+  activityLapZoom=1;
+  activityLapMainFilter="all";
+  currentActivityLapIndex=null;
+  hideActivityChartReadout();
+  if(currentActivityMap){
+    currentActivityMap.remove();
+    currentActivityMap=null;
+  }
+  ui.activityMap.classList.remove("hidden");
+  ui.activityMap.innerHTML='<div class="activity-map-empty">Cargando recorrido…</div>';
+  ui.activityDetailLoading.classList.remove("active");
+  scheduleAtlasScrollAudit();
+}
 function activityPower(a){const n=Number(pick(a,["average_watts","icu_average_watts"])??a?.power?.averageWatts??a?.power?.weightedAverageWatts);return Number.isFinite(n)&&n>0?n:null;}
 function activityTemperature(a){const n=Number(pick(a,["average_temperature","average_temp","avg_temp","temperature"])??a?.temperature?.averageC);return Number.isFinite(n)?n:null;}
 function activityVo2(a){if(Number.isFinite(currentActivityVo2)&&currentActivityVo2>0)return currentActivityVo2;const direct=findVo2InActivity(a);if(direct?.value)return direct.value;for(const raw of [a?.vo2max,a?.vo2Max,a?.vo2_max,a?.icu_vo2max]){const n=Number(raw?.value??raw);if(Number.isFinite(n)&&n>0)return n;}if(currentCachedVo2?.activityId&&String(currentCachedVo2.activityId)===String(a?.id)){const n=Number(currentCachedVo2.value);if(Number.isFinite(n)&&n>0)return n;}return null;}
@@ -4721,8 +5449,8 @@ function renderAtlasState(state){currentAtlasState=state;
  if(!state){ui.trainingStateScore.textContent="—";ui.trainingStateBtn.className="training-state";ui.trainingStateCircle.style.setProperty("--score-pct","0%");ui.trainingStateWord.textContent="Sin datos";ui.trainingStateNote.textContent="Necesito más métricas recientes";if(ui.stateDetail?.classList.contains("open"))renderStateDetail();return;}
  ui.trainingStateScore.textContent=String(state.score);ui.trainingStateBtn.className=`training-state state-${state.band.tone}`;ui.trainingStateCircle.style.setProperty("--score-pct",`${state.score}%`);ui.trainingStateWord.textContent=state.band.label;ui.trainingStateNote.textContent=state.note;if(ui.stateDetail?.classList.contains("open"))renderStateDetail();
 }
-function openStateDetail(){ui.stateDetail.classList.add("open");ui.stateDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";renderStateDetail();}
-function closeStateDetail(){ui.stateDetail.classList.remove("open");ui.stateDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";}
+function openStateDetail(){ui.stateDetail.classList.add("open");ui.stateDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";renderStateDetail();scheduleAtlasScrollAudit();}
+function closeStateDetail(){ui.stateDetail.classList.remove("open");ui.stateDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";scheduleAtlasScrollAudit();}
 function renderStateDetail(){const s=currentAtlasState;if(!s){ui.stateDetailHero.className="state-detail-card";ui.stateDetailRing.style.setProperty("--score-pct","0%");ui.stateDetailScore.textContent="—";ui.stateDetailWord.textContent="Sin datos";ui.stateDetailNote.textContent="Necesito métricas de salud recientes";ui.stateDetailMeta.textContent=fullTodayDate();ui.stateFactors.innerHTML='<div class="state-factor"><div class="state-factor-context">No hay suficientes métricas recientes para calcular el Estado ɅTLɅS.</div></div>';ui.stateBaseScore.textContent="—";ui.stateRecoveryPenalty.textContent="—";ui.stateLimiter.className="state-limiter";ui.stateLimiter.textContent="";return;}
  ui.stateDetailHero.className=`state-detail-card state-${s.band.tone}`;ui.stateDetailRing.style.setProperty("--score-pct",`${s.score}%`);ui.stateDetailScore.textContent=String(s.score);ui.stateDetailWord.textContent=s.band.label;ui.stateDetailNote.textContent=s.note;ui.stateDetailMeta.textContent=fullTodayDate();
  const sleepContext=()=>{const parts=[];if(Number.isFinite(s.sleepHours))parts.push(formatSleepHM(s.sleepHours*3600));if(s.sleepQuality?.label)parts.push(s.sleepQuality.label);if(Number.isFinite(s.sleepScore))parts.push(`puntuación ${formatNatural(s.sleepScore,0)}`);return parts.length?parts.join(" · "):"Sin datos recientes";};
@@ -4820,9 +5548,107 @@ function globalSyncButtons(){return qsa(".global-sync-btn").filter(Boolean);}
 function setGlobalSyncing(active){globalSyncButtons().forEach(b=>b.classList.toggle("syncing",!!active));}
 async function busy(fn){const bs=[ui.smartSyncBtn,ui.testBtn,ui.fullSyncBtn,...globalSyncButtons()].filter(Boolean);bs.forEach(b=>b.disabled=true);try{await fn();}finally{bs.forEach(b=>b.disabled=false);}}
 function downloadJsonBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=name;a.rel="noopener";a.style.display="none";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);}
+
+async function writeSettingsAtomically(entries){
+  return withDbRetry(async d=>{
+    const tx=d.transaction("settings","readwrite"),st=tx.objectStore("settings");
+    for(const[key,value]of Object.entries(entries))st.put({key,value});
+    await txDone(tx);
+  });
+}
+
+function validateBackupPayload(payload){
+  const version=Number(payload?.atlas?.schemaVersion);
+  if(![1,2,3,4,5,6,7,8,9,10].includes(version)||!payload?.data||typeof payload.data!=="object"){
+    throw new Error("Copia de ɅTLɅS no compatible.");
+  }
+  for(const[key,value]of Object.entries(payload.data)){
+    if(STORES.includes(key)&&value!=null&&!Array.isArray(value)){
+      throw new Error(`La copia contiene datos no válidos en ${key}.`);
+    }
+  }
+  return version;
+}
+
+async function importBackupAtomically(payload,version){
+  const d=await ensureDb();
+  const sourceStores=version===1?["settings","meta","profile","activities","wellness"]:STORES;
+  const stores=sourceStores.filter(s=>d.objectStoreNames.contains(s)&&Array.isArray(payload.data[s]));
+  if(!stores.length)throw new Error("La copia no contiene datos restaurables.");
+
+  const tx=d.transaction(stores,"readwrite");
+  try{
+    for(const s of stores){
+      const st=tx.objectStore(s);
+      const records=payload.data[s]||[];
+
+      if(s!=="settings")st.clear();
+
+      for(const row of records){
+        if(s==="settings"&&row?.key==="clientToken")continue;
+        if(row&&typeof row==="object")st.put(row);
+      }
+    }
+    await txDone(tx);
+  }catch(error){
+    try{tx.abort();}catch{}
+    throw error;
+  }
+}
+
+async function clearDataAtomically(){
+  const d=await ensureDb();
+  const stores=DATA_STORES.filter(s=>d.objectStoreNames.contains(s));
+  const tx=d.transaction(stores,"readwrite");
+  try{
+    for(const s of stores)tx.objectStore(s).clear();
+    await txDone(tx);
+  }catch(error){
+    try{tx.abort();}catch{}
+    throw error;
+  }
+}
+
 async function exportDatabase(){try{const data={};for(const s of STORES)data[s]=await storeGetAll(s);data.settings=data.settings.filter(x=>!["clientToken","hrvGarminLow","hrvGarminHigh"].includes(x.key));const payload={atlas:{version:APP_VERSION,schemaVersion:SCHEMA_VERSION,exportedAt:new Date().toISOString()},data},blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),name=`ATLAS-backup-${fmtDate(new Date())}.json`;downloadJsonBlob(blob,name);toast("✅ JSON exportado.");}catch(e){toast(`⚠️ ${e.message}`,true);}}
-async function importDatabase(e){const file=e.target.files?.[0];e.target.value="";if(!file)return;try{const p=JSON.parse(await file.text()),v=Number(p?.atlas?.schemaVersion);if(![1,2,3,4,5,6,7,8,9].includes(v)||!p?.data)throw new Error("Copia de ɅTLɅS no compatible.");const stores=v===1?["settings","meta","profile","activities","wellness"]:STORES;for(const s of stores){if(!db.objectStoreNames.contains(s))continue;const rec=p.data[s];if(!Array.isArray(rec)||!rec.length)continue;const tx=db.transaction(s,"readwrite"),st=tx.objectStore(s);for(const r of rec){if(s==="settings"&&r?.key==="clientToken")continue;st.put(r);}await txDone(tx);}await refreshAll();toast("✅ JSON importado.");}catch(err){toast(`⚠️ ${err.message}`,true);}}
-async function clearData(){if(!confirm("¿Borrar todos los datos deportivos locales? La conexión se conservará."))return;try{for(const s of DATA_STORES)await storeClear(s);await refreshAll();toast("✅ Base de datos vaciada.");}catch(e){toast(`⚠️ ${e.message}`,true);}}
+async function importDatabase(e){
+  const file=e.target.files?.[0];
+  e.target.value="";
+  if(!file)return;
+
+  try{
+    const text=await file.text();
+    let payload;
+    try{payload=JSON.parse(text);}
+    catch{throw new Error("El archivo no contiene un JSON válido.");}
+
+    const version=validateBackupPayload(payload);
+    await importBackupAtomically(payload,version);
+    await refreshAll();
+    scheduleAtlasScrollAudit();
+    toast("✅ Copia restaurada.");
+  }catch(error){
+    recordRuntimeAudit("backup-import",error).catch(()=>{});
+    toast(`⚠️ ${error.message}`,true);
+  }
+}
+async function clearData(){
+  if(!confirm("¿Borrar todos los datos deportivos locales? La conexión se conservará."))return;
+  try{
+    await clearDataAtomically();
+    currentActivities=[];
+    currentWellness=[];
+    currentGear=[];
+    currentEvents=[];
+    currentCachedVo2=null;
+    currentRunningRecords=null;
+    await refreshAll();
+    scheduleAtlasScrollAudit();
+    toast("✅ Base de datos vaciada.");
+  }catch(error){
+    recordRuntimeAudit("database-clear",error).catch(()=>{});
+    toast(`⚠️ ${error.message}`,true);
+  }
+}
 })();
 
 
@@ -4874,6 +5700,8 @@ async function clearData(){if(!confirm("¿Borrar todos los datos deportivos loca
 
 
 
+
+installAtlasScrollAudit();
 </script>
 
 <style id="atlas-v073-style">
@@ -5507,6 +6335,289 @@ body.profile-detail-open .nav{display:none!important}
   .activity-detail-inner,.metric-detail-inner,.state-detail-inner,.plan-detail-shell,.data-detail-inner{max-width:820px!important}
   .activity-map{height:340px!important}.nav{width:min(740px,calc(100% - 48px))!important}
 }
+</style>
+
+
+<style id="atlas-v078-style">
+/* ===== ɅTLɅS v0.78 · cierre iPad + adaptación específica de escritorio ===== */
+
+/* La navegación sigue siendo una barra de app, fija al viewport en todos los tamaños. */
+.nav{
+  position:fixed!important;
+  left:50%!important;
+  top:auto!important;
+  bottom:calc(8px + env(safe-area-inset-bottom))!important;
+  transform:translate3d(-50%,0,0)!important;
+  margin:0!important;
+}
+body.profile-detail-open .nav{display:none!important}
+
+/* Cierre de iPad: ancho legible, sin estirar indefinidamente los contenidos. */
+@media (min-width:600px) and (max-width:1199px){
+  .app{width:100%!important;max-width:860px!important;margin:0 auto!important}
+  .atlas-header,.section-bar,.page-header,
+  .training-state,.metric-strip,.activity-list,
+  .activities-toolbar,.activities-summary,#activitiesList,
+  .plan-overview-card,.plan-toolbar,.plan-today-btn,.plan-summary,.plan-days,
+  .profile-home-card,.profile-home-links{
+    width:100%!important;max-width:780px!important;margin-left:auto!important;margin-right:auto!important
+  }
+  .activity-detail-inner,.metric-detail-inner,.state-detail-inner,
+  .plan-detail-shell,.data-detail-inner{width:min(100%,800px)!important;max-width:800px!important}
+  .activity-map{height:310px!important}
+  .activity-chart,.metric-chart{height:286px!important}
+  .activity-lap-bars{min-height:230px!important}
+  .nav{width:min(710px,calc(100% - 36px))!important}
+}
+
+/* ===== Escritorio / ordenador ===== */
+@media (min-width:1200px){
+  :root{--nav:72px}
+  html,body{background:#030507!important}
+  body{
+    min-height:100vh!important;
+    padding-bottom:calc(var(--nav) + 28px)!important;
+  }
+  .app{
+    width:100%!important;
+    max-width:1180px!important;
+    min-height:100vh!important;
+    margin:0 auto!important;
+    padding:24px 36px 34px!important;
+    background:#030507!important;
+  }
+  .view{width:100%!important;max-width:none!important}
+  .atlas-header{width:100%!important;max-width:900px!important;margin:0 auto!important}
+  .atlas-title{width:100%!important;max-width:900px!important}
+  .section-bar,.page-header{max-width:1060px!important;margin-left:auto!important;margin-right:auto!important}
+  .section-name,.page-title{font-size:34px!important}
+
+  /* Hoy aprovecha el ancho extra únicamente donde aporta valor. */
+  #view-today.active{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    grid-template-rows:auto auto auto auto auto auto!important;
+    column-gap:18px!important;
+    align-items:start!important;
+  }
+  #view-today>.atlas-header{grid-column:1/-1!important;grid-row:1!important}
+  #view-today>.section-bar{grid-column:1/-1!important;grid-row:2!important;width:100%!important}
+  #view-today>.training-state{grid-column:1/-1!important;grid-row:3!important;width:100%!important;max-width:1060px!important;margin-left:auto!important;margin-right:auto!important}
+  #view-today>.metric-strip{grid-column:1/-1!important;grid-row:4!important;width:100%!important;max-width:1060px!important;margin-left:auto!important;margin-right:auto!important}
+  #view-today>.today-last-heading:not(.today-upcoming-heading){grid-column:1!important;grid-row:5!important;margin-left:2px!important}
+  #view-today>.today-upcoming-heading{grid-column:2!important;grid-row:5!important;margin-left:2px!important}
+  #view-today>.today-last-list{grid-column:1!important;grid-row:6!important;width:100%!important;margin:0!important}
+  #view-today>.today-upcoming-list{grid-column:2!important;grid-row:6!important;width:100%!important;margin:0!important}
+  #view-today .today-last-heading{font-size:16px!important;margin-top:15px!important;margin-bottom:7px!important}
+
+  /* Actividades: una columna central amplia mantiene la lectura cronológica. */
+  #view-activities>.page-header,
+  #view-activities>.activities-toolbar,
+  #view-activities>.activities-summary,
+  #view-activities>#activitiesList{width:100%!important;max-width:920px!important;margin-left:auto!important;margin-right:auto!important}
+  .activities-toolbar{grid-template-columns:1fr 1fr 1.3fr!important;align-items:center!important}
+  .activities-search{grid-column:auto!important;min-height:42px!important}
+  .activities-select{min-height:42px!important}
+  .activity-row{min-height:62px!important;padding-left:10px!important;padding-right:10px!important}
+
+  /* Plan: columna central compacta, sin convertir la semana en una tabla de escritorio. */
+  #view-plan>.page-header,
+  #view-plan>.plan-overview-card,
+  #view-plan>.plan-toolbar,
+  #view-plan>.plan-today-btn,
+  #view-plan>.plan-summary,
+  #view-plan>.plan-days{width:100%!important;max-width:900px!important;margin-left:auto!important;margin-right:auto!important}
+  .plan-day-head,#sessionGeneratorList .plan-week-calendar-head{min-height:60px!important}
+
+  /* Perfil: tarjeta personal y accesos en dos columnas, manteniendo exactamente el lenguaje iPhone/iPad. */
+  #view-data.active{
+    display:grid!important;
+    grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr)!important;
+    grid-template-rows:auto auto auto!important;
+    gap:0 18px!important;
+    align-items:start!important;
+    max-width:980px!important;
+    margin:0 auto!important;
+  }
+  #view-data>.atlas-header{grid-column:1/-1!important;grid-row:1!important}
+  #view-data>.page-header{grid-column:1/-1!important;grid-row:2!important;width:100%!important;max-width:none!important}
+  #view-data>.profile-home-card{grid-column:1!important;grid-row:3!important;width:100%!important;margin:0!important}
+  #view-data>.profile-home-links{grid-column:2!important;grid-row:3!important;width:100%!important;margin:0!important}
+  #view-data>.hidden{display:none!important}
+  .profile-home-card,.profile-home-links{border-radius:20px!important}
+  .profile-home-links .data-native-row{min-height:64px!important}
+
+  /* Chat: lienzo central sobrio hasta su implementación funcional. */
+  #view-assistant{max-width:980px!important;margin:0 auto!important}
+
+  /* Fichas y apartados: más espacio real para datos y gráficas. */
+  .activity-detail-inner{width:min(100%,1040px)!important;max-width:1040px!important}
+  .metric-detail-inner,.state-detail-inner{width:min(100%,960px)!important;max-width:960px!important}
+  .plan-detail-shell,.data-detail-inner{width:min(100%,940px)!important;max-width:940px!important}
+  .activity-map{height:390px!important}
+  .activity-chart{height:330px!important}
+  .metric-chart{height:330px!important}
+  .activity-lap-bars{min-height:250px!important}
+  .activity-primary{max-width:none!important}
+  .period-control{max-width:700px!important;margin-left:auto!important;margin-right:auto!important}
+  .range-nav{max-width:700px!important;margin-left:auto!important;margin-right:auto!important}
+  .detail-stats{max-width:820px!important;margin-left:auto!important;margin-right:auto!important}
+
+  /* Formularios y diálogos dejan de sentirse como controles de móvil estirados. */
+  dialog{width:min(620px,calc(100% - 48px))!important;max-height:calc(100vh - 48px)!important}
+  .sheet{padding:20px!important}
+  .form-row{gap:10px!important}
+  .action-grid{gap:8px!important}
+
+  /* Barra inferior de escritorio: flotante, centrada y contenida. */
+  .nav{
+    width:760px!important;
+    max-width:calc(100% - 48px)!important;
+    height:72px!important;
+    bottom:16px!important;
+    border-radius:25px!important;
+    box-shadow:0 18px 46px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.09)!important;
+  }
+  .nav-btn{transition:background .14s ease,color .14s ease,transform .14s ease!important}
+  .nav-icon{font-size:20px!important}.nav-label{font-size:10px!important}
+
+  /* Mouse/trackpad: feedback Apple-like, sin alterar el comportamiento táctil. */
+  @media (hover:hover) and (pointer:fine){
+    button,.data-native-row,.activity-row,.engine-v2-card,.availability-card,.session-generator-card,.adaptive-card{transition:background .14s ease,border-color .14s ease,transform .14s ease,filter .14s ease}
+    .activity-row:hover,.data-native-row:hover,.engine-v2-card:hover,.availability-card:hover,.session-generator-card:hover,.adaptive-card:hover{background:#111b24!important}
+    .metric-card:hover{background:#111b24!important}
+    .nav-btn:hover{background:rgba(29,155,240,.08)!important;color:#c8e8fb!important}
+    .nav-btn.active:hover{background:var(--blue-soft)!important;color:var(--blue)!important}
+    .sync-quick:hover,.plan-nav-btn:hover,.range-arrow:hover,.metric-back:hover,.plan-detail-back:hover{filter:brightness(1.12)}
+  }
+}
+</style>
+
+
+<style id="atlas-v079-style">
+/* ===== ɅTLɅS v0.79 · robustez de capas + scroll contextual real ===== */
+
+/* Eliminamos cualquier overflow artificial heredado de iteraciones anteriores. */
+html{
+  min-height:100%!important;
+  height:auto!important;
+  overflow-x:hidden!important;
+}
+body{
+  min-height:100dvh!important;
+  height:auto!important;
+  overflow-x:hidden!important;
+  padding-bottom:0!important;
+}
+.app{
+  min-height:100dvh!important;
+  height:auto!important;
+  padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 20px)!important;
+}
+#dataPerformanceDetail .data-detail-inner{
+  min-height:0!important;
+}
+
+/* Si la pantalla cabe, no existe un contenedor desplazable:
+   sin rebote, sin movimiento y sin indicador lateral. */
+html.atlas-main-scroll-locked,
+body.atlas-main-scroll-locked{
+  height:100dvh!important;
+  max-height:100dvh!important;
+  overflow-y:hidden!important;
+  overscroll-behavior-y:none!important;
+}
+.metric-detail.atlas-scroll-locked,
+.state-detail.atlas-scroll-locked,
+.activity-detail.atlas-scroll-locked,
+.plan-detail.atlas-scroll-locked,
+.data-detail.atlas-scroll-locked{
+  overflow-y:hidden!important;
+  overscroll-behavior-y:none!important;
+  -webkit-overflow-scrolling:auto!important;
+}
+
+/* Solo cuando hay contenido real fuera del viewport se activa el scroll de iOS. */
+.metric-detail.atlas-scrollable,
+.state-detail.atlas-scrollable,
+.activity-detail.atlas-scrollable,
+.plan-detail.atlas-scrollable,
+.data-detail.atlas-scrollable{
+  overflow-y:auto!important;
+  overscroll-behavior-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+
+/* Jerarquía de navegación:
+   una actividad abierta desde Mejores marcas/Plan se sitúa por encima,
+   de forma que Volver revela la página de origen. */
+.data-detail{z-index:75!important}
+.plan-detail{z-index:70!important}
+.metric-detail{z-index:60!important}
+.state-detail{z-index:61!important}
+.activity-detail{z-index:82!important}
+
+/* La barra de pestañas nunca participa del flujo del documento. */
+.nav{
+  position:fixed!important;
+  left:50%!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:calc(8px + env(safe-area-inset-bottom))!important;
+  transform:translate3d(-50%,0,0)!important;
+  margin:0!important;
+  z-index:90!important;
+}
+
+/* En Perfil continúa sin barra inferior, tal como se acordó. */
+body.profile-detail-open .nav{display:none!important}
+
+/* Escritorio: neutraliza el padding inferior del body de v0.78;
+   la reserva para la barra vive dentro de .app, no genera scroll artificial. */
+@media(min-width:1200px){
+  body{padding-bottom:0!important}
+  .app{padding-bottom:calc(var(--nav) + 28px)!important}
+}
+</style>
+
+<style id="atlas-v080-style">
+/* ===== ɅTLɅS v0.80 · robustez de arranque y sincronización ===== */
+#atlasFatalRecovery button:active{transform:scale(.98)}
+</style>
+
+
+<style id="atlas-v081-style">
+/* ===== ɅTLɅS v0.81 · tolerancia a fallos / regresión ===== */
+#connectionState{font-variant-numeric:tabular-nums}
+</style>
+
+
+<style id="atlas-v082-chat-style">
+#view-assistant.active{display:flex!important;flex-direction:column!important;height:calc(100dvh - var(--nav) - env(safe-area-inset-bottom) - 12px)!important;min-height:0!important;overflow:hidden!important}
+#view-assistant>.atlas-header{flex:0 0 auto!important}
+.assistant-chat-canvas{position:relative!important;display:flex!important;flex:1 1 auto!important;min-height:0!important;width:100%!important;max-width:760px!important;margin:0 auto!important;overflow:hidden!important}
+.assistant-chat-toolbar{flex:0 0 39px;display:flex;align-items:center;gap:8px;padding:0 2px 4px}.assistant-toolbar-spacer{flex:1}
+.assistant-icon-btn,.assistant-history-back,.assistant-history-new{appearance:none;border:0;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.055);color:#fff;font:600 20px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+.assistant-icon-btn:active,.assistant-history-back:active,.assistant-history-new:active{transform:scale(.94)}
+.assistant-messages{flex:1 1 auto;min-height:0;overflow-y:hidden;overscroll-behavior-y:none;padding:9px 2px 13px;display:flex;flex-direction:column;gap:9px;scrollbar-width:none}
+.assistant-messages::-webkit-scrollbar{display:none}.assistant-messages.scrollable{overflow-y:auto;overscroll-behavior-y:auto;-webkit-overflow-scrolling:touch}
+.assistant-empty{margin:auto;color:rgba(29,155,240,.16);font:800 clamp(72px,22vw,112px)/1 -apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif;user-select:none}
+.assistant-message-row{display:flex;width:100%}.assistant-message-row.user{justify-content:flex-end}.assistant-message-row.assistant{justify-content:flex-start}
+.assistant-message{max-width:min(84%,620px);padding:9px 12px;border-radius:18px;color:#f5f7f9;font:500 14px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;white-space:pre-wrap;overflow-wrap:anywhere;letter-spacing:-.08px}
+.assistant-message-row.user .assistant-message{background:#1d9bf0;color:#fff;border-bottom-right-radius:6px}
+.assistant-message-row.assistant .assistant-message{background:linear-gradient(180deg,rgba(24,31,39,.96),rgba(15,21,27,.96));border:1px solid rgba(255,255,255,.075);border-bottom-left-radius:6px}
+.assistant-message.assistant-error{color:#ffb6b2;border-color:rgba(255,69,58,.24);background:rgba(58,18,18,.55)}
+.assistant-typing{display:flex;gap:4px;align-items:center;min-width:45px;min-height:35px}.assistant-typing span{width:5px;height:5px;border-radius:50%;background:#b7c0c7;animation:atlasChatDot 1.15s infinite ease-in-out}.assistant-typing span:nth-child(2){animation-delay:.14s}.assistant-typing span:nth-child(3){animation-delay:.28s}
+@keyframes atlasChatDot{0%,70%,100%{opacity:.35;transform:translateY(0)}35%{opacity:1;transform:translateY(-3px)}}
+.assistant-composer{flex:0 0 auto;display:grid;grid-template-columns:minmax(0,1fr) 38px;align-items:end;gap:7px;padding:7px 7px 7px 11px;margin:0 0 2px;border:1px solid rgba(255,255,255,.11);border-radius:22px;background:rgba(18,25,32,.88);backdrop-filter:blur(22px) saturate(145%);-webkit-backdrop-filter:blur(22px) saturate(145%)}
+.assistant-input{appearance:none;resize:none;width:100%;min-height:24px;max-height:120px;padding:3px 0 2px;border:0;outline:0;background:transparent;color:#fff;font:500 15px/1.35 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;overflow-y:auto;scrollbar-width:none}.assistant-input::-webkit-scrollbar{display:none}.assistant-input::placeholder{color:#7f8991}
+.assistant-send{appearance:none;border:0;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#1d9bf0;color:#fff;font:800 20px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif;-webkit-tap-highlight-color:transparent}.assistant-send:disabled{opacity:.38}.assistant-send:not(:disabled):active{transform:scale(.94)}
+.assistant-history-panel{position:absolute;inset:0;z-index:12;display:flex;flex-direction:column;background:rgba(5,9,13,.985);backdrop-filter:blur(28px) saturate(135%);-webkit-backdrop-filter:blur(28px) saturate(135%);opacity:0;pointer-events:none;transform:translateX(-14px);transition:opacity .16s ease,transform .16s ease}.assistant-history-panel.open{opacity:1;pointer-events:auto;transform:none}
+.assistant-history-head{flex:0 0 49px;display:grid;grid-template-columns:36px 1fr 36px;align-items:center;gap:6px;border-bottom:1px solid rgba(255,255,255,.075)}.assistant-history-title{text-align:center;color:#fff;font:750 16px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif}
+.assistant-history-list{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:7px 0 12px}.assistant-history-row{appearance:none;width:100%;min-height:58px;display:grid;grid-template-columns:minmax(0,1fr) 34px;align-items:center;gap:8px;padding:8px 8px 8px 12px;border:0;border-bottom:1px solid rgba(255,255,255,.065);background:transparent;color:#fff;text-align:left}.assistant-history-row.active{background:rgba(29,155,240,.08)}
+.assistant-history-copy{min-width:0;display:flex;flex-direction:column;gap:4px}.assistant-history-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:680 14.5px/1.25 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}.assistant-history-date{color:#82909a;font:550 11px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}.assistant-history-delete{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#74808a;font-size:11px}.assistant-history-empty{padding:32px 12px;text-align:center;color:#75818a;font:550 13px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
+@media(min-width:600px){#view-assistant.active{height:calc(100dvh - var(--nav) - 18px)!important}.assistant-chat-canvas{max-width:720px!important}.assistant-message{font-size:14.5px}}
+@media(min-width:1200px){.assistant-chat-canvas{max-width:760px!important}.assistant-message{max-width:72%}}
 </style>
 
 </body>
