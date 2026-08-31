@@ -963,6 +963,13 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
     <div class="activity-detail-loading" id="activityDetailLoading">Actualizando información de Intervals.icu…</div>
     <div class="activity-equipment hidden" id="activityEquipment"></div>
     <div class="activity-primary" id="activityPrimary"></div>
+    <div class="activity-ai-zone">
+      <button class="activity-ai-btn" id="activityAiBtn" type="button" aria-label="Analizar esta actividad con ATLAS" title="Analizar con ATLAS"><span class="activity-ai-mark">Ʌ</span></button>
+      <div class="activity-ai-result hidden" id="activityAiResult" aria-live="polite">
+        <div class="activity-ai-text" id="activityAiText"></div>
+        <div class="activity-ai-cost" id="activityAiCost"></div>
+      </div>
+    </div>
     <div class="activity-laps hidden" id="activityLaps">
       <div class="activity-lap-bars-card">
         <div class="activity-lap-bars-readout" id="activityLapReadout">Pulsa una barra para seleccionar una vuelta</div>
@@ -1708,7 +1715,7 @@ html,body{overscroll-behavior-y:none}
 
 (()=>{
 "use strict";
-const APP_VERSION="0.84.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="0.85.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits","chats"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -1718,7 +1725,7 @@ function onAll(selector,type,handler,root=document,options){qsa(selector,root).f
 const ui={
  assistantChatCanvas:$("assistantChatCanvas"),assistantMessages:$("assistantMessages"),assistantEmpty:$("assistantEmpty"),assistantComposer:$("assistantComposer"),assistantInput:$("assistantInput"),assistantSend:$("assistantSend"),assistantNewBtn:$("assistantNewBtn"),assistantHistoryBtn:$("assistantHistoryBtn"),assistantHistoryPanel:$("assistantHistoryPanel"),assistantHistoryList:$("assistantHistoryList"),assistantHistoryClose:$("assistantHistoryClose"),assistantHistoryNew:$("assistantHistoryNew"),
  todayDate:$("todayDate"),stateDateLabel:$("stateDateLabel"),quickSyncBtn:$("quickSyncBtn"),activitySyncBtn:$("activitySyncBtn"),planSyncBtn:$("planSyncBtn"),dataSyncBtn:$("dataSyncBtn"),upcomingTrainingList:$("upcomingTrainingList"),trainingStateBtn:$("trainingStateBtn"),trainingStateCircle:$("trainingStateCircle"),trainingStateScore:$("trainingStateScore"),trainingStateWord:$("trainingStateWord"),trainingStateNote:$("trainingStateNote"),sleepValue:$("sleepValue"),sleepMeta:$("sleepMeta"),hrvValue:$("hrvValue"),hrvMeta:$("hrvMeta"),rhrValue:$("rhrValue"),rhrMeta:$("rhrMeta"),vo2Value:$("vo2Value"),vo2Meta:$("vo2Meta"),freshValue:$("freshValue"),freshMeta:$("freshMeta"),volumeValue:$("volumeValue"),volumeMeta:$("volumeMeta"),
- lastActivityBtn:$("lastActivityBtn"),activityLapBars:$("activityLapBars"),activityLapBarsScroll:$("activityLapBarsScroll"),activityLapReadout:$("activityLapReadout"),activitySportFilter:$("activitySportFilter"),activityYearFilter:$("activityYearFilter"),activitySearch:$("activitySearch"),activitiesSummary:$("activitiesSummary"),activitiesList:$("activitiesList"),activityDetail:$("activityDetail"),activityDetailBack:$("activityDetailBack"),activityDetailBottomBack:$("activityDetailBottomBack"),activityDetailEmoji:$("activityDetailEmoji"),activityDetailTitle:$("activityDetailTitle"),activityDetailDate:$("activityDetailDate"),activityMap:$("activityMap"),activityDetailLoading:$("activityDetailLoading"),activityPrimary:$("activityPrimary"),activityEquipment:$("activityEquipment"),activityPerception:$("activityPerception"),activityAnalysis:$("activityAnalysis"),activityChartTabs:$("activityChartTabs"),activityChartStats:$("activityChartStats"),activityChartCard:$("activityChartCard"),activityChartScroll:$("activityChartScroll"),activityChart:$("activityChart"),activityChartReadout:$("activityChartReadout"),activityLaps:$("activityLaps"),activityLapsRows:$("activityLapsRows"),activityDescription:$("activityDescription"),
+ lastActivityBtn:$("lastActivityBtn"),activityLapBars:$("activityLapBars"),activityLapBarsScroll:$("activityLapBarsScroll"),activityLapReadout:$("activityLapReadout"),activitySportFilter:$("activitySportFilter"),activityYearFilter:$("activityYearFilter"),activitySearch:$("activitySearch"),activitiesSummary:$("activitiesSummary"),activitiesList:$("activitiesList"),activityDetail:$("activityDetail"),activityDetailBack:$("activityDetailBack"),activityDetailBottomBack:$("activityDetailBottomBack"),activityDetailEmoji:$("activityDetailEmoji"),activityDetailTitle:$("activityDetailTitle"),activityDetailDate:$("activityDetailDate"),activityMap:$("activityMap"),activityDetailLoading:$("activityDetailLoading"),activityPrimary:$("activityPrimary"),activityEquipment:$("activityEquipment"),activityPerception:$("activityPerception"),activityAnalysis:$("activityAnalysis"),activityChartTabs:$("activityChartTabs"),activityChartStats:$("activityChartStats"),activityChartCard:$("activityChartCard"),activityChartScroll:$("activityChartScroll"),activityChart:$("activityChart"),activityChartReadout:$("activityChartReadout"),activityLaps:$("activityLaps"),activityLapsRows:$("activityLapsRows"),activityDescription:$("activityDescription"),activityAiBtn:$("activityAiBtn"),activityAiResult:$("activityAiResult"),activityAiText:$("activityAiText"),activityAiCost:$("activityAiCost"),
  planDetail:$("planDetail"),planDetailBack:$("planDetailBack"),planDetailBottomBack:$("planDetailBottomBack"),planAdaptiveActions:$("planAdaptiveActions"),planDetailMove:$("planDetailMove"),planDetailUnavailable:$("planDetailUnavailable"),planDetailReplace:$("planDetailReplace"),planManualDialog:$("planManualDialog"),planManualForm:$("planManualForm"),planManualTitle:$("planManualTitle"),planManualSession:$("planManualSession"),planManualMoveFields:$("planManualMoveFields"),planManualDate:$("planManualDate"),planManualReplaceFields:$("planManualReplaceFields"),planManualReplacement:$("planManualReplacement"),planManualImpact:$("planManualImpact"),planManualApply:$("planManualApply"),planDetailActions:$("planDetailActions"),planDetailEdit:$("planDetailEdit"),planDetailDelete:$("planDetailDelete"),planDetailDate:$("planDetailDate"),planDetailIcon:$("planDetailIcon"),planDetailTitle:$("planDetailTitle"),planDetailDistance:$("planDetailDistance"),planDetailDuration:$("planDetailDuration"),planDetailTarget:$("planDetailTarget"),planDetailSteps:$("planDetailSteps"),planDetailPurpose:$("planDetailPurpose"),planDetailRaw:$("planDetailRaw"),planDetailResult:$("planDetailResult"),planDetailResultStatus:$("planDetailResultStatus"),planDetailResultMeta:$("planDetailResultMeta"),planDetailResultActivity:$("planDetailResultActivity"),
  availabilityCard:$("availabilityCard"),availabilityMeta:$("availabilityMeta"),availabilityDialog:$("availabilityDialog"),availabilityForm:$("availabilityForm"),availabilityWeekDate:$("availabilityWeekDate"),availabilityWeekDays:$("availabilityWeekDays"),availabilityNote:$("availabilityNote"),availabilityDelete:$("availabilityDelete"),availabilitySave:$("availabilitySave"),availabilityExceptionsList:$("availabilityExceptionsList"), secondaryGoalAdd:$("secondaryGoalAdd"),secondaryGoalList:$("secondaryGoalList"),secondaryGoalDialog:$("secondaryGoalDialog"),secondaryGoalForm:$("secondaryGoalForm"),secondaryGoalPriority:$("secondaryGoalPriority"),secondaryGoalType:$("secondaryGoalType"),secondaryGoalDate:$("secondaryGoalDate"),secondaryGoalName:$("secondaryGoalName"),secondaryGoalIntention:$("secondaryGoalIntention"),secondaryGoalTime:$("secondaryGoalTime"),secondaryGoalDelete:$("secondaryGoalDelete"),secondaryGoalSave:$("secondaryGoalSave"),
  adaptiveRevisionStatus:$("adaptiveRevisionStatus"),adaptiveRevisionSummary:$("adaptiveRevisionSummary"),adaptiveRevisionDiff:$("adaptiveRevisionDiff"),adaptiveRevisionPrepare:$("adaptiveRevisionPrepare"),adaptiveRevisionActions:$("adaptiveRevisionActions"),adaptiveRevisionReject:$("adaptiveRevisionReject"),adaptiveRevisionApply:$("adaptiveRevisionApply"),
@@ -1736,7 +1743,7 @@ const ui={
  smartSyncBtn:$("smartSyncBtn"),testBtn:$("testBtn"),settingsBtn:$("settingsBtn"),fullSyncBtn:$("fullSyncBtn"),exportBtn:$("exportBtn"),importBtn:$("importBtn"),clearBtn:$("clearBtn"),fileInput:$("fileInput"),toast:$("toast"),
  settingsDialog:$("settingsDialog"),settingsForm:$("settingsForm"),workerUrl:$("workerUrl"),clientToken:$("clientToken"),oldestDate:$("oldestDate"),newestDate:$("newestDate"),historyStart:$("historyStart"),overlapDays:$("overlapDays"),metricDetail:$("metricDetail"),metricDetailBack:$("metricDetailBack"),metricDetailTitle:$("metricDetailTitle"),metricDetailEmoji:$("metricDetailEmoji"),metricPeriodControl:$("metricPeriodControl"),metricPrev:$("metricPrev"),metricNext:$("metricNext"),metricRangeLabel:$("metricRangeLabel"),metricChartScroll:$("metricChartScroll"),metricChart:$("metricChart"),metricChartReadout:$("metricChartReadout"),chartLegend:$("chartLegend"),detailStatLabel1:$("detailStatLabel1"),detailStatValue1:$("detailStatValue1"),detailStatLabel2:$("detailStatLabel2"),detailStatValue2:$("detailStatValue2"),detailStatLabel3:$("detailStatLabel3"),detailStatValue3:$("detailStatValue3"),detailStatSub1:$("detailStatSub1"),detailStatSub2:$("detailStatSub2"),detailStatSub3:$("detailStatSub3"),metricContext:$("metricContext"),metricDetailBottomBack:$("metricDetailBottomBack"),stateDetail:$("stateDetail"),stateDetailBack:$("stateDetailBack"),stateDetailBottomBack:$("stateDetailBottomBack"),stateDetailHero:$("stateDetailHero"),stateDetailRing:$("stateDetailRing"),stateDetailScore:$("stateDetailScore"),stateDetailWord:$("stateDetailWord"),stateDetailNote:$("stateDetailNote"),stateDetailMeta:$("stateDetailMeta"),stateFactors:$("stateFactors"),stateBaseScore:$("stateBaseScore"),stateRecoveryPenalty:$("stateRecoveryPenalty"),stateLimiter:$("stateLimiter")
 };
-let db,dbOpenPromise=null,toastTimer,currentActivities=[],currentWellness=[],currentGear=[],currentEvents=[],currentCachedVo2=null,currentEngineV2Goal=null,currentSecondaryGoals=[],currentAvailabilityExceptions=[],currentSecondaryEditId=null,currentAvailabilityEditWeek=null,currentAthleteProfileV2=null,currentGoalRequirements=null,currentGoalAssessment=null,currentMacroTrajectory=null,currentWeeklyTargets=null,currentCalendarSolution=null,currentSessionPlan=null,currentPlanManifest=null,currentPlanCloudMeta=null,currentAdaptiveState=null,currentPlanRevisionDraft=null,currentPlanRevisionHistory=[],currentPlanManualAction=null,currentPlanWeekStart=null,currentPlanEvent=null,currentPlanOutcome=null,currentPlanEditEvent=null,lastCalendarRefreshAt=0,currentActivityDetail=null,currentActivityMap=null,currentActivityStreams=null,currentActivityVo2=null,currentActivityChartKey=null,activityChartZoom=1,activityPinchStartDistance=0,activityPinchStartZoom=1,activityChartPointerStart=null,activityChartReadoutTimer=null,activityLapZoom=1,activityLapPinchStartDistance=0,activityLapPinchStartZoom=1,currentActivityLapIndex=null,activityLapMainFilter="all",currentRunningRecords=null,currentRecordsLoading=false,currentMetricDetail=null,currentMetricDays=30,currentMetricEnd=null,currentAtlasState=null,currentChartState=null,chartReadoutTimer=null,chartZoom=1,pinchStartDistance=0,pinchStartZoom=1,chartPointerStart=null,metricZoomRaf=0,metricZoomPending=null,activityZoomRaf=0,activityZoomPending=null,dataSyncPromise=null,calendarSyncPromise=null,planCloudSyncPromise=null,foregroundRefreshPromise=null,runtimeRefreshStarted=false,runtimeGuardsInstalled=false,initStarted=false,initCompleted=false,currentActivityRequestToken=0,assistantChats=[],currentAssistantChatId=null,assistantSending=false,assistantPendingError="",assistantScrollRaf=0;
+let db,dbOpenPromise=null,toastTimer,currentActivities=[],currentWellness=[],currentGear=[],currentEvents=[],currentCachedVo2=null,currentEngineV2Goal=null,currentSecondaryGoals=[],currentAvailabilityExceptions=[],currentSecondaryEditId=null,currentAvailabilityEditWeek=null,currentAthleteProfileV2=null,currentGoalRequirements=null,currentGoalAssessment=null,currentMacroTrajectory=null,currentWeeklyTargets=null,currentCalendarSolution=null,currentSessionPlan=null,currentPlanManifest=null,currentPlanCloudMeta=null,currentAdaptiveState=null,currentPlanRevisionDraft=null,currentPlanRevisionHistory=[],currentPlanManualAction=null,currentPlanWeekStart=null,currentPlanEvent=null,currentPlanOutcome=null,currentPlanEditEvent=null,lastCalendarRefreshAt=0,currentActivityDetail=null,currentActivityMap=null,currentActivityStreams=null,currentActivityVo2=null,currentActivityChartKey=null,activityChartZoom=1,activityPinchStartDistance=0,activityPinchStartZoom=1,activityChartPointerStart=null,activityChartReadoutTimer=null,activityLapZoom=1,activityLapPinchStartDistance=0,activityLapPinchStartZoom=1,currentActivityLapIndex=null,activityLapMainFilter="all",currentRunningRecords=null,currentRecordsLoading=false,currentMetricDetail=null,currentMetricDays=30,currentMetricEnd=null,currentAtlasState=null,currentChartState=null,chartReadoutTimer=null,chartZoom=1,pinchStartDistance=0,pinchStartZoom=1,chartPointerStart=null,metricZoomRaf=0,metricZoomPending=null,activityZoomRaf=0,activityZoomPending=null,dataSyncPromise=null,calendarSyncPromise=null,planCloudSyncPromise=null,foregroundRefreshPromise=null,runtimeRefreshStarted=false,runtimeGuardsInstalled=false,initStarted=false,initCompleted=false,currentActivityRequestToken=0,assistantChats=[],currentAssistantChatId=null,assistantSending=false,assistantPendingError="",assistantScrollRaf=0,activityAiRequestToken=0,activityAiCache=new Map(),navGlassRaf=0;
 window.addEventListener("DOMContentLoaded",()=>bootstrapAtlas().catch(reportFatalError));
 const CORE_UI_KEYS=["todayDate","lastActivityBtn","activitiesList","activityDetail","metricDetail","stateDetail","toast","settingsDialog"];
 function assertCoreUi(){const missing=CORE_UI_KEYS.filter(key=>!ui[key]);if(missing.length)throw new Error(`Interfaz incompleta: ${missing.join(", ")}`);return true;}
@@ -1864,11 +1871,49 @@ async function scheduleForegroundRefresh(force=false){
   finally{foregroundRefreshPromise=null;}
 }
 
+
+/* ===== Liquid Glass reactivo ===== */
+function updateNavGlassPoint(clientX=null,clientY=null){
+  const nav=document.querySelector(".nav");
+  if(!nav)return;
+  const r=nav.getBoundingClientRect();
+  const x=Number.isFinite(clientX)?clamp((clientX-r.left)/Math.max(1,r.width)*100,0,100):50;
+  const y=Number.isFinite(clientY)?clamp((clientY-r.top)/Math.max(1,r.height)*100,0,100):34;
+  nav.style.setProperty("--glass-x",`${x.toFixed(1)}%`);
+  nav.style.setProperty("--glass-y",`${y.toFixed(1)}%`);
+}
+function installNavGlassRefraction(){
+  const nav=document.querySelector(".nav");
+  if(!nav||nav.dataset.refractionInstalled==="1")return;
+  nav.dataset.refractionInstalled="1";
+  updateNavGlassPoint();
+
+  const move=e=>{
+    if(navGlassRaf)cancelAnimationFrame(navGlassRaf);
+    navGlassRaf=requestAnimationFrame(()=>{
+      navGlassRaf=0;
+      updateNavGlassPoint(e.clientX,e.clientY);
+    });
+  };
+  nav.addEventListener("pointermove",move,{passive:true});
+  nav.addEventListener("pointerenter",move,{passive:true});
+  nav.addEventListener("pointerleave",()=>updateNavGlassPoint(),{passive:true});
+  window.addEventListener("scroll",()=>{
+    if(navGlassRaf)return;
+    navGlassRaf=requestAnimationFrame(()=>{
+      navGlassRaf=0;
+      const phase=(window.scrollY||0)%180;
+      nav.style.setProperty("--glass-flow",`${phase.toFixed(1)}px`);
+    });
+  },{passive:true});
+}
+
 async function init(){
   assertCoreUi();
   ensureMainTabHeaders();
   bindEvents();
   initializeStaticUi();
+  installNavGlassRefraction();
 
   db=await openDb();
   await cleanupLegacySettings().catch(error=>{
@@ -1940,6 +1985,7 @@ function bindEvents(){
  on(ui.assistantHistoryList,"click",handleAssistantHistoryClick);
  on(ui.assistantInput,"input",resizeAssistantInput);
  on(ui.assistantInput,"keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();ui.assistantComposer?.requestSubmit();}});
+ on(ui.activityAiBtn,"click",requestActivityAiInsight);
  on(ui.activitySportFilter,"change",renderActivities);on(ui.activityYearFilter,"change",renderActivities);on(ui.activitySearch,"input",renderActivities);
  on(ui.activitiesList,"click",e=>{const btn=e.target.closest(".activity-row");if(btn)openActivityDetail(btn.dataset.id);});
  on(ui.activityDetailBack,"click",closeActivityDetail);on(ui.activityDetailBottomBack,"click",closeActivityDetail);
@@ -1979,12 +2025,14 @@ function openAssistantHistory(){
   ui.assistantHistoryPanel.classList.add("open");
   ui.assistantHistoryPanel.setAttribute("aria-hidden","false");
   document.body.classList.add("assistant-history-open");
+  scheduleAtlasScrollAudit();
 }
 function closeAssistantHistory(){
   if(!ui.assistantHistoryPanel)return;
   ui.assistantHistoryPanel.classList.remove("open");
   ui.assistantHistoryPanel.setAttribute("aria-hidden","true");
   document.body.classList.remove("assistant-history-open");
+  scheduleAtlasScrollAudit();
 }
 function handleAssistantHistoryClick(event){const del=event.target.closest("[data-chat-delete]");if(del){event.stopPropagation();deleteAssistantConversation(del.dataset.chatDelete);return;}const row=event.target.closest("[data-chat-id]");if(!row)return;currentAssistantChatId=row.dataset.chatId;assistantPendingError="";closeAssistantHistory();renderAssistantChat();requestAnimationFrame(()=>scrollAssistantToBottom(false));}
 function renderAssistantHistory(){if(!ui.assistantHistoryList)return;if(!assistantChats.length){ui.assistantHistoryList.innerHTML='<div class="assistant-history-empty">Sin conversaciones guardadas</div>';return;}ui.assistantHistoryList.innerHTML=assistantChats.map(chat=>`<button class="assistant-history-row${chat.id===currentAssistantChatId?" active":""}" type="button" data-chat-id="${esc(chat.id)}"><span class="assistant-history-copy"><span class="assistant-history-name">${esc(chat.title||"Conversación")}</span><span class="assistant-history-date">${esc(assistantDateLabel(chat.updatedAt))}</span></span><span class="assistant-history-delete" role="button" aria-label="Eliminar conversación" data-chat-delete="${esc(chat.id)}">✕</span></button>`).join("");}
@@ -2219,6 +2267,9 @@ function auditAtlasScrollState(){
   atlasScrollAuditFrame=0;
   const root=document.documentElement;
   const overlay=atlasOpenOverlay();
+  const dialogOpen=!!document.querySelector("dialog[open]");
+  const assistantHistory=!!ui.assistantHistoryPanel?.classList.contains("open");
+  document.body.classList.toggle("atlas-subpage-open",Boolean(overlay||dialogOpen||assistantHistory));
 
   if(overlay){
     root.classList.remove("atlas-main-scroll-locked");
@@ -2236,6 +2287,13 @@ function auditAtlasScrollState(){
       const needs=overlay.scrollHeight>overlay.clientHeight+2;
       atlasSetOverflowClass(overlay,needs);
     });
+    return;
+  }
+
+  if(document.body.classList.contains("assistant-main-active")){
+    root.classList.add("atlas-main-scroll-locked");
+    document.body.classList.add("atlas-main-scroll-locked");
+    document.body.style.overflow="hidden";
     return;
   }
 
@@ -2981,7 +3039,51 @@ async function refreshAll(){
 
 
 
-function renderPlanOverview(){if(!ui.planOverviewTitle||!ui.planOverviewMeta)return;const g=currentEngineV2Goal,summary=$("planGoalSummary");if(!g){ui.planOverviewTitle.textContent="Configurar plan";ui.planOverviewMeta.textContent="Objetivo, carreras y disponibilidad";if(ui.engineGoalTitle)ui.engineGoalTitle.textContent="Definir objetivo principal";if(summary)summary.innerHTML="";return;}const title=g.name||engineV2GoalLabel(g.type);ui.planOverviewTitle.textContent=title;const lifecycle=planLifecycle(),secondary=currentSecondaryGoals.length?` · ${currentSecondaryGoals.length} B/C`:"";ui.planOverviewMeta.textContent=`${engineV2DateLabel(g.date)} · ${engineV2FormatTime(g.targetTimeSec)} · ${lifecycle.label}${secondary}`;if(ui.engineGoalTitle)ui.engineGoalTitle.textContent=title;if(summary){const dist=engineV2GoalDistance(g.type),days=Array.isArray(g.availableDays)&&g.availableDays.length?g.availableDays.length:7,weeks=currentSessionPlan?.weeks?.length||currentMacroTrajectory?.weeks?.length||Math.max(0,Math.ceil(dateDiff(g.startDate||engineV2DefaultPlanStart(),g.date)/7)),runs=currentSessionPlan?.runCount,strength=currentSessionPlan?.strengthCount,items=[["Inicio",engineV2DateLabel(g.startDate||engineV2DefaultPlanStart())],["Carrera",engineV2DateLabel(g.date)],["Distancia",dist?`${formatNatural(dist/1000,dist%1000?1:0)} km`:"—"],["Objetivo",engineV2FormatTime(g.targetTimeSec)],["Disponibilidad",`${days} días/sem`],["Duración",`${weeks} semanas`],["Sesiones carrera",Number.isFinite(runs)?String(runs):"—"],["Sesiones fuerza",Number.isFinite(strength)?String(strength):"—"]];summary.innerHTML=items.map(([k,v])=>`<span class="plan-goal-summary-item"><span class="plan-goal-summary-key">${esc(k)}</span><span class="plan-goal-summary-value">${esc(v)}</span></span>`).join("");}}
+function renderPlanOverview(){
+  if(!ui.planOverviewTitle||!ui.planOverviewMeta)return;
+  const g=currentEngineV2Goal,summary=$("planGoalSummary");
+
+  if(!g){
+    ui.planOverviewTitle.textContent="Configurar plan";
+    ui.planOverviewMeta.textContent="Objetivo, carreras y disponibilidad";
+    if(ui.engineGoalTitle)ui.engineGoalTitle.textContent="Definir objetivo principal";
+    if(summary)summary.innerHTML="";
+    return;
+  }
+
+  const title=g.name||engineV2GoalLabel(g.type),lifecycle=planLifecycle(),
+    secondary=currentSecondaryGoals.length?` · ${currentSecondaryGoals.length} B/C`:"";
+  ui.planOverviewTitle.textContent=title;
+  ui.planOverviewMeta.textContent=`${engineV2DateLabel(g.date)} · ${engineV2FormatTime(g.targetTimeSec)} · ${lifecycle.label}${secondary}`;
+  if(ui.engineGoalTitle)ui.engineGoalTitle.textContent=title;
+
+  if(summary){
+    const dist=engineV2GoalDistance(g.type),
+      days=Array.isArray(g.availableDays)&&g.availableDays.length?g.availableDays.length:7,
+      weeks=currentSessionPlan?.weeks?.length||currentMacroTrajectory?.weeks?.length||Math.max(0,Math.ceil(dateDiff(g.startDate||engineV2DefaultPlanStart(),g.date)/7)),
+      runs=currentSessionPlan?.runCount,
+      strength=currentSessionPlan?.strengthCount,
+      items=[
+        ["🗓️","Inicio",engineV2DateLabel(g.startDate||engineV2DefaultPlanStart())],
+        ["🏁","Carrera",engineV2DateLabel(g.date)],
+        ["📏","Distancia",dist?`${formatNatural(dist/1000,dist%1000?1:0)} km`:"—"],
+        ["🎯","Objetivo",engineV2FormatTime(g.targetTimeSec)],
+        ["📆","Duración",`${weeks} semanas`],
+        ["⏱️","Disponibilidad",`${days} días/sem`],
+        ["🏃🏻‍♂️","Carrera",Number.isFinite(runs)?`${runs} sesiones`:"—"],
+        ["🏋🏻‍♂️","Fuerza",Number.isFinite(strength)?`${strength} sesiones`:"—"]
+      ];
+
+    summary.innerHTML=items.map(([emoji,key,value])=>`
+      <span class="plan-goal-summary-item">
+        <span class="plan-goal-summary-emoji">${emoji}</span>
+        <span class="plan-goal-summary-copy">
+          <span class="plan-goal-summary-key">${esc(key)}</span>
+          <span class="plan-goal-summary-value">${esc(value)}</span>
+        </span>
+      </span>`).join("");
+  }
+}
 function openPlanControl(){renderPlanOverview();ui.planControlDetail.classList.remove("hidden");ui.planControlDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";scheduleAtlasScrollAudit();}
 function closePlanControl(){ui.planControlDetail.classList.add("hidden");ui.planControlDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";scheduleAtlasScrollAudit();}
 
@@ -4931,6 +5033,87 @@ function renderPlan(){
   ui.planDays.innerHTML=markup.join("");requestAnimationFrame(fitPlanTitles);
 }
 
+
+/* ===== Análisis contextual de actividad ===== */
+function resetActivityAiView(){
+  activityAiRequestToken++;
+  if(ui.activityAiBtn){ui.activityAiBtn.disabled=false;ui.activityAiBtn.classList.remove("loading");}
+  if(ui.activityAiResult)ui.activityAiResult.classList.add("hidden");
+  if(ui.activityAiText)ui.activityAiText.textContent="";
+  if(ui.activityAiCost)ui.activityAiCost.textContent="";
+}
+async function buildActivityAiContext(){
+  const context=await buildAssistantContext(),activity=currentActivityDetail;
+  if(context?.activities?.recent)context.activities.recent=context.activities.recent.slice(0,20);
+  if(Array.isArray(context?.wellnessRecent))context.wellnessRecent=context.wellnessRecent.slice(0,20);
+
+  const lapInfo=activityLapRows().rows.slice(0,80).map((r,i)=>({
+    lap:i+1,
+    distanceM:Number.isFinite(Number(r.d))?Math.round(Number(r.d)):null,
+    timeSec:Number.isFinite(Number(r.t))?Math.round(Number(r.t)):null,
+    pace:Number.isFinite(Number(r.p))?`${formatPaceValue(r.p)} min/km`:null,
+    hr:Number.isFinite(Number(r.hr))?Math.round(Number(r.hr)):null,
+    elevation:Number.isFinite(Number(r.elev))?Math.round(Number(r.elev)):null
+  }));
+
+  context.focusActivity={
+    ...assistantActivitySummary(activity),
+    description:String(activity?.description||activity?.notes||"").slice(0,3000)||null,
+    laps:lapInfo
+  };
+  return context;
+}
+async function requestActivityAiInsight(){
+  if(!currentActivityDetail||!ui.activityAiBtn)return;
+  const activityId=String(currentActivityDetail.id||""),cached=activityAiCache.get(activityId);
+
+  if(cached){
+    ui.activityAiText.textContent=cached.reply;
+    ui.activityAiCost.textContent=assistantCostText(cached.cost);
+    ui.activityAiResult.classList.remove("hidden");
+    return;
+  }
+
+  const token=++activityAiRequestToken;
+  ui.activityAiBtn.disabled=true;
+  ui.activityAiBtn.classList.add("loading");
+  ui.activityAiResult.classList.remove("hidden");
+  ui.activityAiText.textContent="Analizando…";
+  ui.activityAiCost.textContent="";
+
+  try{
+    const context=await buildActivityAiContext();
+    const prompt="Analiza únicamente esta actividad. Responde en 2 a 4 líneas breves: qué salió bien o mal, qué revela sobre mi rendimiento y, solo si es útil, una implicación práctica para el plan. No resumas mi estado general ni enumeres métricas. En intervalos, distingue trabajo y recuperación.";
+    const result=await apiRequest("/api/chat",{
+      method:"POST",
+      body:{messages:[{role:"user",content:prompt}],context},
+      timeoutMs:90000,
+      retries:0
+    });
+
+    if(token!==activityAiRequestToken||String(currentActivityDetail?.id||"")!==activityId)return;
+    const reply=String(result?.reply||"").trim();
+    if(!reply)throw new Error("No se ha recibido un análisis válido.");
+
+    const item={reply,cost:result?.cost||null};
+    activityAiCache.set(activityId,item);
+    ui.activityAiText.textContent=reply;
+    ui.activityAiCost.textContent=assistantCostText(item.cost);
+  }catch(error){
+    if(token!==activityAiRequestToken)return;
+    recordRuntimeAudit("activity-ai",error,{activityId}).catch(()=>{});
+    ui.activityAiText.textContent=`No he podido analizarla: ${error?.message||"error de conexión"}`;
+    ui.activityAiCost.textContent="";
+  }finally{
+    if(token===activityAiRequestToken){
+      ui.activityAiBtn.disabled=false;
+      ui.activityAiBtn.classList.remove("loading");
+      scheduleAtlasScrollAudit();
+    }
+  }
+}
+
+
 /* ===== Actividades: normalización, listado y detalle ===== */
 function activityType(a){const type=String(a?.type||""),sport=String(a?.sport||a?.activity_type||""),name=String(a?.name||a?.title||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();const joined=`${type} ${sport}`.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();if(/soccer|football|futbol/.test(joined)||/\bfutbol\b/.test(name))return"Football";return sport||type||"Actividad";}
 function sportKey(raw){return String(raw||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[\s_\-]/g,"");}
@@ -4996,7 +5179,38 @@ function monthLabel(ym){const[y,m]=ym.split("-").map(Number),s=new Intl.DateTime
 function compactActivityDate(s){if(!s)return{month:"—",day:"—"};const[,m,d]=s.split("-").map(Number),months=["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"];return{month:months[m-1]||"—",day:String(d)};}
 function initActivityFilters(){const sports=[...new Set(currentActivities.map(activityType).filter(Boolean))].sort((a,b)=>sportMeta(a).label.localeCompare(sportMeta(b).label,"es"));const years=[...new Set(currentActivities.map(activityDate).filter(Boolean).map(d=>d.slice(0,4)))].sort((a,b)=>b.localeCompare(a));const oldSport=ui.activitySportFilter.value||"all",oldYear=ui.activityYearFilter.value||String(new Date().getFullYear());ui.activitySportFilter.innerHTML='<option value="all">🏅 Todos los deportes</option>'+sports.map(s=>{const meta=sportMeta(s);return`<option value="${esc(s)}">${meta.emoji} ${esc(meta.label)}</option>`;}).join("");ui.activityYearFilter.innerHTML='<option value="all">Todo</option>'+years.map(y=>`<option value="${y}">${y}</option>`).join("");ui.activitySportFilter.value=[...ui.activitySportFilter.options].some(o=>o.value===oldSport)?oldSport:"all";ui.activityYearFilter.value=[...ui.activityYearFilter.options].some(o=>o.value===oldYear)?oldYear:"all";}
 function renderActivities(){if(!ui.activitiesList)return;const sport=ui.activitySportFilter.value||"all",year=ui.activityYearFilter.value||"all",q=(ui.activitySearch.value||"").trim().toLocaleLowerCase("es"),items=[...currentActivities].filter(a=>(sport==="all"||activityType(a)===sport)&&(year==="all"||activityDate(a).startsWith(year))&&(!q||activityName(a).toLocaleLowerCase("es").includes(q))).sort((a,b)=>activityStamp(b).localeCompare(activityStamp(a)));const dist=items.reduce((s,a)=>s+(activityDistanceM(a)||0),0);ui.activitiesSummary.textContent=`${items.length} actividades${dist>0?` · ${formatNatural(dist/1000,1)} km`:""}`;if(!items.length){ui.activitiesList.innerHTML='<div class="card activity-empty">No hay actividades con estos filtros.</div>';return;}const groups=new Map();for(const a of items){const d=activityDate(a),key=d?d.slice(0,7):"Sin fecha";if(!groups.has(key))groups.set(key,[]);groups.get(key).push(a);}ui.activitiesList.innerHTML=[...groups.entries()].map(([key,arr])=>{const km=arr.reduce((s,a)=>s+(activityDistanceM(a)||0),0)/1000;return`<section class="activity-month"><div class="activity-month-head"><div class="activity-month-title">${key==="Sin fecha"?"Sin fecha":monthLabel(key)}</div><div class="activity-month-meta">${arr.length} ${arr.length===1?"actividad":"actividades"}${km?` · ${formatNatural(km,1)} km`:""}</div></div><div class="activity-list">${arr.map(activityRowHtml).join("")}</div></section>`;}).join("");requestAnimationFrame(fitActivityTitles);}
-function activityRowContent(a){const d=activityDate(a),dp=compactActivityDate(d),dist=activityDistanceM(a),elapsed=activityElapsedSec(a),pace=activityPaceSecKm(a),speed=Number(pick(a,["average_speed"])??a?.speed?.averageMps),stats=[dist?`${formatNatural(dist/1000,2)} km`:null,elapsed?formatDuration(elapsed):null,isRun(a)&&pace?formatPaceSecs(pace):(!isRun(a)&&Number.isFinite(speed)&&speed>0?`${formatNatural(speed*3.6,1)} km/h`:null)].filter(Boolean);return`<div class="activity-row-date"><span class="activity-row-month">${dp.month}</span><span class="activity-row-day">${dp.day}</span></div><span class="activity-row-sep" aria-hidden="true"></span><div class="activity-row-copy"><div class="activity-row-title"><span class="activity-row-title-emoji">${activityIcon(a)}</span><span class="activity-row-title-text">${esc(activityName(a))}</span></div><div class="activity-row-main">${stats.length?stats.map(s=>`<span class="activity-row-stat">${s}</span>`).join(""):`<span class="activity-row-stat">${esc(activitySportLabel(a))}</span>`}</div></div>`;}
+
+function activityCompactGymLike(a){
+  const k=sportKey(activityType(a));
+  return k.includes("strength")||k.includes("weighttraining")||k.includes("weightlifting")||
+    k.includes("highintensityinterval")||k==="hiit"||k.includes("crossfit")||
+    k.includes("functional")||k.includes("circuit");
+}
+
+function activityRowContent(a){
+  const d=activityDate(a),dp=compactActivityDate(d),dist=activityDistanceM(a),
+    elapsed=activityElapsedSec(a),pace=activityPaceSecKm(a),
+    speed=Number(pick(a,["average_speed"])??a?.speed?.averageMps),
+    hr=activityHr(a),cal=Number(pick(a,["calories"])??a?.caloriesKcal),
+    gymLike=activityCompactGymLike(a);
+
+  let stats;
+  if(gymLike){
+    stats=[
+      elapsed?formatDuration(elapsed):null,
+      Number.isFinite(cal)&&cal>0?`${formatNatural(cal,0)} kcal`:null,
+      Number.isFinite(hr)&&hr>0?`${formatNatural(hr,0)} ppm`:null
+    ].filter(Boolean);
+  }else{
+    stats=[
+      dist?`${formatNatural(dist/1000,2)} km`:null,
+      elapsed?formatDuration(elapsed):null,
+      isRun(a)&&pace?formatPaceSecs(pace):(!isRun(a)&&Number.isFinite(speed)&&speed>0?`${formatNatural(speed*3.6,1)} km/h`:null)
+    ].filter(Boolean);
+  }
+
+  return`<div class="activity-row-date"><span class="activity-row-month">${dp.month}</span><span class="activity-row-day">${dp.day}</span></div><span class="activity-row-sep" aria-hidden="true"></span><div class="activity-row-copy"><div class="activity-row-title"><span class="activity-row-title-emoji">${activityIcon(a)}</span><span class="activity-row-title-text">${esc(activityName(a))}</span></div><div class="activity-row-main">${stats.length?stats.map(s=>`<span class="activity-row-stat">${s}</span>`).join(""):`<span class="activity-row-stat">${esc(activitySportLabel(a))}</span>`}</div></div>`;
+}
 function activityRowHtml(a){return`<button class="activity-row" data-id="${esc(String(a.id))}">${activityRowContent(a)}</button>`;}
 async function openActivityDetail(id){
   const a=currentActivities.find(x=>String(x.id)===String(id));
@@ -5011,6 +5225,7 @@ async function openActivityDetail(id){
   activityLapZoom=1;
   activityLapMainFilter="all";
   currentActivityLapIndex=null;
+  resetActivityAiView();
 
   ui.activityDetail.classList.add("open");
   ui.activityDetail.setAttribute("aria-hidden","false");
@@ -5043,6 +5258,12 @@ async function openActivityDetail(id){
     renderActivityMap(streams,merged);
     renderActivityLaps();
     renderActivityAnalysis();
+    const cachedAi=activityAiCache.get(String(merged.id||""));
+    if(cachedAi){
+      ui.activityAiText.textContent=cachedAi.reply;
+      ui.activityAiCost.textContent=assistantCostText(cachedAi.cost);
+      ui.activityAiResult.classList.remove("hidden");
+    }
     scheduleAtlasScrollAudit();
   }finally{
     if(requestToken===currentActivityRequestToken){
@@ -5053,6 +5274,7 @@ async function openActivityDetail(id){
 }
 function closeActivityDetail(){
   currentActivityRequestToken++;
+  activityAiRequestToken++;
   ui.activityDetail.classList.remove("open");
   ui.activityDetail.setAttribute("aria-hidden","true");
   document.body.style.overflow="";
@@ -6770,6 +6992,269 @@ body.assistant-history-open .nav{display:none!important}
 @media(min-width:600px){.assistant-chat-canvas{max-width:700px!important}.assistant-message-row.user{padding-left:23%}.assistant-message-row.assistant{padding-right:23%}.assistant-message{font-size:14.7px}}
 @media(min-width:1200px){.assistant-chat-canvas{max-width:720px!important}.assistant-message-row.user{padding-left:28%}.assistant-message-row.assistant{padding-right:28%}}
 @media(prefers-reduced-motion:reduce){.assistant-history-panel,.assistant-typing span{animation:none!important;transition:none!important}}
+</style>
+
+
+<style id="atlas-v085-refinement">
+/* ===== ɅTLɅS v0.85 · Refinamiento visual 01 ===== */
+:root{
+  --panel:#000!important;
+  --panel2:#000!important;
+  --line:rgba(255,255,255,.155)!important;
+  --atlas-border:rgba(255,255,255,.155)!important;
+  --atlas-glass:rgba(0,0,0,.20)!important;
+  --atlas-glass-strong:rgba(0,0,0,.46)!important;
+}
+
+/* Negro OLED real en páginas, fichas, apartados y bases estructurales. */
+html,body,.app,.view,
+.metric-detail,.state-detail,.activity-detail,.plan-detail,.data-detail,
+.card,.training-state,.metric-strip,.activity-list,.plan-days,.plan-summary,.plan-overview-card,
+.plan-home-links,#planControlDetail .plan-control-group,.engine-v2-card,.availability-card,
+.session-generator-card,.adaptive-card,.plan-detail-card,.macro-card,.weekly-target-card,
+.calendar-solver-card,.profile-home-card,.profile-home-links,.data-native-list,.data-system-card,
+.profile-insight-list,.profile-zone-card,.profile-zone-section,.shoe-card,.record-podium,
+.activity-primary,.activity-equipment,.activity-chart-card,.activity-lap-bars-card,
+.activity-lap-group,.chart-card,.detail-stats,.state-detail-card,.state-calc-grid,.state-bands,
+.metric-context,.plan-week-calendar,.plan-week-calendar-day,.plan-manual-session,
+.plan-manual-impact,.adaptive-revision-stat,.assistant-history-panel,
+.assistant-message-row.assistant .assistant-message{
+  background:#000!important;
+  background-image:none!important;
+}
+
+/* Bordes con algo más de presencia, manteniendo separadores internos finos. */
+.card,.training-state,.metric-strip,.activity-list,.plan-days,.plan-summary,.plan-overview-card,
+.plan-home-links,#planControlDetail .plan-control-group,.engine-v2-card,.availability-card,
+.session-generator-card,.adaptive-card,.plan-detail-card,.profile-home-card,.profile-home-links,
+.data-native-list,.data-system-card,.profile-insight-list,.profile-zone-card,.profile-zone-section,
+.shoe-card,.record-podium,.activity-primary,.activity-equipment,.activity-map,.activity-chart-card,
+.activity-lap-bars-card,.chart-card,.detail-stats,.state-detail-card,.state-calc-grid,.state-bands,
+.metric-context,.plan-week-calendar,dialog{
+  border-width:1.35px!important;
+  border-color:var(--line)!important;
+}
+
+/* Las líneas de separación siguen siendo sutiles y consistentes. */
+.activity-row-sep,.plan-day-sep,#sessionGeneratorList .plan-week-calendar-sep,
+.activity-row-stat+.activity-row-stat::before,.activity-mini-sep,
+.record-podium-value+.record-podium-value::before{
+  background:rgba(255,255,255,.16)!important;
+}
+
+/* Barra inferior: siempre anclada al viewport y visible solo en las cinco pantallas raíz. */
+.nav{
+  --glass-x:50%;
+  --glass-y:34%;
+  --glass-flow:0px;
+  position:fixed!important;
+  left:50%!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:calc(8px + env(safe-area-inset-bottom))!important;
+  transform:translate3d(-50%,0,0)!important;
+  margin:0!important;
+  z-index:90!important;
+  isolation:isolate!important;
+  overflow:hidden!important;
+  border:1.35px solid rgba(255,255,255,.24)!important;
+  background:
+    radial-gradient(90px 54px at var(--glass-x) var(--glass-y),rgba(255,255,255,.11),rgba(255,255,255,.025) 42%,transparent 72%),
+    linear-gradient(180deg,rgba(255,255,255,.070),rgba(255,255,255,.018) 36%,rgba(0,0,0,.105) 100%)!important;
+  -webkit-backdrop-filter:blur(27px) saturate(210%) contrast(1.08) brightness(1.04)!important;
+  backdrop-filter:blur(27px) saturate(210%) contrast(1.08) brightness(1.04)!important;
+  box-shadow:
+    0 16px 42px rgba(0,0,0,.40),
+    inset 0 1px 0 rgba(255,255,255,.22),
+    inset 0 -1px 0 rgba(255,255,255,.055)!important;
+}
+.nav::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:-45%;
+  pointer-events:none;
+  opacity:.54;
+  background:
+    radial-gradient(circle at var(--glass-x) var(--glass-y),rgba(255,255,255,.18) 0 2%,rgba(255,255,255,.045) 14%,transparent 32%),
+    repeating-linear-gradient(112deg,transparent 0 31px,rgba(255,255,255,.018) 32px 33px,transparent 34px 68px);
+  transform:translate3d(0,calc(var(--glass-flow) * .035),0);
+  transition:opacity .16s ease;
+}
+.nav::after{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:1px;
+  border-radius:22px;
+  pointer-events:none;
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow:inset 0 8px 20px rgba(255,255,255,.025),inset 0 -8px 20px rgba(0,0,0,.08);
+}
+.nav-btn{z-index:1!important}
+body.atlas-subpage-open .nav,
+body.profile-detail-open .nav,
+body.assistant-history-open .nav,
+body:has(dialog[open]) .nav{
+  display:none!important;
+}
+
+/* Azul Twitter: protagonista solo en detalles y estados activos. */
+.nav-btn.active{color:var(--blue)!important}
+.sync-quick,.metric-back,.plan-detail-back,.plan-nav-btn,.range-arrow,
+.plan-overview-arrow,.data-native-chevron,.chevron{color:var(--blue)!important}
+
+/* Mejores marcas: mucha más presencia tipográfica. */
+.records-list{gap:11px!important}
+.record-podium{border-radius:18px!important}
+.record-podium-head{padding:13px 14px!important}
+.record-podium-title{font-size:20px!important;line-height:1.24!important;font-weight:790!important}
+.record-podium-emoji{font-size:23px!important}
+.record-podium-row{
+  min-height:54px!important;
+  grid-template-columns:34px minmax(0,1.05fr) minmax(0,1fr) minmax(0,1.14fr)!important;
+  padding:12px 9px!important;
+}
+.record-rank{font-size:22px!important}
+.record-podium-value{
+  font-size:16px!important;
+  line-height:1.25!important;
+  font-weight:740!important;
+  padding:0 7px!important;
+}
+.record-podium-pace{font-size:14.6px!important;font-weight:740!important}
+.record-podium-date{font-size:13.4px!important;font-weight:620!important}
+
+/* Calendario semanal: reducción mínima del aire vertical. */
+.plan-day-head,.plan-day-head:not(.multi-session),
+#sessionGeneratorList .plan-week-calendar-head{
+  min-height:56px!important;
+  padding-top:5px!important;
+  padding-bottom:5px!important;
+}
+.plan-day-multi-item{padding-top:4px!important;padding-bottom:4px!important}
+.plan-days{margin-bottom:2px!important}
+
+/* Información del plan: nuevo bloque, único panel con celdas y emojis. */
+#engineGoalCard{
+  padding-bottom:10px!important;
+}
+.plan-goal-summary{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:0!important;
+  width:100%!important;
+  margin-top:13px!important;
+  border:1.35px solid var(--line)!important;
+  border-radius:16px!important;
+  overflow:hidden!important;
+  background:#000!important;
+}
+.plan-goal-summary-item{
+  position:relative!important;
+  min-width:0!important;
+  min-height:58px!important;
+  padding:8px 9px!important;
+  display:grid!important;
+  grid-template-columns:26px minmax(0,1fr)!important;
+  gap:7px!important;
+  align-items:center!important;
+  text-align:left!important;
+}
+.plan-goal-summary-item:nth-child(odd){border-right:1px solid rgba(255,255,255,.13)!important}
+.plan-goal-summary-item:nth-child(n+3){border-top:1px solid rgba(255,255,255,.13)!important}
+.plan-goal-summary-item::before,.plan-goal-summary-item::after{display:none!important}
+.plan-goal-summary-emoji{font-size:18px!important;line-height:1;text-align:center}
+.plan-goal-summary-copy{min-width:0;display:flex;flex-direction:column;gap:3px}
+.plan-goal-summary-key{
+  color:var(--muted2)!important;
+  font-size:10.5px!important;
+  line-height:1.15!important;
+  font-weight:670!important;
+}
+.plan-goal-summary-value{
+  margin:0!important;
+  color:#fff!important;
+  font-size:15px!important;
+  line-height:1.2!important;
+  font-weight:760!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+/* Botón Ʌ contextual dentro de la actividad. */
+.activity-ai-zone{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  margin:1px 0 10px;
+}
+.activity-ai-btn{
+  appearance:none;
+  width:54px;
+  height:54px;
+  flex:0 0 54px;
+  display:grid;
+  place-items:center;
+  border:1.35px solid rgba(255,255,255,.23);
+  border-radius:50%;
+  background:var(--blue)!important;
+  color:#fff;
+  box-shadow:0 9px 28px rgba(29,155,240,.25),inset 0 1px 0 rgba(255,255,255,.32);
+}
+.activity-ai-mark{font-size:22px;line-height:1;font-weight:850;transform:translateY(-1px)}
+.activity-ai-btn:active{transform:scale(.95)}
+.activity-ai-btn.loading{animation:atlasActivityAiPulse 1.05s ease-in-out infinite}
+.activity-ai-result{
+  width:100%;
+  border:1.35px solid var(--line);
+  border-radius:15px;
+  background:#000;
+  padding:9px 11px 8px;
+}
+.activity-ai-text{
+  color:#edf2f5;
+  font-size:12.6px;
+  line-height:1.43;
+  font-weight:540;
+  white-space:pre-wrap;
+}
+.activity-ai-cost{
+  margin-top:5px;
+  color:#626e77;
+  font-size:8.4px;
+  line-height:1.15;
+  font-weight:560;
+  font-variant-numeric:tabular-nums;
+}
+@keyframes atlasActivityAiPulse{
+  0%,100%{box-shadow:0 9px 28px rgba(29,155,240,.22),0 0 0 0 rgba(29,155,240,.12),inset 0 1px 0 rgba(255,255,255,.32)}
+  50%{box-shadow:0 9px 32px rgba(29,155,240,.34),0 0 0 5px rgba(29,155,240,.055),inset 0 1px 0 rgba(255,255,255,.32)}
+}
+
+/* Chat: respuestas más compactas visualmente, sin cambiar su formato de mensajería. */
+.assistant-message{
+  font-size:14.2px!important;
+  line-height:1.38!important;
+  padding-top:8px!important;
+  padding-bottom:8px!important;
+}
+.assistant-cost{
+  color:#626e77!important;
+  font-size:8.3px!important;
+}
+
+/* Fuerza/HIIT: tiempo | kcal | FC con los separadores verticales existentes. */
+.activity-row-main{overflow:visible!important}
+.activity-row-stat{font-variant-numeric:tabular-nums}
+
+/* Escritorio conserva negro OLED, sin gris exterior. */
+@media(min-width:1200px){
+  html,body,.app{background:#000!important}
+  .nav{bottom:16px!important}
+}
 </style>
 
 </body>
