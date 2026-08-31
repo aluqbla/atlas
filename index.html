@@ -1,18 +1,9 @@
 <!doctype html>
-<html lang="es" data-theme="dark">
+<html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#000000">
-<script>
-try{
-  const atlasSavedTheme=localStorage.getItem("atlas:appearance-theme");
-  if(atlasSavedTheme==="light"||atlasSavedTheme==="dark"){
-    document.documentElement.dataset.theme=atlasSavedTheme;
-    document.documentElement.style.colorScheme=atlasSavedTheme;
-  }
-}catch{}
-</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="ɅTLɅS">
@@ -775,13 +766,18 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
 
   <section class="view" id="view-assistant" aria-label="Asistente ATLAS">
     <div class="assistant-chat-canvas" id="assistantChatCanvas" aria-hidden="false">
-      <div class="assistant-chat-toolbar">
-        <button class="assistant-icon-btn" id="assistantHistoryBtn" type="button" aria-label="Conversaciones" title="Conversaciones">☰</button>
-        <span class="assistant-toolbar-spacer"></span>
-        <button class="assistant-icon-btn" id="assistantNewBtn" type="button" aria-label="Nueva conversación" title="Nueva conversación">＋</button>
+      <div class="assistant-chat-topbar">
+        <div class="assistant-chat-presence" aria-hidden="true">
+          <span class="assistant-chat-avatar">Ʌ</span>
+          <span class="assistant-chat-status-dot"></span>
+        </div>
+        <div class="assistant-chat-actions">
+          <button class="assistant-icon-btn" id="assistantHistoryBtn" type="button" aria-label="Conversaciones" title="Conversaciones">☰</button>
+          <button class="assistant-icon-btn" id="assistantNewBtn" type="button" aria-label="Nueva conversación" title="Nueva conversación">＋</button>
+        </div>
       </div>
       <div class="assistant-messages" id="assistantMessages" aria-live="polite">
-        <div class="assistant-empty" id="assistantEmpty" aria-hidden="true">Ʌ</div>
+        <div class="assistant-empty" id="assistantEmpty" aria-hidden="true"><span class="assistant-empty-avatar">Ʌ</span></div>
       </div>
       <form class="assistant-composer" id="assistantComposer" autocomplete="off">
         <textarea class="assistant-input" id="assistantInput" rows="1" maxlength="6000" placeholder="Mensaje" aria-label="Mensaje para ATLAS"></textarea>
@@ -834,14 +830,6 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
     </div>
 
     <div class="hidden" aria-hidden="true"><span id="performanceHomeNote"></span><span id="shoesTileNote"></span><span id="connectionTileNote"></span></div>
-
-    <div class="profile-appearance" id="profileAppearance">
-      <div class="profile-appearance-copy"><span class="profile-appearance-title">Apariencia</span><span class="profile-appearance-note">Tema de la aplicación</span></div>
-      <div class="theme-segment" role="group" aria-label="Apariencia">
-        <button class="theme-choice" type="button" data-theme-choice="light" aria-pressed="false">Claro</button>
-        <button class="theme-choice active" type="button" data-theme-choice="dark" aria-pressed="true">Oscuro</button>
-      </div>
-    </div>
 
     <div class="profile-home-links">
       <button class="data-native-row data-page-open" type="button" data-data-page="performance">
@@ -975,13 +963,6 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
     <div class="activity-detail-loading" id="activityDetailLoading">Actualizando información de Intervals.icu…</div>
     <div class="activity-equipment hidden" id="activityEquipment"></div>
     <div class="activity-primary" id="activityPrimary"></div>
-    <div class="activity-ai-block">
-      <button class="activity-ai-btn" id="activityAiBtn" type="button" aria-label="Analizar esta actividad con ATLAS" title="Analizar con ATLAS">Ʌ</button>
-      <div class="activity-ai-result hidden" id="activityAiResult" aria-live="polite">
-        <div class="activity-ai-text" id="activityAiText"></div>
-        <div class="activity-ai-cost" id="activityAiCost"></div>
-      </div>
-    </div>
     <div class="activity-laps hidden" id="activityLaps">
       <div class="activity-lap-bars-card">
         <div class="activity-lap-bars-readout" id="activityLapReadout">Pulsa una barra para seleccionar una vuelta</div>
@@ -1727,7 +1708,7 @@ html,body{overscroll-behavior-y:none}
 
 (()=>{
 "use strict";
-const APP_VERSION="0.83.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="0.84.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits","chats"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -1737,7 +1718,7 @@ function onAll(selector,type,handler,root=document,options){qsa(selector,root).f
 const ui={
  assistantChatCanvas:$("assistantChatCanvas"),assistantMessages:$("assistantMessages"),assistantEmpty:$("assistantEmpty"),assistantComposer:$("assistantComposer"),assistantInput:$("assistantInput"),assistantSend:$("assistantSend"),assistantNewBtn:$("assistantNewBtn"),assistantHistoryBtn:$("assistantHistoryBtn"),assistantHistoryPanel:$("assistantHistoryPanel"),assistantHistoryList:$("assistantHistoryList"),assistantHistoryClose:$("assistantHistoryClose"),assistantHistoryNew:$("assistantHistoryNew"),
  todayDate:$("todayDate"),stateDateLabel:$("stateDateLabel"),quickSyncBtn:$("quickSyncBtn"),activitySyncBtn:$("activitySyncBtn"),planSyncBtn:$("planSyncBtn"),dataSyncBtn:$("dataSyncBtn"),upcomingTrainingList:$("upcomingTrainingList"),trainingStateBtn:$("trainingStateBtn"),trainingStateCircle:$("trainingStateCircle"),trainingStateScore:$("trainingStateScore"),trainingStateWord:$("trainingStateWord"),trainingStateNote:$("trainingStateNote"),sleepValue:$("sleepValue"),sleepMeta:$("sleepMeta"),hrvValue:$("hrvValue"),hrvMeta:$("hrvMeta"),rhrValue:$("rhrValue"),rhrMeta:$("rhrMeta"),vo2Value:$("vo2Value"),vo2Meta:$("vo2Meta"),freshValue:$("freshValue"),freshMeta:$("freshMeta"),volumeValue:$("volumeValue"),volumeMeta:$("volumeMeta"),
- lastActivityBtn:$("lastActivityBtn"),activityLapBars:$("activityLapBars"),activityLapBarsScroll:$("activityLapBarsScroll"),activityLapReadout:$("activityLapReadout"),activitySportFilter:$("activitySportFilter"),activityYearFilter:$("activityYearFilter"),activitySearch:$("activitySearch"),activitiesSummary:$("activitiesSummary"),activitiesList:$("activitiesList"),activityDetail:$("activityDetail"),activityDetailBack:$("activityDetailBack"),activityDetailBottomBack:$("activityDetailBottomBack"),activityDetailEmoji:$("activityDetailEmoji"),activityDetailTitle:$("activityDetailTitle"),activityDetailDate:$("activityDetailDate"),activityMap:$("activityMap"),activityDetailLoading:$("activityDetailLoading"),activityPrimary:$("activityPrimary"),activityEquipment:$("activityEquipment"),activityPerception:$("activityPerception"),activityAnalysis:$("activityAnalysis"),activityChartTabs:$("activityChartTabs"),activityChartStats:$("activityChartStats"),activityChartCard:$("activityChartCard"),activityChartScroll:$("activityChartScroll"),activityChart:$("activityChart"),activityChartReadout:$("activityChartReadout"),activityLaps:$("activityLaps"),activityLapsRows:$("activityLapsRows"),activityDescription:$("activityDescription"),activityAiBtn:$("activityAiBtn"),activityAiResult:$("activityAiResult"),activityAiText:$("activityAiText"),activityAiCost:$("activityAiCost"),
+ lastActivityBtn:$("lastActivityBtn"),activityLapBars:$("activityLapBars"),activityLapBarsScroll:$("activityLapBarsScroll"),activityLapReadout:$("activityLapReadout"),activitySportFilter:$("activitySportFilter"),activityYearFilter:$("activityYearFilter"),activitySearch:$("activitySearch"),activitiesSummary:$("activitiesSummary"),activitiesList:$("activitiesList"),activityDetail:$("activityDetail"),activityDetailBack:$("activityDetailBack"),activityDetailBottomBack:$("activityDetailBottomBack"),activityDetailEmoji:$("activityDetailEmoji"),activityDetailTitle:$("activityDetailTitle"),activityDetailDate:$("activityDetailDate"),activityMap:$("activityMap"),activityDetailLoading:$("activityDetailLoading"),activityPrimary:$("activityPrimary"),activityEquipment:$("activityEquipment"),activityPerception:$("activityPerception"),activityAnalysis:$("activityAnalysis"),activityChartTabs:$("activityChartTabs"),activityChartStats:$("activityChartStats"),activityChartCard:$("activityChartCard"),activityChartScroll:$("activityChartScroll"),activityChart:$("activityChart"),activityChartReadout:$("activityChartReadout"),activityLaps:$("activityLaps"),activityLapsRows:$("activityLapsRows"),activityDescription:$("activityDescription"),
  planDetail:$("planDetail"),planDetailBack:$("planDetailBack"),planDetailBottomBack:$("planDetailBottomBack"),planAdaptiveActions:$("planAdaptiveActions"),planDetailMove:$("planDetailMove"),planDetailUnavailable:$("planDetailUnavailable"),planDetailReplace:$("planDetailReplace"),planManualDialog:$("planManualDialog"),planManualForm:$("planManualForm"),planManualTitle:$("planManualTitle"),planManualSession:$("planManualSession"),planManualMoveFields:$("planManualMoveFields"),planManualDate:$("planManualDate"),planManualReplaceFields:$("planManualReplaceFields"),planManualReplacement:$("planManualReplacement"),planManualImpact:$("planManualImpact"),planManualApply:$("planManualApply"),planDetailActions:$("planDetailActions"),planDetailEdit:$("planDetailEdit"),planDetailDelete:$("planDetailDelete"),planDetailDate:$("planDetailDate"),planDetailIcon:$("planDetailIcon"),planDetailTitle:$("planDetailTitle"),planDetailDistance:$("planDetailDistance"),planDetailDuration:$("planDetailDuration"),planDetailTarget:$("planDetailTarget"),planDetailSteps:$("planDetailSteps"),planDetailPurpose:$("planDetailPurpose"),planDetailRaw:$("planDetailRaw"),planDetailResult:$("planDetailResult"),planDetailResultStatus:$("planDetailResultStatus"),planDetailResultMeta:$("planDetailResultMeta"),planDetailResultActivity:$("planDetailResultActivity"),
  availabilityCard:$("availabilityCard"),availabilityMeta:$("availabilityMeta"),availabilityDialog:$("availabilityDialog"),availabilityForm:$("availabilityForm"),availabilityWeekDate:$("availabilityWeekDate"),availabilityWeekDays:$("availabilityWeekDays"),availabilityNote:$("availabilityNote"),availabilityDelete:$("availabilityDelete"),availabilitySave:$("availabilitySave"),availabilityExceptionsList:$("availabilityExceptionsList"), secondaryGoalAdd:$("secondaryGoalAdd"),secondaryGoalList:$("secondaryGoalList"),secondaryGoalDialog:$("secondaryGoalDialog"),secondaryGoalForm:$("secondaryGoalForm"),secondaryGoalPriority:$("secondaryGoalPriority"),secondaryGoalType:$("secondaryGoalType"),secondaryGoalDate:$("secondaryGoalDate"),secondaryGoalName:$("secondaryGoalName"),secondaryGoalIntention:$("secondaryGoalIntention"),secondaryGoalTime:$("secondaryGoalTime"),secondaryGoalDelete:$("secondaryGoalDelete"),secondaryGoalSave:$("secondaryGoalSave"),
  adaptiveRevisionStatus:$("adaptiveRevisionStatus"),adaptiveRevisionSummary:$("adaptiveRevisionSummary"),adaptiveRevisionDiff:$("adaptiveRevisionDiff"),adaptiveRevisionPrepare:$("adaptiveRevisionPrepare"),adaptiveRevisionActions:$("adaptiveRevisionActions"),adaptiveRevisionReject:$("adaptiveRevisionReject"),adaptiveRevisionApply:$("adaptiveRevisionApply"),
@@ -1755,7 +1736,7 @@ const ui={
  smartSyncBtn:$("smartSyncBtn"),testBtn:$("testBtn"),settingsBtn:$("settingsBtn"),fullSyncBtn:$("fullSyncBtn"),exportBtn:$("exportBtn"),importBtn:$("importBtn"),clearBtn:$("clearBtn"),fileInput:$("fileInput"),toast:$("toast"),
  settingsDialog:$("settingsDialog"),settingsForm:$("settingsForm"),workerUrl:$("workerUrl"),clientToken:$("clientToken"),oldestDate:$("oldestDate"),newestDate:$("newestDate"),historyStart:$("historyStart"),overlapDays:$("overlapDays"),metricDetail:$("metricDetail"),metricDetailBack:$("metricDetailBack"),metricDetailTitle:$("metricDetailTitle"),metricDetailEmoji:$("metricDetailEmoji"),metricPeriodControl:$("metricPeriodControl"),metricPrev:$("metricPrev"),metricNext:$("metricNext"),metricRangeLabel:$("metricRangeLabel"),metricChartScroll:$("metricChartScroll"),metricChart:$("metricChart"),metricChartReadout:$("metricChartReadout"),chartLegend:$("chartLegend"),detailStatLabel1:$("detailStatLabel1"),detailStatValue1:$("detailStatValue1"),detailStatLabel2:$("detailStatLabel2"),detailStatValue2:$("detailStatValue2"),detailStatLabel3:$("detailStatLabel3"),detailStatValue3:$("detailStatValue3"),detailStatSub1:$("detailStatSub1"),detailStatSub2:$("detailStatSub2"),detailStatSub3:$("detailStatSub3"),metricContext:$("metricContext"),metricDetailBottomBack:$("metricDetailBottomBack"),stateDetail:$("stateDetail"),stateDetailBack:$("stateDetailBack"),stateDetailBottomBack:$("stateDetailBottomBack"),stateDetailHero:$("stateDetailHero"),stateDetailRing:$("stateDetailRing"),stateDetailScore:$("stateDetailScore"),stateDetailWord:$("stateDetailWord"),stateDetailNote:$("stateDetailNote"),stateDetailMeta:$("stateDetailMeta"),stateFactors:$("stateFactors"),stateBaseScore:$("stateBaseScore"),stateRecoveryPenalty:$("stateRecoveryPenalty"),stateLimiter:$("stateLimiter")
 };
-let db,dbOpenPromise=null,toastTimer,currentActivities=[],currentWellness=[],currentGear=[],currentEvents=[],currentCachedVo2=null,currentEngineV2Goal=null,currentSecondaryGoals=[],currentAvailabilityExceptions=[],currentSecondaryEditId=null,currentAvailabilityEditWeek=null,currentAthleteProfileV2=null,currentGoalRequirements=null,currentGoalAssessment=null,currentMacroTrajectory=null,currentWeeklyTargets=null,currentCalendarSolution=null,currentSessionPlan=null,currentPlanManifest=null,currentPlanCloudMeta=null,currentAdaptiveState=null,currentPlanRevisionDraft=null,currentPlanRevisionHistory=[],currentPlanManualAction=null,currentPlanWeekStart=null,currentPlanEvent=null,currentPlanOutcome=null,currentPlanEditEvent=null,lastCalendarRefreshAt=0,currentActivityDetail=null,currentActivityMap=null,currentActivityStreams=null,currentActivityVo2=null,currentActivityChartKey=null,activityChartZoom=1,activityPinchStartDistance=0,activityPinchStartZoom=1,activityChartPointerStart=null,activityChartReadoutTimer=null,activityLapZoom=1,activityLapPinchStartDistance=0,activityLapPinchStartZoom=1,currentActivityLapIndex=null,activityLapMainFilter="all",currentRunningRecords=null,currentRecordsLoading=false,currentMetricDetail=null,currentMetricDays=30,currentMetricEnd=null,currentAtlasState=null,currentChartState=null,chartReadoutTimer=null,chartZoom=1,pinchStartDistance=0,pinchStartZoom=1,chartPointerStart=null,metricZoomRaf=0,metricZoomPending=null,activityZoomRaf=0,activityZoomPending=null,dataSyncPromise=null,calendarSyncPromise=null,planCloudSyncPromise=null,foregroundRefreshPromise=null,runtimeRefreshStarted=false,runtimeGuardsInstalled=false,initStarted=false,initCompleted=false,currentActivityRequestToken=0,assistantChats=[],currentAssistantChatId=null,assistantSending=false,assistantPendingError="",assistantScrollRaf=0,activityAiRequestToken=0,activityAiCache=new Map();
+let db,dbOpenPromise=null,toastTimer,currentActivities=[],currentWellness=[],currentGear=[],currentEvents=[],currentCachedVo2=null,currentEngineV2Goal=null,currentSecondaryGoals=[],currentAvailabilityExceptions=[],currentSecondaryEditId=null,currentAvailabilityEditWeek=null,currentAthleteProfileV2=null,currentGoalRequirements=null,currentGoalAssessment=null,currentMacroTrajectory=null,currentWeeklyTargets=null,currentCalendarSolution=null,currentSessionPlan=null,currentPlanManifest=null,currentPlanCloudMeta=null,currentAdaptiveState=null,currentPlanRevisionDraft=null,currentPlanRevisionHistory=[],currentPlanManualAction=null,currentPlanWeekStart=null,currentPlanEvent=null,currentPlanOutcome=null,currentPlanEditEvent=null,lastCalendarRefreshAt=0,currentActivityDetail=null,currentActivityMap=null,currentActivityStreams=null,currentActivityVo2=null,currentActivityChartKey=null,activityChartZoom=1,activityPinchStartDistance=0,activityPinchStartZoom=1,activityChartPointerStart=null,activityChartReadoutTimer=null,activityLapZoom=1,activityLapPinchStartDistance=0,activityLapPinchStartZoom=1,currentActivityLapIndex=null,activityLapMainFilter="all",currentRunningRecords=null,currentRecordsLoading=false,currentMetricDetail=null,currentMetricDays=30,currentMetricEnd=null,currentAtlasState=null,currentChartState=null,chartReadoutTimer=null,chartZoom=1,pinchStartDistance=0,pinchStartZoom=1,chartPointerStart=null,metricZoomRaf=0,metricZoomPending=null,activityZoomRaf=0,activityZoomPending=null,dataSyncPromise=null,calendarSyncPromise=null,planCloudSyncPromise=null,foregroundRefreshPromise=null,runtimeRefreshStarted=false,runtimeGuardsInstalled=false,initStarted=false,initCompleted=false,currentActivityRequestToken=0,assistantChats=[],currentAssistantChatId=null,assistantSending=false,assistantPendingError="",assistantScrollRaf=0;
 window.addEventListener("DOMContentLoaded",()=>bootstrapAtlas().catch(reportFatalError));
 const CORE_UI_KEYS=["todayDate","lastActivityBtn","activitiesList","activityDetail","metricDetail","stateDetail","toast","settingsDialog"];
 function assertCoreUi(){const missing=CORE_UI_KEYS.filter(key=>!ui[key]);if(missing.length)throw new Error(`Interfaz incompleta: ${missing.join(", ")}`);return true;}
@@ -1883,40 +1864,6 @@ async function scheduleForegroundRefresh(force=false){
   finally{foregroundRefreshPromise=null;}
 }
 
-
-/* ===== Apariencia ATLAS ===== */
-function atlasTheme(){return document.documentElement.dataset.theme==="light"?"light":"dark";}
-function syncThemeControls(theme=atlasTheme()){
-  qsa("[data-theme-choice]").forEach(btn=>{
-    const active=btn.dataset.themeChoice===theme;
-    btn.classList.toggle("active",active);
-    btn.setAttribute("aria-pressed",active?"true":"false");
-  });
-}
-function applyAtlasTheme(theme,{persist=false}={}){
-  const next=theme==="light"?"light":"dark";
-  document.documentElement.dataset.theme=next;
-  document.documentElement.style.colorScheme=next;
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content",next==="light"?"#ffffff":"#000000");
-  document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.setAttribute("content",next==="light"?"default":"black-translucent");
-  syncThemeControls(next);
-  if(persist){
-    try{localStorage.setItem("atlas:appearance-theme",next);}catch{}
-    storePut("settings",{key:"appearanceTheme",value:next}).catch(error=>recordRuntimeAudit("theme-save",error).catch(()=>{}));
-  }
-  requestAnimationFrame(()=>{
-    if(currentMetricDetail)renderMetricDetail();
-    if(currentActivityChartKey)renderActivityChart();
-  });
-}
-async function initializeAppearanceTheme(){
-  const saved=await storeGet("settings","appearanceTheme").catch(()=>null);
-  let fallback=null;
-  try{fallback=localStorage.getItem("atlas:appearance-theme");}catch{}
-  applyAtlasTheme(saved?.value==="light"||(!saved&&fallback==="light")?"light":"dark");
-}
-function setAtlasTheme(theme){applyAtlasTheme(theme,{persist:true});}
-
 async function init(){
   assertCoreUi();
   ensureMainTabHeaders();
@@ -1935,7 +1882,6 @@ async function init(){
     recordRuntimeAudit("settings-load",error).catch(()=>{});
   });
 
-  await initializeAppearanceTheme();
   await refreshAll();
   await initializeAssistantChat();
   startRuntimeRefresh();
@@ -1994,8 +1940,6 @@ function bindEvents(){
  on(ui.assistantHistoryList,"click",handleAssistantHistoryClick);
  on(ui.assistantInput,"input",resizeAssistantInput);
  on(ui.assistantInput,"keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();ui.assistantComposer?.requestSubmit();}});
- on($("profileAppearance"),"click",e=>{const btn=e.target.closest("[data-theme-choice]");if(btn)setAtlasTheme(btn.dataset.themeChoice);});
- on(ui.activityAiBtn,"click",requestActivityAiInsight);
  on(ui.activitySportFilter,"change",renderActivities);on(ui.activityYearFilter,"change",renderActivities);on(ui.activitySearch,"input",renderActivities);
  on(ui.activitiesList,"click",e=>{const btn=e.target.closest(".activity-row");if(btn)openActivityDetail(btn.dataset.id);});
  on(ui.activityDetailBack,"click",closeActivityDetail);on(ui.activityDetailBottomBack,"click",closeActivityDetail);
@@ -2004,7 +1948,7 @@ function bindEvents(){
  on(ui.activityChartScroll,"touchstart",handleActivityChartPinchStart,{passive:true});on(ui.activityChartScroll,"touchmove",handleActivityChartPinchMove,{passive:false});on(ui.activityChartScroll,"touchend",handleActivityChartPinchEnd,{passive:true});on(ui.activityChartScroll,"scroll",clampActivityChartScroll,{passive:true});on(ui.activityChartScroll,"dblclick",()=>setActivityChartZoom(1));on(ui.activityLapBars,"click",e=>{const b=e.target.closest("[data-lap-index]");if(b)selectActivityLap(b.dataset.lapIndex);});on(ui.activityLapsRows,"click",e=>{const r=e.target.closest("[data-lap-index]");if(r)selectActivityLap(r.dataset.lapIndex);});on(ui.activityLapBarsScroll,"touchstart",handleActivityLapPinchStart,{passive:true});on(ui.activityLapBarsScroll,"touchmove",handleActivityLapPinchMove,{passive:false});on(ui.activityLapBarsScroll,"touchend",handleActivityLapPinchEnd,{passive:true});on(ui.activityLapBarsScroll,"dblclick",()=>setActivityLapZoom(1));
  on(ui.secondaryGoalAdd,"click",()=>openSecondaryGoalDialog());on(ui.secondaryGoalList,"click",e=>{const b=e.target.closest("[data-secondary-goal-id]");if(b)openSecondaryGoalDialog(b.dataset.secondaryGoalId);});on(ui.secondaryGoalForm,"submit",saveSecondaryGoal);on(ui.secondaryGoalDelete,"click",deleteSecondaryGoal);on(ui.availabilityCard,"click",openAvailabilityDialog);on(ui.availabilityForm,"submit",saveAvailabilityException);on(ui.availabilityDelete,"click",deleteAvailabilityException);on(ui.availabilityWeekDate,"change",loadAvailabilityWeekFromInput);on(ui.availabilityExceptionsList,"click",e=>{const b=e.target.closest("[data-availability-week]");if(b)loadAvailabilityException(b.dataset.availabilityWeek);});on(ui.engineGoalCard,"click",openEngineV2GoalDialog);on(ui.engineGoalForm,"submit",saveEngineV2Goal);on(ui.engineGoalDelete,"click",deleteEngineV2Goal);on(ui.adaptiveRevisionPrepare,"click",prepareAdaptiveRevision);on(ui.adaptiveRevisionReject,"click",rejectAdaptiveRevision);on(ui.adaptiveRevisionApply,"click",applyAdaptiveRevision);on(ui.adaptiveEngineCard,"click",openAdaptiveEngine);on(ui.adaptiveEngineBack,"click",closeAdaptiveEngine);on(ui.adaptiveEngineBottomBack,"click",closeAdaptiveEngine);on(ui.sessionPublishBtn,"click",publishCurrentPlan);on(ui.trainingPacesCard,"click",openTrainingPaces);on(ui.trainingPacesBack,"click",closeTrainingPaces);on(ui.trainingPacesBottomBack,"click",closeTrainingPaces);on(ui.sessionGeneratorCard,"click",openSessionGenerator);on(ui.sessionGeneratorBack,"click",closeSessionGenerator);on(ui.sessionGeneratorBottomBack,"click",closeSessionGenerator);on(ui.calendarSolverCard,"click",openCalendarSolver);on(ui.calendarSolverBack,"click",closeCalendarSolver);on(ui.calendarSolverBottomBack,"click",closeCalendarSolver);on(ui.weeklyTargetsCard,"click",openWeeklyTargets);on(ui.weeklyTargetsBack,"click",closeWeeklyTargets);on(ui.weeklyTargetsBottomBack,"click",closeWeeklyTargets);on(ui.macroTrajectoryCard,"click",openMacroTrajectory);on(ui.macroTrajectoryBack,"click",closeMacroTrajectory);on(ui.macroTrajectoryBottomBack,"click",closeMacroTrajectory);on(ui.engineDiagnosticCard,"click",openEngineV2Diagnostic);on(ui.engineDiagnosticBack,"click",closeEngineV2Diagnostic);on(ui.engineDiagnosticBottomBack,"click",closeEngineV2Diagnostic);
  on(ui.planAddBtn,"click",()=>openPlanEditor());on(ui.planEditorForm,"submit",savePlanEditor);on(ui.planDetailEdit,"click",()=>{if(currentPlanEvent)openPlanEditor(currentPlanEvent);});on(ui.planDetailDelete,"click",deleteCurrentPlanEvent);on(ui.planDetailMove,"click",()=>openPlanManualAction("move"));on(ui.planDetailUnavailable,"click",()=>openPlanManualAction("unavailable"));on(ui.planDetailReplace,"click",()=>openPlanManualAction("replace"));on(ui.planManualForm,"submit",applyPlanManualAction);on(ui.planManualDate,"change",renderPlanManualImpact);on(ui.planManualReplacement,"change",renderPlanManualImpact);
- on(ui.planOverviewCard,"click",openPlanControl);on(ui.planControlBack,"click",closePlanControl);on(ui.planControlBottomBack,"click",closePlanControl);on(ui.planPrev,"click",()=>shiftPlanMonth(-1));on(ui.planNext,"click",()=>shiftPlanMonth(1));on(ui.planToday,"click",()=>{currentPlanWeekStart=new Date();renderPlan();});on(ui.planDays,"click",e=>{const activity=e.target.closest("[data-activity-id]");if(activity){openActivityDetail(activity.dataset.activityId);return;}const planned=e.target.closest("[data-plan-event-id]");if(planned)openPlanDetail(planned.dataset.planEventId);});on(ui.planDetailBack,"click",closePlanDetail);on(ui.planDetailBottomBack,"click",closePlanDetail);on(ui.planDetailResultActivity,"click",()=>{const a=currentPlanOutcome?.activity;if(!a?.id)return;const id=String(a.id);closePlanDetail();openActivityDetail(id);});
+ on(ui.planOverviewCard,"click",openPlanControl);on(ui.planControlBack,"click",closePlanControl);on(ui.planControlBottomBack,"click",closePlanControl);on(ui.planPrev,"click",()=>shiftPlanWeek(-1));on(ui.planNext,"click",()=>shiftPlanWeek(1));on(ui.planToday,"click",()=>{currentPlanWeekStart=mondayOf(new Date());renderPlan();});on(ui.planDays,"click",e=>{const activity=e.target.closest("[data-activity-id]");if(activity){openActivityDetail(activity.dataset.activityId);return;}const planned=e.target.closest("[data-plan-event-id]");if(planned)openPlanDetail(planned.dataset.planEventId);});on(ui.planDetailBack,"click",closePlanDetail);on(ui.planDetailBottomBack,"click",closePlanDetail);on(ui.planDetailResultActivity,"click",()=>{const a=currentPlanOutcome?.activity;if(!a?.id)return;const id=String(a.id);closePlanDetail();openActivityDetail(id);});
  onAll(".metric-link","click",e=>openMetricDetail(e.currentTarget.dataset.metric));
  on(ui.metricDetailBack,"click",closeMetricDetail);on(ui.metricDetailBottomBack,"click",closeMetricDetail);
  on(ui.metricChart,"pointerdown",e=>{chartPointerStart={x:e.clientX,y:e.clientY};});on(ui.metricChart,"pointerup",handleChartPointerUp);
@@ -2020,7 +1964,7 @@ function bindEvents(){
 }
 
 
-/* ===== IA central ===== */
+/* ===== Asistente central ===== */
 function assistantId(){try{return crypto.randomUUID();}catch{return`chat-${Date.now()}-${Math.random().toString(36).slice(2,10)}`;}}
 function assistantDateLabel(value){const d=new Date(value||Date.now());if(Number.isNaN(d.getTime()))return"";const t=new Date(),same=t.toDateString()===d.toDateString();return same?new Intl.DateTimeFormat("es-ES",{hour:"2-digit",minute:"2-digit"}).format(d):new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short"}).format(d).replace(".","");}
 function assistantChatTitle(text){const clean=String(text||"").replace(/\s+/g," ").trim();if(!clean)return"Nueva conversación";return clean.length>48?`${clean.slice(0,47).trim()}…`:clean;}
@@ -2034,13 +1978,13 @@ function openAssistantHistory(){
   renderAssistantHistory();
   ui.assistantHistoryPanel.classList.add("open");
   ui.assistantHistoryPanel.setAttribute("aria-hidden","false");
-  scheduleAtlasScrollAudit();
+  document.body.classList.add("assistant-history-open");
 }
 function closeAssistantHistory(){
   if(!ui.assistantHistoryPanel)return;
   ui.assistantHistoryPanel.classList.remove("open");
   ui.assistantHistoryPanel.setAttribute("aria-hidden","true");
-  scheduleAtlasScrollAudit();
+  document.body.classList.remove("assistant-history-open");
 }
 function handleAssistantHistoryClick(event){const del=event.target.closest("[data-chat-delete]");if(del){event.stopPropagation();deleteAssistantConversation(del.dataset.chatDelete);return;}const row=event.target.closest("[data-chat-id]");if(!row)return;currentAssistantChatId=row.dataset.chatId;assistantPendingError="";closeAssistantHistory();renderAssistantChat();requestAnimationFrame(()=>scrollAssistantToBottom(false));}
 function renderAssistantHistory(){if(!ui.assistantHistoryList)return;if(!assistantChats.length){ui.assistantHistoryList.innerHTML='<div class="assistant-history-empty">Sin conversaciones guardadas</div>';return;}ui.assistantHistoryList.innerHTML=assistantChats.map(chat=>`<button class="assistant-history-row${chat.id===currentAssistantChatId?" active":""}" type="button" data-chat-id="${esc(chat.id)}"><span class="assistant-history-copy"><span class="assistant-history-name">${esc(chat.title||"Conversación")}</span><span class="assistant-history-date">${esc(assistantDateLabel(chat.updatedAt))}</span></span><span class="assistant-history-delete" role="button" aria-label="Eliminar conversación" data-chat-delete="${esc(chat.id)}">✕</span></button>`).join("");}
@@ -2055,12 +1999,21 @@ function assistantCostText(cost){
 function assistantMessageNode(message){
   const row=document.createElement("div");
   row.className=`assistant-message-row ${message.role==="user"?"user":"assistant"}`;
+
+  if(message.role==="assistant"){
+    const avatar=document.createElement("div");
+    avatar.className="assistant-message-avatar";
+    avatar.textContent="Ʌ";
+    row.appendChild(avatar);
+  }
+
   const stack=document.createElement("div");
   stack.className="assistant-message-stack";
   const bubble=document.createElement("div");
   bubble.className="assistant-message";
   bubble.textContent=String(message.content||"");
   stack.appendChild(bubble);
+
   if(message.role==="assistant"){
     const cost=assistantCostText(message.cost);
     if(cost){
@@ -2070,11 +2023,67 @@ function assistantMessageNode(message){
       stack.appendChild(meta);
     }
   }
+
   row.appendChild(stack);
   return row;
 }
-function assistantTypingNode(){const row=document.createElement("div");row.className="assistant-message-row assistant";row.id="assistantTyping";const bubble=document.createElement("div");bubble.className="assistant-message assistant-typing";bubble.innerHTML="<span></span><span></span><span></span>";row.appendChild(bubble);return row;}
-function renderAssistantChat(){if(!ui.assistantMessages)return;const chat=currentAssistantChat(),messages=Array.isArray(chat?.messages)?chat.messages:[];ui.assistantMessages.innerHTML="";if(!messages.length&&!assistantSending&&!assistantPendingError){const empty=document.createElement("div");empty.className="assistant-empty";empty.setAttribute("aria-hidden","true");empty.textContent="Ʌ";ui.assistantMessages.appendChild(empty);}for(const message of messages)ui.assistantMessages.appendChild(assistantMessageNode(message));if(assistantSending)ui.assistantMessages.appendChild(assistantTypingNode());if(assistantPendingError){const row=document.createElement("div");row.className="assistant-message-row assistant";const bubble=document.createElement("div");bubble.className="assistant-message assistant-error";bubble.textContent=assistantPendingError;row.appendChild(bubble);ui.assistantMessages.appendChild(row);}if(ui.assistantSend)ui.assistantSend.disabled=assistantSending;if(ui.assistantInput)ui.assistantInput.disabled=assistantSending;auditAssistantMessageScroll();}
+function assistantTypingNode(){
+  const row=document.createElement("div");
+  row.className="assistant-message-row assistant";
+  row.id="assistantTyping";
+  const avatar=document.createElement("div");
+  avatar.className="assistant-message-avatar";
+  avatar.textContent="Ʌ";
+  const stack=document.createElement("div");
+  stack.className="assistant-message-stack";
+  const bubble=document.createElement("div");
+  bubble.className="assistant-message assistant-typing";
+  bubble.innerHTML="<span></span><span></span><span></span>";
+  stack.appendChild(bubble);
+  row.appendChild(avatar);
+  row.appendChild(stack);
+  return row;
+}
+function renderAssistantChat(){
+  if(!ui.assistantMessages)return;
+  const chat=currentAssistantChat(),messages=Array.isArray(chat?.messages)?chat.messages:[];
+  ui.assistantMessages.innerHTML="";
+
+  if(!messages.length&&!assistantSending&&!assistantPendingError){
+    const empty=document.createElement("div");
+    empty.className="assistant-empty";
+    empty.setAttribute("aria-hidden","true");
+    const mark=document.createElement("span");
+    mark.className="assistant-empty-avatar";
+    mark.textContent="Ʌ";
+    empty.appendChild(mark);
+    ui.assistantMessages.appendChild(empty);
+  }
+
+  for(const message of messages)ui.assistantMessages.appendChild(assistantMessageNode(message));
+  if(assistantSending)ui.assistantMessages.appendChild(assistantTypingNode());
+
+  if(assistantPendingError){
+    const row=document.createElement("div");
+    row.className="assistant-message-row assistant";
+    const avatar=document.createElement("div");
+    avatar.className="assistant-message-avatar";
+    avatar.textContent="Ʌ";
+    const stack=document.createElement("div");
+    stack.className="assistant-message-stack";
+    const bubble=document.createElement("div");
+    bubble.className="assistant-message assistant-error";
+    bubble.textContent=assistantPendingError;
+    stack.appendChild(bubble);
+    row.appendChild(avatar);
+    row.appendChild(stack);
+    ui.assistantMessages.appendChild(row);
+  }
+
+  if(ui.assistantSend)ui.assistantSend.disabled=assistantSending;
+  if(ui.assistantInput)ui.assistantInput.disabled=assistantSending;
+  auditAssistantMessageScroll();
+}
 function resizeAssistantInput(){const el=ui.assistantInput;if(!el)return;el.style.height="auto";el.style.height=`${Math.min(120,Math.max(24,el.scrollHeight))}px`;}
 function auditAssistantMessageScroll(){if(!ui.assistantMessages)return;if(assistantScrollRaf)cancelAnimationFrame(assistantScrollRaf);assistantScrollRaf=requestAnimationFrame(()=>{assistantScrollRaf=0;const needs=ui.assistantMessages.scrollHeight>ui.assistantMessages.clientHeight+2;ui.assistantMessages.classList.toggle("scrollable",needs);if(!needs)ui.assistantMessages.scrollTop=0;});}
 function scrollAssistantToBottom(smooth=true){if(!ui.assistantMessages)return;const top=Math.max(0,ui.assistantMessages.scrollHeight-ui.assistantMessages.clientHeight);try{ui.assistantMessages.scrollTo({top,behavior:smooth?"smooth":"auto"});}catch{ui.assistantMessages.scrollTop=top;}}
@@ -2210,35 +2219,33 @@ function auditAtlasScrollState(){
   atlasScrollAuditFrame=0;
   const root=document.documentElement;
   const overlay=atlasOpenOverlay();
-  const assistantHistory=!!ui.assistantHistoryPanel?.classList.contains("open");
-  const dialogOpen=!!document.querySelector("dialog[open]");
-  const secondary=Boolean(overlay||assistantHistory||dialogOpen);
-  document.body.classList.toggle("atlas-subpage-open",secondary);
 
   if(overlay){
     root.classList.remove("atlas-main-scroll-locked");
     document.body.classList.remove("atlas-main-scroll-locked");
     document.body.style.overflow="hidden";
+
     qsa(".metric-detail,.state-detail,.activity-detail,.plan-detail,.data-detail")
-      .filter(x=>x!==overlay).forEach(x=>x.classList.remove("atlas-scrollable","atlas-scroll-locked"));
+      .filter(x=>x!==overlay)
+      .forEach(x=>x.classList.remove("atlas-scrollable","atlas-scroll-locked"));
+
     overlay.classList.remove("atlas-scroll-locked");
     overlay.classList.add("atlas-scrollable");
-    requestAnimationFrame(()=>atlasSetOverflowClass(overlay,overlay.scrollHeight>overlay.clientHeight+2));
-    return;
-  }
 
-  if(document.body.classList.contains("assistant-main-active")){
-    root.classList.add("atlas-main-scroll-locked");
-    document.body.classList.add("atlas-main-scroll-locked");
-    document.body.style.overflow="hidden";
+    requestAnimationFrame(()=>{
+      const needs=overlay.scrollHeight>overlay.clientHeight+2;
+      atlasSetOverflowClass(overlay,needs);
+    });
     return;
   }
 
   document.body.style.overflow="";
   root.classList.remove("atlas-main-scroll-locked");
   document.body.classList.remove("atlas-main-scroll-locked");
+
   requestAnimationFrame(()=>{
-    const scrolling=document.scrollingElement||root,needs=scrolling.scrollHeight>window.innerHeight+2;
+    const scrolling=document.scrollingElement||root;
+    const needs=scrolling.scrollHeight>window.innerHeight+2;
     root.classList.toggle("atlas-main-scroll-locked",!needs);
     document.body.classList.toggle("atlas-main-scroll-locked",!needs);
     if(!needs&&scrolling.scrollTop)scrolling.scrollTop=0;
@@ -2290,7 +2297,10 @@ function showView(tab){
   document.body.classList.toggle("assistant-main-active",tab==="assistant");
   if(tab==="activities")renderActivities();
   if(tab==="plan")renderPlan();
-  if(tab==="assistant"){renderAssistantChat();requestAnimationFrame(()=>scrollAssistantToBottom(false));}
+  if(tab==="assistant"){
+    renderAssistantChat();
+    requestAnimationFrame(()=>scrollAssistantToBottom(false));
+  }
   window.scrollTo({top:0,behavior:"instant"});
   scheduleAtlasScrollAudit();
 }
@@ -4393,27 +4403,6 @@ function planEventPaceLabel(e){
   return"Ritmos";
 }
 function planEventMeta(e){const parts=[],d=planEventDistanceM(e),t=planEventDurationSec(e),pace=planEventPaceLabel(e);if(d)parts.push(`${formatNatural(d/1000,2)} km`);if(t)parts.push(formatDuration(t));if(pace)parts.push(pace);return parts.join(" · ");}
-
-function planMonthRange(){
-  const anchor=currentPlanWeekStart?new Date(currentPlanWeekStart):new Date();
-  const start=new Date(anchor.getFullYear(),anchor.getMonth(),1,12);
-  const end=new Date(anchor.getFullYear(),anchor.getMonth()+1,0,12);
-  const gridStart=new Date(start),weekday=(gridStart.getDay()+6)%7;
-  gridStart.setDate(gridStart.getDate()-weekday);
-  const gridEnd=new Date(end),tail=(7-((gridEnd.getDay()+6)%7)-1)%7;
-  gridEnd.setDate(gridEnd.getDate()+tail);
-  return{start,end,gridStart,gridEnd,startKey:planDateKey(start),endKey:planDateKey(end),gridStartKey:planDateKey(gridStart),gridEndKey:planDateKey(gridEnd)};
-}
-function shiftPlanMonth(delta){
-  const a=currentPlanWeekStart?new Date(currentPlanWeekStart):new Date();
-  currentPlanWeekStart=new Date(a.getFullYear(),a.getMonth()+delta,1,12);
-  renderPlan();
-}
-function planMonthLabel(date){
-  const text=new Intl.DateTimeFormat("es-ES",{month:"long",year:"numeric"}).format(date);
-  return text.charAt(0).toUpperCase()+text.slice(1);
-}
-
 function planWeekRange(){const start=currentPlanWeekStart?new Date(currentPlanWeekStart):mondayOf(new Date()),end=new Date(start);end.setDate(end.getDate()+6);return{start,end,startKey:planDateKey(start),endKey:planDateKey(end)};}
 function shiftPlanWeek(delta){if(!currentPlanWeekStart)currentPlanWeekStart=mondayOf(new Date());const d=new Date(currentPlanWeekStart);d.setDate(d.getDate()+delta*7);currentPlanWeekStart=d;renderPlan();}
 function planRangeLabel(start,end){const months=["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"];if(start.getMonth()===end.getMonth())return`${start.getDate()}–${end.getDate()} ${months[start.getMonth()]} ${String(end.getFullYear()).slice(-2)}`;return`${start.getDate()} ${months[start.getMonth()]} – ${end.getDate()} ${months[end.getMonth()]} ${String(end.getFullYear()).slice(-2)}`;}
@@ -4427,7 +4416,7 @@ function makeAtlasExternalId(){
   return`atlas-event-${id}`;
 }
 function defaultPlanEditorDate(){
-  const today=fmtDate(new Date()),range=planMonthRange();
+  const today=fmtDate(new Date()),range=planWeekRange();
   return today>=range.startKey&&today<=range.endKey?today:range.startKey;
 }
 
@@ -4915,136 +4904,32 @@ function planSessionMetaHtml(s,large=false){
   return`${base}<span class="plan-execution-meta">${status}${actual}</span>`;
 }
 function renderPlan(){
-  if(!ui.planDays)return;
-  if(!currentPlanWeekStart)currentPlanWeekStart=new Date();
-
-  const range=planMonthRange(),today=fmtDate(new Date()),
-    allEvents=currentEvents.filter(e=>{const d=planEventDate(e);return d>=range.gridStartKey&&d<=range.gridEndKey;}),
-    allActivities=currentActivities.filter(a=>{const d=activityDate(a);return d>=range.gridStartKey&&d<=range.gridEndKey;}),
-    monthEvents=allEvents.filter(e=>{const d=planEventDate(e);return d>=range.startKey&&d<=range.endKey;}),
-    monthActivities=allActivities.filter(a=>{const d=activityDate(a);return d>=range.startKey&&d<=range.endKey;}),
-    matchedIds=planMatchedActivityIds();
-
-  ui.planRange.textContent=planMonthLabel(range.start);
-  ui.planRangeSub.textContent="";
-  ui.planRangeSub.classList.add("hidden");
-
-  const now=new Date(),sameMonth=now.getFullYear()===range.start.getFullYear()&&now.getMonth()===range.start.getMonth();
-  ui.planToday.classList.toggle("hidden",sameMonth);
-  ui.planToday.textContent="Este mes";
-
-  const planEvents=monthEvents.filter(e=>publishedPlanSessionForEvent(e)||isAtlasPlanEvent(e)),
-    plannedKm=planEvents.reduce((s,e)=>s+(planEventDistanceM(e)||0),0)/1000,
-    doneKm=monthActivities.reduce((s,a)=>s+(activityDistanceM(a)||0),0)/1000,
-    outcomes=(currentAdaptiveState?.outcomes||[]).filter(o=>o.session.date>=range.startKey&&o.session.date<=range.endKey),
-    completed=outcomes.filter(planCompletedStatus).length,total=outcomes.length;
-
-  ui.planPlannedKm.textContent=formatNatural(plannedKm,1);
-  ui.planDoneKm.textContent=formatNatural(doneKm,1);
-  ui.planSessions.textContent=total?`${completed}/${total}`:"0";
-
-  const weekdays=["L","M","X","J","V","S","D"],cells=[],cursor=new Date(range.gridStart);
-  while(cursor<=range.gridEnd){
-    const key=planDateKey(cursor),outside=cursor.getMonth()!==range.start.getMonth(),
-      events=allEvents.filter(e=>planEventDate(e)===key),
-      activities=allActivities.filter(a=>activityDate(a)===key).sort((a,b)=>activityStamp(a).localeCompare(activityStamp(b))),
-      items=[];
-
-    for(const e of events){
-      const s=planExecutionSessionForEvent(e);
-      items.push({icon:s.icon,title:s.title,kind:"plan",tone:s.outcome?planOutcomeTone(s.outcome):"pending",planEventId:s.planEventId,activityId:s.activityId||null});
+  if(!ui.planDays)return;if(!currentPlanWeekStart)currentPlanWeekStart=mondayOf(new Date());
+  const{start,end,startKey,endKey}=planWeekRange(),today=fmtDate(new Date()),events=currentEvents.filter(e=>{const d=planEventDate(e);return d>=startKey&&d<=endKey;}),activities=currentActivities.filter(a=>{const d=activityDate(a);return d>=startKey&&d<=endKey;}),matchedIds=planMatchedActivityIds();
+  ui.planRange.textContent=planRangeLabel(start,end);ui.planRangeSub.textContent=planWeekSubLabel(start);
+  const planEvents=events.filter(e=>publishedPlanSessionForEvent(e)||isAtlasPlanEvent(e)),plannedKm=planEvents.reduce((s,e)=>s+(planEventDistanceM(e)||0),0)/1000,doneKm=activities.reduce((s,a)=>s+(activityDistanceM(a)||0),0)/1000,weekOutcomes=(currentAdaptiveState?.outcomes||[]).filter(o=>o.session.date>=startKey&&o.session.date<=endKey),completed=weekOutcomes.filter(planCompletedStatus).length,totalEvaluable=weekOutcomes.length;
+  ui.planPlannedKm.textContent=formatNatural(plannedKm,1);ui.planDoneKm.textContent=formatNatural(doneKm,1);ui.planSessions.textContent=totalEvaluable?`${completed}/${totalEvaluable}`:"0";
+  const days=["LUN","MAR","MIÉ","JUE","VIE","SÁB","DOM"],markup=[];
+  const renderMultiItem=s=>{const metaHtml=planSessionMetaHtml(s),extra=s.kind==="extra"&&s.showExtra?'<span class="plan-execution-chip pending plan-execution-extra plan-extra-meta-chip">Actividad extra</span>':"",attrs=s.planEventId?`data-plan-event-id="${esc(s.planEventId)}"`:s.activityId?`data-activity-id="${esc(s.activityId)}"`:"";return`<button class="plan-day-multi-item" type="button" ${attrs}><div class="plan-day-multi-title"><span>${s.icon}</span><span class="plan-day-multi-title-text">${esc(s.title)}</span></div><div class="plan-day-multi-meta"><span class="plan-meta-values">${metaHtml}</span>${extra}${s.kind!=="extra"&&s.outcome?`<span class="plan-execution-chip ${s.tone}">${esc(s.status)}</span>`:""}</div></button>`;};
+  for(let i=0;i<7;i++){
+    const d=new Date(start);d.setDate(start.getDate()+i);const key=planDateKey(d),dayEvents=events.filter(e=>planEventDate(e)===key),dayActivities=activities.filter(a=>activityDate(a)===key).sort((a,b)=>activityStamp(a).localeCompare(activityStamp(b))),sessions=[];
+    for(const e of dayEvents)sessions.push(planExecutionSessionForEvent(e));
+    for(const a of dayActivities){const id=String(a.id);if(matchedIds.has(id))continue;sessions.push({kind:"extra",icon:activityIcon(a),title:activityName(a),metaParts:planActivityMetaParts(a),activityId:id,tone:"pending",showExtra:planDateInsideAtlasPlan(key)});}
+    let head="";
+    if(sessions.length===1){
+      const s=sessions[0],tag=s.planEventId?"button":s.activityId?"button":"div",attrs=s.planEventId?` type="button" data-plan-event-id="${esc(s.planEventId)}"`:s.activityId?` type="button" data-activity-id="${esc(s.activityId)}"`:"",metaHtml=planSessionMetaHtml(s,true),extra=s.kind==="extra"&&s.showExtra?`<span class="plan-execution-chip pending plan-execution-extra plan-extra-meta-chip">Actividad extra</span>`:"";
+      head=`<${tag} class="plan-day-head single-session"${attrs}><div class="plan-day-date"><span class="plan-day-weekday">${days[i]}</span><span class="plan-day-number">${d.getDate()}</span></div><span class="plan-day-sep" aria-hidden="true"></span><div class="plan-day-copy"><div class="plan-day-mainline"><span class="plan-day-main-icon">${s.icon}</span><span class="plan-day-main-title">${esc(s.title)}</span></div><div class="plan-day-main-meta"><span class="plan-meta-values">${metaHtml}</span>${extra}</div></div></${tag}>`;
+    }else if(sessions.length===0){
+      const rest=planDateInsideAtlasPlan(key)?'<div class="plan-rest-copy">🛌 Descanso</div>':'<div class="plan-rest-copy plan-rest-blank" aria-hidden="true">&nbsp;</div>';
+      head=`<div class="plan-day-head"><div class="plan-day-date"><span class="plan-day-weekday">${days[i]}</span><span class="plan-day-number">${d.getDate()}</span></div><span class="plan-day-sep" aria-hidden="true"></span><div class="plan-day-copy">${rest}</div></div>`;
+    }else{
+      head=`<div class="plan-day-head multi-session"><div class="plan-day-date"><span class="plan-day-weekday">${days[i]}</span><span class="plan-day-number">${d.getDate()}</span></div><span class="plan-day-sep" aria-hidden="true"></span><div class="plan-day-copy"><div class="plan-day-multi-list">${sessions.map(renderMultiItem).join("")}</div></div></div>`;
     }
-    for(const a of activities){
-      const id=String(a.id);
-      if(matchedIds.has(id))continue;
-      items.push({icon:activityIcon(a),title:activityName(a),kind:"extra",tone:"pending",activityId:id});
-    }
-
-    const visible=items.slice(0,3).map(item=>{
-      const attr=item.planEventId?`data-plan-event-id="${esc(item.planEventId)}"`:`data-activity-id="${esc(item.activityId)}"`;
-      return`<button class="plan-month-item ${item.kind} ${item.tone}" type="button" ${attr} aria-label="${esc(item.title)}" title="${esc(item.title)}"><span>${item.icon}</span></button>`;
-    }).join("");
-    const more=items.length>3?`<span class="plan-month-more">+${items.length-3}</span>`:"";
-    const rest=!items.length&&planDateInsideAtlasPlan(key)?'<span class="plan-month-rest" aria-hidden="true"></span>':"";
-
-    cells.push(`<div class="plan-month-day${outside?" outside":""}${key===today?" today":""}${items.length?" has-items":""}" data-date="${key}">
-      <div class="plan-month-number">${cursor.getDate()}</div>
-      <div class="plan-month-items">${visible}${more}${rest}</div>
-    </div>`);
-    cursor.setDate(cursor.getDate()+1);
+    markup.push(`<section class="plan-day${key===today?" today":""}">${head}</section>`);
   }
-
-  ui.planDays.innerHTML=`<div class="plan-month-weekdays">${weekdays.map(x=>`<span>${x}</span>`).join("")}</div><div class="plan-month-grid">${cells.join("")}</div>`;
-  scheduleAtlasScrollAudit();
+  if(!markup.length)markup.push('<div class="card activity-empty">No hay entrenamientos en esta semana.</div>');
+  ui.planDays.innerHTML=markup.join("");requestAnimationFrame(fitPlanTitles);
 }
-
-
-/* ===== Lectura contextual de actividad ===== */
-function resetActivityAiView(){
-  activityAiRequestToken++;
-  if(ui.activityAiBtn){ui.activityAiBtn.disabled=false;ui.activityAiBtn.classList.remove("loading");}
-  if(ui.activityAiResult)ui.activityAiResult.classList.add("hidden");
-  if(ui.activityAiText)ui.activityAiText.textContent="";
-  if(ui.activityAiCost)ui.activityAiCost.textContent="";
-}
-async function buildActivityAiContext(){
-  const context=await buildAssistantContext(),activity=currentActivityDetail;
-  context.focusActivity={
-    ...assistantActivitySummary(activity),
-    description:String(activity?.description||activity?.notes||"").slice(0,5000)||null,
-    laps:activityLapRows().rows.slice(0,80).map((r,i)=>({
-      lap:i+1,
-      distanceM:Number.isFinite(Number(r.d))?Math.round(Number(r.d)):null,
-      timeSec:Number.isFinite(Number(r.t))?Math.round(Number(r.t)):null,
-      pace:Number.isFinite(Number(r.p))?`${formatPaceValue(r.p)} min/km`:null,
-      hr:Number.isFinite(Number(r.hr))?Math.round(Number(r.hr)):null,
-      elevation:Number.isFinite(Number(r.elev))?Math.round(Number(r.elev)):null
-    }))
-  };
-  return context;
-}
-async function requestActivityAiInsight(){
-  if(!currentActivityDetail||!ui.activityAiBtn)return;
-  const activityId=String(currentActivityDetail.id||""),cached=activityAiCache.get(activityId);
-  if(cached){
-    ui.activityAiText.textContent=cached.reply;
-    ui.activityAiCost.textContent=assistantCostText(cached.cost);
-    ui.activityAiResult.classList.remove("hidden");
-    return;
-  }
-
-  const token=++activityAiRequestToken;
-  ui.activityAiBtn.disabled=true;
-  ui.activityAiBtn.classList.add("loading");
-  ui.activityAiResult.classList.remove("hidden");
-  ui.activityAiText.textContent="Analizando…";
-  ui.activityAiCost.textContent="";
-
-  try{
-    const context=await buildActivityAiContext();
-    const prompt="Analiza esta actividad deportiva en 3 a 5 frases. Destaca únicamente información que aporte valor: calidad de la ejecución, comportamiento de ritmo y frecuencia cardiaca si existen, relación con mi estado, carga y plan, y una conclusión práctica. Evita enumerar métricas sin interpretarlas. Si es un entrenamiento por intervalos, distingue trabajo y recuperaciones.";
-    const result=await apiRequest("/api/chat",{method:"POST",body:{messages:[{role:"user",content:prompt}],context},timeoutMs:90000,retries:0});
-    if(token!==activityAiRequestToken||String(currentActivityDetail?.id||"")!==activityId)return;
-    const reply=String(result?.reply||"").trim();
-    if(!reply)throw new Error("No se ha recibido una lectura válida.");
-    const item={reply,cost:result?.cost||null};
-    activityAiCache.set(activityId,item);
-    ui.activityAiText.textContent=reply;
-    ui.activityAiCost.textContent=assistantCostText(item.cost);
-  }catch(error){
-    if(token!==activityAiRequestToken)return;
-    recordRuntimeAudit("activity-ai",error,{activityId}).catch(()=>{});
-    ui.activityAiText.textContent=`No he podido analizarla: ${error?.message||"error de conexión"}`;
-    ui.activityAiCost.textContent="";
-  }finally{
-    if(token===activityAiRequestToken){
-      ui.activityAiBtn.disabled=false;
-      ui.activityAiBtn.classList.remove("loading");
-      scheduleAtlasScrollAudit();
-    }
-  }
-}
-
 
 /* ===== Actividades: normalización, listado y detalle ===== */
 function activityType(a){const type=String(a?.type||""),sport=String(a?.sport||a?.activity_type||""),name=String(a?.name||a?.title||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();const joined=`${type} ${sport}`.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();if(/soccer|football|futbol/.test(joined)||/\bfutbol\b/.test(name))return"Football";return sport||type||"Actividad";}
@@ -5126,7 +5011,6 @@ async function openActivityDetail(id){
   activityLapZoom=1;
   activityLapMainFilter="all";
   currentActivityLapIndex=null;
-  resetActivityAiView();
 
   ui.activityDetail.classList.add("open");
   ui.activityDetail.setAttribute("aria-hidden","false");
@@ -5159,12 +5043,6 @@ async function openActivityDetail(id){
     renderActivityMap(streams,merged);
     renderActivityLaps();
     renderActivityAnalysis();
-    const aiCached=activityAiCache.get(String(merged.id||""));
-    if(aiCached){
-      ui.activityAiText.textContent=aiCached.reply;
-      ui.activityAiCost.textContent=assistantCostText(aiCached.cost);
-      ui.activityAiResult.classList.remove("hidden");
-    }
     scheduleAtlasScrollAudit();
   }finally{
     if(requestToken===currentActivityRequestToken){
@@ -5175,7 +5053,6 @@ async function openActivityDetail(id){
 }
 function closeActivityDetail(){
   currentActivityRequestToken++;
-  activityAiRequestToken++;
   ui.activityDetail.classList.remove("open");
   ui.activityDetail.setAttribute("aria-hidden","true");
   document.body.style.overflow="";
@@ -6828,228 +6705,71 @@ body.profile-detail-open .nav{display:none!important}
 </style>
 
 
-<style id="atlas-v082-chat-style">
-#view-assistant.active{display:flex!important;flex-direction:column!important;height:calc(100dvh - var(--nav) - env(safe-area-inset-bottom) - 12px)!important;min-height:0!important;overflow:hidden!important}
-#view-assistant>.atlas-header{flex:0 0 auto!important}
-.assistant-chat-canvas{position:relative!important;display:flex!important;flex:1 1 auto!important;min-height:0!important;width:100%!important;max-width:760px!important;margin:0 auto!important;overflow:hidden!important}
-.assistant-chat-toolbar{flex:0 0 39px;display:flex;align-items:center;gap:8px;padding:0 2px 4px}.assistant-toolbar-spacer{flex:1}
-.assistant-icon-btn,.assistant-history-back,.assistant-history-new{appearance:none;border:0;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.055);color:#fff;font:600 20px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
-.assistant-icon-btn:active,.assistant-history-back:active,.assistant-history-new:active{transform:scale(.94)}
-.assistant-messages{flex:1 1 auto;min-height:0;overflow-y:hidden;overscroll-behavior-y:none;padding:9px 2px 13px;display:flex;flex-direction:column;gap:9px;scrollbar-width:none}
-.assistant-messages::-webkit-scrollbar{display:none}.assistant-messages.scrollable{overflow-y:auto;overscroll-behavior-y:auto;-webkit-overflow-scrolling:touch}
-.assistant-empty{margin:auto;color:rgba(29,155,240,.16);font:800 clamp(72px,22vw,112px)/1 -apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif;user-select:none}
-.assistant-message-row{display:flex;width:100%}.assistant-message-row.user{justify-content:flex-end}.assistant-message-row.assistant{justify-content:flex-start}
-.assistant-message{max-width:min(84%,620px);padding:9px 12px;border-radius:18px;color:#f5f7f9;font:500 14px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;white-space:pre-wrap;overflow-wrap:anywhere;letter-spacing:-.08px}
-.assistant-message-row.user .assistant-message{background:#1d9bf0;color:#fff;border-bottom-right-radius:6px}
-.assistant-message-row.assistant .assistant-message{background:linear-gradient(180deg,rgba(24,31,39,.96),rgba(15,21,27,.96));border:1px solid rgba(255,255,255,.075);border-bottom-left-radius:6px}
-.assistant-message.assistant-error{color:#ffb6b2;border-color:rgba(255,69,58,.24);background:rgba(58,18,18,.55)}
-.assistant-typing{display:flex;gap:4px;align-items:center;min-width:45px;min-height:35px}.assistant-typing span{width:5px;height:5px;border-radius:50%;background:#b7c0c7;animation:atlasChatDot 1.15s infinite ease-in-out}.assistant-typing span:nth-child(2){animation-delay:.14s}.assistant-typing span:nth-child(3){animation-delay:.28s}
-@keyframes atlasChatDot{0%,70%,100%{opacity:.35;transform:translateY(0)}35%{opacity:1;transform:translateY(-3px)}}
-.assistant-composer{flex:0 0 auto;display:grid;grid-template-columns:minmax(0,1fr) 38px;align-items:end;gap:7px;padding:7px 7px 7px 11px;margin:0 0 2px;border:1px solid rgba(255,255,255,.11);border-radius:22px;background:rgba(18,25,32,.88);backdrop-filter:blur(22px) saturate(145%);-webkit-backdrop-filter:blur(22px) saturate(145%)}
-.assistant-input{appearance:none;resize:none;width:100%;min-height:24px;max-height:120px;padding:3px 0 2px;border:0;outline:0;background:transparent;color:#fff;font:500 15px/1.35 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;overflow-y:auto;scrollbar-width:none}.assistant-input::-webkit-scrollbar{display:none}.assistant-input::placeholder{color:#7f8991}
-.assistant-send{appearance:none;border:0;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#1d9bf0;color:#fff;font:800 20px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif;-webkit-tap-highlight-color:transparent}.assistant-send:disabled{opacity:.38}.assistant-send:not(:disabled):active{transform:scale(.94)}
-.assistant-history-panel{position:absolute;inset:0;z-index:12;display:flex;flex-direction:column;background:rgba(5,9,13,.985);backdrop-filter:blur(28px) saturate(135%);-webkit-backdrop-filter:blur(28px) saturate(135%);opacity:0;pointer-events:none;transform:translateX(-14px);transition:opacity .16s ease,transform .16s ease}.assistant-history-panel.open{opacity:1;pointer-events:auto;transform:none}
-.assistant-history-head{flex:0 0 49px;display:grid;grid-template-columns:36px 1fr 36px;align-items:center;gap:6px;border-bottom:1px solid rgba(255,255,255,.075)}.assistant-history-title{text-align:center;color:#fff;font:750 16px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif}
-.assistant-history-list{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:7px 0 12px}.assistant-history-row{appearance:none;width:100%;min-height:58px;display:grid;grid-template-columns:minmax(0,1fr) 34px;align-items:center;gap:8px;padding:8px 8px 8px 12px;border:0;border-bottom:1px solid rgba(255,255,255,.065);background:transparent;color:#fff;text-align:left}.assistant-history-row.active{background:rgba(29,155,240,.08)}
-.assistant-history-copy{min-width:0;display:flex;flex-direction:column;gap:4px}.assistant-history-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:680 14.5px/1.25 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}.assistant-history-date{color:#82909a;font:550 11px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}.assistant-history-delete{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#74808a;font-size:11px}.assistant-history-empty{padding:32px 12px;text-align:center;color:#75818a;font:550 13px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
-@media(min-width:600px){#view-assistant.active{height:calc(100dvh - var(--nav) - 18px)!important}.assistant-chat-canvas{max-width:720px!important}.assistant-message{font-size:14.5px}}
-@media(min-width:1200px){.assistant-chat-canvas{max-width:760px!important}.assistant-message{max-width:72%}}
-</style>
 
-
-<style id="atlas-v083-design-system">
-:root{
-  color-scheme:dark;--blue:#1d9bf0;--green:#22c55e;--yellow:#f4c430;--red:#ff453a;
-  --bg:#000000;--surface:rgba(28,28,30,.46);--surface-soft:rgba(255,255,255,.035);--surface-strong:rgba(34,34,36,.72);
-  --glass:rgba(20,20,22,.42);--glass-strong:rgba(28,28,30,.66);--glass-top:rgba(255,255,255,.060);--glass-bottom:rgba(255,255,255,.018);
-  --line:rgba(255,255,255,.095);--line-strong:rgba(255,255,255,.15);--text:#f5f5f7;--text-strong:#fff;--muted:#a1a1a6;--muted2:#6e6e73;
-  --shadow:0 14px 40px rgba(0,0,0,.32);--shadow-soft:0 7px 22px rgba(0,0,0,.20);--highlight:inset 0 1px 0 rgba(255,255,255,.08);
-  --chart-grid:rgba(255,255,255,.075);--radius-xl:22px;--radius-lg:18px;--radius-md:14px;--radius-sm:11px;--touch:44px;
-}
-html[data-theme="light"]{
-  color-scheme:light;--bg:#fff;--surface:rgba(246,246,248,.66);--surface-soft:rgba(0,0,0,.025);--surface-strong:rgba(255,255,255,.82);
-  --glass:rgba(248,248,250,.58);--glass-strong:rgba(255,255,255,.78);--glass-top:rgba(255,255,255,.90);--glass-bottom:rgba(245,245,247,.50);
-  --line:rgba(0,0,0,.075);--line-strong:rgba(0,0,0,.12);--text:#1d1d1f;--text-strong:#000;--muted:#6e6e73;--muted2:#8e8e93;
-  --shadow:0 14px 38px rgba(0,0,0,.075);--shadow-soft:0 6px 18px rgba(0,0,0,.055);--highlight:inset 0 1px 0 rgba(255,255,255,.95);--chart-grid:rgba(0,0,0,.075);
-}
-*{box-sizing:border-box}
-html,body{background:var(--bg)!important;color:var(--text)!important;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",system-ui,sans-serif!important;transition:background-color .24s ease,color .24s ease}
-body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
-button,input,select,textarea{font-family:inherit!important}
-.app{background:var(--bg)!important;color:var(--text)!important;padding-left:max(12px,env(safe-area-inset-left))!important;padding-right:max(12px,env(safe-area-inset-right))!important}
-.view{color:var(--text)!important}
-
-/* Wordmark */
-.atlas-header{min-height:48px!important;height:48px!important;display:flex!important;align-items:flex-end!important;justify-content:center!important;padding:0 0 5px!important;margin:0!important}
-.atlas-title{display:none!important}
-.atlas-header::after{content:"ɅTLɅS";color:var(--text-strong);font-size:20px;line-height:1;font-weight:820;letter-spacing:4.5px;transform:translateX(2px)}
-
-/* Native typography and round utility controls */
-.page-header,.section-bar{min-height:44px!important;margin:0 0 8px!important;padding:0 2px!important;align-items:center!important}
-.page-title,.section-name{color:var(--text-strong)!important;font-size:clamp(29px,8vw,34px)!important;line-height:1.05!important;font-weight:790!important;letter-spacing:-1.05px!important}
-.sync-quick,.plan-nav-btn,.range-arrow,.metric-back,.plan-detail-back{min-width:var(--touch)!important;width:var(--touch)!important;min-height:var(--touch)!important;height:var(--touch)!important;border:1px solid var(--line)!important;border-radius:50%!important;background:linear-gradient(180deg,var(--glass-top),var(--glass-bottom))!important;color:var(--blue)!important;box-shadow:var(--highlight),var(--shadow-soft)!important;backdrop-filter:blur(26px) saturate(160%)!important;-webkit-backdrop-filter:blur(26px) saturate(160%)!important}
-button{transition:transform .14s ease,opacity .14s ease,background-color .20s ease,border-color .20s ease,box-shadow .20s ease}
-button:active{transform:scale(.975)}
-@media(hover:hover){button:hover{filter:brightness(1.025)}}
-
-/* Unified Liquid Glass */
-.training-state,.metric-card,.activity-list,.plan-overview-card,.plan-summary,.profile-home-card,.profile-home-links,.profile-appearance,.data-native-list,.data-system-card,.profile-zone-card,.profile-insight-list,.records-card,.record-podium,.shoe-card,.chart-card,.activity-chart-card,.activity-lap-bars-card,.detail-stats,.metric-context,.state-factors,.state-explanation,.plan-detail-card,.engine-v2-card,.macro-card,.weekly-target-card,.calendar-solver-card,.session-generator-card,.adaptive-card,.availability-card,.plan-analysis-details,.assistant-composer,.assistant-message-row.assistant .assistant-message{border:1px solid var(--line)!important;background:linear-gradient(180deg,var(--glass-top),var(--glass-bottom))!important;color:var(--text)!important;box-shadow:var(--highlight),var(--shadow-soft)!important;backdrop-filter:blur(28px) saturate(155%)!important;-webkit-backdrop-filter:blur(28px) saturate(155%)!important}
-.training-state,.profile-home-card,.profile-home-links,.profile-appearance,.data-native-list,.plan-overview-card,.plan-summary,.chart-card,.activity-chart-card,.activity-lap-bars-card,.data-system-card,.profile-zone-card,.records-card,.record-podium,.shoe-card,.plan-detail-card{border-radius:var(--radius-xl)!important}
-
-/* Blue only as accent/action */
-.action.primary,.plan-publish-btn,.plan-manual-btn,.period-btn.active,.activity-chart-tab.active,.theme-choice.active,.data-native-row:active,.plan-overview-card:active{background:transparent!important}
-.action.primary,.plan-publish-btn,.period-btn.active,.activity-chart-tab.active,.theme-choice.active{color:var(--blue)!important;border-color:rgba(29,155,240,.34)!important}
-
-/* Today */
-.training-state{min-height:94px!important;padding:12px!important;margin-bottom:9px!important;grid-template-columns:72px minmax(0,1fr)!important;gap:12px!important}
-.state-score{width:68px!important;height:68px!important;background:transparent!important;box-shadow:none!important}
-.state-score-main{color:var(--text-strong)!important;font-size:24px!important}
-.state-kicker{font-size:10.5px!important;color:var(--muted2)!important}.state-word{font-size:21px!important;color:var(--text-strong)!important;letter-spacing:-.35px!important}.state-note{font-size:12.5px!important;color:var(--muted)!important}
-.metric-strip{gap:6px!important;margin:0 0 12px!important}
-.metric-card{border-radius:16px!important;padding:9px 5px 8px!important;min-height:98px!important;box-shadow:var(--highlight)!important}
-.metric-emoji{font-size:18px!important}.metric-label{color:var(--muted)!important;font-size:clamp(10px,2.65vw,12px)!important;font-weight:690!important;line-height:1.12!important}
-.metric-value{color:var(--text-strong)!important;font-size:clamp(18px,5vw,22px)!important;font-weight:780!important;letter-spacing:-.45px!important}.metric-meta{color:var(--muted2)!important;font-size:9.5px!important}
-.today-last-heading{color:var(--text)!important;font-size:14px!important;margin:11px 2px 6px!important}
-
-/* Universal daily activity card */
-.activity-list{overflow:hidden!important;border-radius:var(--radius-xl)!important;background:transparent!important}
-.activity-row{min-height:58px!important;padding:6px 8px!important;background:transparent!important;color:var(--text)!important;border:0!important}
-.activity-row+.activity-row{border-top:1px solid var(--line)!important}
-.activity-row-day,.activity-row-title-text{color:var(--text-strong)!important}.activity-row-month,.activity-row-main,.activity-row-sub{color:var(--muted)!important}.activity-row-sep{background:var(--line)!important}
-.activities-toolbar{gap:6px!important;margin-bottom:8px!important}.activities-select,.activities-search,input,select,textarea{border:1px solid var(--line)!important;background:var(--surface-soft)!important;color:var(--text)!important;box-shadow:var(--highlight)!important}
-.activities-select,.activities-search{min-height:38px!important;border-radius:13px!important;font-size:12.5px!important}.activities-summary{color:var(--muted)!important;font-size:11px!important}
-
-/* Profile */
-.profile-home-card{padding:13px!important;margin-bottom:8px!important}.profile-home-avatar{background:var(--surface-soft)!important;border:1px solid var(--line)!important;box-shadow:none!important}
-.profile-home-name{color:var(--text-strong)!important;font-size:21px!important}.profile-home-location,.profile-home-stat-label{color:var(--muted)!important}.profile-home-stat strong{color:var(--text-strong)!important;font-size:17px!important}
-.profile-appearance{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 10px 9px 13px;margin-bottom:8px}
-.profile-appearance-copy{display:flex;flex-direction:column;gap:2px;min-width:0}.profile-appearance-title{color:var(--text-strong);font-size:15.5px;font-weight:730}.profile-appearance-note{color:var(--muted);font-size:10.5px}
-.theme-segment{display:flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:12px;background:var(--surface-soft)}
-.theme-choice{min-width:58px;min-height:30px;padding:0 9px;border:1px solid transparent;border-radius:9px;background:transparent;color:var(--muted);font-size:11.5px;font-weight:720}.theme-choice.active{box-shadow:var(--highlight),0 3px 10px rgba(0,0,0,.08)!important}
-.profile-home-links{overflow:hidden!important}.data-native-row{min-height:58px!important;padding:9px 11px!important;background:transparent!important;color:var(--text)!important}.data-native-row+.data-native-row{border-top:1px solid var(--line)!important}
-.data-native-title{color:var(--text-strong)!important;font-size:17px!important;font-weight:735!important}.data-native-chevron{color:var(--muted2)!important}.data-native-icon{font-size:20px!important}
-
-/* Plan month dashboard */
-#view-plan .page-header{margin-bottom:4px!important}
-#view-plan .plan-overview-card{min-height:38px!important;grid-template-columns:minmax(0,1fr) 14px!important;gap:6px!important;padding:7px 10px!important;margin-bottom:5px!important}
-#view-plan .plan-overview-icon{display:none!important}#view-plan .plan-overview-title{color:var(--text-strong)!important;font-size:14.5px!important;font-weight:735!important}#view-plan .plan-overview-meta{color:var(--muted)!important;font-size:9.5px!important;margin-top:0!important}#view-plan .plan-overview-arrow{color:var(--blue)!important}
-.plan-toolbar{grid-template-columns:38px minmax(0,1fr) 38px!important;min-height:38px!important;margin:0 0 3px!important;gap:6px!important}.plan-nav-btn{width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;font-size:20px!important;box-shadow:var(--highlight)!important}
-.plan-range-main{color:var(--text-strong)!important;font-size:18px!important;font-weight:760!important}.plan-today-btn{color:var(--blue)!important;font-size:10.5px!important;margin:-1px auto 3px!important;padding:1px 7px!important}
-.plan-summary{margin:0 0 6px!important;border-radius:15px!important;box-shadow:var(--highlight)!important}.plan-summary-item{padding:6px 3px!important}.plan-summary-item+.plan-summary-item::before{top:6px!important;bottom:6px!important;background:var(--line)!important}
-.plan-summary-value{color:var(--text-strong)!important;font-size:16px!important}.plan-summary-unit,.plan-summary-label{color:var(--muted)!important;font-size:8.8px!important}
-.plan-days{display:block!important;border:0!important;border-radius:0!important;background:transparent!important;overflow:visible!important;margin:0!important}
-.plan-month-weekdays{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));padding:0 2px 4px;color:var(--muted2);font-size:9.5px;font-weight:750;text-align:center}
-.plan-month-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));grid-auto-rows:minmax(54px,1fr);min-height:min(47vh,390px);max-height:430px;overflow:hidden;border:1px solid var(--line);border-radius:var(--radius-xl);background:linear-gradient(180deg,var(--glass-top),var(--glass-bottom));box-shadow:var(--highlight),var(--shadow-soft);backdrop-filter:blur(28px) saturate(155%);-webkit-backdrop-filter:blur(28px) saturate(155%)}
-.plan-month-day{position:relative;min-width:0;padding:5px 3px 3px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:transparent}.plan-month-day:nth-child(7n){border-right:0}.plan-month-day:nth-last-child(-n+7){border-bottom:0}.plan-month-day.outside{opacity:.30}
-.plan-month-number{width:23px;height:23px;display:grid;place-items:center;margin:0 auto 3px;border-radius:50%;color:var(--text);font-size:11px;font-weight:680;font-variant-numeric:tabular-nums}.plan-month-day.today .plan-month-number{background:var(--blue);color:#fff;box-shadow:0 4px 16px rgba(29,155,240,.28)}
-.plan-month-items{min-height:18px;display:flex;align-items:center;justify-content:center;gap:1px;flex-wrap:wrap}.plan-month-item{width:19px;height:19px;min-width:19px;display:grid;place-items:center;padding:0;border:0;border-radius:6px;background:var(--surface-soft)!important;color:var(--text);font-size:11px;box-shadow:none!important}
-.plan-month-item.good{box-shadow:inset 0 -2px 0 rgba(34,197,94,.72)!important}.plan-month-item.warn{box-shadow:inset 0 -2px 0 rgba(244,196,48,.72)!important}.plan-month-item.bad{box-shadow:inset 0 -2px 0 rgba(255,69,58,.72)!important}.plan-month-item.extra{opacity:.72}.plan-month-more{font-size:7.5px;color:var(--muted);font-weight:700}.plan-month-rest{width:4px;height:4px;border-radius:50%;background:var(--line-strong)}
-
-/* Details */
-.metric-detail,.state-detail,.activity-detail,.plan-detail,.data-detail{background:var(--bg)!important;color:var(--text)!important}.metric-detail-inner,.state-detail-inner,.activity-detail-inner,.plan-detail-shell,.data-detail-inner{color:var(--text)!important}
-.metric-detail-title,.plan-detail-title,.data-detail-section-title,.activity-analysis-title,.profile-hero-name,.profile-metric-value,.profile-zone-name,.record-podium-time,.shoe-name{color:var(--text-strong)!important}
-.metric-context,.activity-description,.plan-week-calendar-structure{color:var(--text)!important}
-.metric-footer-back{width:132px!important;min-height:42px!important;border:1px solid var(--line)!important;background:linear-gradient(180deg,var(--glass-top),var(--glass-bottom))!important;color:var(--text-strong)!important;box-shadow:var(--highlight),var(--shadow-soft)!important;backdrop-filter:blur(24px)!important;-webkit-backdrop-filter:blur(24px)!important}
-.period-control{background:var(--surface-soft)!important;border:1px solid var(--line)!important;border-radius:14px!important}.period-btn{color:var(--muted)!important;border:0!important}.period-btn.active{color:var(--blue)!important}
-.detail-stat{color:var(--text)!important}.detail-stat-value{color:var(--text-strong)!important}.detail-stat-label,.detail-stat-sub{color:var(--muted)!important}
-
-/* Charts and laps */
-.chart-grid,.activity-lap-pace-grid-line{stroke:var(--chart-grid)!important;background:var(--chart-grid)!important}.chart-label,.chart-empty{fill:var(--muted)!important;color:var(--muted)!important}
-.activity-lap-pace-axis,.activity-lap-pace-unit,.activity-lap-pace-tick{color:var(--muted)!important}.activity-lap-bars-card{background:linear-gradient(180deg,var(--glass-top),var(--glass-bottom))!important}
-.activity-lap-group,.activity-lap-row,.activity-lap-columns{background:transparent!important;color:var(--text)!important}.activity-lap-row{border-color:var(--line)!important}.activity-lap-columns{color:var(--muted)!important}
-.activity-lap-hr,.activity-lap-elev,.activity-lap-time,.activity-lap-distance,.activity-lap-index{color:var(--text)!important}
-
-/* Contextual AI */
-.activity-ai-block{display:flex;align-items:flex-start;gap:9px;margin:9px 0 11px}.activity-ai-btn{flex:0 0 42px;width:42px;height:42px;border:1px solid rgba(255,255,255,.25);border-radius:50%;background:var(--blue)!important;color:#fff!important;font-size:19px;font-weight:820;box-shadow:0 8px 26px rgba(29,155,240,.23),inset 0 1px 0 rgba(255,255,255,.30)!important}.activity-ai-btn.loading{animation:atlasAiPulse 1.15s ease-in-out infinite}
-.activity-ai-result{min-width:0;flex:1;padding:9px 11px;border:1px solid var(--line);border-radius:15px;background:linear-gradient(180deg,var(--glass-top),var(--glass-bottom));box-shadow:var(--highlight)}.activity-ai-text{color:var(--text);font-size:12.3px;line-height:1.48;font-weight:530;white-space:pre-wrap}
-.activity-ai-cost,.assistant-cost{margin-top:5px;color:var(--muted2);font-size:8.5px;line-height:1.2;font-weight:560;font-variant-numeric:tabular-nums}
-
-/* Chat fills the app; only messages scroll */
+<style id="atlas-v084-chat-style">
 body.assistant-main-active{height:100dvh!important;max-height:100dvh!important;overflow:hidden!important}
-#view-assistant.active{height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 74px)!important;min-height:0!important;overflow:hidden!important}
-.assistant-chat-canvas{overflow:hidden!important}.assistant-chat-toolbar{padding:0 1px 3px!important}.assistant-icon-btn,.assistant-history-back,.assistant-history-new{background:var(--surface-soft)!important;border:1px solid var(--line)!important;color:var(--text)!important;box-shadow:var(--highlight)!important}
-.assistant-empty{color:rgba(29,155,240,.15)!important}.assistant-message-stack{max-width:min(84%,620px);display:flex;flex-direction:column;align-items:flex-start}.assistant-message-row.user .assistant-message-stack{align-items:flex-end}.assistant-message{max-width:100%!important}
-.assistant-message-row.user .assistant-message{background:var(--blue)!important;color:#fff!important;border:0!important;box-shadow:0 5px 18px rgba(29,155,240,.15)!important}.assistant-message-row.assistant .assistant-message{color:var(--text)!important}
-.assistant-composer{margin-bottom:2px!important;background:linear-gradient(180deg,var(--glass-top),var(--glass-bottom))!important}.assistant-input{color:var(--text)!important}.assistant-input::placeholder{color:var(--muted2)!important}.assistant-send{background:var(--blue)!important;color:#fff!important}
-.assistant-history-panel{background:var(--bg)!important;color:var(--text)!important}.assistant-history-head,.assistant-history-row{border-color:var(--line)!important}.assistant-history-row{color:var(--text)!important}.assistant-history-row.active{background:var(--surface-soft)!important}.assistant-history-name{color:var(--text-strong)!important}.assistant-history-date,.assistant-history-empty,.assistant-history-delete{color:var(--muted)!important}
+body.assistant-main-active .app{height:100dvh!important;min-height:100dvh!important;overflow:hidden!important;padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 8px)!important}
+#view-assistant.active{display:flex!important;flex-direction:column!important;height:calc(100dvh - var(--nav) - env(safe-area-inset-bottom) - 8px)!important;min-height:0!important;overflow:hidden!important}
+#view-assistant>.atlas-header{flex:0 0 auto!important}
+.assistant-chat-canvas{position:relative!important;display:flex!important;flex-direction:column!important;flex:1 1 auto!important;min-height:0!important;width:100%!important;max-width:760px!important;margin:0 auto!important;overflow:hidden!important}
 
-/* Maximum-transparency Liquid Glass tab bar — main screens only */
-.nav{height:64px!important;padding:4px 5px!important;border:1px solid var(--line-strong)!important;border-radius:25px!important;background:var(--glass)!important;box-shadow:var(--highlight),0 16px 44px rgba(0,0,0,.20)!important;backdrop-filter:blur(38px) saturate(180%)!important;-webkit-backdrop-filter:blur(38px) saturate(180%)!important}
-.nav-btn{min-height:54px!important;border-radius:19px!important;background:transparent!important;color:var(--muted)!important}.nav-btn.active{color:var(--blue)!important;background:transparent!important}.nav-icon{font-size:18px!important}.nav-label{font-size:clamp(10.5px,2.8vw,12px)!important;line-height:1.05!important;font-weight:690!important;letter-spacing:-.1px!important}
-.nav .ai-btn{position:relative!important;width:52px!important;min-width:52px!important;height:52px!important;min-height:52px!important;align-self:center!important;border-radius:50%!important;background:var(--blue)!important;color:#fff!important;box-shadow:0 9px 30px rgba(29,155,240,.24),inset 0 1px 0 rgba(255,255,255,.32)!important}.ai-mark img{display:none!important}.ai-mark::after{content:"Ʌ";color:#fff;font-size:21px;font-weight:840;line-height:1}
-body.atlas-subpage-open .nav{display:none!important}
+.assistant-chat-topbar{flex:0 0 43px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 2px 5px;border-bottom:1px solid rgba(255,255,255,.055)}
+.assistant-chat-presence{display:flex;align-items:center;gap:6px;min-width:0}
+.assistant-chat-avatar{width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:#1d9bf0;color:#fff;font:800 15px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif;box-shadow:0 4px 14px rgba(29,155,240,.18)}
+.assistant-chat-status-dot{width:7px;height:7px;border-radius:50%;background:#32d74b;box-shadow:0 0 0 2px #000}
+.assistant-chat-actions{display:flex;align-items:center;gap:6px}
+.assistant-icon-btn{appearance:none;border:1px solid rgba(255,255,255,.08);width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.045);color:#f5f7f9;font:650 18px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+.assistant-icon-btn:active{transform:scale(.94)}
 
-/* Forms/dialogs */
-dialog{background:var(--glass-strong)!important;color:var(--text)!important;border:1px solid var(--line)!important;box-shadow:var(--shadow)!important;backdrop-filter:blur(34px) saturate(150%)!important;-webkit-backdrop-filter:blur(34px) saturate(150%)!important}dialog::backdrop{background:rgba(0,0,0,.34);backdrop-filter:blur(6px)}
-label,.form-hint,.data-system-status span,.plan-control-label{color:var(--muted)!important}.action{border:1px solid var(--line)!important;background:var(--surface-soft)!important;color:var(--text)!important;box-shadow:var(--highlight)!important}.action.danger{color:var(--red)!important}
+.assistant-messages{flex:1 1 auto;min-height:0;overflow-y:hidden;overflow-x:hidden;overscroll-behavior-y:none;-webkit-overflow-scrolling:auto;scrollbar-width:none;padding:12px 3px 14px;display:flex;flex-direction:column;gap:8px}
+.assistant-messages::-webkit-scrollbar{display:none}
+.assistant-messages.scrollable{overflow-y:auto;overscroll-behavior-y:auto;-webkit-overflow-scrolling:touch}
+.assistant-empty{flex:1;display:grid;place-items:center;min-height:0;user-select:none}
+.assistant-empty-avatar{width:62px;height:62px;display:grid;place-items:center;border-radius:50%;background:rgba(29,155,240,.075);border:1px solid rgba(29,155,240,.12);color:rgba(29,155,240,.55);font:820 27px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif}
 
-/* Light theme legacy neutralization */
-html[data-theme="light"] .plan-day-number,html[data-theme="light"] .plan-day-main-title,html[data-theme="light"] .plan-day-multi-title,html[data-theme="light"] .plan-week-calendar-number,html[data-theme="light"] .plan-week-calendar-title,html[data-theme="light"] .engine-v2-title,html[data-theme="light"] .records-title,html[data-theme="light"] .record-podium-time,html[data-theme="light"] .shoe-name,html[data-theme="light"] .activity-row-title-text,html[data-theme="light"] .profile-zone-value,html[data-theme="light"] .profile-insight-value,html[data-theme="light"] .data-system-status strong,html[data-theme="light"] .plan-analysis-details>summary,html[data-theme="light"] .plan-goal-summary-value{color:var(--text-strong)!important}
-html[data-theme="light"] .plan-week-calendar-structure,html[data-theme="light"] .activity-lap-row,html[data-theme="light"] .metric-context{color:var(--text)!important}
+.assistant-message-row{width:100%;min-width:0;display:flex;align-items:flex-end;gap:7px}
+.assistant-message-row.user{justify-content:flex-end;padding-left:17%}
+.assistant-message-row.assistant{justify-content:flex-start;padding-right:17%}
+.assistant-message-avatar{flex:0 0 27px;width:27px;height:27px;display:grid;place-items:center;margin-bottom:2px;border-radius:50%;background:#1d9bf0;color:#fff;font:800 12px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif;box-shadow:0 3px 10px rgba(29,155,240,.14)}
+.assistant-message-stack{min-width:0;max-width:100%;display:flex;flex-direction:column}
+.assistant-message-row.user .assistant-message-stack{align-items:flex-end}
+.assistant-message-row.assistant .assistant-message-stack{align-items:flex-start}
+.assistant-message{width:fit-content;max-width:100%;min-width:0;padding:9px 12px 10px;border-radius:19px;color:#f5f7f9;font:500 14.5px/1.43 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;letter-spacing:-.08px;white-space:pre-wrap;word-break:normal;overflow-wrap:break-word;text-align:left}
+.assistant-message-row.user .assistant-message{background:#1d9bf0;color:#fff;border-bottom-right-radius:6px;box-shadow:0 4px 14px rgba(29,155,240,.13)}
+.assistant-message-row.assistant .assistant-message{background:#171c21;border:1px solid rgba(255,255,255,.065);border-bottom-left-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.assistant-cost{margin:4px 4px 0;color:#65717a;font:550 8.5px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.assistant-message.assistant-error{background:rgba(55,20,22,.84);border-color:rgba(255,69,58,.24);color:#ffb9b5}
 
-@keyframes atlasAiPulse{0%,100%{box-shadow:0 8px 26px rgba(29,155,240,.20),inset 0 1px 0 rgba(255,255,255,.30)}50%{box-shadow:0 8px 34px rgba(29,155,240,.36),0 0 0 5px rgba(29,155,240,.055),inset 0 1px 0 rgba(255,255,255,.30)}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
-@media(min-width:600px){.app{max-width:880px!important}.metric-strip{gap:8px!important}.plan-month-grid{min-height:min(52vh,470px);max-height:500px}.plan-month-number{font-size:12px}.plan-month-item{width:22px;height:22px;min-width:22px;font-size:12px}}
-@media(min-width:1200px){.app{max-width:1040px!important}#view-plan,.activity-detail-inner,.metric-detail-inner,.state-detail-inner,.plan-detail-shell,.data-detail-inner{max-width:900px!important}.plan-month-grid{min-height:510px;max-height:560px}}
-</style>
+.assistant-typing{min-width:48px;min-height:37px;display:flex;align-items:center;justify-content:center;gap:4px}
+.assistant-typing span{width:5px;height:5px;border-radius:50%;background:#aab4bb;animation:atlasMsgDot 1.15s infinite ease-in-out}
+.assistant-typing span:nth-child(2){animation-delay:.14s}.assistant-typing span:nth-child(3){animation-delay:.28s}
+@keyframes atlasMsgDot{0%,70%,100%{opacity:.35;transform:translateY(0)}35%{opacity:1;transform:translateY(-3px)}}
 
+.assistant-composer{flex:0 0 auto;display:grid;grid-template-columns:minmax(0,1fr) 38px;align-items:end;gap:7px;margin:0 0 2px;padding:6px 6px 6px 12px;border:1px solid rgba(255,255,255,.10);border-radius:22px;background:rgba(20,27,34,.94);box-shadow:0 8px 26px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.045);backdrop-filter:blur(20px) saturate(135%);-webkit-backdrop-filter:blur(20px) saturate(135%)}
+.assistant-input{appearance:none;width:100%;min-height:26px;max-height:112px;resize:none;padding:4px 0 3px;border:0;outline:0;background:transparent;color:#fff;font:500 15px/1.35 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;overflow-y:auto;scrollbar-width:none}
+.assistant-input::-webkit-scrollbar{display:none}.assistant-input::placeholder{color:#74808a}
+.assistant-send{appearance:none;border:0;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:#1d9bf0;color:#fff;font:800 20px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif;box-shadow:0 4px 14px rgba(29,155,240,.16)}
+.assistant-send:disabled{opacity:.35}.assistant-send:not(:disabled):active{transform:scale(.94)}
 
-<style id="atlas-v083-polish">
-/* Neutralize legacy blue structural fills: blue remains an accent, selected state or data color. */
-.adaptive-revision-btn.primary,.engine-mini-btn,.constraint-chip.race-c,.macro-phase-chip,
-.engine-v2-day input:checked+span,.shoe-status,.data-native-avatar{
-  background:var(--surface-soft)!important;
-}
-.adaptive-revision-btn.primary,.engine-mini-btn,.constraint-chip.race-c,.macro-phase-chip,
-.engine-v2-day input:checked+span,.shoe-status{
-  color:var(--blue)!important;
-  border-color:rgba(29,155,240,.28)!important;
-}
-.activity-lap-row.selected{
-  background:var(--surface-soft)!important;
-  box-shadow:inset 3px 0 0 var(--blue)!important;
-}
-@media(hover:hover){
-  .nav-btn:hover{background:transparent!important;color:var(--text)!important}
-  .nav-btn.active:hover{color:var(--blue)!important}
-}
-body:has(dialog[open]) .nav{display:none!important}
+.assistant-history-panel{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;background:#000;opacity:0;pointer-events:none;transform:translateX(14px);transition:opacity .16s ease,transform .16s ease}
+.assistant-history-panel.open{opacity:1;pointer-events:auto;transform:none}
+.assistant-history-head{flex:0 0 49px;display:grid;grid-template-columns:38px 1fr 38px;align-items:center;gap:6px;border-bottom:1px solid rgba(255,255,255,.065)}
+.assistant-history-back,.assistant-history-new{appearance:none;border:0;width:36px;height:36px;display:grid;place-items:center;border-radius:50%;background:transparent;color:#1d9bf0;font:650 22px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif}
+.assistant-history-title{color:#fff;text-align:center;font:750 17px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif}
+.assistant-history-list{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 12px}
+.assistant-history-row{appearance:none;width:100%;min-height:61px;display:grid;grid-template-columns:minmax(0,1fr) 35px;align-items:center;gap:8px;padding:8px 8px 8px 13px;border:0;border-bottom:1px solid rgba(255,255,255,.06);background:transparent;color:#fff;text-align:left}
+.assistant-history-row.active{background:rgba(255,255,255,.035)}
+.assistant-history-copy{min-width:0;display:flex;flex-direction:column;gap:4px}
+.assistant-history-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#f5f7f9;font:680 14.5px/1.25 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
+.assistant-history-date{color:#69747d;font:550 10.5px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
+.assistant-history-delete{width:30px;height:30px;display:grid;place-items:center;border-radius:50%;color:#68737c;font-size:11px}
+.assistant-history-empty{padding:34px 12px;text-align:center;color:#6f7b84;font:550 13px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
+body.assistant-history-open .nav{display:none!important}
 
-/* Theme transition is short and quiet, including glass surfaces. */
-.training-state,.metric-card,.activity-list,.plan-overview-card,.plan-summary,.profile-home-card,
-.profile-home-links,.profile-appearance,.data-native-list,.data-system-card,.profile-zone-card,
-.records-card,.record-podium,.shoe-card,.chart-card,.activity-chart-card,.activity-lap-bars-card,
-.plan-month-grid,.assistant-composer,.assistant-message{
-  transition:background-color .22s ease,border-color .22s ease,box-shadow .22s ease,color .22s ease!important;
-}
-
-/* Assistant viewport: reserve exactly the floating tab bar and never create page scroll. */
-body.assistant-main-active .app{
-  height:100dvh!important;
-  min-height:100dvh!important;
-  overflow:hidden!important;
-  padding-bottom:calc(72px + env(safe-area-inset-bottom))!important;
-}
-body.assistant-main-active #view-assistant.active{
-  max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 72px)!important;
-}
-
-/* Light mode refinements for controls that used legacy dark fills. */
-html[data-theme="light"] .activities-select,
-html[data-theme="light"] .activities-search,
-html[data-theme="light"] .shoe-limit-input,
-html[data-theme="light"] dialog input,
-html[data-theme="light"] dialog select,
-html[data-theme="light"] dialog textarea{
-  background:rgba(0,0,0,.025)!important;
-  color:var(--text)!important;
-}
-html[data-theme="light"] .chart-touch-readout,
-html[data-theme="light"] .activity-chart-readout{
-  background:rgba(255,255,255,.92)!important;
-  color:var(--text)!important;
-  border-color:var(--line)!important;
-}
+@media(max-width:380px){.assistant-message-row.user{padding-left:12%}.assistant-message-row.assistant{padding-right:12%}.assistant-message{font-size:14px}}
+@media(min-width:600px){.assistant-chat-canvas{max-width:700px!important}.assistant-message-row.user{padding-left:23%}.assistant-message-row.assistant{padding-right:23%}.assistant-message{font-size:14.7px}}
+@media(min-width:1200px){.assistant-chat-canvas{max-width:720px!important}.assistant-message-row.user{padding-left:28%}.assistant-message-row.assistant{padding-right:28%}}
+@media(prefers-reduced-motion:reduce){.assistant-history-panel,.assistant-typing span{animation:none!important;transition:none!important}}
 </style>
 
 </body>
