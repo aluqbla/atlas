@@ -956,19 +956,16 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
   <div class="activity-detail-inner">
     <div class="metric-detail-head">
       <div class="metric-back-row"><button class="metric-back" id="activityDetailBack" aria-label="Volver">‹</button></div>
-      <div class="metric-title-row"><div class="metric-detail-emoji" id="activityDetailEmoji">🏃🏻‍♂️</div><div class="metric-detail-title" id="activityDetailTitle">Actividad</div></div>
+      <div class="metric-title-row activity-title-row"><div class="metric-detail-emoji" id="activityDetailEmoji">🏃🏻‍♂️</div><div class="metric-detail-title" id="activityDetailTitle">Actividad</div><button class="activity-ai-btn" id="activityAiBtn" type="button" aria-label="Analizar esta actividad con ATLAS" title="Analizar con ATLAS"><span class="activity-ai-mark"><img class="activity-ai-icon" src="data:image/png;base64,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" alt="Ʌ"></span></button></div>
     </div>
     <div class="activity-top-meta"><div class="activity-detail-date" id="activityDetailDate"></div><div class="activity-top-perception hidden" id="activityPerception"></div></div>
     <div class="activity-map" id="activityMap"><div class="activity-map-empty">Cargando recorrido…</div></div>
     <div class="activity-detail-loading" id="activityDetailLoading">Actualizando información de Intervals.icu…</div>
     <div class="activity-equipment hidden" id="activityEquipment"></div>
     <div class="activity-primary" id="activityPrimary"></div>
-    <div class="activity-ai-zone">
-      <button class="activity-ai-btn" id="activityAiBtn" type="button" aria-label="Analizar esta actividad con ATLAS" title="Analizar con ATLAS"><span class="activity-ai-mark">Ʌ</span></button>
-      <div class="activity-ai-result hidden" id="activityAiResult" aria-live="polite">
-        <div class="activity-ai-text" id="activityAiText"></div>
-        <div class="activity-ai-cost" id="activityAiCost"></div>
-      </div>
+    <div class="activity-ai-result hidden" id="activityAiResult" aria-live="polite">
+      <div class="activity-ai-text" id="activityAiText"></div>
+      <div class="activity-ai-cost" id="activityAiCost"></div>
     </div>
     <div class="activity-laps hidden" id="activityLaps">
       <div class="activity-lap-bars-card">
@@ -1715,7 +1712,7 @@ html,body{overscroll-behavior-y:none}
 
 (()=>{
 "use strict";
-const APP_VERSION="0.85.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="0.86.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits","chats"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -2025,6 +2022,7 @@ function openAssistantHistory(){
   ui.assistantHistoryPanel.classList.add("open");
   ui.assistantHistoryPanel.setAttribute("aria-hidden","false");
   document.body.classList.add("assistant-history-open");
+  setAtlasSubpageNavHidden(true);
   scheduleAtlasScrollAudit();
 }
 function closeAssistantHistory(){
@@ -2032,6 +2030,7 @@ function closeAssistantHistory(){
   ui.assistantHistoryPanel.classList.remove("open");
   ui.assistantHistoryPanel.setAttribute("aria-hidden","true");
   document.body.classList.remove("assistant-history-open");
+  refreshAtlasSubpageNav();
   scheduleAtlasScrollAudit();
 }
 function handleAssistantHistoryClick(event){const del=event.target.closest("[data-chat-delete]");if(del){event.stopPropagation();deleteAssistantConversation(del.dataset.chatDelete);return;}const row=event.target.closest("[data-chat-id]");if(!row)return;currentAssistantChatId=row.dataset.chatId;assistantPendingError="";closeAssistantHistory();renderAssistantChat();requestAnimationFrame(()=>scrollAssistantToBottom(false));}
@@ -2152,8 +2151,23 @@ const METRIC_DETAIL_CONFIG={
  "Frescura":{emoji:"⚡",key:"fresh",title:"Estado de forma"},
  "Volumen":{emoji:"🏃🏻‍♂️",key:"volume",title:"Volumen"}
 };
-function openMetricDetail(name){if(!METRIC_DETAIL_CONFIG[name])return;currentMetricDetail=name;currentMetricDays=7;currentMetricEnd=fmtDate(new Date());resetChartZoom();ui.metricPeriodControl.querySelectorAll(".period-btn").forEach(x=>x.classList.toggle("active",x.dataset.days==="7"));ui.metricDetail.classList.add("open");ui.metricDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";renderMetricDetail();scheduleAtlasScrollAudit();}
-function closeMetricDetail(){ui.metricDetail.classList.remove("open");ui.metricDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";currentMetricDetail=null;currentMetricEnd=null;currentChartState=null;hideChartReadout();resetChartZoom();scheduleAtlasScrollAudit();}
+function openMetricDetail(name){
+  if(!METRIC_DETAIL_CONFIG[name])return;
+  currentMetricDetail=name;currentMetricDays=7;currentMetricEnd=fmtDate(new Date());
+  resetChartZoom();
+  ui.metricPeriodControl.querySelectorAll(".period-btn").forEach(x=>x.classList.toggle("active",x.dataset.days==="7"));
+  ui.metricDetail.classList.add("open");ui.metricDetail.setAttribute("aria-hidden","false");
+  setAtlasSubpageNavHidden(true);
+  document.body.style.overflow="hidden";
+  renderMetricDetail();scheduleAtlasScrollAudit();
+}
+function closeMetricDetail(){
+  ui.metricDetail.classList.remove("open");ui.metricDetail.setAttribute("aria-hidden","true");
+  document.body.style.overflow="";
+  currentMetricDetail=null;currentMetricEnd=null;currentChartState=null;
+  hideChartReadout();resetChartZoom();
+  refreshAtlasSubpageNav();scheduleAtlasScrollAudit();
+}
 function startOfMonthISO(s){return String(s).slice(0,7)+"-01";}
 function startOfYearISO(s){return String(s).slice(0,4)+"-01-01";}
 function endOfMonthISO(s){const[y,m]=String(s).slice(0,7).split("-").map(Number);return new Date(Date.UTC(y,m,0)).toISOString().slice(0,10);}
@@ -2245,6 +2259,24 @@ function formatStatDate(s){const[y,m,d]=s.split("-").map(Number);const month=new
 
 let atlasScrollAuditFrame=0;
 
+
+function setAtlasSubpageNavHidden(hidden){
+  document.body.classList.toggle("atlas-subpage-open",Boolean(hidden));
+}
+function refreshAtlasSubpageNav(){
+  const open=Boolean(
+    ui.activityDetail?.classList.contains("open")||
+    ui.metricDetail?.classList.contains("open")||
+    ui.stateDetail?.classList.contains("open")||
+    qsa(".data-detail").some(x=>!x.classList.contains("hidden"))||
+    qsa(".plan-detail").some(x=>!x.classList.contains("hidden"))||
+    document.querySelector("dialog[open]")||
+    ui.assistantHistoryPanel?.classList.contains("open")
+  );
+  setAtlasSubpageNavHidden(open);
+  return open;
+}
+
 function atlasOpenOverlay(){
   if(ui.activityDetail?.classList.contains("open"))return ui.activityDetail;
   const data=qsa(".data-detail").find(x=>!x.classList.contains("hidden"));
@@ -2267,9 +2299,7 @@ function auditAtlasScrollState(){
   atlasScrollAuditFrame=0;
   const root=document.documentElement;
   const overlay=atlasOpenOverlay();
-  const dialogOpen=!!document.querySelector("dialog[open]");
-  const assistantHistory=!!ui.assistantHistoryPanel?.classList.contains("open");
-  document.body.classList.toggle("atlas-subpage-open",Boolean(overlay||dialogOpen||assistantHistory));
+  refreshAtlasSubpageNav();
 
   if(overlay){
     root.classList.remove("atlas-main-scroll-locked");
@@ -2284,8 +2314,7 @@ function auditAtlasScrollState(){
     overlay.classList.add("atlas-scrollable");
 
     requestAnimationFrame(()=>{
-      const needs=overlay.scrollHeight>overlay.clientHeight+2;
-      atlasSetOverflowClass(overlay,needs);
+      atlasSetOverflowClass(overlay,overlay.scrollHeight>overlay.clientHeight+2);
     });
     return;
   }
@@ -2368,6 +2397,7 @@ function openDataDetail(name){
   qsa(".data-detail").forEach(x=>{x.classList.add("hidden");x.setAttribute("aria-hidden","true");});
   detail.classList.remove("hidden");detail.setAttribute("aria-hidden","false");
   document.body.classList.add("profile-detail-open");
+  setAtlasSubpageNavHidden(true);
   document.body.style.overflow="hidden";
   detail.scrollTop=0;
   if(name==="records")loadRunningRecords().catch(error=>{console.error("ɅTLɅS · mejores marcas",error);renderRunningRecordsError(error);});
@@ -2377,7 +2407,7 @@ function closeDataDetail(){
   qsa(".data-detail").forEach(x=>{x.classList.add("hidden");x.setAttribute("aria-hidden","true");});
   document.body.classList.remove("profile-detail-open");
   document.body.style.overflow="";
-  scheduleAtlasScrollAudit();
+  refreshAtlasSubpageNav();scheduleAtlasScrollAudit();
 }
 function togglePanel(name){const target=$(`panel-${name}`);if(!target)return;const open=!target.classList.contains("active");document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));if(open){target.classList.add("active");if(name==="records")loadRunningRecords().catch(error=>{console.error("ɅTLɅS · mejores marcas",error);renderRunningRecordsError(error);});setTimeout(()=>target.scrollIntoView({behavior:"smooth",block:"nearest"}),20);}}
 function toast(message,isError=false){clearTimeout(toastTimer);if(!ui.toast){console[isError?"error":"log"](message);return;}ui.toast.textContent=message;ui.toast.className="toast show"+(isError?" error":"");toastTimer=setTimeout(()=>{if(ui.toast)ui.toast.className="toast";},2600);}
@@ -5229,6 +5259,7 @@ async function openActivityDetail(id){
 
   ui.activityDetail.classList.add("open");
   ui.activityDetail.setAttribute("aria-hidden","false");
+  setAtlasSubpageNavHidden(true);
   document.body.style.overflow="hidden";
   renderActivityDetail(a);
   scheduleAtlasScrollAudit();
@@ -5294,6 +5325,7 @@ function closeActivityDetail(){
   ui.activityMap.classList.remove("hidden");
   ui.activityMap.innerHTML='<div class="activity-map-empty">Cargando recorrido…</div>';
   ui.activityDetailLoading.classList.remove("active");
+  refreshAtlasSubpageNav();
   scheduleAtlasScrollAudit();
 }
 function activityPower(a){const n=Number(pick(a,["average_watts","icu_average_watts"])??a?.power?.averageWatts??a?.power?.weightedAverageWatts);return Number.isFinite(n)&&n>0?n:null;}
@@ -5784,8 +5816,17 @@ function renderAtlasState(state){currentAtlasState=state;
  if(!state){ui.trainingStateScore.textContent="—";ui.trainingStateBtn.className="training-state";ui.trainingStateCircle.style.setProperty("--score-pct","0%");ui.trainingStateWord.textContent="Sin datos";ui.trainingStateNote.textContent="Necesito más métricas recientes";if(ui.stateDetail?.classList.contains("open"))renderStateDetail();return;}
  ui.trainingStateScore.textContent=String(state.score);ui.trainingStateBtn.className=`training-state state-${state.band.tone}`;ui.trainingStateCircle.style.setProperty("--score-pct",`${state.score}%`);ui.trainingStateWord.textContent=state.band.label;ui.trainingStateNote.textContent=state.note;if(ui.stateDetail?.classList.contains("open"))renderStateDetail();
 }
-function openStateDetail(){ui.stateDetail.classList.add("open");ui.stateDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";renderStateDetail();scheduleAtlasScrollAudit();}
-function closeStateDetail(){ui.stateDetail.classList.remove("open");ui.stateDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";scheduleAtlasScrollAudit();}
+function openStateDetail(){
+  ui.stateDetail.classList.add("open");ui.stateDetail.setAttribute("aria-hidden","false");
+  setAtlasSubpageNavHidden(true);
+  document.body.style.overflow="hidden";
+  renderStateDetail();scheduleAtlasScrollAudit();
+}
+function closeStateDetail(){
+  ui.stateDetail.classList.remove("open");ui.stateDetail.setAttribute("aria-hidden","true");
+  document.body.style.overflow="";
+  refreshAtlasSubpageNav();scheduleAtlasScrollAudit();
+}
 function renderStateDetail(){const s=currentAtlasState;if(!s){ui.stateDetailHero.className="state-detail-card";ui.stateDetailRing.style.setProperty("--score-pct","0%");ui.stateDetailScore.textContent="—";ui.stateDetailWord.textContent="Sin datos";ui.stateDetailNote.textContent="Necesito métricas de salud recientes";ui.stateDetailMeta.textContent=fullTodayDate();ui.stateFactors.innerHTML='<div class="state-factor"><div class="state-factor-context">No hay suficientes métricas recientes para calcular el Estado ɅTLɅS.</div></div>';ui.stateBaseScore.textContent="—";ui.stateRecoveryPenalty.textContent="—";ui.stateLimiter.className="state-limiter";ui.stateLimiter.textContent="";return;}
  ui.stateDetailHero.className=`state-detail-card state-${s.band.tone}`;ui.stateDetailRing.style.setProperty("--score-pct",`${s.score}%`);ui.stateDetailScore.textContent=String(s.score);ui.stateDetailWord.textContent=s.band.label;ui.stateDetailNote.textContent=s.note;ui.stateDetailMeta.textContent=fullTodayDate();
  const sleepContext=()=>{const parts=[];if(Number.isFinite(s.sleepHours))parts.push(formatSleepHM(s.sleepHours*3600));if(s.sleepQuality?.label)parts.push(s.sleepQuality.label);if(Number.isFinite(s.sleepScore))parts.push(`puntuación ${formatNatural(s.sleepScore,0)}`);return parts.length?parts.join(" · "):"Sin datos recientes";};
@@ -7254,6 +7295,165 @@ body:has(dialog[open]) .nav{
 @media(min-width:1200px){
   html,body,.app{background:#000!important}
   .nav{bottom:16px!important}
+}
+</style>
+
+
+<style id="atlas-v086-effective-fixes">
+/* ===== v0.86 · cambios efectivos y estructurales ===== */
+
+/* NAV: hide from the DOM state itself — no dependency on async audit. */
+body:has(#activityDetail.open) .nav,
+body:has(#metricDetail.open) .nav,
+body:has(#stateDetail.open) .nav,
+body:has(.data-detail:not(.hidden)) .nav,
+body:has(.plan-detail:not(.hidden)) .nav,
+body:has(dialog[open]) .nav,
+body:has(#assistantHistoryPanel.open) .nav,
+body.atlas-subpage-open .nav{
+  display:none!important;
+}
+
+/* On root screens the bar is always physically pinned to the viewport bottom. */
+body:not(.atlas-subpage-open)>.nav,
+body:not(.atlas-subpage-open) .nav{
+  position:fixed!important;
+  top:auto!important;
+  right:auto!important;
+  left:50%!important;
+  bottom:calc(8px + env(safe-area-inset-bottom))!important;
+  margin:0!important;
+  transform:translate3d(-50%,0,0)!important;
+}
+
+/* Activity AI: same visual hierarchy as the central tab button, now in the title bar. */
+.activity-title-row{width:100%!important;min-width:0!important}
+.activity-title-row .metric-detail-title{min-width:0!important;flex:1 1 auto!important}
+.activity-title-row .activity-ai-btn{
+  margin-left:auto!important;
+  flex:0 0 58px!important;
+  width:58px!important;
+  height:58px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:50%!important;
+  border:2px solid rgba(255,255,255,.12)!important;
+  background:var(--blue)!important;
+  box-shadow:0 9px 24px rgba(29,155,240,.35)!important;
+  padding:0!important;
+  overflow:hidden!important;
+}
+.activity-ai-mark{
+  width:58px!important;
+  height:58px!important;
+  display:grid!important;
+  place-items:center!important;
+}
+.activity-ai-icon{
+  width:38px!important;
+  height:30px!important;
+  display:block!important;
+  object-fit:contain!important;
+}
+.activity-ai-btn.loading{animation:atlasActivityAiPulse 1.05s ease-in-out infinite!important}
+.activity-ai-result{
+  width:100%!important;
+  margin:9px 0 11px!important;
+  padding:10px 11px!important;
+  border:1.5px solid rgba(255,255,255,.16)!important;
+  border-radius:15px!important;
+  background:#000!important;
+}
+
+/* Best marks: unmistakably larger. */
+.records-card-grid{gap:12px!important}
+.record-podium{border-width:1.5px!important}
+.record-podium-head{min-height:54px!important;padding:13px 14px!important}
+.record-podium-title{
+  font-size:22px!important;
+  line-height:1.15!important;
+  font-weight:800!important;
+  letter-spacing:-.35px!important;
+}
+.record-podium-emoji{font-size:25px!important}
+.record-podium-row{
+  min-height:63px!important;
+  grid-template-columns:38px minmax(0,1.05fr) minmax(0,1fr) minmax(0,1.12fr)!important;
+  gap:0!important;
+  padding:11px 8px!important;
+}
+.record-rank{font-size:25px!important}
+.record-podium-value{
+  position:relative!important;
+  padding:0 9px!important;
+  font-size:19px!important;
+  line-height:1.18!important;
+  font-weight:790!important;
+}
+.record-podium-pace{
+  font-size:16.4px!important;
+  line-height:1.2!important;
+  font-weight:760!important;
+}
+.record-podium-date{
+  font-size:14.6px!important;
+  line-height:1.22!important;
+  font-weight:650!important;
+}
+.record-podium-value+.record-podium-value::before{
+  content:""!important;
+  position:absolute!important;
+  left:0!important;
+  top:15%!important;
+  bottom:15%!important;
+  width:1px!important;
+  background:rgba(255,255,255,.16)!important;
+}
+
+/* Weekly plan: only a small but real vertical reduction. */
+.plan-day-head,
+.plan-day-head:not(.multi-session),
+#sessionGeneratorList .plan-week-calendar-head{
+  min-height:52px!important;
+  padding-top:3px!important;
+  padding-bottom:3px!important;
+}
+.plan-day-multi-item{
+  padding-top:3px!important;
+  padding-bottom:3px!important;
+}
+
+/* Pure OLED black and slightly stronger structural edges. */
+html,body,.app,.view,
+.metric-detail,.state-detail,.activity-detail,.plan-detail,.data-detail{
+  background:#000!important;
+}
+.training-state,.metric-card,.activity-list,.plan-days,.plan-summary,.plan-overview-card,
+.profile-home-card,.profile-home-links,.data-native-list,.data-system-card,
+.profile-zone-card,.record-podium,.shoe-card,.activity-primary,.activity-equipment,
+.activity-map,.activity-chart-card,.activity-lap-bars-card,.chart-card,.detail-stats,
+.metric-context,.state-detail-card,.state-calc-grid,.state-bands,.plan-detail-card,
+.plan-week-calendar{
+  border-width:1.5px!important;
+  border-color:rgba(255,255,255,.16)!important;
+}
+
+/* Refraction effect made perceptible while keeping high transparency. */
+.nav{
+  background:
+    radial-gradient(120px 74px at var(--glass-x,50%) var(--glass-y,34%),rgba(255,255,255,.145),rgba(255,255,255,.035) 38%,transparent 70%),
+    linear-gradient(180deg,rgba(255,255,255,.078),rgba(255,255,255,.018) 42%,rgba(0,0,0,.10))!important;
+  -webkit-backdrop-filter:blur(29px) saturate(225%) contrast(1.09)!important;
+  backdrop-filter:blur(29px) saturate(225%) contrast(1.09)!important;
+  border-width:1.5px!important;
+}
+
+/* Force the activity analysis button above the fold on compact iPhones. */
+@media(max-width:430px){
+  .activity-detail .metric-detail-head{margin-bottom:7px!important}
+  .activity-title-row .activity-ai-btn{width:54px!important;height:54px!important;flex-basis:54px!important}
+  .activity-ai-mark{width:54px!important;height:54px!important}
+  .activity-ai-icon{width:35px!important;height:28px!important}
 }
 </style>
 
