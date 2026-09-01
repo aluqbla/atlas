@@ -1217,7 +1217,7 @@ input[type="date"]::-webkit-date-and-time-value{display:flex!important;align-ite
       </button>
       <button class="session-generator-card" id="sessionGeneratorCard" type="button">
         <span class="engine-v2-icon">📝</span>
-        <span class="engine-v2-copy"><span class="engine-v2-title" id="sessionGeneratorCardTitle">Sesiones propuestas</span><span class="engine-v2-meta" id="sessionGeneratorMeta">Pendiente de distribución semanal</span></span>
+        <span class="engine-v2-copy"><span class="engine-v2-title" id="sessionGeneratorCardTitle">Entrenamientos</span><span class="engine-v2-meta" id="sessionGeneratorMeta">Pendiente de distribución semanal</span></span>
         <span class="engine-v2-arrow">›</span>
       </button>
       <button class="adaptive-card" id="adaptiveEngineCard" type="button">
@@ -1803,7 +1803,7 @@ html,body{overscroll-behavior-y:none}
 
 (()=>{
 "use strict";
-const APP_VERSION="0.102.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="0.103.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits","chats"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -3182,6 +3182,26 @@ function profilePerformanceValueHtml(value){
   if(raw.endsWith(' ppm'))return `<span class="profile-dashboard-performance-main">${esc(raw.replace(/ ppm$/,''))}</span><span class="profile-dashboard-performance-unit"> ppm</span>`;
   return `<span class="profile-dashboard-performance-main">${esc(raw)}</span>`;
 }
+
+function fitCommonTextWidth(elements,maxSize,minSize){
+  const nodes=[...elements].filter(Boolean);if(!nodes.length)return;
+  let common=maxSize;
+  for(const el of nodes){
+    let size=maxSize;
+    el.style.setProperty("font-size",`${size}px`,"important");
+    while(size>minSize&&el.scrollWidth>el.clientWidth){size-=.25;el.style.setProperty("font-size",`${size}px`,"important");}
+    common=Math.min(common,size);
+  }
+  nodes.forEach(el=>el.style.setProperty("font-size",`${common}px`,"important"));
+}
+function fitProfileDashboardRecordsTypography(){
+  const root=$("profileDashboardRecords");if(!root)return;
+  fitCommonTextWidth(root.querySelectorAll(".profile-dashboard-record-distance-label:not(.longest)"),13.5,10.5);
+  fitCommonTextWidth(root.querySelectorAll(".profile-dashboard-record-cell-mark"),16.5,12);
+  fitCommonTextWidth(root.querySelectorAll(".profile-dashboard-record-cell-meta"),10.8,8.2);
+  root.querySelectorAll(".profile-dashboard-record-distance-label.longest").forEach(el=>fitTextToWidth(el,11.5,9));
+}
+
 function renderProfileDashboardRecords(records=currentRunningRecords){
   const box=$("profileDashboardRecords");
   if(!box)return;
@@ -3229,10 +3249,11 @@ function renderProfileDashboardRecords(records=currentRunningRecords){
       return best?.id?`<button class="profile-dashboard-record-cell" type="button" data-record-activity-id="${esc(best.id)}">${inner}</button>`:`<span class="profile-dashboard-record-cell">${inner}</span>`;
     }).join("");
 
-    return `<div class="profile-dashboard-record-table-row"><div class="profile-dashboard-record-distance-label">${esc(section.label)}</div>${cells}</div>`;
+    const distanceLabel=section.key==="longest"?'<span>Distancia</span><span>más larga</span>':esc(section.label);
+    return `<div class="profile-dashboard-record-table-row"><div class="profile-dashboard-record-distance-label${section.key==="longest"?" longest":""}">${distanceLabel}</div>${cells}</div>`;
   }).join("");
 
-  box.innerHTML=head+rows;
+  box.innerHTML=head+rows;requestAnimationFrame(fitProfileDashboardRecordsTypography);
 }
 
 function profileZoneColorEmoji(index){return ["🔵","🟢","🟡","🟠","🔴","🟣"][index]||"⚪";}
@@ -4638,8 +4659,7 @@ async function publishCurrentPlan(){
 }
 function renderSessionGenerator(){const s=currentSessionPlan,state=currentPlanPublishState(),published=["published","dirty","error","format-update","engine-update"].includes(state),title=published?"Sesiones del plan":"Sesiones propuestas";ui.sessionGeneratorDate.textContent="";if(ui.sessionGeneratorTitle)ui.sessionGeneratorTitle.textContent=title;if(ui.sessionGeneratorListTitle)ui.sessionGeneratorListTitle.textContent="";if(!s?.ok){ui.sessionGeneratorWeeks.textContent="—";ui.sessionGeneratorRuns.textContent="—";ui.sessionGeneratorStrength.textContent="—";ui.sessionGeneratorAudit.innerHTML="";ui.sessionGeneratorList.innerHTML='<div class="engine-list-empty">No hay distribución suficiente para generar sesiones.</div>';ui.sessionGeneratorReading.textContent="";return;}ui.sessionGeneratorWeeks.textContent=String(s.weeks.length);ui.sessionGeneratorRuns.textContent=String(s.runCount);ui.sessionGeneratorStrength.textContent=String(s.strengthCount);ui.sessionGeneratorAudit.innerHTML="";ui.sessionGeneratorList.innerHTML=s.weeks.map(w=>`<div class="session-preview-week"><div class="session-preview-head"><div class="session-preview-date">${esc(sessionWeekCompactRange(w.start,w.end))}</div><div class="session-preview-title">Semana ${w.weekIndex} · ${esc(w.phase)} · ${esc(w.role)}</div>${w.secondaryFocus?`<span class="secondary-focus-chip">🏁 ${esc(secondaryFocusLabel(w.secondaryFocus))} · ${w.secondaryFocus.weeksToRace} sem</span>`:""}</div>${renderSessionPreviewWeekDays(w)}</div>`).join("");ui.sessionGeneratorReading.textContent="";renderPlanPublicationStatus();requestAnimationFrame(fitSessionPreviewHeadings);}
 function renderSessionGeneratorCard(){
-  const state=currentPlanPublishState(),published=["published","dirty","error","format-update","engine-update"].includes(state);
-  if(ui.sessionGeneratorCardTitle)ui.sessionGeneratorCardTitle.textContent=published?"Sesiones del plan":"Sesiones propuestas";
+  if(ui.sessionGeneratorCardTitle)ui.sessionGeneratorCardTitle.textContent="Entrenamientos";
   if(ui.sessionGeneratorMeta)ui.sessionGeneratorMeta.textContent="";
 }
 function sessionPreviewIcon(type){
@@ -5552,7 +5572,7 @@ function renderPlan(){
     const d=new Date(start);d.setDate(start.getDate()+i);const key=planDateKey(d),dp=compactActivityDate(key),dayEvents=events.filter(e=>planEventDate(e)===key),dayActivities=activities.filter(a=>activityDate(a)===key).sort((a,b)=>activityStamp(a).localeCompare(activityStamp(b))),sessions=[];
     for(const e of dayEvents)sessions.push(planExecutionSessionForEvent(e));
     for(const a of dayActivities){const id=String(a.id);if(matchedIds.has(id))continue;sessions.push({kind:"extra",icon:activityIcon(a),title:activityName(a),metaParts:planActivityMetaParts(a),activityId:id,tone:"pending",showExtra:planDateInsideAtlasPlan(key)});}
-    const content=sessions.length?`<div class="plan-session-list">${sessions.map(renderSession).join("")}</div>`:`<div class="plan-rest-copy"></div>`;
+    const content=sessions.length?`<div class="plan-session-list">${sessions.map(renderSession).join("")}</div>`:`<div class="plan-rest-copy">${planDateInsideAtlasPlan(key)?"🛌 Descanso":""}</div>`;
     markup.push(`<section class="plan-day${key===today?" today":""}"><div class="activity-row plan-week-activity-row"><div class="activity-row-date"><span class="activity-row-weekday">${dp.weekday}</span><span class="activity-row-day">${dp.day}</span><span class="activity-row-month">${dp.month}</span></div><span class="activity-row-sep" aria-hidden="true"></span><div class="activity-row-copy">${content}</div></div></section>`);
   }
   ui.planDays.innerHTML=markup.join("");requestAnimationFrame(()=>{fitPlanTitles();fitActivityTitles();});
@@ -5695,8 +5715,16 @@ function activityGearRefs(a){const raw=a?.gear,out=[];const add=x=>{if(!x)return
 function activityUsesGear(a,id,name){return activityGearRefs(a).some(g=>(id&&g.id===String(id))||(!id&&name&&g.name===name));}
 function gearAccumulatedKm(id,name){const meters=currentActivities.reduce((sum,a)=>activityUsesGear(a,id,name)?sum+(activityDistanceM(a)||0):sum,0);return meters>0?meters/1000:null;}
 function activityGearDetails(a){return activityGearRefs(a).map(ref=>{const g=ref.id?currentGear.find(x=>String(x?.id)===ref.id):null,name=ref.name||g?.name||g?.display_name||g?.label||"Zapatillas",km=gearAccumulatedKm(ref.id,name);return{id:ref.id,name,km};}).filter((x,i,arr)=>arr.findIndex(y=>(x.id&&y.id===x.id)||(!x.id&&y.name===x.name))===i);}
-function fitTextToWidth(el,maxSize,minSize){if(!el)return;el.style.fontSize=`${maxSize}px`;let size=maxSize;while(size>minSize&&el.scrollWidth>el.clientWidth){size-=.5;el.style.fontSize=`${size}px`;}}
-function fitActivityTitles(){document.querySelectorAll(".activity-row-title-text,#sessionGeneratorList .plan-week-calendar-title").forEach(el=>fitTextToWidth(el,17.5,11.5));}
+function fitTextToWidth(el,maxSize,minSize){
+  if(!el)return;
+  const apply=size=>el.style.setProperty("font-size",`${size}px`,"important");
+  let size=maxSize;
+  apply(size);
+  while(size>minSize&&el.scrollWidth>el.clientWidth){size-=.25;apply(size);}
+}
+function fitActivityTitles(){
+  document.querySelectorAll(".activity-row-title-text,#sessionGeneratorList .plan-week-calendar-title").forEach(el=>fitTextToWidth(el,18,11));
+}
 function fitActivityDetailTitle(){requestAnimationFrame(()=>fitTextToWidth(ui.activityDetailTitle,32,18));}
 function fitActivityTopMeta(){const box=document.querySelector(".activity-top-meta"),items=[ui.activityDetailDate,...ui.activityPerception.querySelectorAll(".activity-perception-chip")];if(!box||!items.length)return;let size=11.6;box.style.gap="5px";items.forEach(x=>{x.style.fontSize=`${size}px`;x.style.paddingLeft="7px";x.style.paddingRight="7px";});while(size>7.4&&box.scrollWidth>box.clientWidth+.5){size-=.2;items.forEach(x=>x.style.fontSize=`${size.toFixed(1)}px`);}if(box.scrollWidth>box.clientWidth+.5){items.forEach(x=>{x.style.paddingLeft="4px";x.style.paddingRight="4px";});box.style.gap="2px";while(size>6.8&&box.scrollWidth>box.clientWidth+.5){size-=.2;items.forEach(x=>x.style.fontSize=`${size.toFixed(1)}px`);}}}
 function formatDuration(sec){const s=Math.round(Number(sec)||0),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;return h>0?`${h}:${String(m).padStart(2,"0")}:${String(ss).padStart(2,"0")}`:`${m}:${String(ss).padStart(2,"0")}`;}
@@ -6327,8 +6355,19 @@ function closeStateDetail(){
   document.body.style.overflow="";
   refreshAtlasSubpageNav();scheduleAtlasScrollAudit();
 }
+
+function atlasStateMicroInsight(s){
+  const score=Number(s?.score);
+  if(!Number.isFinite(score))return"";
+  if(score>=95)return"Día óptimo: estás para calidad, carga alta o competir si toca. Aprovecha el momento sin añadir fatiga innecesaria.";
+  if(score>=75)return"Buen día para entrenar con calidad: la recuperación acompaña y puedes asumir carga. Si compitieras hoy, llegarías con buenas garantías.";
+  if(score>=55)return"Puedes entrenar con normalidad, pero conviene reservar el máximo esfuerzo. Prioriza control y una buena recuperación posterior.";
+  if(score>=35)return"Hoy compensa bajar la exigencia: mejor trabajo suave, técnica o fuerza controlada. Descansar también suma rendimiento.";
+  return"Prioriza recuperación y descanso: hoy el beneficio está en llegar más fresco al próximo estímulo, no en acumular más carga.";
+}
+
 function renderStateDetail(){const s=currentAtlasState;if(!s){ui.stateDetailHero.className="state-detail-card";ui.stateDetailRing.style.setProperty("--score-pct","0%");ui.stateDetailScore.textContent="—";ui.stateDetailWord.textContent="Sin datos";ui.stateDetailNote.textContent="";ui.stateDetailMeta.textContent=fullTodayDate();ui.stateFactors.className="state-factors compact-grid";ui.stateFactors.innerHTML='<div class="state-factor"><div class="state-factor-context">No hay suficientes métricas recientes para calcular el Estado ɅTLɅS.</div></div>';ui.stateBaseScore.textContent="—";ui.stateRecoveryPenalty.textContent="—";ui.stateLimiter.className="state-limiter";ui.stateLimiter.textContent="";return;}
- ui.stateDetailHero.className=`state-detail-card state-${s.band.tone}`;ui.stateDetailRing.style.setProperty("--score-pct",`${s.score}%`);ui.stateDetailScore.textContent=String(s.score);ui.stateDetailWord.textContent=s.band.label;ui.stateDetailNote.textContent="";ui.stateDetailMeta.textContent=fullTodayDate();
+ ui.stateDetailHero.className=`state-detail-card state-${s.band.tone}`;ui.stateDetailRing.style.setProperty("--score-pct",`${s.score}%`);ui.stateDetailScore.textContent=String(s.score);ui.stateDetailWord.textContent=s.band.label;ui.stateDetailNote.textContent=atlasStateMicroInsight(s);ui.stateDetailMeta.textContent=fullTodayDate();
  const sleepContext=()=>{const parts=[];if(Number.isFinite(s.sleepHours))parts.push(formatSleepHM(s.sleepHours*3600));if(s.sleepQuality?.label)parts.push(s.sleepQuality.label);if(Number.isFinite(s.sleepScore))parts.push(`puntuación ${formatNatural(s.sleepScore,0)}`);return parts.length?parts.join(" · "):"Sin datos recientes";};
  const defs=[
   {key:"hrv",icon:"🫀",name:"VFC",weight:30,context:()=>Number.isFinite(s.hrv7)?`Media 7 días · ${formatNatural(s.hrv7,1)} ms${s.hrvBaseline?` · base ${formatNatural(s.hrvBaseline.low,0)}–${formatNatural(s.hrvBaseline.high,0)}`:""}`:"Sin datos recientes"},
@@ -8990,6 +9029,223 @@ input[type="date"]::-webkit-date-and-time-value{display:flex!important;align-ite
   .profile-dashboard-performance-label{font-size:7.8px!important;}
   .profile-dashboard-performance-main{font-size:15.5px!important;}
   .profile-dashboard-performance-unit{font-size:7px!important;}
+}
+</style>
+
+
+<style id="atlas-v0103-refinement">
+/* =========================================================
+   ɅTLɅS v0.103 · refinement pass
+   ========================================================= */
+:root{
+  --atlas-glass-card:rgba(12,17,22,.55);
+  --atlas-glass-card-soft:rgba(15,21,27,.46);
+  --atlas-glass-line:rgba(255,255,255,.17);
+  --atlas-glass-depth:0 18px 42px rgba(0,0,0,.62),0 6px 16px rgba(0,0,0,.34),0 0 0 1px rgba(255,255,255,.025),inset 0 1px 0 rgba(255,255,255,.085);
+}
+
+/* More visibly raised / translucent global material. */
+body::before{
+  background:
+    radial-gradient(950px 560px at 50% -10%,rgba(29,155,240,.125),transparent 60%),
+    radial-gradient(650px 460px at 82% 82%,rgba(255,255,255,.045),transparent 68%),
+    #000!important;
+}
+.training-state,.metric-strip,.activity-list,.plan-days,.plan-summary,.plan-overview-card,
+.plan-goal-summary,#engineGoalCard,.plan-detail-card,.profile-dashboard-card,
+.profile-dashboard-performance,.profile-dashboard-zone-column,.profile-dashboard-records,
+.profile-home-card,.profile-home-links,.data-native-list,.data-system-card,.profile-insight-list,
+.profile-zone-card,.performance-zone-column,.shoe-card,.chart-card,.detail-stats,.metric-context,
+.state-detail-card,.state-calc-grid,.state-bands,.activity-primary,.activity-equipment,.activity-map,
+.activity-chart-card,.activity-lap-bars-card,.engine-v2-card,.macro-card,.weekly-target-card,
+.calendar-solver-card,.session-generator-card,.adaptive-card,.availability-card,.assistant-composer,
+.assistant-top-action,dialog,.card,.period-control,.activities-select,.activities-search,
+#sessionGeneratorList .plan-week-calendar{
+  background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.012) 38%,transparent 100%),var(--atlas-glass-card)!important;
+  border-color:var(--atlas-glass-line)!important;
+  box-shadow:var(--atlas-glass-depth)!important;
+  -webkit-backdrop-filter:blur(26px) saturate(180%)!important;
+  backdrop-filter:blur(26px) saturate(180%)!important;
+}
+
+/* TODAY: no horizontal seam; only short traditional vertical separators. */
+.today-hero-card .metric-strip{
+  border-top:0!important;
+}
+.today-hero-card .metric-card{
+  position:relative!important;
+  border-left:0!important;
+}
+.today-hero-card .metric-card::after{display:none!important;content:none!important;}
+.today-hero-card .metric-card+.metric-card::before{
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  left:0!important;
+  top:13px!important;
+  bottom:13px!important;
+  width:1px!important;
+  background:rgba(255,255,255,.12)!important;
+  border-radius:1px!important;
+}
+.today-hero-card .metric-card+.metric-card{border-left:0!important;}
+
+/* STATE detail: zero artificial whitespace; attractive two-line insight. */
+.state-detail-card .state-note{
+  display:-webkit-box!important;
+  -webkit-box-orient:vertical!important;
+  -webkit-line-clamp:2!important;
+  overflow:hidden!important;
+  max-width:34ch!important;
+  margin-top:5px!important;
+  font-size:11.5px!important;
+  line-height:1.32!important;
+  color:#c7d0d6!important;
+}
+.state-factors.compact-grid{align-items:start!important;padding-bottom:5px!important;}
+.state-factors.compact-grid .state-factor{
+  min-height:0!important;
+  padding:7px 9px 6px!important;
+  margin:0!important;
+}
+.state-factors.compact-grid .state-factor-context{margin-bottom:0!important;padding-bottom:0!important;}
+.state-factors.compact-grid .state-factor-track{margin-bottom:0!important;}
+
+/* PLAN weekly counters: slightly smaller than v0.102, still aligned with tab. */
+.plan-summary{margin-top:7px!important;margin-bottom:9px!important;padding:2px 6px!important;}
+#view-plan .plan-summary-item{padding:7px 6px!important;}
+#view-plan .plan-summary-item+.plan-summary-item::before{top:7px!important;bottom:7px!important;}
+#view-plan .plan-summary-value{font-size:20px!important;}
+#view-plan .plan-summary-label{font-size:10.5px!important;margin-top:3px!important;}
+
+/* Plan: actual ATLAS rest days show rest; empty non-plan dates remain physically blank. */
+.plan-rest-copy{height:auto!important;min-height:0!important;padding:3px 0!important;margin:0!important;overflow:visible!important;font-size:14px!important;line-height:1.15!important;font-weight:720!important;color:#c9d1d6!important;}
+.plan-rest-copy:empty{height:0!important;padding:0!important;overflow:hidden!important;}
+
+/* Session-plan view: only the rounded weekly activity card remains boxed. */
+#sessionGeneratorList .session-preview-week,
+#sessionGeneratorList .session-preview-head{
+  background:transparent!important;
+  background-image:none!important;
+  border:0!important;
+  box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+#sessionGeneratorList .session-preview-week{margin:0 0 15px!important;padding:0!important;}
+#sessionGeneratorList .session-preview-head{margin:0 2px 8px!important;padding:0!important;}
+#sessionGeneratorList .plan-week-calendar{
+  border:2px solid var(--atlas-glass-line)!important;
+  border-radius:17px!important;
+  overflow:hidden!important;
+  box-shadow:var(--atlas-glass-depth)!important;
+}
+#sessionGeneratorList .plan-week-calendar-rest{
+  font-size:17.5px!important;
+  line-height:1.12!important;
+  font-weight:780!important;
+  color:#fff!important;
+  gap:6px!important;
+}
+
+/* Plan control: one stronger outer frame around the four navigation entries. */
+.plan-home-links{
+  border:2px solid rgba(255,255,255,.19)!important;
+  border-radius:20px!important;
+  overflow:hidden!important;
+  background:rgba(12,17,22,.50)!important;
+  box-shadow:var(--atlas-glass-depth)!important;
+  -webkit-backdrop-filter:blur(24px) saturate(175%)!important;
+  backdrop-filter:blur(24px) saturate(175%)!important;
+}
+.plan-home-links>button{
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+.plan-home-links>button+button{border-top:1px solid rgba(255,255,255,.10)!important;}
+
+/* RECORDS: denser table, bigger typography, equal 25% columns. */
+.profile-dashboard-record-table-head,.profile-dashboard-record-table-row{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+}
+.profile-dashboard-record-table-head{
+  min-height:43px!important;
+  padding:5px 4px!important;
+}
+.profile-dashboard-record-head-distance{
+  font-size:11.5px!important;
+  font-weight:780!important;
+}
+.profile-dashboard-record-head-pos{
+  font-size:15px!important;
+  line-height:1!important;
+  font-weight:820!important;
+  gap:2px!important;
+}
+.profile-dashboard-record-table-row{min-height:47px!important;}
+.profile-dashboard-record-distance-label{
+  padding:5px 4px!important;
+  font-weight:790!important;
+  text-align:center!important;
+  justify-content:center!important;
+  white-space:nowrap!important;
+  line-height:1.05!important;
+}
+.profile-dashboard-record-distance-label.longest{
+  flex-direction:column!important;
+  white-space:normal!important;
+  gap:1px!important;
+}
+.profile-dashboard-record-cell{
+  min-height:47px!important;
+  padding:5px 3px!important;
+  gap:2px!important;
+}
+.profile-dashboard-record-cell::before{top:7px!important;bottom:7px!important;}
+.profile-dashboard-record-cell-mark{font-weight:820!important;line-height:1!important;}
+.profile-dashboard-record-cell-meta{font-weight:690!important;line-height:1.08!important;}
+
+/* Section headings use exactly the same typographic system as 'Agosto de 2026'. */
+.today-last-heading,
+.profile-dashboard-section-head,
+.profile-dashboard-section-title{
+  font-size:18px!important;
+  line-height:1.35!important;
+  font-weight:760!important;
+  letter-spacing:-.35px!important;
+  color:#fff!important;
+}
+
+/* Dynamic titles: CSS supplies the maximum; JS now reduces with inline !important. */
+.activity-row-title-text,#sessionGeneratorList .plan-week-calendar-title{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  font-size:18px!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+}
+
+/* NAV: more transparent Liquid Glass and stronger refraction/highlight. */
+.nav{
+  background:
+    radial-gradient(150px 86px at var(--glass-x,50%) var(--glass-y,28%),rgba(255,255,255,.23),rgba(255,255,255,.055) 42%,transparent 74%),
+    linear-gradient(180deg,rgba(255,255,255,.085),rgba(19,27,35,.24) 44%,rgba(5,9,13,.30))!important;
+  border-color:rgba(255,255,255,.22)!important;
+  box-shadow:0 20px 52px rgba(0,0,0,.52),0 0 0 1px rgba(255,255,255,.025),inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(255,255,255,.035)!important;
+  -webkit-backdrop-filter:blur(36px) saturate(225%) contrast(1.06)!important;
+  backdrop-filter:blur(36px) saturate(225%) contrast(1.06)!important;
+}
+
+@media(max-width:390px){
+  .profile-dashboard-record-head-pos{font-size:14px!important;}
+  .profile-dashboard-record-head-distance{font-size:10.5px!important;}
 }
 </style>
 
