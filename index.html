@@ -718,6 +718,108 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
   .shoe-limit-input{width:66px!important}
 }
 
+
+/* v0.101 polish */
+:root{
+  --atlas-glass-bg:linear-gradient(180deg,rgba(22,30,39,.82),rgba(10,15,21,.68));
+  --atlas-glass-bg-soft:linear-gradient(180deg,rgba(24,34,43,.70),rgba(10,15,21,.56));
+  --atlas-glass-border:rgba(255,255,255,.16);
+  --atlas-depth-shadow:0 14px 34px rgba(0,0,0,.30),0 4px 12px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.08)!important;
+}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(1200px 650px at 50% -10%,rgba(56,132,201,.16),transparent 58%),radial-gradient(800px 520px at 50% 100%,rgba(255,255,255,.05),transparent 64%);} 
+#view-today>.today-hero-card{margin:0 0 10px!important;}
+.today-hero-card{border:2px solid var(--atlas-glass-border)!important;border-radius:24px!important;overflow:hidden!important;background:var(--atlas-glass-bg)!important;-webkit-backdrop-filter:blur(24px) saturate(170%)!important;backdrop-filter:blur(24px) saturate(170%)!important;box-shadow:var(--atlas-depth-shadow)!important;}
+.today-hero-card .training-state{margin:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;padding:16px 16px 12px!important;}
+.today-hero-card .metric-strip{margin:0!important;border:0!important;border-top:1px solid rgba(255,255,255,.10)!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;padding:2px 0 0!important;}
+.today-hero-card .metric-card{background:transparent!important;border-radius:0!important;min-height:86px!important;}
+.today-hero-card .metric-card+.metric-card{border-left:1px solid rgba(255,255,255,.08)!important;}
+.today-hero-card .metric-card:nth-child(n+4){border-top:1px solid rgba(255,255,255,.08)!important;}
+.today-hero-card .metric-strip{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
+.today-hero-card .metric-value{font-size:18px!important;}
+.today-hero-card .metric-meta{font-size:10.8px!important;}
+
+.training-state,.metric-strip,.activity-list,.plan-days,.plan-summary,.plan-overview-card,.plan-goal-summary,#engineGoalCard,.plan-detail-card,.session-preview-week,.profile-dashboard-card,.profile-dashboard-performance,.profile-dashboard-zone-column,.profile-dashboard-records,.profile-home-card,.profile-home-links,.data-native-list,.data-system-card,.profile-insight-list,.profile-zone-card,.performance-zone-column,.shoe-card,.chart-card,.detail-stats,.metric-context,.state-detail-card,.state-calc-grid,.state-bands,.activity-primary,.activity-equipment,.activity-map,.activity-chart-card,.activity-lap-bars-card,.engine-v2-card,.macro-card,.weekly-target-card,.calendar-solver-card,.session-generator-card,.adaptive-card,.availability-card,.assistant-composer,.assistant-top-action,.nav,dialog,.card,.period-control,.activities-select,.activities-search,#sessionGeneratorList .plan-week-calendar,.session-preview-head{background:var(--atlas-glass-bg-soft)!important;-webkit-backdrop-filter:blur(20px) saturate(165%)!important;backdrop-filter:blur(20px) saturate(165%)!important;border-color:var(--atlas-glass-border)!important;box-shadow:var(--atlas-depth-shadow)!important;}
+.training-state,.metric-strip,.activity-list,.plan-days,.plan-summary,.plan-overview-card,.profile-dashboard-card,.profile-dashboard-performance,.profile-dashboard-zone-column,.profile-dashboard-records,.profile-home-card,.data-native-list,.data-system-card,.chart-card,.detail-stats,.metric-context,.state-detail-card,.activity-primary,.activity-chart-card,.activity-lap-bars-card,.engine-v2-card,.availability-card,.session-generator-card,.adaptive-card,.period-control,.activities-select,.activities-search{background-image:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,0) 44%)!important;}
+
+.nav{padding:8px 8px!important;gap:4px!important;border-radius:28px!important;background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(21,29,38,.42) 34%,rgba(9,14,19,.54))!important;border:2px solid rgba(255,255,255,.18)!important;box-shadow:0 16px 40px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.12)!important;-webkit-backdrop-filter:blur(30px) saturate(190%)!important;backdrop-filter:blur(30px) saturate(190%)!important;}
+.nav-btn{gap:4px!important;border-radius:18px!important;padding:4px 2px!important;color:#9ba6af!important;}
+.nav-btn.active{background:rgba(255,255,255,.12)!important;color:#fff!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 4px 14px rgba(0,0,0,.16)!important;}
+.nav-icon{font-size:20px!important;line-height:1!important;}
+.nav-label{font-size:10.6px!important;line-height:1.08!important;font-weight:760!important;letter-spacing:-.12px!important;color:inherit!important;}
+
+.activities-select,.activities-search{min-height:46px!important;font-size:15px!important;font-weight:700!important;padding-left:13px!important;padding-right:13px!important;}
+.activities-summary{font-size:12px!important;}
+.period-control{padding:4px!important;border-radius:15px!important;}
+.period-btn{font-size:13px!important;font-weight:760!important;min-height:38px!important;}
+.period-btn.active{background:rgba(255,255,255,.12)!important;color:#fff!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 3px 10px rgba(0,0,0,.20)!important;}
+
+#view-plan>.plan-overview-card{min-height:52px!important;padding:12px 14px!important;grid-template-columns:34px minmax(0,1fr) 14px!important;}
+#view-plan>.plan-overview-card .plan-overview-title{font-size:18px!important;line-height:1.16!important;font-weight:770!important;}
+.plan-summary{margin-top:10px!important;margin-bottom:14px!important;border-radius:20px!important;}
+#view-plan .plan-summary-item{padding-top:10px!important;padding-bottom:10px!important;}
+#view-plan .plan-summary-item+.plan-summary-item::before{top:9px!important;bottom:9px!important;}
+#view-plan .plan-summary-value{font-size:22px!important;line-height:1.08!important;}
+#view-plan .plan-summary-unit{font-size:10.5px!important;}
+#view-plan .plan-summary-label{font-size:11.2px!important;line-height:1.18!important;margin-top:3px!important;}
+.session-preview-date{font-size:16.5px!important;line-height:1.14!important;font-weight:760!important;color:#fff!important;letter-spacing:-.1px!important;text-transform:none!important;}
+#sessionGeneratorList .plan-week-calendar-title,.activity-row-title-text{font-size:17px!important;line-height:1.18!important;font-weight:760!important;}
+.activity-row,.plan-day-head,#sessionGeneratorList .plan-week-calendar-head{min-height:60px!important;}
+.plan-rest-copy{min-height:22px!important;}
+
+.compact-only-title{justify-content:flex-start!important;}
+.compact-only-title .profile-dashboard-link{display:none!important;}
+#view-data .profile-dashboard-link{display:none!important;}
+.profile-dashboard-performance{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:0!important;}
+.profile-dashboard-performance-cell{padding:12px 10px!important;}
+.profile-dashboard-performance-label{font-size:11px!important;line-height:1.25!important;}
+.profile-dashboard-performance-reading{display:inline-flex!important;align-items:flex-end!important;gap:2px!important;white-space:nowrap!important;}
+.profile-dashboard-performance-main{font-size:22px!important;line-height:1!important;color:#fff!important;font-weight:790!important;letter-spacing:-.45px!important;}
+.profile-dashboard-performance-unit{font-size:10px!important;line-height:1.2!important;color:var(--muted)!important;font-weight:700!important;padding-bottom:2px!important;}
+
+.profile-dashboard-records{padding:0!important;overflow:hidden!important;}
+.profile-dashboard-record-table-head,.profile-dashboard-record-table-row{display:grid;grid-template-columns:1.05fr repeat(3,minmax(0,1fr));align-items:stretch;}
+.profile-dashboard-record-table-head{padding:10px 10px 8px!important;background:rgba(255,255,255,.03)!important;border-bottom:1px solid rgba(255,255,255,.10)!important;}
+.profile-dashboard-record-table-row{border-top:1px solid rgba(255,255,255,.10)!important;min-height:62px!important;}
+.profile-dashboard-record-table-row:first-of-type{border-top:0!important;}
+.profile-dashboard-record-head-distance,.profile-dashboard-record-head-pos{display:flex;align-items:center;justify-content:center;font-size:11px;line-height:1.2;color:#d4dbe0;font-weight:760;}
+.profile-dashboard-record-head-distance{justify-content:flex-start;padding-left:2px;}
+.profile-dashboard-record-distance-label{display:flex;align-items:center;padding:0 12px;font-size:13px;font-weight:760;color:#fff;white-space:nowrap;}
+.profile-dashboard-record-cell{appearance:none;border:0;background:transparent;color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px;min-width:0;padding:8px 4px;position:relative;}
+.profile-dashboard-record-cell:not(.empty)::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:1px;background:rgba(255,255,255,.08);} 
+.profile-dashboard-record-cell.empty{color:var(--muted2);font-size:13px;font-weight:700;}
+.profile-dashboard-record-cell-mark{font-size:14px;line-height:1.05;font-weight:790;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.profile-dashboard-record-cell-meta{font-size:9.2px;line-height:1.2;color:var(--muted);font-weight:680;white-space:nowrap;}
+.profile-dashboard-records-empty{padding:18px 10px!important;font-size:10.5px!important;}
+
+.state-detail-explanation{display:none!important;}
+.state-detail-card .state-note:empty{display:none!important;}
+.state-factors.compact-grid{position:relative;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:0!important;padding:10px!important;border-top:1px solid rgba(255,255,255,.10)!important;background:rgba(0,0,0,.07)!important;}
+.state-factors.compact-grid::before,.state-factors.compact-grid::after{content:"";position:absolute;background:rgba(255,255,255,.11);pointer-events:none;}
+.state-factors.compact-grid::before{left:50%;top:12px;bottom:12px;width:1px;transform:translateX(-.5px);}
+.state-factors.compact-grid::after{left:12px;right:12px;top:50%;height:1px;transform:translateY(-.5px);}
+.state-factors.compact-grid .state-factor{padding:10px 11px!important;border-top:0!important;background:transparent!important;min-height:122px;display:flex;flex-direction:column;justify-content:flex-start;}
+.state-factors.compact-grid .state-factor-top{grid-template-columns:minmax(0,1fr) auto!important;gap:6px!important;}
+.state-factors.compact-grid .state-factor-name{font-size:13px!important;line-height:1.2!important;font-weight:740!important;}
+.state-factors.compact-grid .state-factor-score{font-size:16px!important;line-height:1.15!important;}
+.state-factor-weight-row{margin-top:2px;color:var(--muted2);font-size:10px;line-height:1.2;font-weight:700;}
+.state-factors.compact-grid .state-factor-track{height:4px!important;margin-top:7px!important;border-radius:999px!important;background:rgba(255,255,255,.08)!important;}
+.state-factors.compact-grid .state-factor-context{margin-top:6px!important;font-size:10px!important;line-height:1.32!important;color:#b8c2c9!important;}
+.state-calc-grid{margin-top:10px!important;border-radius:18px!important;}
+.state-calc-item{padding:9px 8px!important;}
+.state-calc-label{font-size:10px!important;line-height:1.25!important;}
+.state-calc-value{margin-top:3px!important;font-size:16px!important;line-height:1.15!important;font-weight:720!important;}
+.state-limiter{margin-top:8px!important;font-size:10.5px!important;line-height:1.3!important;}
+
+.activity-title-row .activity-ai-btn{width:38px!important;height:38px!important;border-radius:50%!important;background:#1d9bf0!important;display:grid!important;place-items:center!important;padding:0!important;box-shadow:0 8px 20px rgba(29,155,240,.28)!important;}
+.activity-ai-mark{width:100%!important;height:100%!important;display:grid!important;place-items:center!important;background:transparent!important;box-shadow:none!important;}
+.activity-ai-glyph{font:800 22px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif!important;color:#fff!important;display:block!important;transform:translateY(-1px)!important;}
+.activity-ai-icon{display:none!important;}
+
+input[type="date"],.plan-editor-text,select,textarea{font-size:16px!important;}
+input[type="date"]{min-height:52px!important;text-align:center!important;text-align-last:center!important;font-weight:720!important;font-variant-numeric:tabular-nums!important;}
+input[type="date"]::-webkit-date-and-time-value{display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;}
+#availabilityWeekDate,#secondaryGoalDate,#engineGoalDate{padding:0 36px!important;}
+
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -728,18 +830,20 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
     <header class="atlas-header"><img class="atlas-title" src="data:image/jpeg;base64,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JBADAIgPPDGBClMPPGqkAgAAgANItvpggrAHrrAEnPoAAIBJKAADDNHDNClLABIKCCCKrHBHDCHADvpNMIEGHFDDLDDBHDDDGFCNqKANIDMIBIFNuKHOAFACCDJnqrtLGLNPvlNMMAAABJNDDDDDLDHGLPgANFNoFIOIlKKKFKJNkPMgAOAALMCFDLFKGBGNGAAGPBEAPNJHHEEMPDKMoOBOhDCk7hADHCOvvKOPCPlCDEGAFPJPINBJLOMEEFLAGOEAFIALNJOEGiOPqAMBGIKIIHBKCEOJLPANGHsIHPMOOIDHPJJHBkALlKgujuAIiNJDsPHDLJCBGIHFMGEGNPLIIIAOLMMAGAOFGJLNoEFLABCOACAAKAIAABPIIHMIOGAPuvAPKPFKJHIPPIANFANFKIhsoALHjAKCNjPKKKEPgBPNHLHJDBEEAEAAHIECAAAGKHOPoJPBMMOBAAKAKpKhgPPGFPvLCGntIvAPFLDFPJEABAEEBCgFHEpqmDInpPLFMPvKFAEPDDGNMMMPMMNIFAFpJAAAIANqMDLmBABOEECmAAAAEBIHHiNGLCIAHOABIJLvHPFCABAFHKCBABAHJoBgBGPvrLNAKFoCLBIBPOEDPOIEAFMLNKJLGFFKFBNPNGOGmoMJPONEBAEAAEFAPvLIKANhJOJAAFKHALFFNOPFFFOJCCFAPhkOFGlvvnLECFNIKEAECBDOMKCADFGBDKKIAHEBIDOOHKMGtDACIHPDCBEFhFLANINLIAFmJJCAAMJNFPDHDDLDHDDABBEELHBNALMPDvDCFGDPgACEPHLDDHHDLPPFLAHhAOLEINJMGABKAPDBLAKCBADEMELgKCJEKANtJLCBEAEPAKDABFBNABEBHMDCBDDCKPLLvvuDKBHFuMCALBDJAMGPCABPPIAEsAIEAALGAAAAPOALOCGIACAFAAFABLGIMAGOMAIDBCBtLINEPOMNMJLKFAmqMHCDLPOhHNPAGEHLgEBAAPCLHPNPNHCMFBACBAAAAAAAACAAAPErvCAAAJABACAAAOOLvlDoABAAEJCFLEKBPOFDLCFPCBAGANutPLooHBJGFHPssKHAABFOIABADpAAAAEAEAACgAAAAAEAAAAANoAAACCAEKDGKMEIAAFMADDBFACIAEIBLqJIACPtgAAAABPjuMABCOBDNProAFDAAFNIAABAPrgAAGCAAAgAAAAAAAAAAAAAAHAgAIIAAIHngAAAAAAAnvvIHAAAgAAAPvHAAPvIAAAAAHHPIAAAAIIvnAoHHnHAAPHIAAHHPoAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAKD/2gAIAQMBAT8QTB//xAAUEQEAAAAAAAAAAAAAAAAAAACg/9oACAECAQE/EEwf/8QAKRAAAgEEAgEDBAMBAQAAAAAAAAERECExQSBRYXGB8TCRodGx4fDBQP/aAAgBAQABPxAXF8L8n1RQO6pNJZJqCKYojVZZiuzfGa6IELI818cmYpvnj6D7MXpfhbism66txdh5ItcfGeU/Ugm1Y4aEW64zRaueGqe/DdP44aEtmxubctjW6M0Tw0a+lmsDNcNGKe/LVEhZ5xR0eTVI4LhmuCC0DEaNkEfS2Rw1Wb0T5/mvvwim6+KYIPJurVPcz9CeCrJosT0aqkOiIM1mmorBsgkeBEOiHjhoWTfFcYHWOTVqZHjnHKLTwy6bI2ZMURsea6JpuuKPFLkGh1mrFjJeB09xxRCN00K52a5Kk8scdEVue3HPJ0zxUFzB6UwQMV6Yo75N9U2YPPPP0sWohvVXWKYJHTxwwXNjVXx8j9KRYggiuD0ItXyN8NCorDoqKqua4wWo3JG6tsQn3Wau9UeeGKzTKNESRdFpM4qkT4HkdJr6GzdZmxF6Phr6LEQQIURTQi/DHFiM11TFcFiywK54rNhHvX1oiRKeG+OhYFxVjJBMUSk9iCCOEcJohZuZYvoomk8ldEwPFIdHSKZVW+EukdEWMFh8cUS7qkWdJtxXBG6TXRoSIHimqTXQsk3NCzcWblqq69BZIUmKLJIjHJ4NCFFMDNUWCTdNmGaNGqZpquaKu65PQbJsTY1FHTCEWFgRsZim6ukV0IxwQ80gXQ3xms00XojybwOiFTdHg1XVMViKenCC1djRaIJgkTik1fH70zSZshumqaIN0wK5ZMdWoHR8FVq9c0giDRrBHGJItV0SkUUQ88L9HmmzY6XpvhBDIZDIps3w39J/kQ+ODBqkGOO6t0iwr5poY+jRlcHets1Q81xT24rjvhflJ5pHddV1gkzx9jFUpEtjW6M3imbEVzVKWRcw8D9CLGBWrFqvC+g19CT0LcUE7PUhqQ1wm5MixSaWp6VtxmmbEXIljHokzsJRggeDxHiE8TArrniHQG6RImGh4kbJ4JdDfEULNjUZq+GuWx2pJmyEx5qXCdG54WLGWYyRvRnAkepMMdMujHCeKJEpGo2TY0etWrUQ1hP0PsuN1lDS4SSSJN0yrUmkwJWp6mHamEN8JFSBsYJQW8HgE70LcoFdZF7BEpZNaJ9Ml6EifRI8BIkN1gaJpsRMWE9G6xb6LIZh1VWuiBImR9uElInY4TiUITa6SJ2wpXtC0XOhqOKNlpIkdrEKBYsQ5I5apFLXdEGEJ/oEdTRtHB33fQdOzRrfeldSZMlaMUN07I5jsO9tHPy5WcvwlMah01RFuaN2MO4kgWOfhJEW03lOwZPRK9tmxtYT2SjOKeoo2OtopBkzmj8F4H4JIrHFU2TFjIlJ4pbA8GSBJjJtPPskkyLGpmTVA3pI9veJCFiUPoiEMyywk0fyXJUGMCrqkmKaJ5IUhSfwEd5biWMSY7ygaRtewpmgyFiE1bimF7aLk1XM/cFhJBp2kqElOyjDnJDtajyKzGLhh0wqPjMksnuuaohjSCJBLbEo4myfAvIkShIXij4kjs01KLjlJrPyhu25s1lMcCOGPWk1RejsPFd12JcSIXEKJInxS5Lp7Fy5cv0S+i5fokuXLnsT4G3MRYkU8IIk3R4rPgvX0F5pNI8iSLgtcWOCS7ZdPeSiTwYY3RoeaJM8I9qLJh02InUEGaI1XfCNjEqSO9MkCmbXGSliCu2xRB0iJ/tEokkJaRDH1wWaalMZwunZO0ScpwaymReqdifuXm5h247MOkE3+gk9DvbwhLbGstwMseorLToIjBL6JL9U9i/Rc9qz4Llz2pLJfoHmZ9C3bGNHrSKOws3okRRK1JtTfB8MMuhZDHXDaphBJE0gUjTUp2aEpmFtCtvLUrZdVse1y8lzyNbpumTNdmDIlcyQy9mLlFMfTgYjmeyl3TKgddSO1McUOQUri43ps/NcBI1SBuDKlWJcEyNQWo/BGxOCDFNGjFIpqaMS2xzrBBjI7GBIUxBc0uOpVpwp9wkyYqk5Up5RmsZcK29CLKVmNSTYweTDI2McEyQOmqb4qkDQDMJIQsQNJMel5EvoT9KxCkj9sVyGLix2pBshmR5pg3cyetGSKqNiMTTV1eglGuS0kW4qfOM0ZaZPyJKdrTLkDUO5owLsk9TDGuKjBHTME1RkND2iUbt2IYlfsE3H2BD+gfGD48fFib9Y+HFyFP6BNOjGkIPpsaf0j4gfCj4QfGj40Nf6Q5v+QiNFsmDLvkuhKR2XB5robfc3ps/PGQYjRJi9Mk28GELI4mkUeTNJox18izwWCRUdhPsTciy7DQMGtJJkVwWoXSpJJNFFppk/sMdFZJf8YkNyaPWjPB7Um2BohCWQlSL1XBVsaccE1Z6CJYJr8kfNUx8QPjx8GPix8KPgx8GPjR8KPlD5I+QIQLAZ7i7pNJrDHlumzOS1INlhVZqRiFjk6SJNj/DCRLbZb1y3k+hYoqYwZ9kfZPzfZsQWQlNbRcakVdFl/wA7DuasMiqxRpdkRVZJrPJDw98kcNDvmz1cl/fPlZ8zH/YT5qf22P8At424VsHsR3neH8UbaYhA4kUkOtyfeQfvny8+Uny0Sf3z58Nv7JGdlZyE8JFdmGTJ/BsRc3RGpZ6s3psv9ULdjI2YRNqTwm482IsTNhyi9N1wjVZ6VUK7EO5hGEOwhLQrDTMJIjYzUuU0hOxPgV4dsYqxPz2Gx6CRTTW0XJClPVCpfs9jLiGrMagkvBk3murVWCYq808m6JXIvYiRB5t+BYJQsvLR2+hbJbiyceWN7bc3rE/90eZ9yL+4ln/tG8/fi/vZB+6T/ui1/ekGPuT5yQfuj/s5e/7xvf8A1jCU36zOQJktjY8VyImmRHdLQMfCOUSJCQuQXwpnsJQSNtIU7kli3V7Dm78Bt3qh2v8A1i8kiWRhDTw0P3Js0WT2FRoY1CFTdIItRG6R2QKxNYlGBMTc5J2NnslybyN+SWJ3Ef5Mn4z+CKEL2yZqJpJI/WpmiLVwH5ona9EITQlJsz4X2P8AdDqXS7NWG54IUjME5NGUIwRbhq9FS4yBZFdjV6MYkKknoaySyYrAoJLogbgg5rpYz09hyjVlh+RjkIuL9XsKSBPBOG20M1yt8WvlDF4PA1SYZBsxkXREZG6PCpk3ST0LssYjAQukQMg9TBOF2LASUX9R72JaYngm9ibskl9kvsTfZLsl2SP1PJPmiRLdWyKIsKqk0RYggdiR1waqjaw+ZNzp2CPCVPJA7CQcT2k9slNBtmXJ1DYKWzfaEOoVcy2iKIBSTf2pjpDJXWfIsUks1NHTZJL44VN24ITuSSTekki/5mS30n8UYWPYMxNZJtTQ7kE6NQM0IzTQmYk1SEOmKl7kmxI9YZ0btwTgY2YRnjIrlpGMdiTZHgmB0YQiSxs6glYGSU8lrtidKSIPcZgbYs6xRHeXsbpZbHlyKMtEEbnbZ1qm7Yi5E5EYKJ7YPFvGT00I04aMGBXmuB5LQKC4kNjuegzAmJ3Gi5GmETJGxebbn0IYuTLKHImyXRJZRLpniJdEuiOhLpkui84GmcQzFh1VmMixquKbIMIuSTWeEOqv6iQ8ZNwksiQMMnTSFaiKrpj6Q4xK+t/YzSIyJ4Y+UqMpdtbEOUpzhokakbdSoQ9wbvRDWRrui4fyLyZNGp5YRFIeTVEbqhf8mz8V/FGP45kpoQs12ZNCuOmjR4NiFkRFEIMYs+vN6bPzw12bFgdGktlpMs9hUwaJJoh5Hkf5GLIs1Vxy2O0CpukCw5JTbeDAZ2tEobJaEqkZHhIYikfid+47bTSA1g8mEOK7tqYtDaU1KZcewq0F4U+wZQ1fA01o8GWbgdrCJ7HgRq9Ep1VXoiRNtNIlfNiehcqJzqx5T7QxXhhsRLaQa8jW++LX/VSCorU4JqAF0k1KhXDthlHqahycYJDUcleqvXwbNwPoZFqeguEwJHgT082sUksYIHYWpPO7Y6RZI7kyr6Nl0hjSasyUxSoJUntMVyBB58xtCVdO3RZLa9jZpjVLGMDyI9a+OLyO1MEi5LJ/idn4L+KPIn4xLqaFTVNidNcN3N08iuWMuiwIxlnrTemz80IrjNUyyfsb4RPL0Pakm6Wm5abmzDMho8IVjCMi7J3JK3L1rYQm4mki0hDaSuJFpTDP9pYZMskThswTEBpJqGBiVqtVzOhk0RvfMdDFk77QavQaSNmKe1H54Kz4KqKbigtim3ZaCTWCSCDwDwPsQhHQQuhHQQuiF0WEJ6CS6IXRC6GVLeYGMhZFseUOITUXS9+hFlVm5sSuSYpZEwayZIMc0OiU2Fpu1EsNsVsgvV7dJEfb0u+gYTebBsaXNJvROGMRckSW2EAHEaMkSJaSVY3QP9vWTymNeKQSSSJSuM0RIlLpqmOSP8Ts/BfxR5P45lqzJF4I6dXTKLmIHkZuthZpo0flFxt6bF+5qTsRcYmbH2TYwTc2RTJAuiXTBNIpJPZs0LFMmcDWUDo65E22RNRLuiEMQ0Trvt6Q2u3aTeFpDtuWMeRttjQ7DSEUU1tgoqsYiCBSmNrK77Q8Yw008obIag9TwROybl8DFE3NYMIkmxotVMfybllpiPqLmPa8i4T9SKK65CcpomUaS7h7K6IeK4JHFME0xXRoxXY6JCVkkpaySFoGJBr0kKi+SMs9IZzTHMsyyFNxpYpM8HmW2LdGdcW6PcVhkbDJ9EgIIk9xIJggf01imiKPjsuT/iT8N/FHkf8AGZ+WDy6YHg1XyTSKrNHiiqBOyN6bHn1A3TXC9J6psdfP02epqDCFc2IX3XBe8dCJlhCCz0MirQdv6hCSxIbNZIoncZNmw8DGXVLGXQvUgaRfyEKnu+5FUu9VRswaNUWaOeUKkxcYYeWIaY9Blizx5QvLr0oP7CvuaSuzNJ4zT3J8mSKLJttM16DFPQ03kbvwxTNHyQ67PUS2JF3gcqayU+2hRJIklogdhdqXlfZ9WatsjdHjgsjXiRDTQ7CQp53ns1Rfd0h7Q4lI1MNtG5YGi/LVN1fgfgaFw9S+TVIkX/Bs/DUY/gGYfBm6LJAeEa4+D1onFP5rgL4RvTY0+oNuUVWTYn2exsVFXdLGqokltnaQvybJ3CHpm8tC2EHEaFRuCAZoauu2NcMNtvyO1GaMqp8BciaaGjaSb68rZYcCSLG7T7EQtTdGhkiGbsbuSsGjVM10aHRKaJ3MiQ0IQnW+2Jiuz+/+SQZBn/cQW/KT/vIv2nyaH+9EP7hf24v3k/tAmSKeG1A40vDtL8ilMllKa2WHDR2Nn1VhVLqsCqzyZpn6EEjSG6kytpbYrKF5BttkkiySVh9hDOjN310hpd+GeDExRm4fd7ewo4uQ2mQyBUESnHvPXuOzPGMpoaaPU8E1mmTQjZAxqDRolqjk2M0ZIt/xXPx1GP4ZnwwZruSezyeeE2G5sYJMGHcdhmEPdCN+rN6bI2e3JisCsqXpumuFieDqlc7ZoUaaSuvhJCEWymNX6BYLCtb5rSQ55O9BISsmR59BrgiJwM6p6VNo7FdVCG0yT2FOUkJCvsQ8NLpaZdgdHZkzamD+aevDCGNRkbtCrsTrDF2E2yfZLsieTzHkJ9k+yfZ5jyDtZZI7m9yYzHdD3Am2hDtRSUsn2h2oj0NcVkeSWRWLVgWWLvA18NNh7vuJMgZJO6UdjWXEknbYxWGENmfoZDOjvXlsrYTWCRpvBsNQhhiDQYvo7JkVcEjpsVMkJ/g2fhqMJHtj8GeExTQ2eOVhXF4pqmAb7s3pEsd7oeQ+wkqE3VEOyOqlhErB66bUOFETw2bJN0m52hJuwqiXhZM6EnZbUiIoJJWSoySHEZuTC0HZ/cbIleaaPIppDPyG3eX0SoES7Z6CgkUjTSaahpje+3EhW3ISkkwxwSR2NRxkYxZHdwIg9iZOiDCIZBHCxYtml2xW2XDZJDm8ppOhJJDWLN2zHt6B3IsI2LF90mnqWpJPdZmiUiJvocYkTdN6CmKEJLCRI2NshNmnfex3G03Gx+DBkg1X1q0MdlWI0PmVvaBUnkuhjxN0txoInA7UwWHz3w2bqkiFlD/6Nn4ajF3tmTgh2Y5FgWRxo0aVHSBM2MXSFa9NVllfmb0wx7iqWxcQn2ZJ+wfPD5kRftHf90L+3HzwX9mPmRB+0Tq33hD+8SfvH9hCTNNLLlajQl3SJrs2bohpJCz7jCyOz+RTTMr3GQQLVQVxdmBmVqzYybGoY3c2PNdFxZGhz0PPLJJ/gb2ptXuEUTQcjZ7DG6mrJ/yMYFfJHvzyIi5oyE0qO0mR5+8PmR8uPnx8yErq9R8wIP3CbH3h8mO/7o+dD/sh8gF/eiz/ANA2iVsQxDDBqxK8CCCRBBgPeu5p6kZrMU9eKtSKRFMUSGQ1KIiFpxsbsIIF8Wtzy+hpLbsXppDm23uiuaN02NzSKeR9PA1mmRabQhjCU1tUiSYIlvi6bQg2hp8NPQ1x3RVeeCcCNk0QhF/+i5+Mox/HMnBGyBwYIPHPdEkGTQjMn783IGjJk5lbZ2/YEX6h8cPgh8QPih8UI8fZHxA+BE+ftj4cfDD4wOD/AIhPUNRQonhbGeaKsm6epOxXYonZeBEmSbUv2e4laaKc2hLt9D5ia4sbGKbthEi0gsqMviqUmxSXWeGMXFfKcaGIaTTlNSmqOQpdkwqe57Dd6MZHZ2rdkVmuCEkkQzK410biW2xs/QF/QD4QfGD4wfGD4QX7/YEWPtD4YfFD4YNv6hF+gW/+Q+ECSJMsOApIItJRRiTibY9Ik3LjvB2MqOmbcUprAuCWyyT2FdR0MOxU9Q1cxso+z6IgswhuaLjB6KmKJibSE4aHwBrvef3iZI50RhK2p/tMtSlZjqz1N8HR/miVhIteqosjT/iufiKMfxjJ01TZaT1rKj6CyOkmDdHF7/Iyd/8AxtD/ADFDdGx2qrjoqbPJAqbJhJ03XhCNqKQwlRuDEpDTad97G5JvcbZNx5pijskKqyPNExy0mm0yzFmam476GKKIBvEPDTEG45/8RoGoEXI4b4IyepP2hY/8EEFhhByAdv8ADIlU3d2PNzdd0wOlz0IL0wMQncUhNUCzXQiKoQtJEDcCNc7cXbGiy5beWN8MUmjNcWhpjCySbXa2h3KcpO20KexsTBbiT6emOvK8aTTEh1y/oYpqsDFYQkuJLQfzE7fQuOU5Jy1hpDps6s0awM1ktB6i+jFNjybEybhvcbNFi9J8l6e9PcvS9J8klyPJHkYjbjLJsbuPJ5IsPFcsdMDdChBZbLNYGLBcXeTrjt9Dw3c/EIbKuiSTs0SJisPNzCo6yMKcYK9xCoa1i/guQLbReCDA7lDWyaIRBhDkVIojL3JN/iwpgmt63p78L8PccliloJE0zlNl9jsY1SQltjkHk3bgqSSTYuLNE4GyWYFEjcym5TbEltx6T4zbtIXSzISYTwO74vJksXpNiRVRHY+/swSm8UNZmKQ/4GFlA4LF6bPQxT3puk10epunkd6wTkvUQlIitUDpJTqUxaCmy8DS54LI2IimT1M8JZc9aOqVx5FA3RJ9pwNNtL8KsKpGZGJZB1H7DrZ91R3yo+fC/tQ34X7jvpy9dPuEbZg6HFXDXIJhQO6PYwySbQLoTLmBi7MCSiyjAeiN+wpeWlsLSWiE3kglCGrUWRG7k2g0auIubLzI1RYINQxhsuJPYRZO1hIbibbJaKgSQ4QhpSetJpM0kk1RC6Fy5JM0JeWM6wMeDSuCnpOgviFbKjgFTBGEW4iO8MEo2FiY1Ml7HVd+RjyxO5qeE8smVXNdicUelDsG+TwXMGWR5Fadk1dqITLSfRLobqr03xwNQTRE9nrwwWEkrijomhv4PIkduMxo3khEmqYxREskRM8cGRQl5FZg9KJIk+C0sLuifgmS8HsJkyXg9hLxS9CPQhrWhkEljJsWTZNx5MEwJkAmjBfpDdxsm16YN5HXZukXMCY4GEJtCbY4McRub0eSKwLhqmyA9KE8QTXRLwT6J9EmSJcXkLue09CG7GxM1bn6E0R6Gi3CSSUeg3wjhNJomTTY6eg8E3JRKNiPSmSTVMmxuu6t0dFktk2ZZMUdFVLsyiOybUk0apFHSDFJJri43tCdGYEmqSSyazWSSaXJRM0sOi4etFk3ak3HnNEpRseRsiw6YRPZu5ZE3LtHghsTWjIm5JPY7O1Ml6RBNHx2YJJ8k2psZoQ7Ek03JJJJJJNd1VIrstuj46Nc1TX0LE0RmkjzRU1TFcvluq5IhI2ZIueGTY0dECRKHgxxzw2YNE2Lcck2q39FKsOKaqsFoMuC1dUxT1LFqYNUm5YnRNZIMcLRTNUbNjlwSOK5o4pswRvlNMXGT1RmiCOUSP66N8sVmi4SbMjtRG6IkWSZJNFqNrnY8GaIm5jhbhYkR6mCWTc2Y4K1mTfwZsQzP0ppqmyTKo6QeDFNjJNSTaaNyTaCYpaBNIeaYMmzLHYmw8CEeOW6eSNqmjVIrJJNqQK6giwlI1TBL4Phsghd83WDA64pFEKr+jqu+LNc3TVL1yeg1bhrhu5ukqOSETV5GI2etGOxmsGCK3MVfCTJNI+hFFakWIvT045VHWIFcYhGCbYMkVgXDY/zx3zzYtBoyLsXZ61ZBFUZQiKvwZHNNDNcMojlo0TbguLxyn6EW4OmjVNmWY5Oiifp6MUlm+D5Kr8mh0dWJ6GhI2N3lUyzxTVdDtXVNjItR00YRlFtI2bpmqdETxmuzJfQ1H0l2RKk0ZFR/R0J2NWoyeKG7iZq9MMQui2BLdYNkMeR2H4NV0YXNfRWTfFXfGSbcdD4a5Pnis01w3TX0s0g1XAlYYr8kQIeSCb85oxGqJSJE4G6MWpmkwYM0brrhv6CwOxNsEWETum6wTcROjFFg2ZGuacGqLdNUfCYrLpki480wWJIFdjyNmia2pJEjsuCUkWHSL02Qapik01RY+lPB00f/9k=" alt="ɅTLɅS"></header>
     <div class="section-bar"><div class="section-name" id="todayDate">Hoy</div><button class="sync-quick global-sync-btn" id="quickSyncBtn" aria-label="Sincronizar ɅTLɅS con Intervals.icu" title="Sincronizar">↻</button></div>
 
-    <button class="training-state" id="trainingStateBtn" aria-label="Estado actual de entrenamiento">
-      <div class="state-score" id="trainingStateCircle"><span class="state-score-main" id="trainingStateScore">—</span></div>
-      <div class="state-copy"><div class="state-kicker" id="stateDateLabel"></div><div class="state-word" id="trainingStateWord">Calculando</div><div class="state-note" id="trainingStateNote">Preparación actual para entrenar</div></div>
-    </button>
+    <div class="today-hero-card" aria-label="Estado ɅTLɅS y métricas principales">
+      <button class="training-state" id="trainingStateBtn" aria-label="Estado actual de entrenamiento">
+        <div class="state-score" id="trainingStateCircle"><span class="state-score-main" id="trainingStateScore">—</span></div>
+        <div class="state-copy"><div class="state-kicker" id="stateDateLabel"></div><div class="state-word" id="trainingStateWord">Calculando</div><div class="state-note" id="trainingStateNote">Preparación actual para entrenar</div></div>
+      </button>
 
-    <div class="metric-strip" aria-label="Métricas principales">
-      <button class="metric-card metric-link" data-metric="Sueño"><span class="metric-emoji">💤</span><span class="metric-label">Sueño</span><span class="metric-value" id="sleepValue">—</span><span class="metric-meta" id="sleepMeta">—</span></button>
-      <button class="metric-card metric-link" data-metric="VFC"><span class="metric-emoji">🫀</span><span class="metric-label">VFC</span><span class="metric-value" id="hrvValue">—</span><span class="metric-meta" id="hrvMeta">—</span></button>
-      <button class="metric-card metric-link" data-metric="Reposo"><span class="metric-emoji">❤️</span><span class="metric-label">Reposo</span><span class="metric-value" id="rhrValue">—</span><span class="metric-meta" id="rhrMeta">—</span></button>
-      <button class="metric-card metric-link" data-metric="VO₂ máx."><span class="metric-emoji">🫁</span><span class="metric-label">VO₂ máx.</span><span class="metric-value" id="vo2Value">—</span><span class="metric-meta" id="vo2Meta">ml/kg/min</span></button>
-      <button class="metric-card metric-link" data-metric="Frescura"><span class="metric-emoji">⚡</span><span class="metric-label">Frescura</span><span class="metric-value" id="freshValue">—</span><span class="metric-meta" id="freshMeta">—</span></button>
-      <button class="metric-card metric-link" data-metric="Volumen"><span class="metric-emoji">🏃🏻‍♂️</span><span class="metric-label">Volumen</span><span class="metric-value" id="volumeValue">—</span><span class="metric-meta" id="volumeMeta">últ. 7 d</span></button>
+      <div class="metric-strip" aria-label="Métricas principales">
+        <button class="metric-card metric-link" data-metric="Sueño"><span class="metric-emoji">💤</span><span class="metric-label">Sueño</span><span class="metric-value" id="sleepValue">—</span><span class="metric-meta" id="sleepMeta">—</span></button>
+        <button class="metric-card metric-link" data-metric="VFC"><span class="metric-emoji">🫀</span><span class="metric-label">VFC</span><span class="metric-value" id="hrvValue">—</span><span class="metric-meta" id="hrvMeta">—</span></button>
+        <button class="metric-card metric-link" data-metric="Reposo"><span class="metric-emoji">❤️</span><span class="metric-label">Reposo</span><span class="metric-value" id="rhrValue">—</span><span class="metric-meta" id="rhrMeta">—</span></button>
+        <button class="metric-card metric-link" data-metric="VO₂ máx."><span class="metric-emoji">🫁</span><span class="metric-label">VO₂ máx.</span><span class="metric-value" id="vo2Value">—</span><span class="metric-meta" id="vo2Meta">ml/kg/min</span></button>
+        <button class="metric-card metric-link" data-metric="Frescura"><span class="metric-emoji">⚡</span><span class="metric-label">Frescura</span><span class="metric-value" id="freshValue">—</span><span class="metric-meta" id="freshMeta">—</span></button>
+        <button class="metric-card metric-link" data-metric="Volumen"><span class="metric-emoji">🏃🏻‍♂️</span><span class="metric-label">Volumen</span><span class="metric-value" id="volumeValue">—</span><span class="metric-meta" id="volumeMeta">últ. 7 d</span></button>
+      </div>
     </div>
     <div class="today-last-heading">🕘 Último entrenamiento</div>
     <div class="activity-list today-last-list">
@@ -831,18 +935,16 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
       <div class="hidden" aria-hidden="true"><span id="profileHomeHeight"></span><span id="profileHomeWeight"></span><span id="performanceHomeNote"></span><span id="shoesTileNote"></span><span id="connectionTileNote"></span></div>
     </section>
 
-    <div class="profile-dashboard-section-head">
+    <div class="profile-dashboard-section-head compact-only-title">
       <span>Rendimiento</span>
-      <button class="profile-dashboard-link data-page-open" type="button" data-data-page="performance">Ver detalle ›</button>
     </div>
     <div class="profile-dashboard-performance" id="profileDashboardPerformance"></div>
 
     <div class="profile-dashboard-section-title">Zonas</div>
     <div class="profile-dashboard-zones" id="profileDashboardZones"></div>
 
-    <div class="profile-dashboard-section-head profile-records-head">
+    <div class="profile-dashboard-section-head profile-records-head compact-only-title">
       <span>Mejores marcas</span>
-      <button class="profile-dashboard-link data-page-open" type="button" data-data-page="records">Ver todas ›</button>
     </div>
     <div class="profile-dashboard-records" id="profileDashboardRecords"><div class="profile-dashboard-records-empty">Calculando…</div></div>
   </section>
@@ -1030,7 +1132,7 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
       <div class="state-band-row"><span class="state-band-dot" style="background:var(--orange)"></span><span class="state-band-name">Precaución</span><span class="state-band-range">35–54</span></div>
       <div class="state-band-row"><span class="state-band-dot" style="background:var(--red)"></span><span class="state-band-name">Recuperación</span><span class="state-band-range">0–34</span></div>
     </div>
-    <div class="state-detail-explanation">Resume tu disponibilidad actual para asimilar entrenamiento, combinando VFC, sueño, frecuencia cardiaca en reposo y frescura. No mide tu nivel deportivo, sino que indica cómo de preparado está hoy para entrenar.</div>
+    <div class="state-detail-explanation"></div>
     <button class="metric-footer-back" id="stateDetailBottomBack">Volver</button>
   </div>
 </section>
@@ -1701,7 +1803,7 @@ html,body{overscroll-behavior-y:none}
 
 (()=>{
 "use strict";
-const APP_VERSION="0.99.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="0.102.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits","chats"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -3073,40 +3175,64 @@ function profileInitials(name){
   const parts=String(name||"ATLAS").trim().split(/\s+/).filter(Boolean);
   return(parts.slice(0,2).map(x=>x[0]?.toUpperCase()||"").join("")||"AT").slice(0,2);
 }
+function profilePerformanceValueHtml(value){
+  const raw=String(value??"—").trim();
+  if(!raw||raw==="—")return '<span class="profile-dashboard-performance-main">—</span>';
+  if(raw.endsWith(' min/km'))return `<span class="profile-dashboard-performance-main">${esc(raw.replace(/ min\/km$/,''))}</span><span class="profile-dashboard-performance-unit"> min/km</span>`;
+  if(raw.endsWith(' ppm'))return `<span class="profile-dashboard-performance-main">${esc(raw.replace(/ ppm$/,''))}</span><span class="profile-dashboard-performance-unit"> ppm</span>`;
+  return `<span class="profile-dashboard-performance-main">${esc(raw)}</span>`;
+}
 function renderProfileDashboardRecords(records=currentRunningRecords){
   const box=$("profileDashboardRecords");
   if(!box)return;
-  const wanted=["5k","10k","half","marathon"];
+
   const source=Array.isArray(records)?records:[];
-  const rows=wanted.map(key=>{
-    const section=source.find(x=>x.key===key);
-    const best=section?.top?.[0]||(section?.secs>0?section:null);
-    if(!section)return null;
-    const pace=best?.secs>0&&section.meters>0?best.secs/(section.meters/1000):null;
-    return{
-      key,
-      label:section.label,
-      id:best?.id||null,
-      mark:best?.secs>0?formatDuration(Math.round(best.secs)):"—",
-      pace:Number.isFinite(pace)?`${formatPaceValue(pace)} min/km`:"—",
-      date:best?.date?engineV2DateLabel(best.date):"—"
-    };
-  }).filter(Boolean);
+  const runs=currentActivities.filter(isRun);
+  const longestTop=runs.map(a=>({
+    id:String(a.id),
+    meters:activityDistanceM(a),
+    secs:activityElapsedSec(a),
+    date:activityDate(a)
+  })).filter(x=>Number.isFinite(x.meters)&&x.meters>0)
+    .sort((a,b)=>b.meters-a.meters)
+    .slice(0,3);
 
-  if(!rows.length){
-    box.innerHTML='<div class="profile-dashboard-records-empty">Sin marcas disponibles</div>';
-    return;
-  }
+  const keys=["1k","5k","10k","half","marathon"];
+  const sections=keys.map(key=>source.find(x=>x.key===key)).filter(Boolean);
+  sections.push({key:"longest",label:"Distancia más larga",top:longestTop});
 
-  box.innerHTML=rows.map(r=>`
-    <button class="profile-dashboard-record-row" type="button" ${r.id?`data-record-activity-id="${esc(r.id)}"`:"disabled"}>
-      <span class="profile-dashboard-record-icon">👟</span>
-      <span class="profile-dashboard-record-distance">${esc(r.label)}</span>
-      <span class="profile-dashboard-record-mark">${esc(r.mark)}</span>
-      <span class="profile-dashboard-record-pace">${esc(r.pace)}</span>
-      <span class="profile-dashboard-record-date">${esc(r.date)}</span>
-      <span class="profile-dashboard-record-chevron">›</span>
-    </button>`).join("");
+  const head=`<div class="profile-dashboard-record-table-head">
+    <span class="profile-dashboard-record-head-distance">Distancia</span>
+    <span class="profile-dashboard-record-head-pos">🥇 1º</span>
+    <span class="profile-dashboard-record-head-pos">🥈 2º</span>
+    <span class="profile-dashboard-record-head-pos">🥉 3º</span>
+  </div>`;
+
+  const rows=sections.map(section=>{
+    const top=[section?.top?.[0]||null,section?.top?.[1]||null,section?.top?.[2]||null];
+    const cells=top.map(best=>{
+      if(!best)return '<span class="profile-dashboard-record-cell empty">—</span>';
+
+      let mark="—",meta="—";
+      if(section.key==="longest"){
+        mark=Number.isFinite(best.meters)?`${formatNatural(best.meters/1000,2)} km`:"—";
+        const pace=best.secs>0&&best.meters>0?best.secs/(best.meters/1000):null;
+        meta=Number.isFinite(pace)?`${formatPaceValue(pace)} min/km`:"—";
+      }else{
+        if(!(best.secs>0))return '<span class="profile-dashboard-record-cell empty">—</span>';
+        mark=formatDuration(Math.round(best.secs));
+        const pace=section.meters>0?best.secs/(section.meters/1000):null;
+        meta=Number.isFinite(pace)?`${formatPaceValue(pace)} min/km`:"—";
+      }
+
+      const inner=`<span class="profile-dashboard-record-cell-mark">${esc(mark)}</span><span class="profile-dashboard-record-cell-meta">${esc(meta)}</span>`;
+      return best?.id?`<button class="profile-dashboard-record-cell" type="button" data-record-activity-id="${esc(best.id)}">${inner}</button>`:`<span class="profile-dashboard-record-cell">${inner}</span>`;
+    }).join("");
+
+    return `<div class="profile-dashboard-record-table-row"><div class="profile-dashboard-record-distance-label">${esc(section.label)}</div>${cells}</div>`;
+  }).join("");
+
+  box.innerHTML=head+rows;
 }
 
 function profileZoneColorEmoji(index){return ["🔵","🟢","🟡","🟠","🔴","🟣"][index]||"⚪";}
@@ -3163,7 +3289,7 @@ function renderProfilePanel(athlete){
     performance.innerHTML=metrics.map(([emoji,label,value])=>`
       <div class="profile-dashboard-performance-cell">
         <span class="profile-dashboard-performance-label">${emoji} ${esc(label)}</span>
-        <strong>${esc(value)}</strong>
+        <strong class="profile-dashboard-performance-reading">${profilePerformanceValueHtml(value)}</strong>
       </div>`).join("");
   }
 
@@ -4540,7 +4666,7 @@ function renderSessionPreviewWeekDays(w){
   return html+"</div>";
 }
 function sessionWeekCompactRange(start,end){const months=["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"],a=new Date(`${start}T12:00:00`),b=new Date(`${end}T12:00:00`),da=a.getDate(),db=b.getDate(),ma=months[a.getMonth()],mb=months[b.getMonth()],ya=String(a.getFullYear()).slice(-2),yb=String(b.getFullYear()).slice(-2);if(a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth())return`${da}–${db} ${ma} ${ya}`;if(a.getFullYear()===b.getFullYear())return`${da} ${ma} – ${db} ${mb} ${yb}`;return`${da} ${ma} ${ya} – ${db} ${mb} ${yb}`;}
-function fitSessionPreviewHeadings(){qsa(".secondary-focus-chip",ui.sessionGeneratorList).forEach(el=>{let size=14;el.style.fontSize=`${size}px`;while(size>10&&el.scrollWidth>el.clientWidth){size-=.25;el.style.fontSize=`${size}px`;}});qsa(".session-preview-title",ui.sessionGeneratorList).forEach(el=>{let size=18;el.style.fontSize=`${size}px`;while(size>14&&el.scrollWidth>el.clientWidth){size-=.25;el.style.fontSize=`${size}px`;}});}
+function fitSessionPreviewHeadings(){qsa(".secondary-focus-chip",ui.sessionGeneratorList).forEach(el=>{let size=14;el.style.fontSize=`${size}px`;while(size>10&&el.scrollWidth>el.clientWidth){size-=.25;el.style.fontSize=`${size}px`;}});qsa(".session-preview-title",ui.sessionGeneratorList).forEach(el=>{let size=18;el.style.fontSize=`${size}px`;while(size>14&&el.scrollWidth>el.clientWidth){size-=.25;el.style.fontSize=`${size}px`;}});qsa(".plan-week-calendar-title",ui.sessionGeneratorList).forEach(el=>fitTextToWidth(el,17.5,11.5));}
 
 function openSessionGenerator(){
   currentAthleteProfileV2=buildAthleteProfileV2(currentActivities,currentWellness,currentCachedVo2);currentGoalRequirements=buildGoalRequirementsV2(currentEngineV2Goal);currentGoalAssessment=assessGoalV2(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);renderEngineV2Cards();renderAvailabilityCard();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderTrainingPacesCard();renderAdaptiveEngineCard();renderSessionGenerator();ui.sessionGeneratorDetail.classList.remove("hidden");ui.sessionGeneratorDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";
@@ -5421,15 +5547,15 @@ function renderPlan(){
   const planEvents=events.filter(e=>publishedPlanSessionForEvent(e)||isAtlasPlanEvent(e)),plannedKm=planEvents.reduce((s,e)=>{const p=publishedPlanSessionForEvent(e);return s+(p?.distanceKm?Number(p.distanceKm)*1000:(planEventDistanceM(e)||0));},0)/1000,doneKm=activities.reduce((s,a)=>s+(activityDistanceM(a)||0),0)/1000,weekOutcomes=(currentAdaptiveState?.outcomes||[]).filter(o=>o.session.date>=startKey&&o.session.date<=endKey),completed=weekOutcomes.filter(planCompletedStatus).length,totalEvaluable=weekOutcomes.length;
   ui.planPlannedKm.textContent=formatNatural(plannedKm,1);ui.planDoneKm.textContent=formatNatural(doneKm,1);ui.planSessions.textContent=totalEvaluable?`${completed}/${totalEvaluable}`:"0";
   const markup=[];
-  const renderSession=s=>{const attrs=[s.planEventId?`data-plan-event-id="${esc(s.planEventId)}"`:"",s.activityId?`data-activity-id="${esc(s.activityId)}"`:""].filter(Boolean).join(" "),meta=s.metaParts.filter(Boolean);return`<button class="plan-session-row ${s.kind}${s.outcome?" realized":""}" type="button" ${attrs}><div class="plan-session-title"><span class="plan-session-icon">${s.icon}</span><span class="plan-session-title-text">${esc(s.title)}</span></div><div class="plan-session-meta">${meta.length?activityStatsHtml(meta):'<span class="activity-row-stat">—</span>'}</div></button>`;};
+  const renderSession=s=>{const attrs=[s.planEventId?`data-plan-event-id="${esc(s.planEventId)}"`:"",s.activityId?`data-activity-id="${esc(s.activityId)}"`:""].filter(Boolean).join(" "),meta=s.metaParts.filter(Boolean);return`<button class="plan-session-row ${s.kind}${s.outcome?" realized":""}" type="button" ${attrs}><div class="activity-row-title"><span class="activity-row-title-emoji">${s.icon}</span><span class="activity-row-title-text">${esc(s.title)}</span></div><div class="activity-row-main">${meta.length?activityStatsHtml(meta):'<span class="activity-row-stat">—</span>'}</div></button>`;};
   for(let i=0;i<7;i++){
     const d=new Date(start);d.setDate(start.getDate()+i);const key=planDateKey(d),dp=compactActivityDate(key),dayEvents=events.filter(e=>planEventDate(e)===key),dayActivities=activities.filter(a=>activityDate(a)===key).sort((a,b)=>activityStamp(a).localeCompare(activityStamp(b))),sessions=[];
     for(const e of dayEvents)sessions.push(planExecutionSessionForEvent(e));
     for(const a of dayActivities){const id=String(a.id);if(matchedIds.has(id))continue;sessions.push({kind:"extra",icon:activityIcon(a),title:activityName(a),metaParts:planActivityMetaParts(a),activityId:id,tone:"pending",showExtra:planDateInsideAtlasPlan(key)});}
-    const content=sessions.length?`<div class="plan-session-list">${sessions.map(renderSession).join("")}</div>`:`<div class="plan-rest-copy">${planDateInsideAtlasPlan(key)?"🛌 Descanso":"—"}</div>`;
-    markup.push(`<section class="plan-day${key===today?" today":""}"><div class="plan-day-head"><div class="plan-day-date"><span class="plan-day-weekday">${dp.weekday}</span><span class="plan-day-number">${dp.day}</span><span class="plan-day-month">${dp.month}</span></div><span class="plan-day-sep" aria-hidden="true"></span><div class="plan-day-copy">${content}</div></div></section>`);
+    const content=sessions.length?`<div class="plan-session-list">${sessions.map(renderSession).join("")}</div>`:`<div class="plan-rest-copy"></div>`;
+    markup.push(`<section class="plan-day${key===today?" today":""}"><div class="activity-row plan-week-activity-row"><div class="activity-row-date"><span class="activity-row-weekday">${dp.weekday}</span><span class="activity-row-day">${dp.day}</span><span class="activity-row-month">${dp.month}</span></div><span class="activity-row-sep" aria-hidden="true"></span><div class="activity-row-copy">${content}</div></div></section>`);
   }
-  ui.planDays.innerHTML=markup.join("");requestAnimationFrame(fitPlanTitles);
+  ui.planDays.innerHTML=markup.join("");requestAnimationFrame(()=>{fitPlanTitles();fitActivityTitles();});
 }
 function resetActivityAiView(){
   activityAiRequestToken++;
@@ -5570,7 +5696,7 @@ function activityUsesGear(a,id,name){return activityGearRefs(a).some(g=>(id&&g.i
 function gearAccumulatedKm(id,name){const meters=currentActivities.reduce((sum,a)=>activityUsesGear(a,id,name)?sum+(activityDistanceM(a)||0):sum,0);return meters>0?meters/1000:null;}
 function activityGearDetails(a){return activityGearRefs(a).map(ref=>{const g=ref.id?currentGear.find(x=>String(x?.id)===ref.id):null,name=ref.name||g?.name||g?.display_name||g?.label||"Zapatillas",km=gearAccumulatedKm(ref.id,name);return{id:ref.id,name,km};}).filter((x,i,arr)=>arr.findIndex(y=>(x.id&&y.id===x.id)||(!x.id&&y.name===x.name))===i);}
 function fitTextToWidth(el,maxSize,minSize){if(!el)return;el.style.fontSize=`${maxSize}px`;let size=maxSize;while(size>minSize&&el.scrollWidth>el.clientWidth){size-=.5;el.style.fontSize=`${size}px`;}}
-function fitActivityTitles(){document.querySelectorAll(".activity-row-title-text").forEach(el=>fitTextToWidth(el,15.5,11));}
+function fitActivityTitles(){document.querySelectorAll(".activity-row-title-text,#sessionGeneratorList .plan-week-calendar-title").forEach(el=>fitTextToWidth(el,17.5,11.5));}
 function fitActivityDetailTitle(){requestAnimationFrame(()=>fitTextToWidth(ui.activityDetailTitle,32,18));}
 function fitActivityTopMeta(){const box=document.querySelector(".activity-top-meta"),items=[ui.activityDetailDate,...ui.activityPerception.querySelectorAll(".activity-perception-chip")];if(!box||!items.length)return;let size=11.6;box.style.gap="5px";items.forEach(x=>{x.style.fontSize=`${size}px`;x.style.paddingLeft="7px";x.style.paddingRight="7px";});while(size>7.4&&box.scrollWidth>box.clientWidth+.5){size-=.2;items.forEach(x=>x.style.fontSize=`${size.toFixed(1)}px`);}if(box.scrollWidth>box.clientWidth+.5){items.forEach(x=>{x.style.paddingLeft="4px";x.style.paddingRight="4px";});box.style.gap="2px";while(size>6.8&&box.scrollWidth>box.clientWidth+.5){size-=.2;items.forEach(x=>x.style.fontSize=`${size.toFixed(1)}px`);}}}
 function formatDuration(sec){const s=Math.round(Number(sec)||0),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;return h>0?`${h}:${String(m).padStart(2,"0")}:${String(ss).padStart(2,"0")}`:`${m}:${String(ss).padStart(2,"0")}`;}
@@ -6117,7 +6243,7 @@ function renderToday(activities,wellness,cachedVo2){
  ui.volumeValue.innerHTML=`${formatNatural(dist/1000,1)} <span class="metric-unit">km</span>`;setTone(ui.volumeMeta,null);ui.volumeMeta.textContent="últ. 7 d";
  const state=computeAtlasState({activities,wellness:w,forma,fatiga,fresh,vfc,rhr,sleep,hrvRef,today});renderAtlasState(state);
  renderLastRun(latestActivities[0]);renderUpcomingTrainings();
- requestAnimationFrame(fitMetricTypography);
+ requestAnimationFrame(()=>{fitMetricTypography();fitActivityTitles();});
 }
 function renderLastRun(r){if(!r){ui.lastActivityBtn.innerHTML='<div class="activity-row-copy" style="grid-column:1/-1;padding:8px 6px">Sin actividades</div>';return;}ui.lastActivityBtn.innerHTML=activityRowContent(r);requestAnimationFrame(fitActivityTitles);}
 function upcomingPlanRowContent(e){
@@ -6201,8 +6327,8 @@ function closeStateDetail(){
   document.body.style.overflow="";
   refreshAtlasSubpageNav();scheduleAtlasScrollAudit();
 }
-function renderStateDetail(){const s=currentAtlasState;if(!s){ui.stateDetailHero.className="state-detail-card";ui.stateDetailRing.style.setProperty("--score-pct","0%");ui.stateDetailScore.textContent="—";ui.stateDetailWord.textContent="Sin datos";ui.stateDetailNote.textContent="Necesito métricas de salud recientes";ui.stateDetailMeta.textContent=fullTodayDate();ui.stateFactors.innerHTML='<div class="state-factor"><div class="state-factor-context">No hay suficientes métricas recientes para calcular el Estado ɅTLɅS.</div></div>';ui.stateBaseScore.textContent="—";ui.stateRecoveryPenalty.textContent="—";ui.stateLimiter.className="state-limiter";ui.stateLimiter.textContent="";return;}
- ui.stateDetailHero.className=`state-detail-card state-${s.band.tone}`;ui.stateDetailRing.style.setProperty("--score-pct",`${s.score}%`);ui.stateDetailScore.textContent=String(s.score);ui.stateDetailWord.textContent=s.band.label;ui.stateDetailNote.textContent=s.note;ui.stateDetailMeta.textContent=fullTodayDate();
+function renderStateDetail(){const s=currentAtlasState;if(!s){ui.stateDetailHero.className="state-detail-card";ui.stateDetailRing.style.setProperty("--score-pct","0%");ui.stateDetailScore.textContent="—";ui.stateDetailWord.textContent="Sin datos";ui.stateDetailNote.textContent="";ui.stateDetailMeta.textContent=fullTodayDate();ui.stateFactors.className="state-factors compact-grid";ui.stateFactors.innerHTML='<div class="state-factor"><div class="state-factor-context">No hay suficientes métricas recientes para calcular el Estado ɅTLɅS.</div></div>';ui.stateBaseScore.textContent="—";ui.stateRecoveryPenalty.textContent="—";ui.stateLimiter.className="state-limiter";ui.stateLimiter.textContent="";return;}
+ ui.stateDetailHero.className=`state-detail-card state-${s.band.tone}`;ui.stateDetailRing.style.setProperty("--score-pct",`${s.score}%`);ui.stateDetailScore.textContent=String(s.score);ui.stateDetailWord.textContent=s.band.label;ui.stateDetailNote.textContent="";ui.stateDetailMeta.textContent=fullTodayDate();
  const sleepContext=()=>{const parts=[];if(Number.isFinite(s.sleepHours))parts.push(formatSleepHM(s.sleepHours*3600));if(s.sleepQuality?.label)parts.push(s.sleepQuality.label);if(Number.isFinite(s.sleepScore))parts.push(`puntuación ${formatNatural(s.sleepScore,0)}`);return parts.length?parts.join(" · "):"Sin datos recientes";};
  const defs=[
   {key:"hrv",icon:"🫀",name:"VFC",weight:30,context:()=>Number.isFinite(s.hrv7)?`Media 7 días · ${formatNatural(s.hrv7,1)} ms${s.hrvBaseline?` · base ${formatNatural(s.hrvBaseline.low,0)}–${formatNatural(s.hrvBaseline.high,0)}`:""}`:"Sin datos recientes"},
@@ -6210,9 +6336,10 @@ function renderStateDetail(){const s=currentAtlasState;if(!s){ui.stateDetailHero
   {key:"rhr",icon:"❤️",name:"Reposo",weight:20,context:()=>Number.isFinite(s.rhrDelta)?`Media 7 d vs 28 d · ${signedNatural(s.rhrDelta,1)} ppm`:"Sin referencia suficiente"},
   {key:"fresh",icon:"⚡",name:"Frescura",weight:25,context:()=>Number.isFinite(s.fresh)?`${signedNatural(s.fresh,2)} · ${freshnessZone(s.fresh)?.label||"—"}`:"Sin datos recientes"}
  ];
- ui.stateFactors.innerHTML=defs.map(d=>{const score=s.components?.[d.key],ok=Number.isFinite(score);return`<div class="state-factor"><div class="state-factor-top"><div class="state-factor-name">${d.icon} ${d.name}<span class="state-factor-weight">${d.weight}%</span></div><div class="state-factor-score">${ok?score:"—"}</div></div><div class="state-factor-track"><div class="state-factor-fill" style="width:${ok?clamp(score,0,100):0}%"></div></div><div class="state-factor-context">${d.context()}</div></div>`;}).join("");
+ ui.stateFactors.className="state-factors compact-grid";
+ ui.stateFactors.innerHTML=defs.map(d=>{const score=s.components?.[d.key],ok=Number.isFinite(score);return`<div class="state-factor compact"><div class="state-factor-top"><div class="state-factor-name">${d.icon} ${d.name}</div><div class="state-factor-score">${ok?score:"—"}</div></div><div class="state-factor-weight-row">${d.weight}%</div><div class="state-factor-track"><div class="state-factor-fill" style="width:${ok?clamp(score,0,100):0}%"></div></div><div class="state-factor-context">${d.context()}</div></div>`;}).join("");
  ui.stateBaseScore.textContent=formatNatural(s.baseScore,1);const penalty=Number(s.recovery?.penalty)||0;ui.stateRecoveryPenalty.textContent=penalty>0?`−${formatNatural(penalty,1)}`:"0";
- if(s.limiter){ui.stateLimiter.className="state-limiter active";ui.stateLimiter.textContent=`Limitador activo · ${s.limiter.reason} · máximo ${s.limiter.cap}`;}else if(penalty>=3){ui.stateLimiter.className="state-limiter active";ui.stateLimiter.textContent=`Recuperación aguda en curso · −${formatNatural(penalty,1)} puntos.`;}else{ui.stateLimiter.className="state-limiter";ui.stateLimiter.textContent="";}
+ if(s.limiter){ui.stateLimiter.className="state-limiter active";ui.stateLimiter.textContent=`Limitador activo · ${s.limiter.reason} · máximo ${s.limiter.cap}`;}else{ui.stateLimiter.className="state-limiter";ui.stateLimiter.textContent="";}
 }
 function atlasBand(score){if(score>=95)return{label:"Óptimo",tone:"blue",note:"Máxima disponibilidad para entrenar"};if(score>=75)return{label:"Preparado",tone:"green",note:"Buen momento para entrenar"};if(score>=55)return{label:"Moderado",tone:"yellow",note:"Entrena con control"};if(score>=35)return{label:"Precaución",tone:"orange",note:"Conviene moderar la exigencia"};return{label:"Recuperación",tone:"red",note:"Prioriza recuperación"};}
 function scoreHrv(avg7,range){if(!Number.isFinite(avg7)||!range||!Number.isFinite(range.low)||!Number.isFinite(range.high)||range.high<=range.low)return null;const center=(range.low+range.high)/2,half=Math.max(1,(range.high-range.low)/2);if(avg7>=range.low&&avg7<=range.high)return clamp(90+10*(1-Math.abs(avg7-center)/half),0,100);if(avg7<range.low)return clamp(90-45*((range.low-avg7)/half),0,90);return clamp(90-25*((avg7-range.high)/half),45,90);}
@@ -8626,5 +8753,245 @@ dialog::backdrop{background:rgba(0,0,0,.66)!important}
   .plan-session-meta{font-size:10.9px!important;}
 }
 </style>
+
+<style id="atlas-v0100-plan-activity-identical">
+/* Weekly Plan rows now literally reuse the Activities card component. */
+#view-plan .plan-days{
+  display:block!important;
+  gap:0!important;
+  overflow:hidden!important;
+  border:2px solid var(--atlas-heavy-border,#3c4650)!important;
+  border-radius:18px!important;
+  background:#090a0b!important;
+}
+#view-plan .plan-day{
+  margin:0!important;
+  border:0!important;
+  border-top:1px solid rgba(255,255,255,.10)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+#view-plan .plan-day:first-child{border-top:0!important}
+#view-plan .plan-week-activity-row{
+  width:100%!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
+#view-plan .plan-day.today .plan-week-activity-row{background:rgba(29,155,240,.045)!important}
+#view-plan .plan-session-row{
+  min-height:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+#view-plan .plan-session-row+.plan-session-row{
+  margin-top:6px!important;
+  padding-top:6px!important;
+  border-top:1px solid rgba(255,255,255,.09)!important;
+}
+/* No plan-specific date width exists here: activity-row-date controls it exactly as in Activities. */
+</style>
+
+<style id="atlas-v0102-final-visual-system">
+/* =========================================================
+   ɅTLɅS v0.102 · final visual override
+   This layer is intentionally last so legacy rules cannot win.
+   ========================================================= */
+:root{
+  --atlas-surface:rgba(11,15,18,.76);
+  --atlas-surface-soft:rgba(15,20,25,.66);
+  --atlas-surface-raised:rgba(20,25,30,.72);
+  --atlas-glass-border:rgba(255,255,255,.17);
+  --atlas-glass-highlight:rgba(255,255,255,.075);
+  --atlas-depth:0 16px 38px rgba(0,0,0,.62),0 4px 12px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.075),inset 0 -1px 0 rgba(255,255,255,.018);
+}
+
+/* A subtle underlying field makes real translucency visible while Lights Out remains black. */
+html,body,.app{background:#000!important;}
+body::before{
+  content:"";position:fixed;z-index:-1;inset:0;pointer-events:none;
+  background:
+    radial-gradient(900px 520px at 50% -8%,rgba(29,155,240,.085),transparent 60%),
+    radial-gradient(620px 420px at 85% 80%,rgba(255,255,255,.035),transparent 68%),
+    #000;
+}
+
+/* Common Liquid Glass + clearly raised depth. */
+.training-state,.metric-strip,.activity-list,.plan-days,.plan-summary,.plan-overview-card,
+.plan-goal-summary,#engineGoalCard,.plan-detail-card,.session-preview-week,.session-preview-head,
+.profile-dashboard-card,.profile-dashboard-performance,.profile-dashboard-zone-column,
+.profile-dashboard-records,.profile-home-card,.profile-home-links,.data-native-list,.data-system-card,
+.profile-insight-list,.profile-zone-card,.performance-zone-column,.shoe-card,.chart-card,.detail-stats,
+.metric-context,.state-detail-card,.state-calc-grid,.state-bands,.activity-primary,.activity-equipment,
+.activity-map,.activity-chart-card,.activity-lap-bars-card,.engine-v2-card,.macro-card,.weekly-target-card,
+.calendar-solver-card,.session-generator-card,.adaptive-card,.availability-card,.assistant-composer,
+.assistant-top-action,dialog,.card,.period-control,.activities-select,.activities-search,
+#sessionGeneratorList .plan-week-calendar{
+  background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.012) 38%,transparent 100%),var(--atlas-surface)!important;
+  border:2px solid var(--atlas-glass-border)!important;
+  box-shadow:var(--atlas-depth)!important;
+  -webkit-backdrop-filter:blur(22px) saturate(165%)!important;
+  backdrop-filter:blur(22px) saturate(165%)!important;
+}
+
+/* TODAY: one shared dark card, six metrics remain in ONE horizontal line. */
+.today-hero-card{
+  margin:0 0 10px!important;
+  border:2px solid var(--atlas-glass-border)!important;
+  border-radius:23px!important;
+  overflow:hidden!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.035),transparent 42%),var(--atlas-surface)!important;
+  box-shadow:var(--atlas-depth)!important;
+  -webkit-backdrop-filter:blur(22px) saturate(160%)!important;
+  backdrop-filter:blur(22px) saturate(160%)!important;
+}
+.today-hero-card .training-state{
+  margin:0!important;border:0!important;border-radius:0!important;background:transparent!important;
+  box-shadow:none!important;padding:15px 15px 12px!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+.today-hero-card .metric-strip{
+  display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:0!important;
+  margin:0!important;padding:0!important;border:0!important;border-top:1px solid rgba(255,255,255,.10)!important;
+  border-radius:0!important;background:transparent!important;box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+.today-hero-card .metric-card{
+  min-width:0!important;min-height:94px!important;padding:9px 2px 8px!important;background:transparent!important;
+  border:0!important;border-radius:0!important;box-shadow:none!important;
+}
+.today-hero-card .metric-card+.metric-card{border-left:1px solid rgba(255,255,255,.085)!important;}
+.today-hero-card .metric-card:nth-child(n+4){border-top:0!important;}
+.today-hero-card .metric-emoji{font-size:17px!important;}
+.today-hero-card .metric-label{font-size:9.5px!important;}
+.today-hero-card .metric-value{font-size:17px!important;line-height:1.08!important;}
+.today-hero-card .metric-meta{font-size:9.3px!important;line-height:1.15!important;}
+
+/* STATE DETAIL: compact 2×2 matrix with no wasted bottom space. */
+.state-detail-explanation{display:none!important;}
+.state-detail-card .state-note:empty{display:none!important;}
+.state-factors.compact-grid{
+  position:relative!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-auto-rows:auto!important;gap:0!important;padding:7px 9px!important;
+  border-top:1px solid rgba(255,255,255,.09)!important;background:transparent!important;
+}
+.state-factors.compact-grid::before,.state-factors.compact-grid::after{content:"";position:absolute;pointer-events:none;background:rgba(255,255,255,.10)!important;}
+.state-factors.compact-grid::before{left:50%;top:9px;bottom:9px;width:1px;transform:translateX(-.5px);}
+.state-factors.compact-grid::after{left:10px;right:10px;top:50%;height:1px;transform:translateY(-.5px);}
+.state-factors.compact-grid .state-factor{
+  min-height:0!important;height:auto!important;padding:8px 9px!important;border:0!important;background:transparent!important;
+  display:block!important;align-self:start!important;
+}
+.state-factors.compact-grid .state-factor-top{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;gap:5px!important;}
+.state-factors.compact-grid .state-factor-name{font-size:12.5px!important;line-height:1.14!important;}
+.state-factors.compact-grid .state-factor-score{font-size:15px!important;line-height:1!important;}
+.state-factor-weight-row{margin-top:1px!important;font-size:9px!important;line-height:1.05!important;}
+.state-factors.compact-grid .state-factor-track{height:3px!important;margin:5px 0 0!important;border-radius:999px!important;background:rgba(255,255,255,.08)!important;}
+.state-factors.compact-grid .state-factor-fill{border-radius:999px!important;}
+.state-factors.compact-grid .state-factor-context{margin-top:5px!important;font-size:9.5px!important;line-height:1.24!important;}
+.state-calc-grid{margin-top:7px!important;border-radius:15px!important;}
+.state-calc-item{min-height:0!important;padding:7px 8px!important;}
+.state-calc-label{font-size:9px!important;line-height:1.15!important;}
+.state-calc-value{margin-top:2px!important;font-size:14px!important;line-height:1.05!important;}
+.state-limiter{margin-top:6px!important;font-size:9.5px!important;line-height:1.2!important;}
+
+/* NAV: visibly translucent Liquid Glass; selected item is grey + white, never blue. */
+.nav{
+  padding:7px 8px!important;gap:4px!important;border-radius:28px!important;
+  background:
+    radial-gradient(120px 70px at var(--glass-x,50%) var(--glass-y,28%),rgba(255,255,255,.18),rgba(255,255,255,.045) 40%,transparent 72%),
+    linear-gradient(180deg,rgba(255,255,255,.105),rgba(17,24,31,.36) 42%,rgba(5,9,13,.42))!important;
+  border:2px solid rgba(255,255,255,.19)!important;
+  box-shadow:0 18px 46px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.15),inset 0 -1px 0 rgba(255,255,255,.035)!important;
+  -webkit-backdrop-filter:blur(34px) saturate(205%) contrast(1.04)!important;
+  backdrop-filter:blur(34px) saturate(205%) contrast(1.04)!important;
+}
+.nav-btn{gap:5px!important;border-radius:18px!important;padding:3px 2px!important;color:#8e999f!important;}
+.nav-btn.active{background:rgba(255,255,255,.115)!important;color:#fff!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 5px 15px rgba(0,0,0,.20)!important;}
+.nav-btn.active .nav-label,.nav-btn.active .nav-icon{color:#fff!important;}
+.nav-icon{font-size:21px!important;line-height:1!important;}
+.nav-label{font-size:10.5px!important;line-height:1!important;font-weight:760!important;color:inherit!important;}
+
+/* PLAN: noticeably larger race button and weekly counters. */
+#view-plan>.plan-overview-card{
+  min-height:58px!important;padding:13px 14px!important;margin-bottom:8px!important;
+  grid-template-columns:36px minmax(0,1fr) 16px!important;border-radius:19px!important;
+}
+#view-plan>.plan-overview-card .plan-overview-title{font-size:20px!important;line-height:1.08!important;font-weight:800!important;letter-spacing:-.35px!important;}
+.plan-toolbar{margin-top:2px!important;margin-bottom:5px!important;}
+.plan-range-main,.session-preview-date{font-size:18px!important;line-height:1.12!important;font-weight:790!important;letter-spacing:-.2px!important;}
+.plan-summary{margin-top:9px!important;margin-bottom:11px!important;border-radius:19px!important;padding:4px 7px!important;column-gap:7px!important;}
+#view-plan .plan-summary-item{padding:9px 7px!important;}
+#view-plan .plan-summary-item+.plan-summary-item::before{top:8px!important;bottom:8px!important;background:rgba(255,255,255,.11)!important;}
+#view-plan .plan-summary-value{font-size:22px!important;line-height:1!important;font-weight:800!important;}
+#view-plan .plan-summary-unit{font-size:10px!important;}
+#view-plan .plan-summary-label{font-size:11px!important;line-height:1.1!important;margin-top:4px!important;}
+.plan-rest-copy{min-height:0!important;height:0!important;padding:0!important;margin:0!important;overflow:hidden!important;}
+
+/* PROFILE PERFORMANCE: all four metrics in ONE horizontal row. */
+.profile-dashboard-performance{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:0!important;}
+.profile-dashboard-performance-cell{min-width:0!important;padding:10px 4px!important;}
+.profile-dashboard-performance-cell+.profile-dashboard-performance-cell{border-left:1px solid rgba(255,255,255,.09)!important;}
+.profile-dashboard-performance-label{font-size:8.4px!important;line-height:1.12!important;white-space:nowrap!important;}
+.profile-dashboard-performance-reading{display:flex!important;align-items:flex-end!important;justify-content:center!important;gap:2px!important;min-width:0!important;}
+.profile-dashboard-performance-main{font-size:17px!important;line-height:1!important;font-weight:800!important;white-space:nowrap!important;}
+.profile-dashboard-performance-unit{font-size:7.8px!important;line-height:1.05!important;color:var(--muted)!important;font-weight:700!important;padding-bottom:1px!important;white-space:nowrap!important;}
+
+/* PROFILE RECORDS: exactly equal-width cells; all distance labels centered; longest included by JS. */
+.profile-dashboard-record-table-head,.profile-dashboard-record-table-row{
+  display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;align-items:stretch!important;
+}
+.profile-dashboard-record-head-distance,.profile-dashboard-record-head-pos{
+  display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;
+  padding:0 4px!important;font-size:10.5px!important;line-height:1.15!important;
+}
+.profile-dashboard-record-distance-label{
+  min-width:0!important;display:flex!important;align-items:center!important;justify-content:center!important;
+  padding:7px 4px!important;text-align:center!important;font-size:11.5px!important;line-height:1.15!important;
+  font-weight:760!important;white-space:normal!important;overflow-wrap:anywhere!important;
+}
+.profile-dashboard-record-cell{min-width:0!important;padding:8px 3px!important;}
+.profile-dashboard-record-cell-mark{font-size:13px!important;white-space:nowrap!important;}
+.profile-dashboard-record-cell-meta{font-size:8.2px!important;white-space:nowrap!important;}
+
+/* ACTIVITY TITLES: fixed card height, maximum title size; JS reduces only long titles. */
+.activity-row,#view-plan .plan-week-activity-row,#sessionGeneratorList .plan-week-calendar-head{min-height:60px!important;}
+.activity-row-title-text,#sessionGeneratorList .plan-week-calendar-title{font-size:17.5px!important;line-height:1.12!important;font-weight:780!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:clip!important;}
+
+/* Activity AI button uses the exact central Ʌ asset and centering. */
+.activity-title-row .activity-ai-btn{
+  width:42px!important;height:42px!important;min-width:42px!important;max-width:42px!important;
+  min-height:42px!important;max-height:42px!important;display:grid!important;place-items:center!important;
+  border-radius:50%!important;padding:0!important;background:#1d9bf0!important;
+  border:1.5px solid rgba(255,255,255,.14)!important;box-shadow:0 8px 22px rgba(29,155,240,.30)!important;
+}
+.activity-ai-mark{width:42px!important;height:42px!important;display:grid!important;place-items:center!important;overflow:hidden!important;}
+.activity-ai-icon{display:block!important;width:28px!important;height:22px!important;max-width:28px!important;max-height:22px!important;object-fit:contain!important;margin:auto!important;}
+.activity-ai-glyph{display:none!important;}
+
+/* Activities filters: maximum common readable size. */
+.activities-select,.activities-search{font-size:15.5px!important;line-height:1.2!important;font-weight:700!important;}
+.activities-select{min-height:44px!important;padding:0 12px!important;}
+.activities-search{min-height:46px!important;padding:0 13px!important;}
+
+/* Forms / dates keep large centered type without overflow. */
+input[type="date"]{box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important;min-height:52px!important;font-size:17px!important;line-height:52px!important;font-weight:730!important;text-align:center!important;text-align-last:center!important;}
+input[type="date"]::-webkit-date-and-time-value{display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;}
+
+@media(max-width:390px){
+  .today-hero-card .metric-label{font-size:8.8px!important;}
+  .today-hero-card .metric-value{font-size:16px!important;}
+  .today-hero-card .metric-meta{font-size:8.7px!important;}
+  .profile-dashboard-performance-label{font-size:7.8px!important;}
+  .profile-dashboard-performance-main{font-size:15.5px!important;}
+  .profile-dashboard-performance-unit{font-size:7px!important;}
+}
+</style>
+
 </body>
 </html>
