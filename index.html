@@ -767,16 +767,15 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
   <section class="view" id="view-assistant" aria-label="Asistente ATLAS">
     <div class="assistant-chat-canvas" id="assistantChatCanvas" aria-hidden="false">
       <div class="assistant-chat-topbar">
-        <div class="assistant-chat-actions">
-          <button class="assistant-icon-btn" id="assistantHistoryBtn" type="button" aria-label="Conversaciones" title="Conversaciones">☰</button>
-          <button class="assistant-icon-btn" id="assistantNewBtn" type="button" aria-label="Nueva conversación" title="Nueva conversación">＋</button>
-        </div>
+        <button class="assistant-top-action" id="assistantHistoryBtn" type="button" aria-label="Historial de conversaciones"><span aria-hidden="true">↶</span><span>Historial</span></button>
+        <button class="assistant-top-action" id="assistantNewBtn" type="button" aria-label="Nueva conversación"><span aria-hidden="true">✎</span><span>Nuevo chat</span></button>
       </div>
       <div class="assistant-messages" id="assistantMessages" aria-live="polite">
         <div class="assistant-empty" id="assistantEmpty" aria-hidden="true"></div>
       </div>
       <form class="assistant-composer" id="assistantComposer" autocomplete="off">
-        <textarea class="assistant-input" id="assistantInput" rows="1" maxlength="6000" placeholder="Mensaje" aria-label="Mensaje para ATLAS"></textarea>
+        <button class="assistant-composer-plus" id="assistantComposerNew" type="button" aria-label="Nueva conversación">＋</button>
+        <textarea class="assistant-input" id="assistantInput" rows="1" maxlength="6000" placeholder="Escribe tu mensaje…" aria-label="Mensaje para ATLAS"></textarea>
         <button class="assistant-send" id="assistantSend" type="submit" aria-label="Enviar">↑</button>
       </form>
       <div class="assistant-history-panel" id="assistantHistoryPanel" aria-hidden="true">
@@ -812,43 +811,40 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
   </section>
 
   <section class="view" id="view-data">
-    <div class="page-header"><div class="page-title">Perfil</div><button class="sync-quick global-sync-btn" id="dataSyncBtn" aria-label="Sincronizar con Intervals.icu" title="Sincronizar">↻</button></div>
-
-    <div class="profile-home-card">
-      <div class="profile-home-top">
-        <div class="profile-home-avatar">👤</div>
-        <div class="profile-home-copy"><div class="profile-home-name" id="dataHomeName">Perfil</div><div class="profile-home-location" id="profileTileNote">—</div></div>
-      </div>
-      <div class="profile-home-grid">
-        <div class="profile-home-stat"><span class="profile-home-stat-label">Altura</span><strong id="profileHomeHeight">—</strong></div>
-        <div class="profile-home-stat"><span class="profile-home-stat-label">Peso</span><strong id="profileHomeWeight">—</strong></div>
-      </div>
+    <div class="page-header profile-dashboard-header">
+      <div class="page-title">Perfil</div>
+      <button class="profile-header-settings data-page-open" type="button" data-data-page="system" aria-label="Conexión y datos" title="Conexión y datos">⚙️</button>
     </div>
+    <button class="hidden global-sync-btn" id="dataSyncBtn" type="button" aria-hidden="true" tabindex="-1">↻</button>
 
-    <div class="hidden" aria-hidden="true"><span id="performanceHomeNote"></span><span id="shoesTileNote"></span><span id="connectionTileNote"></span></div>
+    <section class="profile-dashboard-card">
+      <div class="profile-dashboard-avatar" id="profileDashboardAvatar">AT</div>
+      <div class="profile-dashboard-identity">
+        <div class="profile-dashboard-name" id="dataHomeName">Perfil</div>
+        <div class="profile-dashboard-location" id="profileTileNote">—</div>
+        <button class="profile-dashboard-shoes data-page-open" type="button" data-data-page="shoes">👟 Zapatillas</button>
+      </div>
+      <div class="profile-dashboard-side">
+        <div class="profile-dashboard-side-stat"><span>VO₂ máx.</span><strong id="profileDashboardVo2">—</strong></div>
+        <div class="profile-dashboard-side-stat"><span>Experiencia</span><strong id="profileDashboardExperience">—</strong></div>
+      </div>
+      <div class="hidden" aria-hidden="true"><span id="profileHomeHeight"></span><span id="profileHomeWeight"></span><span id="performanceHomeNote"></span><span id="shoesTileNote"></span><span id="connectionTileNote"></span></div>
+    </section>
 
-    <div class="profile-home-links">
-      <button class="data-native-row data-page-open" type="button" data-data-page="performance">
-        <span class="data-native-icon">📈</span>
-        <span class="data-native-row-copy"><span class="data-native-title">Rendimiento</span></span>
-        <span class="data-native-chevron">›</span>
-      </button>
-      <button class="data-native-row data-page-open" type="button" data-data-page="records">
-        <span class="data-native-icon">🏅</span>
-        <span class="data-native-row-copy"><span class="data-native-title">Mejores marcas</span></span>
-        <span class="data-native-chevron">›</span>
-      </button>
-      <button class="data-native-row data-page-open" type="button" data-data-page="shoes">
-        <span class="data-native-icon">👟</span>
-        <span class="data-native-row-copy"><span class="data-native-title">Zapatillas</span></span>
-        <span class="data-native-chevron">›</span>
-      </button>
-      <button class="data-native-row data-page-open" type="button" data-data-page="system">
-        <span class="data-native-icon">⚙️</span>
-        <span class="data-native-row-copy"><span class="data-native-title">Conexión y datos</span></span>
-        <span class="data-native-chevron">›</span>
-      </button>
+    <div class="profile-dashboard-section-head">
+      <span>Rendimiento</span>
+      <button class="profile-dashboard-link data-page-open" type="button" data-data-page="performance">Ver detalle ›</button>
     </div>
+    <div class="profile-dashboard-performance" id="profileDashboardPerformance"></div>
+
+    <div class="profile-dashboard-section-title">Zonas</div>
+    <div class="profile-dashboard-zones" id="profileDashboardZones"></div>
+
+    <div class="profile-dashboard-section-head profile-records-head">
+      <span>Mejores marcas</span>
+      <button class="profile-dashboard-link data-page-open" type="button" data-data-page="records">Ver todas ›</button>
+    </div>
+    <div class="profile-dashboard-records" id="profileDashboardRecords"><div class="profile-dashboard-records-empty">Calculando…</div></div>
   </section>
 </main>
 
@@ -1707,7 +1703,7 @@ html,body{overscroll-behavior-y:none}
 
 (()=>{
 "use strict";
-const APP_VERSION="0.91.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="0.92.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits","chats"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -1970,8 +1966,11 @@ async function init(){
   });
 }
 function ensureMainTabHeaders(){
-  const source=document.querySelector("#view-today > .atlas-header");if(!source)return;
-  for(const id of["view-activities","view-assistant","view-plan","view-data"]){const view=$(id);if(!view||view.querySelector(":scope > .atlas-header"))continue;const clone=source.cloneNode(true);clone.classList.add("atlas-header-clone");qsa("[id]",clone).forEach(el=>el.removeAttribute("id"));view.insertBefore(clone,view.firstChild);}
+  for(const id of["view-activities","view-assistant","view-plan","view-data"]){
+    const view=$(id);
+    if(!view)continue;
+    view.querySelectorAll(":scope > .atlas-header").forEach(header=>header.remove());
+  }
 }
 function initializeStaticUi(){
   ensureMainTabHeaders();
@@ -1997,6 +1996,7 @@ function bindEvents(){
  onAll(".nav-btn","click",e=>showView(e.currentTarget.dataset.tab));
  on(ui.assistantComposer,"submit",sendAssistantMessage);
  on(ui.assistantNewBtn,"click",newAssistantConversation);
+ on($("assistantComposerNew"),"click",newAssistantConversation);
  on(ui.assistantHistoryBtn,"click",openAssistantHistory);
  on(ui.assistantHistoryClose,"click",closeAssistantHistory);
  on(ui.assistantHistoryNew,"click",()=>{closeAssistantHistory();newAssistantConversation();});
@@ -2020,6 +2020,7 @@ function bindEvents(){
  if(ui.metricPeriodControl)qsa(".period-btn",ui.metricPeriodControl).forEach(btn=>on(btn,"click",()=>{currentMetricDays=btn.dataset.days==="all"?"all":Number(btn.dataset.days)||7;if(currentMetricDays==="all")currentMetricEnd=fmtDate(new Date());qsa(".period-btn",ui.metricPeriodControl).forEach(x=>x.classList.toggle("active",x===btn));renderMetricDetail();}));
  on(ui.metricPrev,"click",()=>shiftMetricPeriod(-1));on(ui.metricNext,"click",()=>shiftMetricPeriod(1));
  onAll(".data-page-open","click",e=>openDataDetail(e.currentTarget.dataset.dataPage));onAll("[data-close-data-detail]","click",closeDataDetail);on(ui.recordsList,"click",e=>{const b=e.target.closest("[data-record-activity-id]");if(b)openActivityDetail(b.dataset.recordActivityId);});
+ on($("profileDashboardRecords"),"click",e=>{const b=e.target.closest("[data-record-activity-id]");if(b)openActivityDetail(b.dataset.recordActivityId);});
  on(ui.lastActivityBtn,"click",()=>{const latest=[...currentActivities].sort((a,b)=>activityStamp(b).localeCompare(activityStamp(a)))[0];if(latest)openActivityDetail(latest.id);});on(ui.upcomingTrainingList,"click",e=>{const b=e.target.closest("[data-plan-event-id]");if(b)openPlanDetail(b.dataset.planEventId);});
  on(ui.trainingStateBtn,"click",openStateDetail);on(ui.stateDetailBack,"click",closeStateDetail);on(ui.stateDetailBottomBack,"click",closeStateDetail);
  on(ui.settingsBtn,"click",openSettings);on(ui.testBtn,"click",testConnection);on(ui.smartSyncBtn,"click",smartSync);onAll(".global-sync-btn","click",smartSync);on(ui.fullSyncBtn,"click",fullSync);
@@ -2064,30 +2065,40 @@ function assistantCostText(cost){
   return`≈ ${eur.toLocaleString("es-ES",{minimumFractionDigits:digits,maximumFractionDigits:digits})} €`;
 }
 
+
+function assistantTimeLabel(value){
+  if(!value)return"";
+  const d=new Date(value);
+  if(Number.isNaN(d.getTime()))return"";
+  return new Intl.DateTimeFormat("es-ES",{hour:"2-digit",minute:"2-digit",hour12:false}).format(d);
+}
+
 function assistantMessageNode(message){
   const row=document.createElement("div");
   row.className=`assistant-message-row ${message.role==="user"?"user":"assistant"}`;
 
-  if(message.role==="assistant"){
-    const avatar=document.createElement("div");
-    avatar.className="assistant-message-avatar";
-    avatar.textContent="Ʌ";
-    row.appendChild(avatar);
-  }
-
   const stack=document.createElement("div");
   stack.className="assistant-message-stack";
+
   const bubble=document.createElement("div");
   bubble.className="assistant-message";
   bubble.textContent=String(message.content||"");
   stack.appendChild(bubble);
+
+  const time=assistantTimeLabel(message.at);
+  if(time){
+    const stamp=document.createElement("div");
+    stamp.className="assistant-message-time";
+    stamp.textContent=time;
+    stack.appendChild(stamp);
+  }
 
   if(message.role==="assistant"){
     const cost=assistantCostText(message.cost);
     if(cost){
       const meta=document.createElement("div");
       meta.className="assistant-cost";
-      meta.textContent=cost;
+      meta.textContent=`Coste estimado: ${cost.replace(/^≈\\s*/,"")}`;
       stack.appendChild(meta);
     }
   }
@@ -2099,16 +2110,14 @@ function assistantTypingNode(){
   const row=document.createElement("div");
   row.className="assistant-message-row assistant";
   row.id="assistantTyping";
-  const avatar=document.createElement("div");
-  avatar.className="assistant-message-avatar";
-  avatar.textContent="Ʌ";
+
   const stack=document.createElement("div");
   stack.className="assistant-message-stack";
   const bubble=document.createElement("div");
   bubble.className="assistant-message assistant-typing";
   bubble.innerHTML="<span></span><span></span><span></span>";
+
   stack.appendChild(bubble);
-  row.appendChild(avatar);
   row.appendChild(stack);
   return row;
 }
@@ -2130,16 +2139,12 @@ function renderAssistantChat(){
   if(assistantPendingError){
     const row=document.createElement("div");
     row.className="assistant-message-row assistant";
-    const avatar=document.createElement("div");
-    avatar.className="assistant-message-avatar";
-    avatar.textContent="Ʌ";
     const stack=document.createElement("div");
     stack.className="assistant-message-stack";
     const bubble=document.createElement("div");
     bubble.className="assistant-message assistant-error";
     bubble.textContent=assistantPendingError;
     stack.appendChild(bubble);
-    row.appendChild(avatar);
     row.appendChild(stack);
     ui.assistantMessages.appendChild(row);
   }
@@ -2399,12 +2404,21 @@ function showView(tab){
   document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===`view-${tab}`));
   document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
   document.body.classList.toggle("assistant-main-active",tab==="assistant");
+
   if(tab==="activities")renderActivities();
   if(tab==="plan")renderPlan();
   if(tab==="assistant"){
     renderAssistantChat();
     requestAnimationFrame(()=>scrollAssistantToBottom(false));
   }
+  if(tab==="data"){
+    renderProfileDashboardRecords();
+    loadRunningRecords().then(()=>renderProfileDashboardRecords()).catch(error=>{
+      console.warn("ɅTLɅS · marcas en Perfil",error);
+      renderProfileDashboardRecords();
+    });
+  }
+
   window.scrollTo({top:0,behavior:"instant"});
   scheduleAtlasScrollAudit();
 }
@@ -3056,6 +3070,47 @@ function profileZoneRows(sport){
   const thresholdSec=sportThresholdPaceSecKm(sport),lthr=Number(sport?.lthr),maxHr=Number(sport?.max_hr),pace=atlasPaceZones(thresholdSec),hr=atlasHrZones(lthr,maxHr);
   return{pace,hr,thresholdSec};
 }
+
+function profileInitials(name){
+  const parts=String(name||"ATLAS").trim().split(/\s+/).filter(Boolean);
+  return(parts.slice(0,2).map(x=>x[0]?.toUpperCase()||"").join("")||"AT").slice(0,2);
+}
+function renderProfileDashboardRecords(records=currentRunningRecords){
+  const box=$("profileDashboardRecords");
+  if(!box)return;
+  const wanted=["5k","10k","half","marathon"];
+  const source=Array.isArray(records)?records:[];
+  const rows=wanted.map(key=>{
+    const section=source.find(x=>x.key===key);
+    const best=section?.top?.[0]||(section?.secs>0?section:null);
+    if(!section)return null;
+    const pace=best?.secs>0&&section.meters>0?best.secs/(section.meters/1000):null;
+    return{
+      key,
+      label:section.label,
+      id:best?.id||null,
+      mark:best?.secs>0?formatDuration(Math.round(best.secs)):"—",
+      pace:Number.isFinite(pace)?`${formatPaceValue(pace)} min/km`:"—",
+      date:best?.date?engineV2DateLabel(best.date):"—"
+    };
+  }).filter(Boolean);
+
+  if(!rows.length){
+    box.innerHTML='<div class="profile-dashboard-records-empty">Sin marcas disponibles</div>';
+    return;
+  }
+
+  box.innerHTML=rows.map(r=>`
+    <button class="profile-dashboard-record-row" type="button" ${r.id?`data-record-activity-id="${esc(r.id)}"`:"disabled"}>
+      <span class="profile-dashboard-record-icon">👟</span>
+      <span class="profile-dashboard-record-distance">${esc(r.label)}</span>
+      <span class="profile-dashboard-record-mark">${esc(r.mark)}</span>
+      <span class="profile-dashboard-record-pace">${esc(r.pace)}</span>
+      <span class="profile-dashboard-record-date">${esc(r.date)}</span>
+      <span class="profile-dashboard-record-chevron">›</span>
+    </button>`).join("");
+}
+
 function renderProfilePanel(athlete){
   const a=athlete||{},
     height=Number(a.height),
@@ -3063,18 +3118,29 @@ function renderProfilePanel(athlete){
     sport=runningSportSettings(a),
     thresholdSec=sportThresholdPaceSecKm(sport),
     name=a.name||profileLabel(null),
-    location=[a.city,a.state,a.country].filter(Boolean).join(" · ")||"—";
+    location=[a.city,a.state,a.country].filter(Boolean).join(" · ")||"—",
+    vo2=Number(currentCachedVo2?.value??currentAthleteProfileV2?.performance?.vo2?.value??currentAthleteProfileV2?.performance?.vo2),
+    experience=Number(currentAthleteProfileV2?.historical?.experienceYears);
 
   if(ui.dataHomeName)ui.dataHomeName.textContent=name;
   if(ui.profileTileNote)ui.profileTileNote.textContent=location;
+  const avatar=$("profileDashboardAvatar");
+  if(avatar)avatar.textContent=profileInitials(name);
+  const dashVo2=$("profileDashboardVo2"),dashExperience=$("profileDashboardExperience");
+  if(dashVo2)dashVo2.textContent=Number.isFinite(vo2)?formatNatural(vo2,2):"—";
+  if(dashExperience)dashExperience.textContent=Number.isFinite(experience)?`${formatNatural(experience,1)} a`:"—";
+
   const hh=$("profileHomeHeight"),hw=$("profileHomeWeight");
   if(hh)hh.textContent=Number.isFinite(height)?`${formatNatural(height,2)} m`:"—";
   if(hw)hw.textContent=Number.isFinite(weight)?`${formatNatural(weight,1)} kg`:"—";
+
   if(ui.profileName)ui.profileName.textContent=name;
   if(ui.profileState)ui.profileState.textContent=a.id?"Sincronizado con Intervals.icu":"Sin datos";
   if(ui.profileLocation)ui.profileLocation.textContent=location;
   if(ui.profileHeight)ui.profileHeight.textContent=Number.isFinite(height)?`${formatNatural(height,2)} m`:"—";
   if(ui.profileWeight)ui.profileWeight.textContent=Number.isFinite(weight)?`${formatNatural(weight,1)} kg`:"—";
+  if(ui.profileVo2)ui.profileVo2.textContent=Number.isFinite(vo2)?formatNatural(vo2,2):"—";
+  if(ui.profileThresholdHr)ui.profileThresholdHr.textContent=Number.isFinite(Number(sport?.lthr))?`${formatNatural(Number(sport.lthr),0)} ppm`:"—";
 
   const rows=[
     profileInsightRow("Umbral de lactato",Number.isFinite(thresholdSec)?`${formatPaceValue(thresholdSec)} min/km`:"—"),
@@ -3086,7 +3152,35 @@ function renderProfilePanel(athlete){
   const pr=$("performanceRunningRows");
   if(pr)pr.innerHTML=rows;
 
-  const zones=profileZoneRows(sport),zoneBox=$("performanceZones");
+  const performance=$("profileDashboardPerformance");
+  if(performance){
+    const metrics=[
+      ["🫁","VO₂ máx.",Number.isFinite(vo2)?formatNatural(vo2,2):"—"],
+      ["⚡","Umbral",Number.isFinite(thresholdSec)?`${formatPaceValue(thresholdSec)} min/km`:"—"],
+      ["❤️","FC umbral",Number.isFinite(Number(sport?.lthr))?`${formatNatural(Number(sport.lthr),0)} ppm`:"—"],
+      ["🔺","FC máx.",Number.isFinite(Number(sport?.max_hr))?`${formatNatural(Number(sport.max_hr),0)} ppm`:"—"]
+    ];
+    performance.innerHTML=metrics.map(([emoji,label,value])=>`
+      <div class="profile-dashboard-performance-cell">
+        <span class="profile-dashboard-performance-label">${emoji} ${esc(label)}</span>
+        <strong>${esc(value)}</strong>
+      </div>`).join("");
+  }
+
+  const zones=profileZoneRows(sport);
+  const zoneHtml=(title,emoji,data)=>`<section class="profile-dashboard-zone-column">
+    <div class="profile-dashboard-zone-head"><span>${emoji}</span><span>${title}</span></div>
+    <div class="profile-dashboard-zone-list">${data.map(z=>`<div class="profile-dashboard-zone-row"><span class="profile-dashboard-zone-name">${esc(z.name)}</span><span class="profile-dashboard-zone-value">${esc(z.value)}</span></div>`).join("")}</div>
+  </section>`;
+
+  const dashboardZones=$("profileDashboardZones");
+  if(dashboardZones){
+    dashboardZones.innerHTML=(zones.pace.length||zones.hr.length)
+      ?zoneHtml("Zonas de ritmo","🏃🏻‍♂️",zones.pace)+zoneHtml("Zonas de FC","❤️",zones.hr)
+      :'<div class="profile-dashboard-records-empty">No hay datos suficientes para calcular las zonas.</div>';
+  }
+
+  const zoneBox=$("performanceZones");
   if(zoneBox){
     const sections=[];
     if(zones.pace.length){
@@ -3107,6 +3201,7 @@ function renderProfilePanel(athlete){
 
   if($("performanceCadenceInsight"))$("performanceCadenceInsight").innerHTML="";
   if(ui.profileCadenceInsight)ui.profileCadenceInsight.innerHTML="";
+  renderProfileDashboardRecords();
 }function evolutionWindowStats(runs,anchor,days=28){
   const end=anchor,start=addDays(anchor,-(days-1)),prevEnd=addDays(start,-1),prevStart=addDays(prevEnd,-(days-1)),now=v2RunsBetween(runs,start,end),prev=v2RunsBetween(runs,prevStart,prevEnd);
   return{km:v2SumKm(now),prevKm:v2SumKm(prev),freq:now.length/(days/7),prevFreq:prev.length/(days/7)};
@@ -5238,12 +5333,12 @@ function renderPlan(){
       s.planEventId?`data-plan-event-id="${esc(s.planEventId)}"`:"",
       s.activityId?`data-activity-id="${esc(s.activityId)}"`:""
     ].filter(Boolean).join(" ");
-    const extra=s.kind==="extra"&&s.showExtra
-      ?'<span class="plan-execution-chip pending plan-execution-extra">Actividad extra</span>'
-      :"";
+    const meta=s.metaParts.filter(Boolean);
+    const extra=s.kind==="extra"&&s.showExtra?"Actividad extra":null;
     return`<button class="plan-session-row ${s.kind}${s.outcome?" realized":""}" type="button" ${attrs}>
       <div class="plan-session-title"><span class="plan-session-icon">${s.icon}</span><span class="plan-session-title-text">${esc(s.title)}</span></div>
-      <div class="plan-session-meta"><span class="plan-meta-values">${planSessionMetaHtml(s)}</span>${extra}</div>
+      <div class="plan-session-subtitle">${s.kind==="plan"?"Plan de entrenamiento":extra||"Actividad realizada"}</div>
+      <div class="plan-session-meta">${meta.length?activityStatsHtml(meta):'<span class="activity-row-stat">—</span>'}</div>
     </button>`;
   };
 
@@ -5272,12 +5367,10 @@ function renderPlan(){
 
     const content=sessions.length
       ?`<div class="plan-session-list">${sessions.map(renderSession).join("")}</div>`
-      :planDateInsideAtlasPlan(key)
-        ?'<div class="plan-rest-copy">🛌 Descanso</div>'
-        :'<div class="plan-rest-copy plan-rest-blank" aria-hidden="true">&nbsp;</div>';
+      :`<div class="plan-rest-copy">${planDateInsideAtlasPlan(key)?"🛌 Descanso":"—"}</div>`;
 
     markup.push(`<section class="plan-day${key===today?" today":""}">
-      <div class="plan-day-head${sessions.length>1?" multi-session":""}">
+      <div class="plan-day-head">
         <div class="plan-day-date"><span class="plan-day-weekday">${days[i]}</span><span class="plan-day-number">${d.getDate()}</span></div>
         <span class="plan-day-sep" aria-hidden="true"></span>
         <div class="plan-day-copy">${content}</div>
@@ -5438,7 +5531,14 @@ function formatPaceSecs(sec){if(!Number.isFinite(Number(sec)))return"—";const 
 function formatPaceValue(sec){if(!Number.isFinite(Number(sec)))return"—";const s=Math.round(sec),m=Math.floor(s/60);return`${m}:${String(s%60).padStart(2,"0")}`;}
 function fullActivityDate(a){const raw=activityStamp(a);if(!raw)return"📅 —";const d=new Date(raw.length===10?`${raw}T12:00:00`:raw);if(Number.isNaN(d.getTime()))return`📅 ${activityDate(a)}`;const months=["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"],time=new Intl.DateTimeFormat("es-ES",{hour:"2-digit",minute:"2-digit"}).format(d);return`📅 ${d.getDate()} ${months[d.getMonth()]} ${String(d.getFullYear()).slice(-2)} · ${time}`;}
 function monthLabel(ym){const[y,m]=ym.split("-").map(Number),s=new Intl.DateTimeFormat("es-ES",{month:"long",year:"numeric"}).format(new Date(y,m-1,1));return s.charAt(0).toUpperCase()+s.slice(1);}
-function compactActivityDate(s){if(!s)return{month:"—",day:"—"};const[,m,d]=s.split("-").map(Number),months=["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"];return{month:months[m-1]||"—",day:String(d)};}
+function compactActivityDate(s){
+  if(!s)return{month:"—",day:"—",weekday:"—"};
+  const[y,m,d]=s.split("-").map(Number),
+    months=["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"],
+    weekdays=["DOM","LUN","MAR","MIÉ","JUE","VIE","SÁB"],
+    date=new Date(y,m-1,d,12);
+  return{month:months[m-1]||"—",day:String(d),weekday:weekdays[date.getDay()]||"—"};
+}
 function initActivityFilters(){const sports=[...new Set(currentActivities.map(activityType).filter(Boolean))].sort((a,b)=>sportMeta(a).label.localeCompare(sportMeta(b).label,"es"));const years=[...new Set(currentActivities.map(activityDate).filter(Boolean).map(d=>d.slice(0,4)))].sort((a,b)=>b.localeCompare(a));const oldSport=ui.activitySportFilter.value||"all",oldYear=ui.activityYearFilter.value||String(new Date().getFullYear());ui.activitySportFilter.innerHTML='<option value="all">🏅 Todos los deportes</option>'+sports.map(s=>{const meta=sportMeta(s);return`<option value="${esc(s)}">${meta.emoji} ${esc(meta.label)}</option>`;}).join("");ui.activityYearFilter.innerHTML='<option value="all">Todo</option>'+years.map(y=>`<option value="${y}">${y}</option>`).join("");ui.activitySportFilter.value=[...ui.activitySportFilter.options].some(o=>o.value===oldSport)?oldSport:"all";ui.activityYearFilter.value=[...ui.activityYearFilter.options].some(o=>o.value===oldYear)?oldYear:"all";}
 function renderActivities(){if(!ui.activitiesList)return;const sport=ui.activitySportFilter.value||"all",year=ui.activityYearFilter.value||"all",q=(ui.activitySearch.value||"").trim().toLocaleLowerCase("es"),items=[...currentActivities].filter(a=>(sport==="all"||activityType(a)===sport)&&(year==="all"||activityDate(a).startsWith(year))&&(!q||activityName(a).toLocaleLowerCase("es").includes(q))).sort((a,b)=>activityStamp(b).localeCompare(activityStamp(a)));const dist=items.reduce((s,a)=>s+(activityDistanceM(a)||0),0);ui.activitiesSummary.textContent=`${items.length} actividades${dist>0?` · ${formatNatural(dist/1000,1)} km`:""}`;if(!items.length){ui.activitiesList.innerHTML='<div class="card activity-empty">No hay actividades con estos filtros.</div>';return;}const groups=new Map();for(const a of items){const d=activityDate(a),key=d?d.slice(0,7):"Sin fecha";if(!groups.has(key))groups.set(key,[]);groups.get(key).push(a);}ui.activitiesList.innerHTML=[...groups.entries()].map(([key,arr])=>{const km=arr.reduce((s,a)=>s+(activityDistanceM(a)||0),0)/1000;return`<section class="activity-month"><div class="activity-month-head"><div class="activity-month-title">${key==="Sin fecha"?"Sin fecha":monthLabel(key)}</div><div class="activity-month-meta">${arr.length} ${arr.length===1?"actividad":"actividades"}${km?` · ${formatNatural(km,1)} km`:""}</div></div><div class="activity-list">${arr.map(activityRowHtml).join("")}</div></section>`;}).join("");requestAnimationFrame(fitActivityTitles);}
 
@@ -5447,6 +5547,18 @@ function activityCompactGymLike(a){
   return k.includes("strength")||k.includes("weighttraining")||k.includes("weightlifting")||
     k.includes("highintensityinterval")||k==="hiit"||k.includes("crossfit")||
     k.includes("functional")||k.includes("circuit");
+}
+
+
+function activityCardSubtitle(a){
+  const sport=activitySportLabel(a);
+  const hr=activityHr(a);
+  const parts=[sport];
+  if(Number.isFinite(hr)&&hr>0&&!activityCompactGymLike(a))parts.push(`${formatNatural(hr,0)} ppm`);
+  return parts.filter(Boolean).join(" · ");
+}
+function activityStatsHtml(stats){
+  return stats.filter(Boolean).map((value,index)=>`${index?'<span class="activity-row-pipe" aria-hidden="true">|</span>':""}<span class="activity-row-stat">${esc(String(value))}</span>`).join("");
 }
 
 function activityRowContent(a){
@@ -5466,11 +5578,21 @@ function activityRowContent(a){
     stats=[
       dist?`${formatNatural(dist/1000,2)} km`:null,
       elapsed?formatDuration(elapsed):null,
-      isRun(a)&&pace?formatPaceSecs(pace):(!isRun(a)&&Number.isFinite(speed)&&speed>0?`${formatNatural(speed*3.6,1)} km/h`:null)
+      isRun(a)&&pace?`${formatPaceValue(pace)} min/km`:(!isRun(a)&&Number.isFinite(speed)&&speed>0?`${formatNatural(speed*3.6,1)} km/h`:null)
     ].filter(Boolean);
   }
 
-  return`<div class="activity-row-date"><span class="activity-row-month">${dp.month}</span><span class="activity-row-day">${dp.day}</span></div><span class="activity-row-sep" aria-hidden="true"></span><div class="activity-row-copy"><div class="activity-row-title"><span class="activity-row-title-emoji">${activityIcon(a)}</span><span class="activity-row-title-text">${esc(activityName(a))}</span></div><div class="activity-row-main">${stats.length?stats.map(s=>`<span class="activity-row-stat">${esc(String(s))}</span>`).join(""):`<span class="activity-row-stat">${esc(activitySportLabel(a))}</span>`}</div></div>`;
+  return`<div class="activity-row-date">
+      <span class="activity-row-month">${dp.month}</span>
+      <span class="activity-row-day">${dp.day}</span>
+      <span class="activity-row-weekday">${dp.weekday}</span>
+    </div>
+    <span class="activity-row-sep" aria-hidden="true"></span>
+    <div class="activity-row-copy">
+      <div class="activity-row-title"><span class="activity-row-title-emoji">${activityIcon(a)}</span><span class="activity-row-title-text">${esc(activityName(a))}</span></div>
+      <div class="activity-row-subtitle">${esc(activityCardSubtitle(a))}</div>
+      <div class="activity-row-main">${activityStatsHtml(stats)}</div>
+    </div>`;
 }
 function activityRowHtml(a){return`<button class="activity-row" data-id="${esc(String(a.id))}">${activityRowContent(a)}</button>`;}
 async function openActivityDetail(id){
@@ -5978,8 +6100,18 @@ function renderToday(activities,wellness,cachedVo2){
 }
 function renderLastRun(r){if(!r){ui.lastActivityBtn.innerHTML='<div class="activity-row-copy" style="grid-column:1/-1;padding:8px 6px">Sin actividades</div>';return;}ui.lastActivityBtn.innerHTML=activityRowContent(r);requestAnimationFrame(fitActivityTitles);}
 function upcomingPlanRowContent(e){
-  const date=planEventDate(e),dp=compactActivityDate(date),session=publishedPlanSessionForEvent(e),dist=session?.distanceKm?`${formatNatural(session.distanceKm,1)} km`:planEventDistanceM(e)?`${formatNatural(planEventDistanceM(e)/1000,1)} km`:null,pace=sessionQuickPaceLabel(session),stats=[dist,pace&&pace!=="—"?pace:null].filter(Boolean);
-  return`<div class="activity-row-date"><span class="activity-row-month">${dp.month}</span><span class="activity-row-day">${dp.day}</span></div><span class="activity-row-sep" aria-hidden="true"></span><div class="activity-row-copy"><div class="activity-row-title"><span class="activity-row-title-emoji">${sportMeta(planEventType(e)).emoji}</span><span class="activity-row-title-text">${esc(planEventName(e))}</span></div><div class="activity-row-main">${stats.length?stats.map(s=>`<span class="activity-row-stat">${esc(s)}</span>`).join(""):`<span class="activity-row-stat">Entrenamiento planificado</span>`}</div></div>`;
+  const d=planEventDate(e),dp=compactActivityDate(d),stats=(planEventMeta(e)||"").split(" · ").filter(Boolean);
+  return`<div class="activity-row-date">
+      <span class="activity-row-month">${dp.month}</span>
+      <span class="activity-row-day">${dp.day}</span>
+      <span class="activity-row-weekday">${dp.weekday}</span>
+    </div>
+    <span class="activity-row-sep" aria-hidden="true"></span>
+    <div class="activity-row-copy">
+      <div class="activity-row-title"><span class="activity-row-title-emoji">${sportMeta(planEventType(e)).emoji}</span><span class="activity-row-title-text">${esc(planEventName(e))}</span></div>
+      <div class="activity-row-subtitle">Entrenamiento planificado</div>
+      <div class="activity-row-main">${stats.length?activityStatsHtml(stats):'<span class="activity-row-stat">Planificado</span>'}</div>
+    </div>`;
 }
 function renderUpcomingTrainings(){
   if(!ui.upcomingTrainingList)return;const today=fmtDate(new Date()),prefixId=currentPlanManifest?.planId?planExternalPrefix(currentPlanManifest.planId):null;
@@ -7268,58 +7400,56 @@ body.assistant-history-open .nav{display:none!important}
 
 
 
-<style id="atlas-v091-clean-system">
+
+<style id="atlas-v092-selected-design">
 /* =========================================================
-   ɅTLɅS v0.91 · consolidated polish layer
-   Replaces the accumulated v0.85–v0.90 patch stack.
+   ɅTLɅS v0.92 · Selected Design
+   Hoy remains untouched except for the shared activity card.
    ========================================================= */
 
-/* OLED black is structural everywhere. */
-html,body,.app,.view,
+:root{--atlas-edge:rgba(255,255,255,.15)}
+
+/* OLED black on all redesigned surfaces. */
+#view-activities,#view-assistant,#view-plan,#view-data,
 .metric-detail,.state-detail,.activity-detail,.plan-detail,.data-detail,
-.training-state,.metric-card,.activity-list,.plan-days,.plan-summary,.plan-overview-card,
-.profile-home-card,.profile-home-links,.data-native-list,.data-system-card,
-.profile-insight-list,.profile-zone-card,.shoe-card,.chart-card,.detail-stats,
-.metric-context,.state-detail-card,.state-calc-grid,.state-bands,.plan-detail-card,
-.plan-week-calendar,#sessionGeneratorDetail,#sessionGeneratorDetail .plan-detail-shell,
+#sessionGeneratorDetail,#sessionGeneratorDetail .plan-detail-shell,
 #sessionGeneratorDetail .plan-detail-card,#sessionGeneratorList,
 #sessionGeneratorList .session-preview-week,#sessionGeneratorList .session-preview-head,
 #sessionGeneratorList .plan-week-calendar,#sessionGeneratorList .plan-week-calendar-day,
 #sessionGeneratorList .plan-week-calendar-head,#sessionGeneratorList .plan-week-calendar-session{
-  background:#000!important;
-  background-image:none!important;
+  background:#000!important;background-image:none!important;
 }
 
-/* Slightly stronger premium edges. */
-.training-state,.metric-card,.activity-list,.plan-days,.plan-summary,.plan-overview-card,
-.profile-home-card,.profile-home-links,.data-native-list,.data-system-card,
-.profile-insight-list,.shoe-card,.chart-card,.detail-stats,.metric-context,
-.state-detail-card,.state-calc-grid,.state-bands,.plan-detail-card,.plan-week-calendar,
-.activity-primary,.activity-equipment,.activity-map,.activity-chart-card,.activity-lap-bars-card,
-.atlas-record-card,.performance-zone-column,dialog{
-  border-width:1.5px!important;
-  border-color:rgba(255,255,255,.16)!important;
+/* ATLAS image exists ONLY in Hoy. */
+#view-activities>.atlas-header,
+#view-assistant>.atlas-header,
+#view-plan>.atlas-header,
+#view-data>.atlas-header{display:none!important}
+
+/* Main views without header start naturally below the safe area. */
+#view-activities>.page-header,
+#view-plan>.page-header,
+#view-data>.page-header{
+  padding-top:5px!important;
+  padding-bottom:9px!important;
 }
 
-/* Root tab bar: physically low and fixed to viewport on every main tab. */
+/* ---------------- TAB BAR: current ATLAS style, correct iPhone position ---------------- */
 .nav{
-  --glass-x:50%;
-  --glass-y:34%;
+  --glass-x:50%;--glass-y:34%;
   position:fixed!important;
-  left:50%!important;
-  right:auto!important;
-  top:auto!important;
-  bottom:max(4px,calc(env(safe-area-inset-bottom) - 26px))!important;
+  left:50%!important;right:auto!important;top:auto!important;
+  bottom:calc(env(safe-area-inset-bottom) + 6px)!important;
   transform:translate3d(-50%,0,0)!important;
   margin:0!important;
-  z-index:90!important;
-  border:1.5px solid rgba(255,255,255,.24)!important;
+  z-index:100!important;
+  border:1.5px solid rgba(255,255,255,.22)!important;
   background:
-    radial-gradient(110px 68px at var(--glass-x) var(--glass-y),rgba(255,255,255,.14),rgba(255,255,255,.03) 40%,transparent 72%),
-    linear-gradient(180deg,rgba(255,255,255,.078),rgba(255,255,255,.018) 42%,rgba(0,0,0,.10))!important;
-  -webkit-backdrop-filter:blur(29px) saturate(225%) contrast(1.09)!important;
-  backdrop-filter:blur(29px) saturate(225%) contrast(1.09)!important;
-  box-shadow:0 15px 38px rgba(0,0,0,.36),inset 0 1px 0 rgba(255,255,255,.20),inset 0 -1px 0 rgba(255,255,255,.055)!important;
+    radial-gradient(108px 66px at var(--glass-x) var(--glass-y),rgba(255,255,255,.12),rgba(255,255,255,.025) 42%,transparent 72%),
+    linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.016) 44%,rgba(0,0,0,.11))!important;
+  -webkit-backdrop-filter:blur(28px) saturate(210%) contrast(1.07)!important;
+  backdrop-filter:blur(28px) saturate(210%) contrast(1.07)!important;
+  box-shadow:0 14px 36px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.18)!important;
 }
 body.atlas-subpage-open .nav,
 body.profile-detail-open .nav,
@@ -7330,417 +7460,532 @@ body:has(#stateDetail.open) .nav,
 body:has(.data-detail:not(.hidden)) .nav,
 body:has(.plan-detail:not(.hidden)) .nav,
 body:has(dialog[open]) .nav,
-body:has(#assistantHistoryPanel.open) .nav{
-  display:none!important;
-}
+body:has(#assistantHistoryPanel.open) .nav{display:none!important}
 
-/* Chat composer stays safely above the tab bar but uses its exact material. */
-body.assistant-main-active{height:100dvh!important;max-height:100dvh!important;overflow:hidden!important}
-body.assistant-main-active .app{height:100dvh!important;min-height:100dvh!important;overflow:hidden!important;padding-bottom:0!important}
-#view-assistant.active{
-  position:fixed!important;
-  z-index:40!important;
-  top:env(safe-area-inset-top)!important;
-  left:0!important;right:0!important;
-  bottom:calc(var(--nav) + max(4px,calc(env(safe-area-inset-bottom) - 26px)) + 10px)!important;
-  height:auto!important;min-height:0!important;
-  padding:0 max(8px,env(safe-area-inset-right)) 0 max(8px,env(safe-area-inset-left))!important;
-  overflow:hidden!important;
-  background:#000!important;
-}
-.assistant-chat-topbar{justify-content:flex-end!important;border-bottom:0!important}
-.assistant-chat-presence,.assistant-chat-avatar,.assistant-chat-status-dot,.assistant-empty-avatar{display:none!important}
-.assistant-chat-actions{margin-left:auto!important}
-.assistant-empty{display:block!important}
-.assistant-composer{
-  min-height:58px!important;
-  margin:6px 0 2px!important;
-  padding:6px 7px 6px 14px!important;
-  border:1.5px solid rgba(255,255,255,.24)!important;
-  border-radius:24px!important;
-  background:
-    radial-gradient(110px 64px at 50% 30%,rgba(255,255,255,.13),rgba(255,255,255,.03) 42%,transparent 72%),
-    linear-gradient(180deg,rgba(255,255,255,.078),rgba(255,255,255,.018) 40%,rgba(0,0,0,.10))!important;
-  -webkit-backdrop-filter:blur(29px) saturate(225%) contrast(1.09)!important;
-  backdrop-filter:blur(29px) saturate(225%) contrast(1.09)!important;
-  box-shadow:0 14px 36px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.21),inset 0 -1px 0 rgba(255,255,255,.055)!important;
-}
-.assistant-input{background:transparent!important;border:0!important;box-shadow:none!important}
-
-/* Filters stay OLED black. */
-.activities-select,.activities-search{background:#000!important;background-image:none!important;border-color:rgba(255,255,255,.16)!important}
-
-/* Date geometry is physically identical in Today, Activities and Plan. */
-.activity-row,
-.plan-day-head,
-#sessionGeneratorList .plan-week-calendar-head{
-  display:grid!important;
-  grid-template-columns:39px 1px minmax(0,1fr)!important;
-  gap:0!important;
-  padding-left:8px!important;
-  padding-right:8px!important;
-}
-.activity-row-date,.plan-day-date,#sessionGeneratorList .plan-week-calendar-date{
-  width:31px!important;min-width:31px!important;max-width:31px!important;
-  justify-self:start!important;margin:0!important;padding:0!important;
-}
-.activity-row-sep,.plan-day-sep,#sessionGeneratorList .plan-week-calendar-sep{
-  grid-column:2!important;
-  width:1px!important;
-  height:auto!important;
-  align-self:stretch!important;
-  margin:4px 0!important;
-  background:rgba(255,255,255,.17)!important;
-}
-.activity-row-copy,.plan-day-copy,#sessionGeneratorList .plan-week-calendar-copy{
-  grid-column:3!important;
-  min-width:0!important;
-  margin:0!important;
-  padding-left:8px!important;
-}
-
-/* Activity metadata separators occupy layout; they can never overlap text. */
-.activity-row-main{
+/* ---------------- SHARED ACTIVITY CARD ---------------- */
+.activity-list{
   display:flex!important;
-  align-items:center!important;
-  gap:0!important;
-  min-width:0!important;
-  overflow:hidden!important;
-}
-.activity-row-stat{
-  position:relative!important;
-  flex:0 1 auto!important;
-  min-width:0!important;
-  padding:0 8px!important;
-  border-left:1px solid rgba(255,255,255,.17)!important;
-  white-space:nowrap!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-}
-.activity-row-stat:first-child{
-  padding-left:0!important;
-  border-left:0!important;
-}
-.activity-row-stat:last-child{padding-right:0!important}
-.activity-row-stat::before,.activity-row-stat::after{display:none!important}
-
-/* PLAN — same session component whether there are 1, 2 or more activities. */
-.plan-day-head{
-  min-height:50px!important;
-  padding-top:2px!important;
-  padding-bottom:2px!important;
-  align-items:stretch!important;
-}
-.plan-day-copy{display:flex!important;flex-direction:column!important;justify-content:center!important}
-.plan-session-list{display:flex;flex-direction:column;min-width:0}
-.plan-session-row{
-  appearance:none;
-  width:100%;
-  min-width:0;
-  min-height:42px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  padding:4px 0!important;
-  border:0;
-  background:#000!important;
-  color:#fff;
-  text-align:left;
-}
-.plan-session-row+.plan-session-row{border-top:1px solid rgba(255,255,255,.11)}
-.plan-session-row:active{background:rgba(255,255,255,.035)!important}
-.plan-session-title{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  min-width:0;
-  font-size:14.5px;
-  line-height:1.22;
-  font-weight:745;
-}
-.plan-session-icon{flex:0 0 auto;font-size:15px}
-.plan-session-title-text{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.plan-session-meta{
-  margin-top:2px;
-  min-width:0;
-  display:flex;
-  align-items:center;
-  gap:5px;
-  color:#c9d0d6;
-  font-size:12px;
-  line-height:1.22;
-  font-weight:570;
-  white-space:nowrap;
-  overflow:hidden;
-}
-.plan-session-row.realized .plan-session-title-text{color:#fff}
-.plan-session-row.realized{box-shadow:inset 2px 0 0 rgba(29,155,240,.58)}
-.plan-meta-values{min-width:0;overflow:hidden;text-overflow:ellipsis}
-.plan-execution-meta{display:inline-flex!important;align-items:center!important;margin-left:6px!important}
-.plan-rest-copy{padding:4px 0!important}
-
-/* Plan race summary retained, but aligned and full width. */
-#view-plan>.plan-overview-card{
-  position:relative!important;
-  min-height:42px!important;
-  padding:6px 8px!important;
-  grid-template-columns:22px minmax(0,1fr) 22px!important;
-  align-items:center!important;
-}
-#view-plan .plan-overview-copy{display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important}
-#view-plan .plan-overview-title{width:100%!important;text-align:center!important;font-size:16.5px!important;font-weight:770!important}
-#view-plan .plan-overview-meta{display:none!important}
-#engineGoalCard{position:relative!important;display:block!important;width:100%!important;padding:12px!important}
-#engineGoalCard .engine-v2-copy{display:block!important;width:100%!important;max-width:none!important}
-#engineGoalCard .engine-v2-arrow{position:absolute!important;top:14px!important;right:12px!important}
-#engineGoalCard .plan-goal-summary{width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important}
-.plan-goal-summary{
-  display:grid!important;
-  grid-template-columns:repeat(2,minmax(0,1fr))!important;
-  gap:0!important;
-  overflow:hidden!important;
-  border:1.5px solid rgba(255,255,255,.16)!important;
-  border-radius:16px!important;
-  background:#000!important;
-}
-.plan-goal-summary-item{
-  min-height:58px!important;
-  display:grid!important;
-  grid-template-columns:26px minmax(0,1fr)!important;
-  gap:7px!important;
-  align-items:center!important;
-  padding:8px 9px!important;
-  text-align:left!important;
-}
-.plan-goal-summary-item:nth-child(odd){border-right:1px solid rgba(255,255,255,.13)!important}
-.plan-goal-summary-item:nth-child(n+3){border-top:1px solid rgba(255,255,255,.13)!important}
-.plan-goal-summary-emoji{font-size:18px!important;text-align:center}
-.plan-goal-summary-copy{display:flex;flex-direction:column;gap:3px;min-width:0}
-.plan-goal-summary-key{font-size:10.5px!important;color:var(--muted2)!important;font-weight:670!important}
-.plan-goal-summary-value{font-size:15px!important;color:#fff!important;font-weight:760!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
-
-/* PERFORMANCE — true two-column zone layout. */
-#performanceZones.profile-zone-card{
-  display:grid!important;
-  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  flex-direction:column!important;
   gap:8px!important;
   border:0!important;
   background:transparent!important;
   overflow:visible!important;
 }
-.performance-zone-column{
-  min-width:0;
-  overflow:hidden;
-  border:1.5px solid rgba(255,255,255,.16);
-  border-radius:17px;
-  background:#000;
+.activity-row{
+  appearance:none!important;
+  width:100%!important;
+  min-height:82px!important;
+  display:grid!important;
+  grid-template-columns:58px 1px minmax(0,1fr)!important;
+  align-items:stretch!important;
+  gap:0!important;
+  padding:8px 10px!important;
+  border:1.5px solid var(--atlas-edge)!important;
+  border-radius:15px!important;
+  background:#090a0b!important;
+  color:#fff!important;
+  text-align:left!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;
 }
-.performance-zone-head{
-  min-height:47px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  padding:8px 7px;
-  border-bottom:1px solid rgba(255,255,255,.13);
-  color:#fff;
-  text-align:center;
-  font-size:12.5px;
-  line-height:1.15;
-  font-weight:770;
-}
-.performance-zone-list{display:flex;flex-direction:column}
-.performance-zone-row{
-  min-height:49px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  gap:3px;
-  padding:7px 8px;
-}
-.performance-zone-row+.performance-zone-row{border-top:1px solid rgba(255,255,255,.09)}
-.performance-zone-name{
-  color:#fff;
-  font-size:10.8px;
-  line-height:1.16;
-  font-weight:700;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.performance-zone-value{
-  color:#9ed8fa;
-  font-size:11.5px;
-  line-height:1.18;
-  font-weight:730;
-  font-variant-numeric:tabular-nums;
-  white-space:normal;
-}
-
-/* BEST RECORDS — ATLAS performance board. */
-.records-list,.records-card-grid{
+.activity-row+.activity-row{border-top:1.5px solid var(--atlas-edge)!important}
+.activity-row:active{background:#0d1012!important;transform:scale(.994)}
+.activity-row-date{
+  width:50px!important;
+  min-width:50px!important;
   display:flex!important;
   flex-direction:column!important;
-  gap:11px!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:0 7px 0 0!important;
+  margin:0!important;
 }
-.atlas-record-card{
-  position:relative;
-  width:100%;
-  overflow:hidden;
-  border:1.5px solid rgba(255,255,255,.16);
-  border-radius:19px;
-  background:#000;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.035);
+.activity-row-month,.activity-row-weekday{
+  color:#a8b0b6!important;
+  font-size:8.5px!important;
+  line-height:1!important;
+  font-weight:760!important;
+  letter-spacing:.28px!important;
 }
-.atlas-record-card::before{
-  content:"";
-  position:absolute;
-  top:0;left:0;bottom:0;
-  width:2px;
-  background:linear-gradient(180deg,var(--blue),rgba(29,155,240,.12));
+.activity-row-day{
+  margin:4px 0!important;
+  color:#fff!important;
+  font-size:24px!important;
+  line-height:.95!important;
+  font-weight:720!important;
+  letter-spacing:-.7px!important;
 }
-.atlas-record-head{
-  min-height:46px;
-  display:grid;
-  grid-template-columns:30px minmax(0,1fr) auto;
-  align-items:center;
-  gap:8px;
-  padding:8px 11px 8px 12px;
-  border-bottom:1px solid rgba(255,255,255,.12);
+.activity-row-sep{
+  width:1px!important;
+  height:auto!important;
+  align-self:stretch!important;
+  margin:2px 0!important;
+  background:rgba(255,255,255,.16)!important;
+  border-radius:2px!important;
 }
-.atlas-record-icon{font-size:20px;text-align:center}
-.atlas-record-title{
+.activity-row-copy{
+  min-width:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  padding-left:11px!important;
+}
+.activity-row-title{gap:7px!important}
+.activity-row-title-emoji{font-size:17px!important}
+.activity-row-title-text{
+  color:#fff!important;
+  font-size:15.5px!important;
+  line-height:1.18!important;
+  font-weight:750!important;
+  letter-spacing:-.22px!important;
+}
+.activity-row-subtitle{
   min-width:0;
-  color:#fff;
-  font-size:18px;
-  line-height:1.15;
-  font-weight:790;
-  letter-spacing:-.25px;
-}
-.atlas-record-badge{
-  padding:3px 6px;
-  border:1px solid rgba(29,155,240,.25);
-  border-radius:999px;
-  color:#7dc8f5;
-  font-size:8px;
-  line-height:1;
-  font-weight:800;
-  letter-spacing:.45px;
-}
-.atlas-record-hero{
-  appearance:none;
-  width:100%;
-  min-height:76px;
-  display:grid;
-  grid-template-columns:38px minmax(0,1fr) 14px;
-  align-items:center;
-  gap:8px;
-  padding:9px 11px 9px 10px;
-  border:0;
-  background:#000;
-  color:#fff;
-  text-align:left;
-}
-.atlas-record-hero:active,.atlas-record-row:active{background:rgba(255,255,255,.035)}
-.atlas-record-medal{font-size:24px;text-align:center}
-.atlas-record-hero-copy{min-width:0;display:flex;flex-direction:column;gap:4px}
-.atlas-record-mark{
-  color:#fff;
-  font-size:25px;
-  line-height:1;
-  font-weight:820;
-  letter-spacing:-.65px;
-  font-variant-numeric:tabular-nums;
-}
-.atlas-record-detail{
-  color:#a9b3ba;
-  font-size:11.5px;
-  line-height:1.25;
-  font-weight:600;
+  margin-top:3px;
+  color:#858e95;
+  font-size:10.5px;
+  line-height:1.2;
+  font-weight:570;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
 }
-.atlas-record-dot{color:#4f5a62;padding:0 3px}
-.atlas-record-chevron{color:var(--blue);font-size:20px;text-align:right}
-.atlas-record-secondary{border-top:1px solid rgba(255,255,255,.12)}
-.atlas-record-row{
-  appearance:none;
-  width:100%;
-  min-height:52px;
-  display:grid;
-  grid-template-columns:38px minmax(70px,.8fr) minmax(82px,1fr) minmax(70px,.9fr) 14px;
-  align-items:center;
-  gap:6px;
-  padding:7px 11px 7px 10px;
-  border:0;
-  background:#000;
-  color:#fff;
-  text-align:left;
-}
-.atlas-record-row+.atlas-record-row{border-top:1px solid rgba(255,255,255,.09)}
-.atlas-record-row .atlas-record-medal{font-size:20px}
-.atlas-record-row-mark{font-size:16px;font-weight:780;font-variant-numeric:tabular-nums}
-.atlas-record-row-pace{font-size:12px;color:#d5dde2;font-weight:700;white-space:nowrap}
-.atlas-record-row-date{font-size:10.5px;color:#7f8a92;font-weight:600;text-align:right;white-space:nowrap}
-.atlas-record-empty{padding:18px 12px;color:var(--muted);font-size:12px;text-align:center}
-
-/* CONNECTION: Intervals controls are a balanced 2x2 grid. */
-.connection-action-grid{
-  display:grid!important;
-  grid-template-columns:repeat(2,minmax(0,1fr))!important;
-  gap:6px!important;
-}
-.connection-action-grid .action{
-  width:100%!important;
+.activity-row-main,.plan-session-meta{
   min-width:0!important;
-  margin:0!important;
+  margin-top:7px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:7px!important;
+  overflow:hidden!important;
+  color:#e0e5e8!important;
+  font-size:12px!important;
+  line-height:1.15!important;
+  font-weight:620!important;
+  white-space:nowrap!important;
+  font-variant-numeric:tabular-nums!important;
 }
+.activity-row-stat{
+  min-width:0!important;
+  flex:0 1 auto!important;
+  padding:0!important;
+  border:0!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.activity-row-pipe{
+  flex:0 0 auto!important;
+  color:#596168!important;
+  font-size:12px!important;
+  font-weight:500!important;
+  line-height:1!important;
+}
+.activity-row-stat::before,.activity-row-stat::after{display:none!important}
 
-/* Contextual AI button retained in activity header. */
+/* Activity list page. */
+.activities-select,.activities-search{
+  background:#000!important;background-image:none!important;
+  border:1.5px solid var(--atlas-edge)!important;
+}
+.activity-month{margin-bottom:13px!important}
+.activity-month-head{padding:0 2px 7px!important}
+
+/* ---------------- PLAN ---------------- */
+#view-plan>.plan-overview-card{
+  position:relative!important;
+  min-height:42px!important;
+  padding:6px 9px!important;
+  margin-bottom:5px!important;
+  border:1.5px solid var(--atlas-edge)!important;
+  background:#090a0b!important;
+}
+#view-plan .plan-overview-copy{
+  display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;
+}
+#view-plan .plan-overview-title{
+  width:100%!important;text-align:center!important;font-size:16px!important;font-weight:760!important;
+}
+#view-plan .plan-overview-meta{display:none!important}
+.plan-toolbar{margin-top:1px!important;margin-bottom:2px!important}
+.plan-summary{
+  margin-bottom:6px!important;
+  border:1.5px solid var(--atlas-edge)!important;
+  background:#000!important;
+}
+.plan-days{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:5px!important;
+  border:0!important;
+  background:transparent!important;
+  overflow:visible!important;
+}
+.plan-day{
+  border:1.5px solid var(--atlas-edge)!important;
+  border-radius:13px!important;
+  overflow:hidden!important;
+  background:#08090a!important;
+}
+.plan-day-head{
+  min-height:59px!important;
+  display:grid!important;
+  grid-template-columns:48px 1px minmax(0,1fr)!important;
+  gap:0!important;
+  padding:5px 8px!important;
+  align-items:stretch!important;
+  background:#08090a!important;
+}
+.plan-day-date{
+  width:42px!important;min-width:42px!important;
+  display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:center!important;
+  padding-right:6px!important;margin:0!important;
+}
+.plan-day-weekday{
+  color:#a0a8ae!important;font-size:8px!important;line-height:1!important;font-weight:760!important;letter-spacing:.25px!important;
+}
+.plan-day-number{
+  margin-top:4px!important;color:#fff!important;font-size:21px!important;line-height:1!important;font-weight:720!important;
+}
+.plan-day-sep{
+  width:1px!important;height:auto!important;align-self:stretch!important;margin:2px 0!important;
+  background:rgba(255,255,255,.15)!important;
+}
+.plan-day-copy{
+  min-width:0!important;
+  display:flex!important;flex-direction:column!important;justify-content:center!important;
+  padding-left:10px!important;margin:0!important;
+}
+.plan-session-list{display:flex!important;flex-direction:column!important;min-width:0!important}
+.plan-session-row{
+  appearance:none!important;
+  width:100%!important;min-width:0!important;min-height:46px!important;
+  display:flex!important;flex-direction:column!important;justify-content:center!important;
+  padding:3px 0!important;border:0!important;background:transparent!important;color:#fff!important;text-align:left!important;
+}
+.plan-session-row+.plan-session-row{
+  margin-top:4px!important;padding-top:6px!important;border-top:1px solid rgba(255,255,255,.10)!important;
+}
+.plan-session-title{display:flex!important;align-items:center!important;gap:6px!important;min-width:0!important}
+.plan-session-icon{flex:0 0 auto!important;font-size:15px!important}
+.plan-session-title-text{
+  min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;
+  color:#fff!important;font-size:14px!important;line-height:1.15!important;font-weight:745!important;
+}
+.plan-session-subtitle{
+  min-width:0;margin-top:2px;color:#747e85;font-size:9.6px;line-height:1.12;font-weight:570;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.plan-session-meta{margin-top:4px!important;font-size:10.8px!important;gap:6px!important;color:#d5dadd!important}
+.plan-session-row.realized{box-shadow:inset 2px 0 0 rgba(29,155,240,.56)!important;padding-left:7px!important}
+.plan-rest-copy{padding:4px 0!important;color:#90999f!important;font-size:12px!important}
+
+/* Plan detail summary remains full-width. */
+#engineGoalCard{position:relative!important;display:block!important;width:100%!important;padding:12px!important}
+#engineGoalCard .engine-v2-copy{display:block!important;width:100%!important;max-width:none!important}
+#engineGoalCard .engine-v2-arrow{position:absolute!important;top:14px!important;right:12px!important}
+#engineGoalCard .plan-goal-summary{width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important}
+.plan-goal-summary{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:0!important;
+  overflow:hidden!important;border:1.5px solid var(--atlas-edge)!important;border-radius:16px!important;background:#000!important;
+}
+.plan-goal-summary-item{
+  min-height:58px!important;display:grid!important;grid-template-columns:26px minmax(0,1fr)!important;
+  gap:7px!important;align-items:center!important;padding:8px 9px!important;text-align:left!important;
+}
+.plan-goal-summary-item:nth-child(odd){border-right:1px solid rgba(255,255,255,.13)!important}
+.plan-goal-summary-item:nth-child(n+3){border-top:1px solid rgba(255,255,255,.13)!important}
+
+/* ---------------- PROFILE — Concept C ---------------- */
+#view-data.active{
+  display:block!important;
+  padding-bottom:6px!important;
+}
+.profile-dashboard-header{padding-top:4px!important;padding-bottom:9px!important}
+.profile-header-settings{
+  appearance:none;width:38px;height:38px;display:grid;place-items:center;
+  border:0;background:transparent;color:#fff;font-size:21px;
+}
+.profile-dashboard-card{
+  display:grid;
+  grid-template-columns:58px minmax(0,1fr) 88px;
+  align-items:center;
+  gap:10px;
+  min-height:106px;
+  padding:11px;
+  border:1.5px solid var(--atlas-edge);
+  border-radius:15px;
+  background:#090a0b;
+}
+.profile-dashboard-avatar{
+  width:54px;height:54px;display:grid;place-items:center;
+  border-radius:50%;
+  border:1.5px solid rgba(255,255,255,.18);
+  background:linear-gradient(145deg,#1b2228,#090b0d);
+  color:#fff;font-size:18px;font-weight:800;letter-spacing:-.35px;
+}
+.profile-dashboard-identity{min-width:0}
+.profile-dashboard-name{
+  color:#fff;font-size:16px;line-height:1.15;font-weight:760;letter-spacing:-.25px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.profile-dashboard-location{
+  margin-top:4px;color:#9aa3aa;font-size:10.8px;line-height:1.2;font-weight:570;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.profile-dashboard-shoes{
+  appearance:none;margin-top:8px;padding:4px 7px;
+  border:1px solid rgba(255,255,255,.13);border-radius:999px;
+  background:#000;color:#c8d0d5;font-size:9.6px;font-weight:650;
+}
+.profile-dashboard-side{
+  align-self:stretch;
+  display:flex;flex-direction:column;justify-content:center;gap:8px;
+  padding-left:10px;border-left:1px solid rgba(255,255,255,.12);
+}
+.profile-dashboard-side-stat{display:flex;flex-direction:column;gap:2px}
+.profile-dashboard-side-stat span{color:#7e888f;font-size:8.8px;font-weight:650}
+.profile-dashboard-side-stat strong{color:#fff;font-size:15px;font-weight:760;font-variant-numeric:tabular-nums}
+.profile-dashboard-section-title,
+.profile-dashboard-section-head{
+  margin:12px 1px 7px;
+  color:#fff;font-size:15px;line-height:1.15;font-weight:760;
+}
+.profile-dashboard-section-head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+}
+.profile-dashboard-link{
+  appearance:none;border:0;background:transparent;color:var(--blue);
+  padding:2px;font-size:10px;font-weight:680;
+}
+.profile-dashboard-performance{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  border:1.5px solid var(--atlas-edge);border-radius:14px;overflow:hidden;background:#090a0b;
+}
+.profile-dashboard-performance-cell{
+  position:relative;min-width:0;min-height:69px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;padding:7px 3px;text-align:center;
+}
+.profile-dashboard-performance-cell+.profile-dashboard-performance-cell{border-left:1px solid rgba(255,255,255,.12)}
+.profile-dashboard-performance-label{
+  color:#8e989f;font-size:8px;line-height:1.1;font-weight:650;white-space:nowrap;
+}
+.profile-dashboard-performance-cell strong{
+  max-width:100%;color:#fff;font-size:13.2px;line-height:1.15;font-weight:760;
+  white-space:nowrap;overflow:hidden;text-overflow:clip;font-variant-numeric:tabular-nums;
+}
+.profile-dashboard-zones{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;
+}
+.profile-dashboard-zone-column{
+  min-width:0;overflow:hidden;border:1.5px solid var(--atlas-edge);border-radius:14px;background:#090a0b;
+}
+.profile-dashboard-zone-head{
+  min-height:38px;display:flex;align-items:center;justify-content:center;gap:5px;
+  padding:7px 5px;border-bottom:1px solid rgba(255,255,255,.11);
+  color:#fff;font-size:10.5px;line-height:1.1;font-weight:740;text-align:center;
+}
+.profile-dashboard-zone-list{display:flex;flex-direction:column}
+.profile-dashboard-zone-row{
+  min-height:30px;display:grid;grid-template-columns:auto minmax(0,1fr);
+  align-items:center;gap:6px;padding:4px 7px;
+}
+.profile-dashboard-zone-row+.profile-dashboard-zone-row{border-top:1px solid rgba(255,255,255,.07)}
+.profile-dashboard-zone-name{
+  color:#fff;font-size:9px;line-height:1.1;font-weight:690;white-space:nowrap;
+}
+.profile-dashboard-zone-value{
+  min-width:0;color:#b7c0c6;font-size:9px;line-height:1.12;font-weight:620;
+  text-align:right;white-space:normal;
+}
+.profile-dashboard-records{
+  overflow:hidden;border:1.5px solid var(--atlas-edge);border-radius:14px;background:#090a0b;
+}
+.profile-dashboard-record-row{
+  appearance:none;width:100%;min-height:44px;
+  display:grid;grid-template-columns:24px minmax(70px,.85fr) minmax(64px,.8fr) minmax(80px,1fr) minmax(72px,.95fr) 12px;
+  align-items:center;gap:5px;padding:6px 8px;
+  border:0;background:#090a0b;color:#fff;text-align:left;
+}
+.profile-dashboard-record-row+.profile-dashboard-record-row{border-top:1px solid rgba(255,255,255,.09)}
+.profile-dashboard-record-row:active{background:#0d1012}
+.profile-dashboard-record-icon{font-size:14px;text-align:center}
+.profile-dashboard-record-distance{font-size:10.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.profile-dashboard-record-mark{font-size:14px;font-weight:790;font-variant-numeric:tabular-nums;white-space:nowrap}
+.profile-dashboard-record-pace{font-size:9.7px;color:#c4ccd1;font-weight:650;white-space:nowrap}
+.profile-dashboard-record-date{font-size:8.8px;color:#78838a;font-weight:590;text-align:right;white-space:nowrap}
+.profile-dashboard-record-chevron{color:var(--blue);font-size:15px}
+.profile-dashboard-records-empty{padding:15px 10px;color:#717b82;font-size:10px;text-align:center}
+
+/* Detail Rendimiento remains two-column zones. */
+#performanceZones.profile-zone-card{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:8px!important;border:0!important;background:transparent!important;overflow:visible!important;
+}
+.performance-zone-column{
+  min-width:0;overflow:hidden;border:1.5px solid var(--atlas-edge);border-radius:17px;background:#000;
+}
+.performance-zone-head{
+  min-height:47px;display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:8px 7px;border-bottom:1px solid rgba(255,255,255,.13);
+  color:#fff;text-align:center;font-size:12.5px;line-height:1.15;font-weight:770;
+}
+.performance-zone-row{
+  min-height:49px;display:flex;flex-direction:column;justify-content:center;gap:3px;padding:7px 8px;
+}
+.performance-zone-row+.performance-zone-row{border-top:1px solid rgba(255,255,255,.09)}
+.performance-zone-name{color:#fff;font-size:10.8px;font-weight:700}
+.performance-zone-value{color:#9ed8fa;font-size:11.5px;font-weight:730}
+
+/* Intervals controls remain balanced 2x2. */
+.connection-action-grid{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important;
+}
+.connection-action-grid .action{width:100%!important;min-width:0!important;margin:0!important}
+
+/* ---------------- CHAT — Concept B ---------------- */
+body.assistant-main-active{
+  height:100dvh!important;max-height:100dvh!important;overflow:hidden!important;
+}
+body.assistant-main-active .app{
+  height:100dvh!important;min-height:100dvh!important;overflow:hidden!important;padding-bottom:0!important;
+}
+#view-assistant.active{
+  position:fixed!important;z-index:40!important;
+  top:env(safe-area-inset-top)!important;
+  left:0!important;right:0!important;
+  bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 18px)!important;
+  height:auto!important;min-height:0!important;
+  padding:8px max(11px,env(safe-area-inset-right)) 0 max(11px,env(safe-area-inset-left))!important;
+  overflow:hidden!important;background:#000!important;
+}
+.assistant-chat-canvas{
+  width:100%!important;max-width:700px!important;height:100%!important;margin:0 auto!important;
+  display:flex!important;flex-direction:column!important;min-height:0!important;overflow:hidden!important;
+}
+.assistant-chat-topbar{
+  flex:0 0 48px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;
+  gap:10px!important;padding:0 0 6px!important;border:0!important;
+}
+.assistant-top-action{
+  appearance:none;min-height:38px;display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:0 12px;border:1.5px solid rgba(255,255,255,.13);border-radius:12px;
+  background:#08090a;color:#f3f5f6;font-size:11.5px;font-weight:650;
+}
+.assistant-messages{
+  flex:1 1 auto!important;min-height:0!important;
+  display:flex!important;flex-direction:column!important;gap:11px!important;
+  padding:11px 3px 8px!important;overflow-y:hidden!important;overflow-x:hidden!important;
+  scrollbar-width:none!important;
+}
+.assistant-messages.scrollable{overflow-y:auto!important;-webkit-overflow-scrolling:touch!important}
+.assistant-messages::-webkit-scrollbar{display:none}
+.assistant-empty{flex:1!important;min-height:0!important}
+.assistant-message-row{
+  width:100%!important;display:flex!important;align-items:flex-end!important;
+}
+.assistant-message-row.user{justify-content:flex-end!important;padding-left:20%!important}
+.assistant-message-row.assistant{justify-content:flex-start!important;padding-right:20%!important}
+.assistant-message-stack{
+  min-width:0!important;max-width:100%!important;display:flex!important;flex-direction:column!important;
+}
+.assistant-message-row.user .assistant-message-stack{align-items:flex-end!important}
+.assistant-message-row.assistant .assistant-message-stack{align-items:flex-start!important}
+.assistant-message-avatar{display:none!important}
+.assistant-message{
+  width:fit-content!important;max-width:100%!important;
+  padding:10px 12px!important;border-radius:14px!important;
+  color:#f6f7f8!important;font-size:14px!important;line-height:1.38!important;font-weight:500!important;
+  white-space:pre-wrap!important;word-break:normal!important;overflow-wrap:break-word!important;
+}
+.assistant-message-row.user .assistant-message{
+  background:rgba(29,155,240,.42)!important;
+  border:1px solid rgba(29,155,240,.45)!important;
+  border-bottom-right-radius:5px!important;
+}
+.assistant-message-row.assistant .assistant-message{
+  background:#111315!important;
+  border:1.5px solid rgba(255,255,255,.09)!important;
+  border-bottom-left-radius:5px!important;
+}
+.assistant-message-time{
+  margin:3px 3px 0;color:#647078;font-size:8.5px;line-height:1;font-weight:560;
+}
+.assistant-cost{
+  margin:4px 3px 0!important;color:#657079!important;font-size:8.5px!important;line-height:1.1!important;font-weight:560!important;
+}
+.assistant-typing{min-width:48px!important;min-height:37px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:4px!important}
+.assistant-composer{
+  flex:0 0 auto!important;min-height:58px!important;
+  display:grid!important;grid-template-columns:38px minmax(0,1fr) 40px!important;align-items:center!important;gap:7px!important;
+  margin:6px 0 2px!important;padding:6px 7px!important;
+  border:1.5px solid rgba(255,255,255,.20)!important;border-radius:24px!important;
+  background:
+    radial-gradient(110px 64px at 50% 30%,rgba(255,255,255,.11),rgba(255,255,255,.025) 42%,transparent 72%),
+    linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.014) 43%,rgba(0,0,0,.10))!important;
+  -webkit-backdrop-filter:blur(28px) saturate(210%) contrast(1.07)!important;
+  backdrop-filter:blur(28px) saturate(210%) contrast(1.07)!important;
+  box-shadow:0 12px 32px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.17)!important;
+}
+.assistant-composer-plus{
+  appearance:none;width:36px;height:36px;display:grid;place-items:center;
+  border:0;border-radius:50%;background:rgba(255,255,255,.075);color:#e8ecef;font-size:21px;
+}
+.assistant-input{
+  width:100%!important;min-height:28px!important;max-height:104px!important;resize:none!important;
+  padding:5px 1px!important;border:0!important;outline:0!important;background:transparent!important;
+  color:#fff!important;font-size:14.5px!important;line-height:1.35!important;box-shadow:none!important;
+}
+.assistant-input::placeholder{color:#68737b!important}
+.assistant-send{
+  width:38px!important;height:38px!important;border-radius:50%!important;border:0!important;
+  background:var(--blue)!important;color:#fff!important;font-size:20px!important;
+}
+.assistant-history-panel{background:#000!important}
+
+/* Contextual activity AI stays as existing functional control. */
 .activity-title-row{width:100%!important;min-width:0!important}
 .activity-title-row .metric-detail-title{min-width:0!important;flex:1 1 auto!important}
 .activity-title-row .activity-ai-btn{
-  margin-left:auto!important;
-  flex:0 0 54px!important;
-  width:54px!important;height:54px!important;
-  display:grid!important;place-items:center!important;
-  border-radius:50%!important;
-  border:2px solid rgba(255,255,255,.12)!important;
-  background:var(--blue)!important;
-  box-shadow:0 9px 24px rgba(29,155,240,.30)!important;
-  padding:0!important;
+  margin-left:auto!important;flex:0 0 54px!important;width:54px!important;height:54px!important;
+  display:grid!important;place-items:center!important;border-radius:50%!important;
+  border:2px solid rgba(255,255,255,.12)!important;background:var(--blue)!important;
+  box-shadow:0 9px 24px rgba(29,155,240,.30)!important;padding:0!important;
 }
 .activity-ai-mark{width:54px!important;height:54px!important;display:grid!important;place-items:center!important}
 .activity-ai-icon{width:35px!important;height:28px!important;display:block!important;object-fit:contain!important}
 .activity-ai-result{
-  width:100%!important;
-  margin:9px 0 11px!important;
-  padding:10px 11px!important;
-  border:1.5px solid rgba(255,255,255,.16)!important;
-  border-radius:15px!important;
-  background:#000!important;
+  width:100%!important;margin:9px 0 11px!important;padding:10px 11px!important;
+  border:1.5px solid var(--atlas-edge)!important;border-radius:15px!important;background:#000!important;
 }
 
-/* Tiny vertical compacting retained for the weekly calendar. */
+/* Secondary Plan/Profile pages remain pure black. */
+.plan-detail,.data-detail,.metric-detail,.state-detail,.activity-detail{background:#000!important}
+
+/* iPhone tuning. */
 @media(max-width:599px){
-  #view-today>.section-bar{padding-top:9px!important;padding-bottom:7px!important}
-  #view-activities>.page-header,#view-plan>.page-header,#view-data>.page-header{padding-top:12px!important;padding-bottom:8px!important}
-}
-
-@media(max-width:390px){
-  .atlas-record-row{
-    grid-template-columns:34px minmax(64px,.8fr) minmax(76px,1fr) minmax(58px,.8fr) 12px;
-    gap:4px;
+  #view-activities>.page-header,#view-plan>.page-header,#view-data>.page-header{
+    padding-top:3px!important;padding-bottom:8px!important;
   }
-  .atlas-record-row-pace{font-size:11px}
-  .atlas-record-row-date{font-size:9.8px}
-  .performance-zone-name{font-size:10.2px}
-  .performance-zone-value{font-size:10.8px}
+  #view-plan .plan-summary-item{padding-top:5px!important;padding-bottom:5px!important}
+}
+@media(max-width:390px){
+  .profile-dashboard-record-row{
+    grid-template-columns:21px minmax(64px,.8fr) minmax(58px,.75fr) minmax(72px,.95fr) minmax(58px,.8fr) 10px;
+    gap:3px;padding-left:6px;padding-right:6px;
+  }
+  .profile-dashboard-record-pace{font-size:9px}
+  .profile-dashboard-record-date{font-size:8px}
+  .profile-dashboard-performance-label{font-size:7.5px}
+  .profile-dashboard-performance-cell strong{font-size:12px}
+  .assistant-message-row.user{padding-left:14%!important}
+  .assistant-message-row.assistant{padding-right:14%!important}
 }
 
-@media(min-width:1200px){
-  .nav{bottom:8px!important}
+/* Desktop/iPad remain centered and app-like. */
+@media(min-width:600px){
+  #view-data,#view-activities,#view-plan{max-width:760px!important;margin-left:auto!important;margin-right:auto!important}
+  #view-assistant.active{left:50%!important;right:auto!important;width:min(760px,100vw)!important;transform:translateX(-50%)!important}
 }
 </style>
 
