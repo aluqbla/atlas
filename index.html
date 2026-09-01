@@ -767,17 +767,13 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
   <section class="view" id="view-assistant" aria-label="Asistente ATLAS">
     <div class="assistant-chat-canvas" id="assistantChatCanvas" aria-hidden="false">
       <div class="assistant-chat-topbar">
-        <div class="assistant-chat-presence" aria-hidden="true">
-          <span class="assistant-chat-avatar">Ʌ</span>
-          <span class="assistant-chat-status-dot"></span>
-        </div>
         <div class="assistant-chat-actions">
           <button class="assistant-icon-btn" id="assistantHistoryBtn" type="button" aria-label="Conversaciones" title="Conversaciones">☰</button>
           <button class="assistant-icon-btn" id="assistantNewBtn" type="button" aria-label="Nueva conversación" title="Nueva conversación">＋</button>
         </div>
       </div>
       <div class="assistant-messages" id="assistantMessages" aria-live="polite">
-        <div class="assistant-empty" id="assistantEmpty" aria-hidden="true"><span class="assistant-empty-avatar">Ʌ</span></div>
+        <div class="assistant-empty" id="assistantEmpty" aria-hidden="true"></div>
       </div>
       <form class="assistant-composer" id="assistantComposer" autocomplete="off">
         <textarea class="assistant-input" id="assistantInput" rows="1" maxlength="6000" placeholder="Mensaje" aria-label="Mensaje para ATLAS"></textarea>
@@ -938,6 +934,7 @@ input:focus{border-color:rgba(29,155,240,.65)}.form-row{display:grid;grid-templa
     <div class="data-detail-section-title">Intervals.icu</div>
     <div class="data-system-card">
       <div class="data-system-status"><span>Estado</span><strong id="connectionState">Sin configurar</strong></div>
+      <div class="location-attribution">Localidades GPS · © OpenStreetMap contributors</div>
       <div class="action-grid"><button class="action primary" id="smartSyncBtn">⚡ Sincronizar</button><button class="action" id="testBtn">🔌 Probar</button><button class="action" id="settingsBtn">⚙️ Ajustes</button></div>
       <div class="action-grid" style="margin-top:6px"><button class="action" id="fullSyncBtn">🗂️ Rango manual</button></div>
     </div>
@@ -1712,7 +1709,7 @@ html,body{overscroll-behavior-y:none}
 
 (()=>{
 "use strict";
-const APP_VERSION="0.86.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="0.89.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits","chats"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -1740,7 +1737,7 @@ const ui={
  smartSyncBtn:$("smartSyncBtn"),testBtn:$("testBtn"),settingsBtn:$("settingsBtn"),fullSyncBtn:$("fullSyncBtn"),exportBtn:$("exportBtn"),importBtn:$("importBtn"),clearBtn:$("clearBtn"),fileInput:$("fileInput"),toast:$("toast"),
  settingsDialog:$("settingsDialog"),settingsForm:$("settingsForm"),workerUrl:$("workerUrl"),clientToken:$("clientToken"),oldestDate:$("oldestDate"),newestDate:$("newestDate"),historyStart:$("historyStart"),overlapDays:$("overlapDays"),metricDetail:$("metricDetail"),metricDetailBack:$("metricDetailBack"),metricDetailTitle:$("metricDetailTitle"),metricDetailEmoji:$("metricDetailEmoji"),metricPeriodControl:$("metricPeriodControl"),metricPrev:$("metricPrev"),metricNext:$("metricNext"),metricRangeLabel:$("metricRangeLabel"),metricChartScroll:$("metricChartScroll"),metricChart:$("metricChart"),metricChartReadout:$("metricChartReadout"),chartLegend:$("chartLegend"),detailStatLabel1:$("detailStatLabel1"),detailStatValue1:$("detailStatValue1"),detailStatLabel2:$("detailStatLabel2"),detailStatValue2:$("detailStatValue2"),detailStatLabel3:$("detailStatLabel3"),detailStatValue3:$("detailStatValue3"),detailStatSub1:$("detailStatSub1"),detailStatSub2:$("detailStatSub2"),detailStatSub3:$("detailStatSub3"),metricContext:$("metricContext"),metricDetailBottomBack:$("metricDetailBottomBack"),stateDetail:$("stateDetail"),stateDetailBack:$("stateDetailBack"),stateDetailBottomBack:$("stateDetailBottomBack"),stateDetailHero:$("stateDetailHero"),stateDetailRing:$("stateDetailRing"),stateDetailScore:$("stateDetailScore"),stateDetailWord:$("stateDetailWord"),stateDetailNote:$("stateDetailNote"),stateDetailMeta:$("stateDetailMeta"),stateFactors:$("stateFactors"),stateBaseScore:$("stateBaseScore"),stateRecoveryPenalty:$("stateRecoveryPenalty"),stateLimiter:$("stateLimiter")
 };
-let db,dbOpenPromise=null,toastTimer,currentActivities=[],currentWellness=[],currentGear=[],currentEvents=[],currentCachedVo2=null,currentEngineV2Goal=null,currentSecondaryGoals=[],currentAvailabilityExceptions=[],currentSecondaryEditId=null,currentAvailabilityEditWeek=null,currentAthleteProfileV2=null,currentGoalRequirements=null,currentGoalAssessment=null,currentMacroTrajectory=null,currentWeeklyTargets=null,currentCalendarSolution=null,currentSessionPlan=null,currentPlanManifest=null,currentPlanCloudMeta=null,currentAdaptiveState=null,currentPlanRevisionDraft=null,currentPlanRevisionHistory=[],currentPlanManualAction=null,currentPlanWeekStart=null,currentPlanEvent=null,currentPlanOutcome=null,currentPlanEditEvent=null,lastCalendarRefreshAt=0,currentActivityDetail=null,currentActivityMap=null,currentActivityStreams=null,currentActivityVo2=null,currentActivityChartKey=null,activityChartZoom=1,activityPinchStartDistance=0,activityPinchStartZoom=1,activityChartPointerStart=null,activityChartReadoutTimer=null,activityLapZoom=1,activityLapPinchStartDistance=0,activityLapPinchStartZoom=1,currentActivityLapIndex=null,activityLapMainFilter="all",currentRunningRecords=null,currentRecordsLoading=false,currentMetricDetail=null,currentMetricDays=30,currentMetricEnd=null,currentAtlasState=null,currentChartState=null,chartReadoutTimer=null,chartZoom=1,pinchStartDistance=0,pinchStartZoom=1,chartPointerStart=null,metricZoomRaf=0,metricZoomPending=null,activityZoomRaf=0,activityZoomPending=null,dataSyncPromise=null,calendarSyncPromise=null,planCloudSyncPromise=null,foregroundRefreshPromise=null,runtimeRefreshStarted=false,runtimeGuardsInstalled=false,initStarted=false,initCompleted=false,currentActivityRequestToken=0,assistantChats=[],currentAssistantChatId=null,assistantSending=false,assistantPendingError="",assistantScrollRaf=0,activityAiRequestToken=0,activityAiCache=new Map(),navGlassRaf=0;
+let db,dbOpenPromise=null,toastTimer,currentActivities=[],currentWellness=[],currentGear=[],currentEvents=[],currentCachedVo2=null,currentEngineV2Goal=null,currentSecondaryGoals=[],currentAvailabilityExceptions=[],currentSecondaryEditId=null,currentAvailabilityEditWeek=null,currentAthleteProfileV2=null,currentGoalRequirements=null,currentGoalAssessment=null,currentMacroTrajectory=null,currentWeeklyTargets=null,currentCalendarSolution=null,currentSessionPlan=null,currentPlanManifest=null,currentPlanCloudMeta=null,currentAdaptiveState=null,currentPlanRevisionDraft=null,currentPlanRevisionHistory=[],currentPlanManualAction=null,currentPlanWeekStart=null,currentPlanEvent=null,currentPlanOutcome=null,currentPlanEditEvent=null,lastCalendarRefreshAt=0,currentActivityDetail=null,currentActivityMap=null,currentActivityStreams=null,currentActivityVo2=null,currentActivityChartKey=null,activityChartZoom=1,activityPinchStartDistance=0,activityPinchStartZoom=1,activityChartPointerStart=null,activityChartReadoutTimer=null,activityLapZoom=1,activityLapPinchStartDistance=0,activityLapPinchStartZoom=1,currentActivityLapIndex=null,activityLapMainFilter="all",currentRunningRecords=null,currentRecordsLoading=false,currentMetricDetail=null,currentMetricDays=30,currentMetricEnd=null,currentAtlasState=null,currentChartState=null,chartReadoutTimer=null,chartZoom=1,pinchStartDistance=0,pinchStartZoom=1,chartPointerStart=null,metricZoomRaf=0,metricZoomPending=null,activityZoomRaf=0,activityZoomPending=null,dataSyncPromise=null,calendarSyncPromise=null,planCloudSyncPromise=null,foregroundRefreshPromise=null,runtimeRefreshStarted=false,runtimeGuardsInstalled=false,initStarted=false,initCompleted=false,currentActivityRequestToken=0,assistantChats=[],currentAssistantChatId=null,assistantSending=false,assistantPendingError="",assistantScrollRaf=0,activityAiRequestToken=0,activityAiCache=new Map(),navGlassRaf=0,activityLocalityQueue=[],activityLocalityQueued=new Set(),activityLocalityBusy=false,activityLocalityObserver=null,lastLocalityLookupAt=0,activityLocalityRefreshRaf=0;
 window.addEventListener("DOMContentLoaded",()=>bootstrapAtlas().catch(reportFatalError));
 const CORE_UI_KEYS=["todayDate","lastActivityBtn","activitiesList","activityDetail","metricDetail","stateDetail","toast","settingsDialog"];
 function assertCoreUi(){const missing=CORE_UI_KEYS.filter(key=>!ui[key]);if(missing.length)throw new Error(`Interfaz incompleta: ${missing.join(", ")}`);return true;}
@@ -2100,10 +2097,6 @@ function renderAssistantChat(){
     const empty=document.createElement("div");
     empty.className="assistant-empty";
     empty.setAttribute("aria-hidden","true");
-    const mark=document.createElement("span");
-    mark.className="assistant-empty-avatar";
-    mark.textContent="Ʌ";
-    empty.appendChild(mark);
     ui.assistantMessages.appendChild(empty);
   }
 
@@ -2791,6 +2784,15 @@ async function commitSyncPayload(payload,bootstrap,{oldest,newest,mode}){
 async function performSync(oldest,newest,mode){
   validateRange(oldest,newest);
   const syncPayload=validateSyncPayload(await api(`/api/sync?oldest=${encodeURIComponent(oldest)}&newest=${encodeURIComponent(newest)}`));
+
+  const cachedById=new Map(currentActivities.map(a=>[String(a.id),a]));
+  for(const row of syncPayload.activities){
+    const cached=cachedById.get(String(row?.id));
+    if(!cached)continue;
+    if(!row.atlas_locality&&cached.atlas_locality)row.atlas_locality=cached.atlas_locality;
+    if(!row.atlas_locality_unavailable&&cached.atlas_locality_unavailable)row.atlas_locality_unavailable=true;
+  }
+
   let bootstrap=null;
   try{
     const candidate=await api("/api/bootstrap");
@@ -2800,6 +2802,7 @@ async function performSync(oldest,newest,mode){
     console.warn("ɅTLɅS · bootstrap",error);
     recordRuntimeAudit("bootstrap-sync",error).catch(()=>{});
   }
+
   await commitSyncPayload(syncPayload,bootstrap,{oldest,newest,mode});
   await syncCalendar(false);
   await syncPlanStateFromCloud({startup:false}).catch(error=>{
@@ -2912,9 +2915,45 @@ function normalizeRunningRecords(response){
 }
 function recordMedal(i){return["🥇","🥈","🥉"][i]||`${i+1}.`;}
 function renderRunningRecords(records=currentRunningRecords){
-  if(!ui.recordsList)return;const base=Array.isArray(records)?records:RUN_RECORD_DISTANCES.map(x=>({...x,top:[]})),runs=currentActivities.filter(isRun),longestCandidates=runs.map(a=>({key:"longest",label:"Distancia más larga",meters:activityDistanceM(a),secs:activityElapsedSec(a),id:String(a.id),date:activityDate(a),activityName:activityName(a),activityDistanceM:activityDistanceM(a)})).filter(x=>Number.isFinite(x.meters)&&x.meters>0).sort((a,b)=>b.meters-a.meters).slice(0,3),list=[...base,{key:"longest",label:"Distancia más larga",top:longestCandidates}];if(ui.recordsState)ui.recordsState.textContent="";
-  const emojis={"1k":"⚡","5k":"🏃🏻‍♂️","10k":"🔥",half:"🎯",marathon:"🏁",longest:"🗺️"};
-  ui.recordsList.innerHTML=list.map(section=>{const top=Array.isArray(section.top)?section.top.filter(x=>x&&(x.secs>0||section.key==="longest")):[];return`<section class="record-podium"><div class="record-podium-head"><div class="record-podium-title">${esc(section.label)}</div><div class="record-podium-emoji">${emojis[section.key]||"🏅"}</div></div><div class="record-podium-list">${top.length?top.map((r,i)=>{const isLongest=section.key==="longest",pace=r.secs>0&&r.meters>0?r.secs/(r.meters/1000):null,main=isLongest?`${formatNatural(r.meters/1000,2)} km`:formatDuration(Math.round(r.secs)),sub=r.date?engineV2DateLabel(r.date):"",paceText=Number.isFinite(pace)?`${formatPaceValue(pace)} min/km`:"—";return`<button class="record-podium-row" type="button" data-record-activity-id="${esc(r.id)}"><span class="record-rank">${recordMedal(i)}</span><span class="record-podium-value">${esc(main)}</span><span class="record-podium-value record-podium-pace">${esc(paceText)}</span><span class="record-podium-value record-podium-date">${esc(sub)}</span></button>`;}).join(""):'<div class="record-podium-empty">Sin registro disponible</div>'}</div></section>`;}).join("");
+  if(!ui.recordsList)return;
+  const base=Array.isArray(records)?records:RUN_RECORD_DISTANCES.map(x=>({...x,top:[]})),
+    runs=currentActivities.filter(isRun),
+    longestCandidates=runs.map(a=>({
+      key:"longest",label:"Distancia más larga",meters:activityDistanceM(a),secs:activityElapsedSec(a),
+      id:String(a.id),date:activityDate(a),activityName:activityName(a),activityDistanceM:activityDistanceM(a)
+    })).filter(x=>Number.isFinite(x.meters)&&x.meters>0).sort((a,b)=>b.meters-a.meters).slice(0,3),
+    list=[...base,{key:"longest",label:"Distancia más larga",top:longestCandidates}],
+    icons={"1k":"⚡","5k":"🏃🏻‍♂️","10k":"🔥",half:"🎯",marathon:"🏁",longest:"🗺️"};
+
+  if(ui.recordsState)ui.recordsState.textContent="";
+
+  ui.recordsList.innerHTML=list.map(section=>{
+    const top=Array.isArray(section.top)?section.top.filter(x=>x&&(x.secs>0||section.key==="longest")):[];
+    const rows=top.length?top.map((r,i)=>{
+      const isLongest=section.key==="longest",
+        pace=r.secs>0&&r.meters>0?r.secs/(r.meters/1000):null,
+        primary=isLongest?`${formatNatural(r.meters/1000,2)} km`:formatDuration(Math.round(r.secs)),
+        paceText=Number.isFinite(pace)?`${formatPaceValue(pace)} min/km`:"—",
+        dateText=r.date?engineV2DateLabel(r.date):"—";
+      return`<button class="record-board-row" type="button" data-record-activity-id="${esc(r.id)}">
+        <span class="record-board-medal">${recordMedal(i)}</span>
+        <span class="record-board-main">
+          <span class="record-board-primary">${esc(primary)}</span>
+          <span class="record-board-date">${esc(dateText)}</span>
+        </span>
+        <span class="record-board-pace">${esc(paceText)}</span>
+        <span class="record-board-chevron">›</span>
+      </button>`;
+    }).join(""):'<div class="record-board-empty">Sin registro disponible</div>';
+
+    return`<section class="record-board">
+      <div class="record-board-head">
+        <span class="record-board-icon">${icons[section.key]||"🏅"}</span>
+        <span class="record-board-title">${esc(section.label)}</span>
+      </div>
+      <div class="record-board-list">${rows}</div>
+    </section>`;
+  }).join("");
 }
 function renderRunningRecordsLoading(){ui.recordsState.textContent="Calculando…";ui.recordsList.innerHTML='<div class="records-loading"><span class="records-spinner"></span><span>Calculando mejores marcas del histórico…</span></div>';}
 function renderRunningRecordsError(error){
@@ -3075,16 +3114,17 @@ function renderPlanOverview(){
 
   if(!g){
     ui.planOverviewTitle.textContent="Configurar plan";
-    ui.planOverviewMeta.textContent="Objetivo, carreras y disponibilidad";
+    ui.planOverviewMeta.textContent="";
+    ui.planOverviewMeta.classList.add("hidden");
     if(ui.engineGoalTitle)ui.engineGoalTitle.textContent="Definir objetivo principal";
     if(summary)summary.innerHTML="";
     return;
   }
 
-  const title=g.name||engineV2GoalLabel(g.type),lifecycle=planLifecycle(),
-    secondary=currentSecondaryGoals.length?` · ${currentSecondaryGoals.length} B/C`:"";
+  const title=g.name||engineV2GoalLabel(g.type);
   ui.planOverviewTitle.textContent=title;
-  ui.planOverviewMeta.textContent=`${engineV2DateLabel(g.date)} · ${engineV2FormatTime(g.targetTimeSec)} · ${lifecycle.label}${secondary}`;
+  ui.planOverviewMeta.textContent="";
+  ui.planOverviewMeta.classList.add("hidden");
   if(ui.engineGoalTitle)ui.engineGoalTitle.textContent=title;
 
   if(summary){
@@ -4534,7 +4574,22 @@ function planEventPaceLabel(e){
   if(keys.length===1)return formatTargetPaceRange(ranges[0]);
   return"Ritmos";
 }
-function planEventMeta(e){const parts=[],d=planEventDistanceM(e),t=planEventDurationSec(e),pace=planEventPaceLabel(e);if(d)parts.push(`${formatNatural(d/1000,2)} km`);if(t)parts.push(formatDuration(t));if(pace)parts.push(pace);return parts.join(" · ");}
+function planEventMeta(e){
+  const parts=[],type=planEventType(e),k=sportKey(type),gymLike=k.includes("strength")||k.includes("weight")||k.includes("hiit")||k.includes("highintensity")||k.includes("crossfit")||k.includes("functional")||k.includes("circuit"),
+    d=planEventDistanceM(e),t=planEventDurationSec(e),pace=planEventPaceLabel(e),
+    cal=Number(pick(e,["calories","icu_calories"])??e?.caloriesKcal),
+    hr=Number(pick(e,["average_heartrate","average_hr"])??e?.heartRate?.averageBpm);
+  if(gymLike){
+    if(t)parts.push(formatDuration(t));
+    if(Number.isFinite(cal)&&cal>0)parts.push(`${formatNatural(cal,0)} kcal`);
+    if(Number.isFinite(hr)&&hr>0)parts.push(`${formatNatural(hr,0)} ppm`);
+  }else{
+    if(d)parts.push(`${formatNatural(d/1000,2)} km`);
+    if(t)parts.push(formatDuration(t));
+    if(pace)parts.push(pace);
+  }
+  return parts.join(" · ");
+}
 function planWeekRange(){const start=currentPlanWeekStart?new Date(currentPlanWeekStart):mondayOf(new Date()),end=new Date(start);end.setDate(end.getDate()+6);return{start,end,startKey:planDateKey(start),endKey:planDateKey(end)};}
 function shiftPlanWeek(delta){if(!currentPlanWeekStart)currentPlanWeekStart=mondayOf(new Date());const d=new Date(currentPlanWeekStart);d.setDate(d.getDate()+delta*7);currentPlanWeekStart=d;renderPlan();}
 function planRangeLabel(start,end){const months=["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"];if(start.getMonth()===end.getMonth())return`${start.getDate()}–${end.getDate()} ${months[start.getMonth()]} ${String(end.getFullYear()).slice(-2)}`;return`${start.getDate()} ${months[start.getMonth()]} – ${end.getDate()} ${months[end.getMonth()]} ${String(end.getFullYear()).slice(-2)}`;}
@@ -4989,7 +5044,21 @@ function fitPlanTitles(){
     }
   });
 }
-function planActivityMetaParts(a){const parts=[],d=activityDistanceM(a),t=activityElapsedSec(a),pace=activityPaceSecKm(a);if(d)parts.push(`${formatNatural(d/1000,2)} km`);if(t)parts.push(formatDuration(t));if(isRun(a)&&pace)parts.push(formatPaceSecs(pace));return parts;}function planActivityMeta(a){return planActivityMetaParts(a).join(" · ");}
+function planActivityMetaParts(a){
+  const parts=[],locality=activityLocality(a),d=activityDistanceM(a),t=activityElapsedSec(a),
+    pace=activityPaceSecKm(a),hr=activityHr(a),cal=activityCalories(a),gymLike=activityCompactGymLike(a);
+  if(locality)parts.push(locality);
+  if(gymLike){
+    if(t)parts.push(formatDuration(t));
+    if(Number.isFinite(cal))parts.push(`${formatNatural(cal,0)} kcal`);
+    if(Number.isFinite(hr)&&hr>0)parts.push(`${formatNatural(hr,0)} ppm`);
+    return parts;
+  }
+  if(d)parts.push(`${formatNatural(d/1000,2)} km`);
+  if(t)parts.push(formatDuration(t));
+  if(isRun(a)&&pace)parts.push(formatPaceSecs(pace));
+  return parts;
+}function planActivityMeta(a){return planActivityMetaParts(a).join(" · ");}
 
 function sessionQuickPaceLabel(session){
   if(!session)return null;if(session.type==="strength")return"—";if(session.type==="long"&&/\+|progresiv|rcm|rhm|espec/i.test(String(session.structure||"").toLowerCase()))return"Vario";if(session.type==="quality")return session.pace||"Vario";if(session.type==="race"||session.type==="raceA")return session.pace||"Competición";return session.pace||null;
@@ -5026,8 +5095,23 @@ function planLifecycle(){
   return{status:"active",label:"En curso"};
 }
 function planExecutionSessionForEvent(e){
-  const meta=sportMeta(planEventType(e)),session=publishedPlanSessionForEvent(e),outcome=session?planOutcomeForSession(session):null,actual=planOutcomeActualMeta(outcome),baseMeta=(planEventMeta(e)||meta.label).split(" · ");
-  return{kind:"plan",icon:meta.emoji,title:planEventName(e),metaParts:baseMeta,planEventId:planEventId(e,currentEvents.indexOf(e)),outcome,status:outcome?.status||null,tone:planOutcomeTone(outcome),actualMeta:actual,activityId:planOutcomeActivityId(outcome)};
+  const meta=sportMeta(planEventType(e)),session=publishedPlanSessionForEvent(e),
+    outcome=session?planOutcomeForSession(session):null,
+    actualActivity=outcome?.activity||null,
+    plannedMeta=(planEventMeta(e)||meta.label).split(" · ").filter(Boolean),
+    actualMeta=actualActivity?planActivityMetaParts(actualActivity):null;
+  return{
+    kind:"plan",
+    icon:meta.emoji,
+    title:planEventName(e),
+    metaParts:actualMeta?.length?actualMeta:plannedMeta,
+    planEventId:planEventId(e,currentEvents.indexOf(e)),
+    outcome,
+    status:outcome?.status||null,
+    tone:planOutcomeTone(outcome),
+    actualMeta:null,
+    activityId:planOutcomeActivityId(outcome)
+  };
 }
 function planSessionMetaHtml(s,large=false){
   const base=s.metaParts.filter(Boolean).map((x,idx)=>`${idx?'<span class="activity-mini-sep" aria-hidden="true"></span>':""}<span>${esc(x)}</span>`).join("");
@@ -5060,7 +5144,7 @@ function renderPlan(){
     markup.push(`<section class="plan-day${key===today?" today":""}">${head}</section>`);
   }
   if(!markup.length)markup.push('<div class="card activity-empty">No hay entrenamientos en esta semana.</div>');
-  ui.planDays.innerHTML=markup.join("");requestAnimationFrame(fitPlanTitles);
+  ui.planDays.innerHTML=markup.join("");requestAnimationFrame(()=>{fitPlanTitles();activities.forEach(a=>queueActivityLocality(a));observeActivityLocalityRows(ui.planDays);});
 }
 
 
@@ -5193,6 +5277,40 @@ function activityCadence(a){const n=Number(pick(a,["average_cadence"])??a?.runni
 function activityRpe(a){const raw=pick(a,["icu_rpe","perceived_exertion","rpe"])??a?.perception?.effortRpe,n=Number(raw);return Number.isFinite(n)&&n>=1&&n<=10?n:null;}
 function activityRpeLabel(n){const labels={1:"Nada",2:"Muy fácil",3:"Fácil",4:"Cómodo",5:"Algo exigente",6:"Difícil",7:"Duro",8:"Muy duro",9:"Extremadamente duro",10:"Esfuerzo máximo"};return labels[Math.round(Number(n))]||null;}
 function activityFeel(a){const raw=pick(a,["feel","feel_label"])??a?.perception?.feelLabel??a?.perception?.feel;if(raw===null||raw===undefined||raw==="")return null;if(typeof raw==="string"&&!/^\d+(?:\.\d+)?$/.test(raw.trim()))return raw;const n=Number(raw);const labels={1:"Fuerte",2:"Bien",3:"Normal",4:"Flojo",5:"Débil"};return labels[Math.round(n)]||String(raw);}
+
+function activityLocality(a){
+  if(!a)return null;
+
+  const cached=String(a.atlas_locality||a._atlas_locality||"").trim();
+  if(cached)return cached;
+
+  const directLocation=typeof a.location==="string"?a.location.trim():null;
+  const directStartLocation=typeof a.start_location==="string"?a.start_location.trim():
+    (typeof a.startLocation==="string"?a.startLocation.trim():null);
+
+  const nested=[
+    a?.location?.city,a?.location?.locality,a?.location?.town,a?.location?.municipality,a?.location?.name,
+    a?.start_location?.city,a?.start_location?.locality,a?.start_location?.town,a?.start_location?.municipality,
+    a?.startLocation?.city,a?.startLocation?.locality,a?.startLocation?.town,a?.startLocation?.municipality
+  ];
+
+  const raw=directLocation||directStartLocation||pick(a,[
+    "start_city","startCity","city","locality","town","municipality",
+    "location_city","locationCity","place_city","placeCity","start_locality","startLocality"
+  ])||nested.find(Boolean);
+
+  if(raw==null)return null;
+  let text=String(raw).trim();
+  if(!text||text==="[object Object]")return null;
+  text=text.split(/\s+[·|]\s+|,\s*/)[0].trim();
+  if(!text||/^[-—]$/.test(text)||/^-?\d+(?:\.\d+)?\s*[,/]\s*-?\d+(?:\.\d+)?$/.test(text))return null;
+  return text.length>34?`${text.slice(0,33).trim()}…`:text;
+}
+function activityCalories(a){
+  const n=Number(pick(a,["calories","icu_calories","kilojoules_calories"])??a?.caloriesKcal??a?.energy?.calories);
+  return Number.isFinite(n)&&n>0?n:null;
+}
+
 function activityGearRefs(a){const raw=a?.gear,out=[];const add=x=>{if(!x)return;if(typeof x==="string"||typeof x==="number")out.push({id:String(x),name:null});else out.push({id:x.id!=null?String(x.id):null,name:x.name||x.label||x.display_name||null});};if(Array.isArray(raw))raw.forEach(add);else add(raw);return out.filter(x=>x.id||x.name);}
 function activityUsesGear(a,id,name){return activityGearRefs(a).some(g=>(id&&g.id===String(id))||(!id&&name&&g.name===name));}
 function gearAccumulatedKm(id,name){const meters=currentActivities.reduce((sum,a)=>activityUsesGear(a,id,name)?sum+(activityDistanceM(a)||0):sum,0);return meters>0?meters/1000:null;}
@@ -5208,7 +5326,117 @@ function fullActivityDate(a){const raw=activityStamp(a);if(!raw)return"📅 —"
 function monthLabel(ym){const[y,m]=ym.split("-").map(Number),s=new Intl.DateTimeFormat("es-ES",{month:"long",year:"numeric"}).format(new Date(y,m-1,1));return s.charAt(0).toUpperCase()+s.slice(1);}
 function compactActivityDate(s){if(!s)return{month:"—",day:"—"};const[,m,d]=s.split("-").map(Number),months=["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"];return{month:months[m-1]||"—",day:String(d)};}
 function initActivityFilters(){const sports=[...new Set(currentActivities.map(activityType).filter(Boolean))].sort((a,b)=>sportMeta(a).label.localeCompare(sportMeta(b).label,"es"));const years=[...new Set(currentActivities.map(activityDate).filter(Boolean).map(d=>d.slice(0,4)))].sort((a,b)=>b.localeCompare(a));const oldSport=ui.activitySportFilter.value||"all",oldYear=ui.activityYearFilter.value||String(new Date().getFullYear());ui.activitySportFilter.innerHTML='<option value="all">🏅 Todos los deportes</option>'+sports.map(s=>{const meta=sportMeta(s);return`<option value="${esc(s)}">${meta.emoji} ${esc(meta.label)}</option>`;}).join("");ui.activityYearFilter.innerHTML='<option value="all">Todo</option>'+years.map(y=>`<option value="${y}">${y}</option>`).join("");ui.activitySportFilter.value=[...ui.activitySportFilter.options].some(o=>o.value===oldSport)?oldSport:"all";ui.activityYearFilter.value=[...ui.activityYearFilter.options].some(o=>o.value===oldYear)?oldYear:"all";}
-function renderActivities(){if(!ui.activitiesList)return;const sport=ui.activitySportFilter.value||"all",year=ui.activityYearFilter.value||"all",q=(ui.activitySearch.value||"").trim().toLocaleLowerCase("es"),items=[...currentActivities].filter(a=>(sport==="all"||activityType(a)===sport)&&(year==="all"||activityDate(a).startsWith(year))&&(!q||activityName(a).toLocaleLowerCase("es").includes(q))).sort((a,b)=>activityStamp(b).localeCompare(activityStamp(a)));const dist=items.reduce((s,a)=>s+(activityDistanceM(a)||0),0);ui.activitiesSummary.textContent=`${items.length} actividades${dist>0?` · ${formatNatural(dist/1000,1)} km`:""}`;if(!items.length){ui.activitiesList.innerHTML='<div class="card activity-empty">No hay actividades con estos filtros.</div>';return;}const groups=new Map();for(const a of items){const d=activityDate(a),key=d?d.slice(0,7):"Sin fecha";if(!groups.has(key))groups.set(key,[]);groups.get(key).push(a);}ui.activitiesList.innerHTML=[...groups.entries()].map(([key,arr])=>{const km=arr.reduce((s,a)=>s+(activityDistanceM(a)||0),0)/1000;return`<section class="activity-month"><div class="activity-month-head"><div class="activity-month-title">${key==="Sin fecha"?"Sin fecha":monthLabel(key)}</div><div class="activity-month-meta">${arr.length} ${arr.length===1?"actividad":"actividades"}${km?` · ${formatNatural(km,1)} km`:""}</div></div><div class="activity-list">${arr.map(activityRowHtml).join("")}</div></section>`;}).join("");requestAnimationFrame(fitActivityTitles);}
+function renderActivities(){
+  if(!ui.activitiesList)return;
+  const sport=ui.activitySportFilter.value||"all",year=ui.activityYearFilter.value||"all",
+    q=(ui.activitySearch.value||"").trim().toLocaleLowerCase("es"),
+    items=[...currentActivities].filter(a=>(sport==="all"||activityType(a)===sport)&&(year==="all"||activityDate(a).startsWith(year))&&(!q||activityName(a).toLocaleLowerCase("es").includes(q))).sort((a,b)=>activityStamp(b).localeCompare(activityStamp(a))),
+    dist=items.reduce((s,a)=>s+(activityDistanceM(a)||0),0);
+
+  ui.activitiesSummary.textContent=`${items.length} actividades${dist>0?` · ${formatNatural(dist/1000,1)} km`:""}`;
+
+  if(!items.length){
+    ui.activitiesList.innerHTML='<div class="card activity-empty">No hay actividades con estos filtros.</div>';
+    return;
+  }
+
+  const groups=new Map();
+  for(const a of items){
+    const d=activityDate(a),key=d?d.slice(0,7):"Sin fecha";
+    if(!groups.has(key))groups.set(key,[]);
+    groups.get(key).push(a);
+  }
+
+  ui.activitiesList.innerHTML=[...groups.entries()].map(([key,arr])=>{
+    const km=arr.reduce((s,a)=>s+(activityDistanceM(a)||0),0)/1000;
+    return`<section class="activity-month"><div class="activity-month-head"><div class="activity-month-title">${key==="Sin fecha"?"Sin fecha":monthLabel(key)}</div><div class="activity-month-meta">${arr.length} ${arr.length===1?"actividad":"actividades"}${km?` · ${formatNatural(km,1)} km`:""}</div></div><div class="activity-list">${arr.map(activityRowHtml).join("")}</div></section>`;
+  }).join("");
+
+  requestAnimationFrame(()=>{
+    fitActivityTitles();
+    observeActivityLocalityRows(ui.activitiesList);
+  });
+}
+
+
+function activityNeedsLocality(a){
+  return!!(a?.id&&!activityLocality(a)&&!a.atlas_locality_unavailable&&sportTypicallyGps(a));
+}
+function activityById(id){
+  return currentActivities.find(a=>String(a.id)===String(id))||null;
+}
+function queueActivityLocality(a,{priority=false}={}){
+  if(!activityNeedsLocality(a))return;
+  const id=String(a.id);
+  if(activityLocalityQueued.has(id))return;
+  activityLocalityQueued.add(id);
+  if(priority)activityLocalityQueue.unshift(id);else activityLocalityQueue.push(id);
+  processActivityLocalityQueue().catch(error=>console.warn("ɅTLɅS · localidades",error));
+}
+async function processActivityLocalityQueue(){
+  if(activityLocalityBusy)return;
+  activityLocalityBusy=true;
+  try{
+    while(activityLocalityQueue.length){
+      const id=activityLocalityQueue.shift();
+      activityLocalityQueued.delete(id);
+      const a=activityById(id);
+      if(!activityNeedsLocality(a))continue;
+
+      const elapsed=Date.now()-lastLocalityLookupAt;
+      if(elapsed<1150)await waitMs(1150-elapsed);
+      lastLocalityLookupAt=Date.now();
+
+      try{
+        const result=await apiRequest(`/api/activity-locality?id=${encodeURIComponent(id)}`,{
+          method:"GET",timeoutMs:30000,retries:1
+        });
+        if(result?.locality){
+          a.atlas_locality=String(result.locality).trim();
+          delete a.atlas_locality_unavailable;
+        }else{
+          a.atlas_locality_unavailable=true;
+        }
+        await storePut("activities",a);
+        scheduleActivityLocalityRefresh();
+      }catch(error){
+        // Do not permanently mark unavailable on transport/service errors.
+        console.warn(`ɅTLɅS · localidad ${id}`,error);
+        recordRuntimeAudit("activity-locality",error,{activityId:id}).catch(()=>{});
+      }
+    }
+  }finally{
+    activityLocalityBusy=false;
+  }
+}
+function scheduleActivityLocalityRefresh(){
+  if(activityLocalityRefreshRaf)return;
+  activityLocalityRefreshRaf=requestAnimationFrame(()=>{
+    activityLocalityRefreshRaf=0;
+    const active=document.querySelector(".view.active")?.id||"";
+    if(active==="view-activities")renderActivities();
+    else if(active==="view-plan")renderPlan();
+    else if(active==="view-today")renderToday(currentActivities,currentWellness,currentCachedVo2);
+  });
+}
+function observeActivityLocalityRows(root=document){
+  if(!("IntersectionObserver" in window))return;
+  if(!activityLocalityObserver){
+    activityLocalityObserver=new IntersectionObserver(entries=>{
+      for(const entry of entries){
+        if(!entry.isIntersecting)continue;
+        const id=entry.target.dataset.id||entry.target.dataset.activityId;
+        const a=activityById(id);
+        if(a)queueActivityLocality(a);
+        activityLocalityObserver.unobserve(entry.target);
+      }
+    },{root:null,rootMargin:"140px 0px",threshold:0.01});
+  }
+  root.querySelectorAll?.(".activity-row[data-id],[data-activity-id]").forEach(el=>{
+    const id=el.dataset.id||el.dataset.activityId,a=activityById(id);
+    if(activityNeedsLocality(a))activityLocalityObserver.observe(el);
+  });
+}
 
 function activityCompactGymLike(a){
   const k=sportKey(activityType(a));
@@ -5221,25 +5449,27 @@ function activityRowContent(a){
   const d=activityDate(a),dp=compactActivityDate(d),dist=activityDistanceM(a),
     elapsed=activityElapsedSec(a),pace=activityPaceSecKm(a),
     speed=Number(pick(a,["average_speed"])??a?.speed?.averageMps),
-    hr=activityHr(a),cal=Number(pick(a,["calories"])??a?.caloriesKcal),
+    hr=activityHr(a),cal=activityCalories(a),locality=activityLocality(a),
     gymLike=activityCompactGymLike(a);
 
   let stats;
   if(gymLike){
     stats=[
+      locality,
       elapsed?formatDuration(elapsed):null,
-      Number.isFinite(cal)&&cal>0?`${formatNatural(cal,0)} kcal`:null,
+      Number.isFinite(cal)?`${formatNatural(cal,0)} kcal`:null,
       Number.isFinite(hr)&&hr>0?`${formatNatural(hr,0)} ppm`:null
     ].filter(Boolean);
   }else{
     stats=[
+      locality,
       dist?`${formatNatural(dist/1000,2)} km`:null,
       elapsed?formatDuration(elapsed):null,
       isRun(a)&&pace?formatPaceSecs(pace):(!isRun(a)&&Number.isFinite(speed)&&speed>0?`${formatNatural(speed*3.6,1)} km/h`:null)
     ].filter(Boolean);
   }
 
-  return`<div class="activity-row-date"><span class="activity-row-month">${dp.month}</span><span class="activity-row-day">${dp.day}</span></div><span class="activity-row-sep" aria-hidden="true"></span><div class="activity-row-copy"><div class="activity-row-title"><span class="activity-row-title-emoji">${activityIcon(a)}</span><span class="activity-row-title-text">${esc(activityName(a))}</span></div><div class="activity-row-main">${stats.length?stats.map(s=>`<span class="activity-row-stat">${s}</span>`).join(""):`<span class="activity-row-stat">${esc(activitySportLabel(a))}</span>`}</div></div>`;
+  return`<div class="activity-row-date"><span class="activity-row-month">${dp.month}</span><span class="activity-row-day">${dp.day}</span></div><span class="activity-row-sep" aria-hidden="true"></span><div class="activity-row-copy"><div class="activity-row-title"><span class="activity-row-title-emoji">${activityIcon(a)}</span><span class="activity-row-title-text">${esc(activityName(a))}</span></div><div class="activity-row-main">${stats.length?stats.map(s=>`<span class="activity-row-stat">${esc(String(s))}</span>`).join(""):`<span class="activity-row-stat">${esc(activitySportLabel(a))}</span>`}</div></div>`;
 }
 function activityRowHtml(a){return`<button class="activity-row" data-id="${esc(String(a.id))}">${activityRowContent(a)}</button>`;}
 async function openActivityDetail(id){
@@ -5743,9 +5973,19 @@ function renderToday(activities,wellness,cachedVo2){
  ui.volumeValue.innerHTML=`${formatNatural(dist/1000,1)} <span class="metric-unit">km</span>`;setTone(ui.volumeMeta,null);ui.volumeMeta.textContent="últ. 7 d";
  const state=computeAtlasState({activities,wellness:w,forma,fatiga,fresh,vfc,rhr,sleep,hrvRef,today});renderAtlasState(state);
  renderLastRun(latestActivities[0]);renderUpcomingTrainings();
+ if(latestActivities[0])queueActivityLocality(latestActivities[0],{priority:true});
  requestAnimationFrame(fitMetricTypography);
 }
-function renderLastRun(r){if(!r){ui.lastActivityBtn.innerHTML='<div class="activity-row-copy" style="grid-column:1/-1;padding:8px 6px">Sin actividades</div>';return;}ui.lastActivityBtn.innerHTML=activityRowContent(r);requestAnimationFrame(fitActivityTitles);}
+function renderLastRun(r){
+  if(!r){
+    ui.lastActivityBtn.removeAttribute("data-id");
+    ui.lastActivityBtn.innerHTML='<div class="activity-row-copy" style="grid-column:1/-1;padding:8px 6px">Sin actividades</div>';
+    return;
+  }
+  ui.lastActivityBtn.dataset.id=String(r.id);
+  ui.lastActivityBtn.innerHTML=activityRowContent(r);
+  requestAnimationFrame(fitActivityTitles);
+}
 function upcomingPlanRowContent(e){
   const date=planEventDate(e),dp=compactActivityDate(date),session=publishedPlanSessionForEvent(e),dist=session?.distanceKm?`${formatNatural(session.distanceKm,1)} km`:planEventDistanceM(e)?`${formatNatural(planEventDistanceM(e)/1000,1)} km`:null,pace=sessionQuickPaceLabel(session),stats=[dist,pace&&pace!=="—"?pace:null].filter(Boolean);
   return`<div class="activity-row-date"><span class="activity-row-month">${dp.month}</span><span class="activity-row-day">${dp.day}</span></div><span class="activity-row-sep" aria-hidden="true"></span><div class="activity-row-copy"><div class="activity-row-title"><span class="activity-row-title-emoji">${sportMeta(planEventType(e)).emoji}</span><span class="activity-row-title-text">${esc(planEventName(e))}</span></div><div class="activity-row-main">${stats.length?stats.map(s=>`<span class="activity-row-stat">${esc(s)}</span>`).join(""):`<span class="activity-row-stat">Entrenamiento planificado</span>`}</div></div>`;
@@ -7454,6 +7694,471 @@ html,body,.app,.view,
   .activity-title-row .activity-ai-btn{width:54px!important;height:54px!important;flex-basis:54px!important}
   .activity-ai-mark{width:54px!important;height:54px!important}
   .activity-ai-icon{width:35px!important;height:28px!important}
+}
+</style>
+
+
+<style id="atlas-v087-refinement">
+/* ===== ɅTLɅS v0.87 · compactación + registros + metadatos ===== */
+
+/* ~1 mm menos de aire vertical en iPhone:
+   encabezado ATLAS → título y título → primer contenido. */
+@media(max-width:599px){
+  #view-today>.section-bar{
+    padding-top:9px!important;
+    padding-bottom:7px!important;
+  }
+  #view-activities>.page-header,
+  #view-plan>.page-header,
+  #view-data>.page-header{
+    padding-top:12px!important;
+    padding-bottom:8px!important;
+  }
+  #view-today>.training-state,
+  #view-activities>.activities-toolbar,
+  #view-plan>.plan-overview-card,
+  #view-data>.profile-home-card{
+    margin-top:0!important;
+  }
+}
+
+/* Carrera del Plan: una sola línea, centrada y más baja. */
+#view-plan>.plan-overview-card{
+  position:relative!important;
+  grid-template-columns:22px minmax(0,1fr) 22px!important;
+  min-height:42px!important;
+  padding:6px 8px!important;
+  margin-bottom:6px!important;
+  align-items:center!important;
+}
+#view-plan .plan-overview-icon,
+#view-plan .plan-overview-arrow{
+  width:22px!important;
+  text-align:center!important;
+}
+#view-plan .plan-overview-copy{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-width:0!important;
+  text-align:center!important;
+}
+#view-plan .plan-overview-title{
+  width:100%!important;
+  text-align:center!important;
+  font-size:16.5px!important;
+  line-height:1.2!important;
+  font-weight:770!important;
+}
+#view-plan .plan-overview-meta{
+  display:none!important;
+}
+
+/* El resumen interior del Plan usa todo el ancho útil real. */
+#engineGoalCard{
+  position:relative!important;
+  display:block!important;
+  width:100%!important;
+  padding:12px!important;
+}
+#engineGoalCard .engine-v2-copy{
+  display:block!important;
+  width:100%!important;
+  max-width:none!important;
+}
+#engineGoalCard .engine-v2-title{
+  display:block!important;
+  width:100%!important;
+  padding-right:26px!important;
+}
+#engineGoalCard .engine-v2-arrow{
+  position:absolute!important;
+  top:14px!important;
+  right:12px!important;
+  margin:0!important;
+}
+#engineGoalCard .plan-goal-summary{
+  width:100%!important;
+  max-width:none!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  justify-self:stretch!important;
+}
+
+/* Sesiones propuestas / sesiones del plan: negro OLED real. */
+#sessionGeneratorDetail,
+#sessionGeneratorDetail .plan-detail-shell,
+#sessionGeneratorDetail .plan-detail-card,
+#sessionGeneratorList,
+#sessionGeneratorList .session-preview-week,
+#sessionGeneratorList .session-preview-head,
+#sessionGeneratorList .plan-week-calendar,
+#sessionGeneratorList .plan-week-calendar-day,
+#sessionGeneratorList .plan-week-calendar-head,
+#sessionGeneratorList .plan-week-calendar-session,
+#sessionGeneratorList .strength-preview-summary{
+  background:#000!important;
+  background-image:none!important;
+}
+
+/* Nueva estructura de Mejores marcas: sin la rejilla/podio anterior. */
+.records-list,
+.records-card-grid{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:10px!important;
+}
+.record-board{
+  width:100%;
+  overflow:hidden;
+  border:1.5px solid rgba(255,255,255,.16);
+  border-radius:18px;
+  background:#000;
+}
+.record-board-head{
+  min-height:48px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:9px 12px;
+  border-bottom:1px solid rgba(255,255,255,.14);
+}
+.record-board-icon{
+  flex:0 0 29px;
+  width:29px;
+  text-align:center;
+  font-size:22px;
+  line-height:1;
+}
+.record-board-title{
+  min-width:0;
+  color:#fff;
+  font-size:19px;
+  line-height:1.2;
+  font-weight:790;
+  letter-spacing:-.28px;
+}
+.record-board-list{
+  width:100%;
+}
+.record-board-row{
+  appearance:none;
+  width:100%;
+  min-height:64px;
+  display:grid;
+  grid-template-columns:36px minmax(0,1fr) auto 14px;
+  align-items:center;
+  gap:7px;
+  padding:8px 10px 8px 9px;
+  border:0;
+  background:#000;
+  color:#fff;
+  text-align:left;
+}
+.record-board-row+.record-board-row{
+  border-top:1px solid rgba(255,255,255,.12);
+}
+.record-board-row:active{
+  background:rgba(255,255,255,.035);
+}
+.record-board-medal{
+  font-size:23px;
+  line-height:1;
+  text-align:center;
+}
+.record-board-main{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:3px;
+}
+.record-board-primary{
+  color:#fff;
+  font-size:19px;
+  line-height:1.15;
+  font-weight:790;
+  font-variant-numeric:tabular-nums;
+}
+.record-board-date{
+  color:var(--muted);
+  font-size:11.5px;
+  line-height:1.2;
+  font-weight:590;
+}
+.record-board-pace{
+  color:#d8e0e6;
+  font-size:14px;
+  line-height:1.2;
+  font-weight:710;
+  white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+}
+.record-board-chevron{
+  color:var(--blue);
+  font-size:18px;
+  line-height:1;
+  text-align:right;
+}
+.record-board-empty{
+  padding:18px 12px;
+  color:var(--muted);
+  font-size:12px;
+  text-align:center;
+}
+
+/* Las nuevas líneas de actividad admiten un dato extra sin perder legibilidad. */
+.activity-row-main{
+  display:flex!important;
+  align-items:center!important;
+  flex-wrap:nowrap!important;
+  min-width:0!important;
+  overflow:hidden!important;
+}
+.activity-row-stat{
+  flex:0 1 auto!important;
+  min-width:0!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.activity-row-stat:first-child{
+  max-width:31%!important;
+}
+.activity-row-stat+.activity-row-stat{
+  position:relative!important;
+  padding-left:8px!important;
+  margin-left:8px!important;
+}
+.activity-row-stat+.activity-row-stat::before{
+  content:""!important;
+  position:absolute!important;
+  left:0!important;
+  top:18%!important;
+  bottom:18%!important;
+  width:1px!important;
+  background:rgba(255,255,255,.17)!important;
+}
+
+/* Última microcompactación semanal. */
+.plan-day-head,
+.plan-day-head:not(.multi-session),
+#sessionGeneratorList .plan-week-calendar-head{
+  min-height:50px!important;
+  padding-top:2px!important;
+  padding-bottom:2px!important;
+}
+.plan-day-multi-item{
+  padding-top:2px!important;
+  padding-bottom:2px!important;
+}
+</style>
+
+
+<style id="atlas-v088-refinement">
+/* ===== ɅTLɅS v0.88 ===== */
+
+/* CHAT: use the full region ABOVE the tab bar.
+   The composer can never sit behind the fixed navigation. */
+body.assistant-main-active{
+  height:100dvh!important;
+  max-height:100dvh!important;
+  overflow:hidden!important;
+}
+body.assistant-main-active .app{
+  height:100dvh!important;
+  min-height:100dvh!important;
+  max-height:100dvh!important;
+  overflow:hidden!important;
+  padding-bottom:0!important;
+}
+#view-assistant.active{
+  position:fixed!important;
+  z-index:40!important;
+  top:env(safe-area-inset-top)!important;
+  left:0!important;
+  right:0!important;
+  bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 18px)!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0 max(8px,env(safe-area-inset-right)) 0 max(8px,env(safe-area-inset-left))!important;
+  background:#000!important;
+  overflow:hidden!important;
+}
+#view-assistant>.atlas-header{
+  flex:0 0 auto!important;
+}
+
+/* Only the two requested controls, right aligned. */
+.assistant-chat-topbar{
+  flex:0 0 40px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  padding:0 1px 4px!important;
+  border-bottom:0!important;
+}
+.assistant-chat-presence,
+.assistant-chat-avatar,
+.assistant-chat-status-dot{
+  display:none!important;
+}
+.assistant-chat-actions{
+  margin-left:auto!important;
+}
+
+/* No decorative ATLAS A in the empty background. */
+.assistant-empty{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  display:block!important;
+}
+.assistant-empty-avatar{
+  display:none!important;
+}
+
+/* Composer = same material vocabulary, height and edge treatment as tab bar. */
+.assistant-composer{
+  --glass-x:50%;
+  --glass-y:30%;
+  flex:0 0 auto!important;
+  min-height:58px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 42px!important;
+  align-items:center!important;
+  gap:7px!important;
+  margin:6px 0 2px!important;
+  padding:6px 7px 6px 14px!important;
+  border:1.5px solid rgba(255,255,255,.24)!important;
+  border-radius:24px!important;
+  background:
+    radial-gradient(110px 64px at var(--glass-x) var(--glass-y),rgba(255,255,255,.13),rgba(255,255,255,.03) 42%,transparent 72%),
+    linear-gradient(180deg,rgba(255,255,255,.078),rgba(255,255,255,.018) 40%,rgba(0,0,0,.10))!important;
+  -webkit-backdrop-filter:blur(29px) saturate(225%) contrast(1.09)!important;
+  backdrop-filter:blur(29px) saturate(225%) contrast(1.09)!important;
+  box-shadow:
+    0 14px 36px rgba(0,0,0,.34),
+    inset 0 1px 0 rgba(255,255,255,.21),
+    inset 0 -1px 0 rgba(255,255,255,.055)!important;
+}
+.assistant-input{
+  min-height:30px!important;
+  max-height:104px!important;
+  padding:5px 0!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+.assistant-send{
+  width:38px!important;
+  height:38px!important;
+}
+
+/* Only conversation messages can scroll. */
+.assistant-messages{
+  min-height:0!important;
+  padding-bottom:5px!important;
+}
+
+/* Activities filters: OLED black, no dark blue/grey base. */
+.activities-select,
+.activities-search{
+  background:#000!important;
+  background-image:none!important;
+  border-color:rgba(255,255,255,.16)!important;
+}
+
+/* EXACT same date-column geometry in Hoy, Actividades and Plan.
+   31px is the effective geometry of the Today activity card. */
+.activity-row,
+.plan-day-head,
+#sessionGeneratorList .plan-week-calendar-head{
+  grid-template-columns:31px 1px minmax(0,1fr)!important;
+}
+.activity-row-date,
+.plan-day-date,
+#sessionGeneratorList .plan-week-calendar-date{
+  width:31px!important;
+  min-width:31px!important;
+  max-width:31px!important;
+  padding-left:0!important;
+  padding-right:0!important;
+}
+
+/* Keep locality readable as the first field before distance/time. */
+.activity-row-stat:first-child{
+  max-width:34%!important;
+}
+</style>
+
+
+<style id="atlas-v089-fixes">
+/* ===== ɅTLɅS v0.89 · localidad GPS + fecha físicamente idéntica ===== */
+
+/* One physical 46px date zone in all daily cards.
+   8px left card padding + 31px date + 7px breathing room = separator at x=46px. */
+.activity-row,
+.plan-day-head,
+#sessionGeneratorList .plan-week-calendar-head{
+  --atlas-date-zone:46px;
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:var(--atlas-date-zone) minmax(0,1fr)!important;
+  column-gap:0!important;
+  row-gap:0!important;
+  padding-left:8px!important;
+  padding-right:8px!important;
+}
+.activity-row-date,
+.plan-day-date,
+#sessionGeneratorList .plan-week-calendar-date{
+  grid-column:1!important;
+  width:31px!important;
+  min-width:31px!important;
+  max-width:31px!important;
+  justify-self:start!important;
+  margin:0!important;
+  padding:0!important;
+}
+.activity-row-copy,
+.plan-day-copy,
+#sessionGeneratorList .plan-week-calendar-copy{
+  grid-column:2!important;
+  min-width:0!important;
+  padding-left:0!important;
+  margin-left:0!important;
+}
+.activity-row-sep,
+.plan-day-sep,
+#sessionGeneratorList .plan-week-calendar-sep{
+  position:absolute!important;
+  left:46px!important;
+  top:4px!important;
+  bottom:4px!important;
+  width:1px!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0!important;
+  background:rgba(255,255,255,.17)!important;
+  border-radius:2px!important;
+  pointer-events:none!important;
+}
+/* 7px after separator before copy, exactly as Today originally had. */
+.activity-row-copy,
+.plan-day-copy,
+#sessionGeneratorList .plan-week-calendar-copy{
+  padding-left:8px!important;
+}
+
+/* Locality attribution, deliberately tiny and only in Connection & Data. */
+.location-attribution{
+  margin-top:8px;
+  color:var(--muted2);
+  font-size:8.5px;
+  line-height:1.25;
+  text-align:center;
 }
 </style>
 
