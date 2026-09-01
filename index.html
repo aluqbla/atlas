@@ -871,8 +871,8 @@ input[type="date"]::-webkit-date-and-time-value{display:flex!important;align-ite
   <section class="view" id="view-assistant" aria-label="Asistente ATLAS">
     <div class="assistant-chat-canvas" id="assistantChatCanvas" aria-hidden="false">
       <div class="assistant-chat-topbar">
-        <button class="assistant-top-action" id="assistantHistoryBtn" type="button" aria-label="Historial de conversaciones"><span aria-hidden="true">↶</span><span>Historial</span></button>
-        <button class="assistant-top-action" id="assistantNewBtn" type="button" aria-label="Nueva conversación"><span aria-hidden="true">✎</span><span>Nuevo chat</span></button>
+        <button class="assistant-top-action assistant-icon-action" id="assistantHistoryBtn" type="button" aria-label="Historial de conversaciones" title="Historial"><span aria-hidden="true">↶</span></button>
+        <button class="assistant-top-action assistant-icon-action" id="assistantNewBtn" type="button" aria-label="Nueva conversación" title="Nuevo chat"><span aria-hidden="true">＋</span></button>
       </div>
       <div class="assistant-messages" id="assistantMessages" aria-live="polite">
         <div class="assistant-empty" id="assistantEmpty" aria-hidden="true"></div>
@@ -1150,7 +1150,7 @@ input[type="date"]::-webkit-date-and-time-value{display:flex!important;align-ite
       </div>
       <div class="plan-detail-summary">
         <div class="plan-detail-stat"><div class="plan-detail-value" id="planDetailDistance">—</div><div class="plan-detail-label">Distancia</div></div>
-        <div class="plan-detail-stat"><div class="plan-detail-value" id="planDetailDuration">—</div><div class="plan-detail-label">Duración</div></div>
+        <div class="plan-detail-stat"><div class="plan-detail-value" id="planDetailDuration">—</div><div class="plan-detail-label">Tiempo</div></div>
         <div class="plan-detail-stat"><div class="plan-detail-value" id="planDetailTarget">—</div><div class="plan-detail-label">Ritmo</div></div>
       </div>
       <div class="plan-detail-card">
@@ -1803,7 +1803,7 @@ html,body{overscroll-behavior-y:none}
 
 (()=>{
 "use strict";
-const APP_VERSION="0.103.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="0.104.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits","chats"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -2066,11 +2066,13 @@ async function init(){
   });
 }
 function ensureMainTabHeaders(){
-  for(const id of["view-activities","view-assistant","view-plan","view-data"]){
+  for(const id of["view-activities","view-plan","view-data"]){
     const view=$(id);
     if(!view)continue;
     view.querySelectorAll(":scope > .atlas-header").forEach(header=>header.remove());
   }
+  const assistant=$("view-assistant"),source=$("view-today")?.querySelector(":scope > .atlas-header");
+  if(assistant&&source&&!assistant.querySelector(":scope > .atlas-header"))assistant.prepend(source.cloneNode(true));
 }
 function initializeStaticUi(){
   ensureMainTabHeaders();
@@ -2436,7 +2438,7 @@ function auditAtlasScrollState(){
     overlay.classList.add("atlas-scrollable");
 
     requestAnimationFrame(()=>{
-      atlasSetOverflowClass(overlay,overlay.scrollHeight>overlay.clientHeight+2);
+      atlasSetOverflowClass(overlay,overlay.scrollHeight>overlay.clientHeight+4);
     });
     return;
   }
@@ -2454,7 +2456,7 @@ function auditAtlasScrollState(){
 
   requestAnimationFrame(()=>{
     const scrolling=document.scrollingElement||root;
-    const needs=scrolling.scrollHeight>window.innerHeight+2;
+    const needs=scrolling.scrollHeight>window.innerHeight+4;
     root.classList.toggle("atlas-main-scroll-locked",!needs);
     document.body.classList.toggle("atlas-main-scroll-locked",!needs);
     if(!needs&&scrolling.scrollTop)scrolling.scrollTop=0;
@@ -3178,8 +3180,9 @@ function profileInitials(name){
 function profilePerformanceValueHtml(value){
   const raw=String(value??"—").trim();
   if(!raw||raw==="—")return '<span class="profile-dashboard-performance-main">—</span>';
-  if(raw.endsWith(' min/km'))return `<span class="profile-dashboard-performance-main">${esc(raw.replace(/ min\/km$/,''))}</span><span class="profile-dashboard-performance-unit"> min/km</span>`;
-  if(raw.endsWith(' ppm'))return `<span class="profile-dashboard-performance-main">${esc(raw.replace(/ ppm$/,''))}</span><span class="profile-dashboard-performance-unit"> ppm</span>`;
+  for(const unit of[" ml/kg/min"," min/km"," ppm"]){
+    if(raw.endsWith(unit))return `<span class="profile-dashboard-performance-main">${esc(raw.slice(0,-unit.length))}</span><span class="profile-dashboard-performance-unit">${esc(unit.trim())}</span>`;
+  }
   return `<span class="profile-dashboard-performance-main">${esc(raw)}</span>`;
 }
 
@@ -3196,10 +3199,11 @@ function fitCommonTextWidth(elements,maxSize,minSize){
 }
 function fitProfileDashboardRecordsTypography(){
   const root=$("profileDashboardRecords");if(!root)return;
-  fitCommonTextWidth(root.querySelectorAll(".profile-dashboard-record-distance-label:not(.longest)"),13.5,10.5);
-  fitCommonTextWidth(root.querySelectorAll(".profile-dashboard-record-cell-mark"),16.5,12);
-  fitCommonTextWidth(root.querySelectorAll(".profile-dashboard-record-cell-meta"),10.8,8.2);
-  root.querySelectorAll(".profile-dashboard-record-distance-label.longest").forEach(el=>fitTextToWidth(el,11.5,9));
+  fitCommonTextWidth(root.querySelectorAll(".profile-dashboard-record-distance-label:not(.longest)"),15.5,10.5);
+  fitCommonTextWidth(root.querySelectorAll(".profile-dashboard-record-cell-mark"),17.5,12);
+  fitCommonTextWidth(root.querySelectorAll(".profile-dashboard-record-cell-meta"),11.5,8.5);
+  root.querySelectorAll(".profile-dashboard-record-distance-label.longest").forEach(el=>fitTextToWidth(el,12,9));
+  const distanceHead=root.querySelector(".profile-dashboard-record-head-distance");if(distanceHead)fitTextToWidth(distanceHead,15.5,11);
 }
 
 function renderProfileDashboardRecords(records=currentRunningRecords){
@@ -3223,9 +3227,9 @@ function renderProfileDashboardRecords(records=currentRunningRecords){
 
   const head=`<div class="profile-dashboard-record-table-head">
     <span class="profile-dashboard-record-head-distance">Distancia</span>
-    <span class="profile-dashboard-record-head-pos">🥇 1º</span>
-    <span class="profile-dashboard-record-head-pos">🥈 2º</span>
-    <span class="profile-dashboard-record-head-pos">🥉 3º</span>
+    <span class="profile-dashboard-record-head-pos" aria-label="Primera marca">🥇</span>
+    <span class="profile-dashboard-record-head-pos" aria-label="Segunda marca">🥈</span>
+    <span class="profile-dashboard-record-head-pos" aria-label="Tercera marca">🥉</span>
   </div>`;
 
   const rows=sections.map(section=>{
@@ -3249,8 +3253,9 @@ function renderProfileDashboardRecords(records=currentRunningRecords){
       return best?.id?`<button class="profile-dashboard-record-cell" type="button" data-record-activity-id="${esc(best.id)}">${inner}</button>`:`<span class="profile-dashboard-record-cell">${inner}</span>`;
     }).join("");
 
-    const distanceLabel=section.key==="longest"?'<span>Distancia</span><span>más larga</span>':esc(section.label);
-    return `<div class="profile-dashboard-record-table-row"><div class="profile-dashboard-record-distance-label${section.key==="longest"?" longest":""}">${distanceLabel}</div>${cells}</div>`;
+    const distanceLabel=section.key==="longest"?'<span>Distancia</span><span>más larga</span>':section.key==="half"?'<span>Media</span><span>maratón</span>':esc(section.label);
+    const labelClass=section.key==="longest"?" longest":section.key==="half"?" half":"";
+    return `<div class="profile-dashboard-record-table-row"><div class="profile-dashboard-record-distance-label${labelClass}">${distanceLabel}</div>${cells}</div>`;
   }).join("");
 
   box.innerHTML=head+rows;requestAnimationFrame(fitProfileDashboardRecordsTypography);
@@ -3302,14 +3307,15 @@ function renderProfilePanel(athlete){
   const performance=$("profileDashboardPerformance");
   if(performance){
     const metrics=[
-      ["🫁","VO₂ máx.",Number.isFinite(vo2)?formatNatural(vo2,2):"—"],
+      ["🫁","VO₂ máx.",Number.isFinite(vo2)?`${formatNatural(vo2,2)} ml/kg/min`:"—"],
       ["⚡","Umbral",Number.isFinite(thresholdSec)?`${formatPaceValue(thresholdSec)} min/km`:"—"],
       ["❤️","FC umbral",Number.isFinite(Number(sport?.lthr))?`${formatNatural(Number(sport.lthr),0)} ppm`:"—"],
       ["🔺","FC máx.",Number.isFinite(Number(sport?.max_hr))?`${formatNatural(Number(sport.max_hr),0)} ppm`:"—"]
     ];
     performance.innerHTML=metrics.map(([emoji,label,value])=>`
       <div class="profile-dashboard-performance-cell">
-        <span class="profile-dashboard-performance-label">${emoji} ${esc(label)}</span>
+        <span class="profile-dashboard-performance-emoji">${emoji}</span>
+        <span class="profile-dashboard-performance-label">${esc(label)}</span>
         <strong class="profile-dashboard-performance-reading">${profilePerformanceValueHtml(value)}</strong>
       </div>`).join("");
   }
@@ -3435,6 +3441,11 @@ async function refreshAll(){
 
 
 
+function fitPlanGoalSummaryTypography(){
+  const box=$("planGoalSummary");if(!box)return;
+  fitCommonTextWidth(box.querySelectorAll(".plan-goal-summary-key"),12.5,9.5);
+  fitCommonTextWidth(box.querySelectorAll(".plan-goal-summary-value"),16.5,11.5);
+}
 function renderPlanOverview(){
   if(!ui.planOverviewTitle||!ui.planOverviewMeta)return;
   const g=currentEngineV2Goal,summary=$("planGoalSummary");
@@ -3478,7 +3489,7 @@ function renderPlanOverview(){
           <span class="plan-goal-summary-key">${esc(key)}</span>
           <span class="plan-goal-summary-value">${esc(value)}</span>
         </span>
-      </span>`).join("");
+      </span>`).join("");requestAnimationFrame(fitPlanGoalSummaryTypography);
   }
 }
 function openPlanControl(){renderPlanOverview();ui.planControlDetail.classList.remove("hidden");ui.planControlDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";scheduleAtlasScrollAudit();}
@@ -5465,6 +5476,12 @@ async function applyPlanManualAction(event){
     await commitManualPlanChange(sessions,entry);ui.planManualDialog.close();closePlanDetail();lastCalendarRefreshAt=Date.now();await syncCalendar(false);currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);renderAdaptiveEngineCard();renderPlanPublicationStatus();toast("✅ Cambio aplicado y verificado en Intervals.icu.");
   }catch(error){toast(`⚠️ ${error.message}`,true);}finally{ui.planManualApply.disabled=false;currentPlanManualAction=null;}
 }
+function fitPlanDetailSummary(){
+  const box=document.querySelector("#planDetail .plan-detail-summary");if(!box)return;
+  const fixed=Math.max(72,Math.min(98,Math.max(ui.planDetailDistance?.scrollWidth||0,ui.planDetailDuration?.scrollWidth||0)+24));
+  box.style.gridTemplateColumns=`${fixed}px ${fixed}px minmax(0,1fr)`;
+  fitTextToWidth(ui.planDetailDistance,18,13);fitTextToWidth(ui.planDetailDuration,18,13);fitTextToWidth(ui.planDetailTarget,18,11.5);
+}
 async function openPlanDetail(id){
   const idx=currentEvents.findIndex((e,i)=>planEventId(e,i)===String(id));if(idx<0)return;let e=currentEvents[idx];
   if(e?.id){try{const detail=await api(`/api/calendar-event?id=${encodeURIComponent(e.id)}`);if(detail?.event){e={...e,...detail.event};currentEvents[idx]=e;try{await storePut("events",e);}catch{}}}catch(error){console.warn("ɅTLɅS · detalle de sesión",error);}}
@@ -5482,7 +5499,7 @@ async function openPlanDetail(id){
     ui.planDetailSteps.innerHTML=parsed.steps.map(x=>`<div class="plan-detail-step"><div class="plan-detail-step-icon">${x.icon}</div><div><div class="plan-detail-step-title">${esc(x.title)}</div><div class="plan-detail-step-meta">${esc(x.meta)}</div></div></div>`).join("");
   }
   ui.planDetailPurpose.textContent=parsed.purpose||sessionPurposeDetailed(publishedSession);ui.planDetailRaw.textContent=parsed.raw||"";ui.planDetailRaw.classList.add("hidden");
-  ui.planDetail.classList.remove("hidden");ui.planDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";requestAnimationFrame(fitPlanDetailTitle);
+  ui.planDetail.classList.remove("hidden");ui.planDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";requestAnimationFrame(()=>{fitPlanDetailTitle();fitPlanDetailSummary();scheduleAtlasScrollAudit();});
 }
 function closePlanDetail(){if(!ui.planDetail)return;ui.planDetail.classList.add("hidden");ui.planDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";currentPlanEvent=null;currentPlanOutcome=null;}
 
@@ -9246,6 +9263,177 @@ body::before{
 @media(max-width:390px){
   .profile-dashboard-record-head-pos{font-size:14px!important;}
   .profile-dashboard-record-head-distance{font-size:10.5px!important;}
+}
+</style>
+
+
+<style id="atlas-v0104-final-polish">
+/* =========================================================
+   ɅTLɅS v0.104 · final polish
+   ========================================================= */
+:root{
+  --atlas-divider:rgba(255,255,255,.16);
+  --atlas-divider-strong:rgba(255,255,255,.20);
+  --atlas-divider-w:1.5px;
+}
+
+/* Header closer to Dynamic Island; same header in Hoy and Chat. */
+.app{padding-top:max(3px,calc(env(safe-area-inset-top) + 1px))!important;}
+.atlas-header{padding:0 2px!important;margin:-2px 0 0!important;}
+#view-today>.atlas-header,#view-assistant>.atlas-header{display:flex!important;flex:0 0 auto!important;}
+#view-assistant.active{
+  top:0!important;
+  padding:calc(env(safe-area-inset-top) + 1px) max(12px,env(safe-area-inset-right)) 0 max(12px,env(safe-area-inset-left))!important;
+  display:flex!important;flex-direction:column!important;
+}
+#view-assistant>.atlas-header{width:min(430px,100%)!important;margin:-2px auto 0!important;padding:0!important;}
+#view-assistant .assistant-chat-canvas{height:auto!important;flex:1 1 auto!important;min-height:0!important;}
+
+/* Today: closer Estado ↔ metrics, no extra seam. */
+.today-hero-card .training-state{padding-bottom:7px!important;}
+.today-hero-card .metric-strip{padding-top:0!important;}
+.today-hero-card .metric-card{padding-top:6px!important;}
+
+/* State insight: natural wrapping, never truncate useful text. */
+.state-detail-card .state-note{
+  display:block!important;-webkit-line-clamp:unset!important;max-width:none!important;
+  white-space:normal!important;overflow:visible!important;text-overflow:clip!important;
+  font-size:11.5px!important;line-height:1.36!important;
+}
+
+/* Plan-detail metrics: Distance and Time identical, Pace gets the flexible column. */
+#planDetail .plan-detail-summary{grid-template-columns:82px 82px minmax(0,1fr);}
+#planDetail .plan-detail-stat{padding:9px 4px 8px!important;min-width:0!important;}
+#planDetail .plan-detail-value{white-space:nowrap!important;overflow:hidden!important;text-overflow:clip!important;}
+#planDetail .plan-detail-stat+.plan-detail-stat::before{width:var(--atlas-divider-w)!important;top:8px!important;bottom:8px!important;background:var(--atlas-divider)!important;}
+
+/* Re-enable semantic color on sleep quality and freshness zone in Hoy. */
+#view-today .metric-meta.tone-blue{color:var(--blue)!important;}
+#view-today .metric-meta.tone-green{color:var(--green)!important;}
+#view-today .metric-meta.tone-yellow{color:var(--yellow)!important;}
+#view-today .metric-meta.tone-red{color:var(--red)!important;}
+
+/* Chat: two compact icon actions together on the right. */
+.assistant-chat-topbar{justify-content:flex-end!important;gap:6px!important;border-bottom:0!important;padding:1px 1px 5px!important;flex:0 0 42px!important;}
+.assistant-top-action.assistant-icon-action{
+  width:38px!important;height:38px!important;min-width:38px!important;max-width:38px!important;
+  padding:0!important;border-radius:14px!important;display:grid!important;place-items:center!important;
+  font-size:22px!important;line-height:1!important;font-weight:700!important;
+}
+.assistant-top-action.assistant-icon-action span{display:block!important;line-height:1!important;}
+
+/* Plan root: minimally smaller main plan card and weekly counters. */
+#view-plan>.plan-overview-card{min-height:50px!important;padding:9px 12px!important;}
+#view-plan>.plan-overview-card .plan-overview-title{font-size:18.5px!important;line-height:1.1!important;}
+#view-plan .plan-summary{margin-top:6px!important;margin-bottom:8px!important;padding:1px 5px!important;}
+#view-plan .plan-summary-item{padding:5px 5px!important;}
+#view-plan .plan-summary-value{font-size:19px!important;}
+#view-plan .plan-summary-label{font-size:9.8px!important;margin-top:2px!important;}
+
+/* Training-plan control: outer goal card disappears; the table itself is the surface. */
+#planControlDetail .plan-goal-area{width:100%!important;margin:0 0 12px!important;padding:0!important;}
+#planControlDetail #engineGoalCard{
+  display:block!important;width:100%!important;margin:0!important;padding:0!important;
+  border:0!important;border-radius:0!important;background:transparent!important;background-image:none!important;
+  box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+#planControlDetail #engineGoalCard .engine-v2-copy{display:block!important;width:100%!important;}
+#planControlDetail #engineGoalCard .engine-v2-title{display:block!important;padding:0 3px 8px!important;font-size:19px!important;line-height:1.15!important;text-align:left!important;}
+#planControlDetail #engineGoalCard .engine-v2-arrow{top:0!important;right:3px!important;font-size:19px!important;}
+#planControlDetail .plan-goal-summary{
+  position:relative!important;width:100%!important;max-width:none!important;margin:0!important;
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:0!important;
+  border:2px solid var(--atlas-glass-line)!important;border-radius:18px!important;overflow:hidden!important;
+  background:var(--atlas-glass-card-soft)!important;box-shadow:var(--atlas-glass-depth)!important;
+}
+#planControlDetail .plan-goal-summary::before,#planControlDetail .plan-goal-summary::after{
+  content:"";position:absolute;pointer-events:none;background:var(--atlas-divider-strong);z-index:3;
+}
+#planControlDetail .plan-goal-summary::before{left:50%;top:10px;bottom:10px;width:var(--atlas-divider-w);transform:translateX(-50%);}
+#planControlDetail .plan-goal-summary::after{left:10px;right:10px;top:50%;height:var(--atlas-divider-w);transform:translateY(-50%);}
+#planControlDetail .plan-goal-summary-item{
+  border:0!important;background:transparent!important;padding:10px 7px!important;min-width:0!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;
+}
+#planControlDetail .plan-goal-summary-emoji{font-size:18px!important;line-height:1!important;}
+#planControlDetail .plan-goal-summary-key{font-weight:700!important;color:var(--muted2)!important;}
+#planControlDetail .plan-goal-summary-value{font-weight:790!important;color:#fff!important;white-space:nowrap!important;}
+
+/* Stronger, inset dividers across the app. */
+.metric-card:not(:last-child)::after{width:var(--atlas-divider-w)!important;background:var(--atlas-divider)!important;top:12px!important;bottom:12px!important;}
+.today-hero-card .metric-card+.metric-card::before{width:var(--atlas-divider-w)!important;background:var(--atlas-divider)!important;top:12px!important;bottom:12px!important;}
+.activity-row-sep,.plan-day-sep,#sessionGeneratorList .plan-week-calendar-sep{width:var(--atlas-divider-w)!important;min-width:var(--atlas-divider-w)!important;background:var(--atlas-divider)!important;}
+.activity-row-stat+.activity-row-stat::before,.activity-mini-sep{width:var(--atlas-divider-w)!important;background:var(--atlas-divider)!important;}
+.plan-summary-item+.plan-summary-item::before,.detail-stat:not(:last-child)::after,.activity-primary-item:not(:nth-child(4n))::after{width:var(--atlas-divider-w)!important;background:var(--atlas-divider)!important;}
+.activity-primary::after{height:var(--atlas-divider-w)!important;left:10px!important;right:10px!important;background:var(--atlas-divider)!important;}
+.profile-dashboard-record-cell:not(.empty)::before{width:var(--atlas-divider-w)!important;background:var(--atlas-divider)!important;top:6px!important;bottom:6px!important;}
+.profile-dashboard-record-table-head{border-bottom-width:var(--atlas-divider-w)!important;border-bottom-color:var(--atlas-divider)!important;}
+.profile-dashboard-record-table-row{border-top-width:var(--atlas-divider-w)!important;border-top-color:var(--atlas-divider)!important;}
+.profile-dashboard-zone-row+.profile-dashboard-zone-row,.performance-zone-row+.performance-zone-row{border-top-width:var(--atlas-divider-w)!important;border-top-color:var(--atlas-divider)!important;}
+.state-calc-item+.state-calc-item{border-left:var(--atlas-divider-w) solid var(--atlas-divider)!important;border-right:0!important;}
+.state-factors.compact-grid::before{width:var(--atlas-divider-w)!important;background:var(--atlas-divider)!important;}
+.state-factors.compact-grid::after{height:var(--atlas-divider-w)!important;background:var(--atlas-divider)!important;}
+
+/* Today in weekly Plan is obvious at a glance. */
+#view-plan .plan-day.today .plan-week-activity-row{
+  background:linear-gradient(90deg,rgba(29,155,240,.16),rgba(29,155,240,.075) 48%,rgba(29,155,240,.025))!important;
+  box-shadow:inset 0 0 0 1.5px rgba(29,155,240,.34)!important;
+}
+#view-plan .plan-day.today .activity-row-date{
+  color:#fff!important;background:rgba(29,155,240,.16)!important;border-radius:12px!important;margin:4px 5px!important;
+  width:calc(var(--atlas-date-slot) - 10px)!important;min-width:calc(var(--atlas-date-slot) - 10px)!important;max-width:calc(var(--atlas-date-slot) - 10px)!important;
+}
+#view-plan .plan-day.today .activity-row-weekday,#view-plan .plan-day.today .activity-row-day,#view-plan .plan-day.today .activity-row-month{color:#fff!important;}
+
+/* Records: equal cells, Media maratón forced to 2 lines; larger medal-only header. */
+.profile-dashboard-record-table-head,.profile-dashboard-record-table-row{grid-template-columns:repeat(4,minmax(0,1fr))!important;}
+.profile-dashboard-record-head-pos{font-size:24px!important;line-height:1!important;}
+.profile-dashboard-record-head-distance{font-size:15.5px!important;line-height:1!important;justify-content:center!important;padding:0 2px!important;}
+.profile-dashboard-record-distance-label{font-size:15px;line-height:1.04!important;justify-content:center!important;text-align:center!important;}
+.profile-dashboard-record-distance-label.half,.profile-dashboard-record-distance-label.longest{display:flex!important;flex-direction:column!important;gap:1px!important;white-space:normal!important;}
+.profile-dashboard-record-table-row{min-height:48px!important;}
+.profile-dashboard-record-cell{min-height:48px!important;padding:4px 2px!important;}
+.profile-dashboard-record-cell-mark{line-height:1!important;}
+.profile-dashboard-record-cell-meta{line-height:1.05!important;}
+
+/* Zone headers inherit the premium header language of Records. */
+.profile-dashboard-zone-head,.performance-zone-head{
+  min-height:43px!important;padding:6px 8px!important;margin:0!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;
+  background:rgba(255,255,255,.035)!important;border-bottom:var(--atlas-divider-w) solid var(--atlas-divider)!important;
+  font-size:15px!important;line-height:1.05!important;font-weight:800!important;text-align:center!important;color:#fff!important;
+}
+.profile-dashboard-zone-head>span:first-child,.performance-zone-head>span:first-child{font-size:21px!important;line-height:1!important;}
+
+/* Performance: 4 columns, big emoji, title, value, then unit below. */
+.profile-dashboard-performance{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:0!important;position:relative!important;}
+.profile-dashboard-performance-cell{
+  position:relative!important;min-width:0!important;padding:9px 3px 8px!important;text-align:center!important;
+  display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;gap:3px!important;
+}
+.profile-dashboard-performance-cell+.profile-dashboard-performance-cell::before{
+  content:""!important;position:absolute!important;left:0!important;top:9px!important;bottom:9px!important;
+  width:var(--atlas-divider-w)!important;background:var(--atlas-divider)!important;border-radius:2px!important;
+}
+.profile-dashboard-performance-emoji{font-size:22px!important;line-height:1!important;min-height:22px!important;display:block!important;}
+.profile-dashboard-performance-label{
+  display:block!important;width:100%!important;min-width:0!important;font-size:10.5px!important;line-height:1.05!important;
+  font-weight:760!important;color:#d9e0e5!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:clip!important;
+}
+.profile-dashboard-performance-reading{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:1px!important;white-space:nowrap!important;margin-top:1px!important;}
+.profile-dashboard-performance-main{font-size:17px!important;line-height:1!important;font-weight:820!important;color:#fff!important;}
+.profile-dashboard-performance-unit{display:block!important;font-size:7.8px!important;line-height:1!important;color:var(--muted)!important;font-weight:700!important;padding:0!important;margin-top:1px!important;}
+
+/* No-scroll means no bounce/indicator; real overflow still uses the existing audit. */
+html.atlas-main-scroll-locked,body.atlas-main-scroll-locked{overscroll-behavior:none!important;}
+
+@media(max-width:390px){
+  .profile-dashboard-record-head-pos{font-size:22px!important;}
+  .profile-dashboard-record-head-distance{font-size:14px!important;}
+  .profile-dashboard-performance-emoji{font-size:20px!important;}
+  .profile-dashboard-performance-main{font-size:15.5px!important;}
+  .profile-dashboard-performance-label{font-size:9px!important;}
+  .profile-dashboard-performance-unit{font-size:6.8px!important;}
 }
 </style>
 
