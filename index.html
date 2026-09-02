@@ -1252,6 +1252,12 @@ input[type="date"]::-webkit-date-and-time-value{display:flex!important;align-ite
       <div class="plan-detail-stat"><div class="plan-detail-value" id="adaptiveLevel">—</div><div class="plan-detail-label">ajuste</div></div>
     </div>
     <div class="plan-detail-card"><div class="plan-detail-section-title">Decisión ATLAS</div><div id="adaptiveDecision"></div><div class="engine-v2-reading" id="adaptiveReading">—</div></div>
+    <div class="plan-detail-card" id="adaptiveTrajectoryCard">
+      <div class="plan-detail-section-title">Trayectoria del objetivo</div>
+      <div class="adaptive-trajectory-head"><div class="adaptive-trajectory-status" id="adaptiveTrajectoryStatus">Sin evidencia suficiente</div><div class="adaptive-trajectory-window" id="adaptiveTrajectoryWindow">Últimos 28 días</div></div>
+      <div class="engine-v2-reading" id="adaptiveTrajectoryReading">ATLAS necesita varias semanas de entrenamiento realizado para valorar la dirección del plan.</div>
+      <div class="engine-v2-rows adaptive-trajectory-rows" id="adaptiveTrajectoryRows"></div>
+    </div>
     <div class="plan-detail-card">
       <div class="plan-detail-section-title">Revisión propuesta</div>
       <div class="adaptive-revision-status" id="adaptiveRevisionStatus">Sin revisión pendiente.</div>
@@ -1803,7 +1809,7 @@ html,body{overscroll-behavior-y:none}
 
 (()=>{
 "use strict";
-const APP_VERSION="0.106.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="0.107.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits","chats"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -4321,7 +4327,7 @@ function closeCalendarSolver(){ui.calendarSolverDetail.classList.add("hidden");u
 
 
 /* ===== Session Generator ATLAS ===== */
-const ATLAS_SESSION_GENERATOR_VERSION="1.5";
+const ATLAS_SESSION_GENERATOR_VERSION="1.6";
 const ATLAS_PUBLICATION_FORMAT_VERSION=2;
 function sessionClamp(n,min,max){return Math.max(min,Math.min(max,n));}
 function sessionRoundKm(n){return Math.round(n*2)/2;}function sessionRoundTotalKm(n){return Math.max(1,Math.round(Number(n)||0));}
@@ -4779,7 +4785,7 @@ function closeSessionGenerator(){ui.sessionGeneratorDetail.classList.add("hidden
 
 
 /* ===== Motor Adaptativo ATLAS ===== */
-const ATLAS_ADAPTIVE_VERSION="1.4";
+const ATLAS_ADAPTIVE_VERSION="1.6";
 function adaptiveIsStrengthActivity(a){const t=String(a?.type||a?.sport||a?.sub_type||"").toLowerCase(),n=String(a?.name||"").toLowerCase();return /weight|strength|gym|fuerza/.test(t)||/fuerza|gimnasio|strength/.test(n);}
 function adaptiveActivityDistanceKm(a){const m=v2ActivityDistanceM(a);return Number.isFinite(m)&&m>0?m/1000:null;}
 function adaptiveManifestMap(manifest){const m=new Map();for(const e of manifest?.events||[]){if(e?.external_id)m.set(String(e.external_id),e);}return m;}
@@ -4925,13 +4931,13 @@ function adaptiveDecisionFromEvidence(outcomes,recovery,config,manual,race,today
   const labels=["Continuar","Ajuste local","Replanificación parcial","Revisión estructural"],actions=["Mantener el plan actual","Ajustar únicamente las próximas 48–72 h","Recalcular aproximadamente las próximas 2–4 semanas","Recalcular la trayectoria restante y revisar viabilidad"];
   return{level,label:labels[level],action:actions[level],reasons:[...new Set(reasons)],completion,keyIssues:keyIssueCount,outcomeKeyIssues:outcomeKeyIssues.length,manualKeyIssues:manualKeyIssues.length,missed:missedAll.length,costly:costly.length};
 }
-function buildAdaptiveStateV1(sessionPlan,manifest,activities,profile,goal,secondary,availability,today=fmtDate(new Date())){
+function buildAdaptiveStateLegacyV1(sessionPlan,manifest,activities,profile,goal,secondary,availability,today=fmtDate(new Date())){
   if(!sessionPlan?.ok||!profile?.available||!goal)return null;const outcomes=adaptiveMatchSessions(sessionPlan,manifest,activities,today),recovery=adaptiveRecoveryEvidence(profile),config=adaptiveConfigurationEvidence(manifest,goal,secondary,availability,sessionPlan),manual=adaptiveManualEvidence(manifest,today),race=adaptiveRaceEvidence(outcomes,manifest,goal,secondary),decision=adaptiveDecisionFromEvidence(outcomes,recovery,config,manual,race,today,goal),past=outcomes.filter(o=>o.session.date<today),completed=past.filter(o=>/^(Cumplido|Superado)/.test(o.status)).length,recent=outcomes.filter(o=>o.session.date<today&&adaptiveDateDelta(today,o.session.date)<=14).sort((a,b)=>b.session.date.localeCompare(a.session.date));
   const costly=recent.filter(o=>o.responseCost==="high").length,evidence=[{label:"Ejecución 14 d",status:decision.outcomeKeyIssues>=2?"negative":decision.outcomeKeyIssues===1?"neutral":"positive",detail:recent.length?`${recent.filter(o=>/^(Cumplido|Superado)/.test(o.status)).length}/${recent.length} sesiones cumplidas · ${decision.outcomeKeyIssues} incidencias clave`:"Sin sesiones evaluables"},{label:"Respuesta al esfuerzo",status:costly>=2?"neutral":"positive",detail:recent.length?`${costly} sesiones con coste subjetivo alto`:"Sin sesiones evaluables"},{label:"Decisiones manuales",status:manual.keyLosses>=2?"negative":manual.keyLosses===1?"neutral":"positive",detail:manual.items.length?`${manual.keyLosses} estímulos clave perdidos · ${manual.moved} movimientos`:"Sin cambios manuales recientes"},{label:"Carrera de control",status:race.pending.length?"neutral":"positive",detail:race.pending.length?adaptiveRaceCheckpointDetail(race.latest):(race.checkpoints.length?"Sin recalibraciones pendientes":"Sin carreras B/C realizadas")},{label:"Recuperación",status:recovery.stronglyDegraded?"negative":recovery.degraded?"neutral":"positive",detail:recovery.signals.length?`${recovery.negatives} señales negativas de ${recovery.signals.length}`:"Datos insuficientes"},{label:"Calendario publicado",status:config.level>=3?"negative":config.changed?"neutral":"positive",detail:config.detail}];
   return{ok:true,version:ATLAS_ADAPTIVE_VERSION,today,outcomes,recentOutcomes:recent.slice(0,10),recovery,manual,race,config,decision,evidence,completed,pastCount:past.length,reading:`ATLAS usa las mismas señales de recuperación que Estado, pero como tendencia junto con la ejecución del plan. Una bajada puntual del Estado no obliga por sí sola a modificar el calendario.`};
 }
 
-const ATLAS_REVISION_VERSION="1.0";
+const ATLAS_REVISION_VERSION="1.1";
 function revisionClone(v){return JSON.parse(JSON.stringify(v));}
 function revisionSessionFingerprint(goal,sessions){return planStableHash(JSON.stringify({goal:[goal?.type,goal?.date,goal?.startDate,goal?.targetTimeSec],sessions:(sessions||[]).map(planSessionFingerprint)}));}
 function revisionPaceText(session){return intervalsPaceToken(session?.pace)||"5:30-6:15";}
@@ -4966,7 +4972,7 @@ function revisionTransferQuality(sessions,adaptive,today,windowEnd,reasons){
   }
   return{sessions,transferred:false};
 }
-function buildAdaptiveRevisionPlanV1(basePlan,generatedPlan,adaptive,profile,req,goal,today=fmtDate(new Date())){
+function buildAdaptiveRevisionPlanLegacyV1(basePlan,generatedPlan,adaptive,profile,req,goal,today=fmtDate(new Date())){
   if(!basePlan?.ok||!adaptive?.ok||!goal)return null;const configChanged=!!adaptive.config?.changed,level=adaptive.decision.level,raceRecalibration=!!adaptive.race?.pending?.length;
   let sessions=(configChanged&&generatedPlan?.ok?generatedPlan.sessions:basePlan.sessions).map(revisionClone),reasons={},removedReasons={},pressure=revisionPressure(adaptive),windowDays=level===1?7:level===2?28:level===3?Math.max(42,adaptiveDateDelta(goal.date,today)):0,windowEnd=windowDays?addDays(today,windowDays):today;
   const past=(basePlan.sessions||[]).filter(s=>s.date<today).map(revisionClone),future=sessions.filter(s=>s.date>=today);sessions=configChanged?[...past,...future]:sessions;
@@ -5039,7 +5045,7 @@ async function applyAdaptiveRevision(){
     const keys=[...new Set([...(currentPlanManifest.performanceCheckpoints||[]),...(d.performanceCheckpointKeys||[])])],revision=(Number(currentPlanManifest.revision)||0)+1,entry={id:d.id,status:"accepted",revision,level:d.level,reason:d.reason,changes:{modified:0,added:0,removed:0},at:new Date().toISOString()};
     currentPlanManifest={...currentPlanManifest,revision,performanceCheckpoints:keys,revisions:[...(currentPlanManifest.revisions||[]),entry].slice(-25),verifiedAt:new Date().toISOString()};
     await storePut("meta",{key:"engineV2PlanManifest",value:currentPlanManifest});await persistRevisionHistory(entry);await storeDelete("meta","engineV2PlanRevisionDraft");currentPlanRevisionDraft=null;await pushPlanStateCloudBestEffort();
-    currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);renderAdaptiveEngineCard();renderAdaptiveEngine();renderPlan();toast("✅ Carrera de control registrada · el calendario no necesita cambios.");return;
+    currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);renderAdaptiveEngineCard();renderAdaptiveEngine();renderPlan();toast("✅ Revisión de rendimiento registrada · el calendario no necesita cambios.");return;
   }
   const counts={modified:d.changes.filter(x=>x.kind==="modified").length,added:d.changes.filter(x=>x.kind==="added").length,removed:d.changes.filter(x=>x.kind==="removed").length};if(!confirm(`¿Aplicar la revisión? ${counts.modified} modificadas · ${counts.added} añadidas · ${counts.removed} eliminadas.`))return;
   const applying={...d,status:"applying",updatedAt:new Date().toISOString()};currentPlanRevisionDraft=applying;await storePut("meta",{key:"engineV2PlanRevisionDraft",value:applying});renderAdaptiveRevision();
@@ -5081,7 +5087,7 @@ function adaptiveStatusTone(status){return /Cumplido|Superado/.test(status)?"goo
 function adaptiveEvidenceTone(s){return s==="negative"?"solver-audit-bad":s==="neutral"?"solver-audit-warn":"solver-audit-ok";}
 function adaptiveEvidenceSymbol(s){return s==="negative"?"!":s==="neutral"?"•":"✓";}
 function renderAdaptiveEngineCard(){if(!ui.adaptiveEngineMeta)return;ui.adaptiveEngineMeta.textContent="";}
-function renderAdaptiveEngine(){
+function renderAdaptiveEngineLegacy(){
   const a=currentAdaptiveState;ui.adaptiveEngineDate.textContent="Adaptación";if(!a?.ok){ui.adaptiveCompleted.textContent="—";ui.adaptiveKeyIssues.textContent="—";ui.adaptiveLevel.textContent="—";ui.adaptiveDecision.innerHTML="";ui.adaptiveEvidenceRows.innerHTML="";ui.adaptiveOutcomes.innerHTML='<div class="engine-list-empty">No hay plan suficiente para evaluar.</div>';ui.adaptiveReading.textContent="—";renderAdaptiveRevision();renderAdaptiveHistory();return;}
   ui.adaptiveCompleted.textContent=String(a.completed);ui.adaptiveKeyIssues.textContent=String(a.decision.keyIssues);ui.adaptiveLevel.textContent=adaptiveUserLevel(a.decision.level,true);ui.adaptiveDecision.innerHTML=`<span class="adaptive-level l${a.decision.level}">${esc(adaptiveUserLevel(a.decision.level))}</span><div class="engine-v2-reading" style="margin-top:8px">${esc(a.decision.action)}</div><div class="macro-week-note">${esc(a.decision.reasons.join(" · "))}</div>`;
   ui.adaptiveEvidenceRows.innerHTML=a.evidence.map(x=>`<div class="engine-v2-row"><div class="engine-v2-row-key">${esc(x.label)}</div><div class="engine-v2-row-value ${adaptiveEvidenceTone(x.status)}">${adaptiveEvidenceSymbol(x.status)} ${esc(x.detail)}</div></div>`).join("")+a.recovery.signals.map(x=>`<div class="engine-v2-row"><div class="engine-v2-row-key">${esc(x.label)}</div><div class="engine-v2-row-value ${adaptiveEvidenceTone(x.status)}">${adaptiveEvidenceSymbol(x.status)} ${esc(x.detail)}</div></div>`).join("");
@@ -6710,9 +6716,9 @@ async function clearData(){
 installAtlasScrollAudit();
 
 
-/* ===== ɅTLɅS Training Engine v1.5 · performance programming ===== */
+/* ===== ɅTLɅS Training Engine v1.6 · adaptive performance programming ===== */
 const ATLAS_PERFORMANCE_MODEL={
-  version:"1.0",
+  version:"1.1",
   rollingWindowWeeks:4,
   guidedWindowWeeks:8,
   capacities:{
@@ -7033,8 +7039,190 @@ function buildSessionPlanV1(calendar,weekly,profile,req,goal){
   add("Planificación rodante","ok",`Ventana cerrada ${ATLAS_PERFORMANCE_MODEL.rollingWindowWeeks} sem · semanas posteriores orientativas/provisionales y recalibrables`);
   add("Publicación","ok","Previsualización local · Intervals.icu sin cambios");
   const fingerprint=planStableHash(JSON.stringify({goal:[goal.type,goal.date,goal.startDate,goal.targetTimeSec],performanceModel:ATLAS_PERFORMANCE_MODEL.version,sessions:all.map(planSessionFingerprint)}));
-  return{ok:true,version:ATLAS_SESSION_GENERATOR_VERSION,performanceModelVersion:ATLAS_PERFORMANCE_MODEL.version,fingerprint,weeks,sessions:all,audit,coverage,runCount:all.filter(s=>["easy","quality","long","race","raceA"].includes(s.type)).length,strengthCount:all.filter(s=>s.type==="strength").length,reading:`Motor 1.5 · ${coverage.score}/100 de cobertura del objetivo. ATLAS programa dosis por capacidad, progresa umbral/VO₂/ritmo específico/durabilidad de forma independiente y mantiene sólo ${ATLAS_PERFORMANCE_MODEL.rollingWindowWeeks} semanas como ventana cerrada; el futuro conserva la arquitectura pero puede recalibrarse con rendimiento real.`};
+  return{ok:true,version:ATLAS_SESSION_GENERATOR_VERSION,performanceModelVersion:ATLAS_PERFORMANCE_MODEL.version,fingerprint,weeks,sessions:all,audit,coverage,runCount:all.filter(s=>["easy","quality","long","race","raceA"].includes(s.type)).length,strengthCount:all.filter(s=>s.type==="strength").length,reading:`Motor 1.6 · ${coverage.score}/100 de cobertura del objetivo. ATLAS programa dosis por capacidad, alterna formatos de calidad según distancia y fase, evalúa la progresión cada 4 semanas y puede adelantar la dosis de las próximas 4 semanas cuando la respuesta real lo justifica.`};
 }
+
+
+
+/* ===== ɅTLɅS Motor v1.6 · Evaluador de Progresión + biblioteca de intervalos ===== */
+const ATLAS_PROGRESSION_VERSION="1.0";
+const ATLAS_PROGRESSION_WINDOW_DAYS=28;
+
+function performanceGoalKey(req){return String(req?.type||currentGoalRequirements?.type||currentEngineV2Goal?.type||"").toUpperCase();}
+function performanceStripDistanceTitle(title){return String(title||"Calidad").replace(/\s*·\s*[\d.,]+\s*km\s*$/i,"").trim();}
+function performanceIntervalTemplates(goal,capacity){
+  const g=String(goal||"").toUpperCase(),c=String(capacity||"").toLowerCase();
+  if(c==="vo2"){
+    if(g==="5K")return[
+      {reps:8,repKm:.3,recSec:55},{reps:10,repKm:.3,recSec:55},{reps:12,repKm:.3,recSec:60},{reps:10,repKm:.4,recSec:60},{reps:8,repKm:.5,recSec:75},{reps:6,repKm:.8,recSec:90},{reps:5,repKm:1,recSec:105}
+    ];
+    if(g==="10K")return[
+      {reps:8,repKm:.4,recSec:55},{reps:10,repKm:.4,recSec:60},{reps:8,repKm:.6,recSec:75},{reps:6,repKm:.8,recSec:90},{reps:5,repKm:1,recSec:90},{reps:4,repKm:1.2,recSec:105}
+    ];
+    return[
+      {reps:10,repKm:.4,recSec:60},{reps:8,repKm:.5,recSec:75},{reps:6,repKm:.8,recSec:90},{reps:5,repKm:1,recSec:90}
+    ];
+  }
+  if(c==="racepace"&&g==="5K")return[
+    {reps:8,repKm:.4,recSec:70},{reps:10,repKm:.4,recSec:75},{reps:6,repKm:.8,recSec:90},{reps:5,repKm:1,recSec:105},{reps:4,repKm:1.2,recSec:120}
+  ];
+  if(c==="racepace"&&g==="10K")return[
+    {reps:8,repKm:.4,recSec:55},{reps:10,repKm:.4,recSec:60},{reps:6,repKm:.8,recSec:75},{reps:5,repKm:1,recSec:90},{reps:4,repKm:1.2,recSec:90},{reps:3,repKm:1.6,recSec:120},{reps:3,repKm:2,recSec:120}
+  ];
+  return[];
+}
+function performanceChooseIntervalTemplate(goal,capacity,targetWorkKm,weekIndex){
+  const options=performanceIntervalTemplates(goal,capacity);if(!options.length)return null;
+  const target=Math.max(.1,Number(targetWorkKm)||0),rotation=Math.abs(Number(weekIndex)||0)%options.length,within=options.filter(x=>x.reps*x.repKm<=target*1.12),pool=within.length?within:options;
+  let best=null,bestScore=Infinity;
+  for(const x of pool){
+    const i=options.indexOf(x),work=x.reps*x.repKm,cyclic=(i-rotation+options.length)%options.length,score=Math.abs(work-target)+cyclic*.045;
+    if(score<bestScore){bestScore=score;best={...x,workKm:work};}
+  }
+  return best;
+}
+
+/* Session size accounts for the recovery distance of short repetitions. */
+function sessionQualityDesiredKm(slot,week,profile,req){
+  const title=String(slot?.title||"").toLowerCase(),perf=performanceStimulusForSlot(slot,week),pace=sessionStimulusPace(slot,week,profile,req);
+  if(/strides|cuestas/.test(title))return 8;
+  const work=performanceStimulusWorkKm(perf,pace),cap=perf?.performance?.capacity,goal=performanceGoalKey(req),tpl=Number.isFinite(work)?performanceChooseIntervalTemplate(goal,cap,work,week?.weekIndex||week?.index):null;
+  if(Number.isFinite(work)&&work>0){
+    let overhead=3.5;
+    if(cap==="threshold"||/media/.test(title))overhead=4.2;
+    else if(tpl)overhead=5.4;
+    else if(cap==="vo2"||/10k|5k/.test(title))overhead=5.1;
+    else if(cap==="aerobic")overhead=3.5;
+    return sessionClamp(work+overhead,sessionQualityMinimumKm(week,req),16);
+  }
+  const km=sessionKmFromText(String(slot?.meta||""));if(km>0)return sessionClamp(km+4,7,16);
+  return sessionQualityMinimumKm(week,req);
+}
+
+/* v1.6 selects the interval format from the required dose and race distance. */
+function sessionQualityPrescription(slot,totalKm,week,profile,req){
+  const title=String(slot.title||""),l=title.toLowerCase(),m=sessionPaceModel(profile,req),pace=sessionStimulusPace(slot,week,profile,req),paceText=sessionRange(pace-4,pace+4),easyText=sessionRange(m.easyFast,m.easySlow),total=sessionRoundTotalKm(totalKm),km=x=>`${formatNatural(x,2)} km`,recLabel=s=>s%60===0?`R${s/60}'`:`R${s}\"`,stimulus=performanceStimulusForSlot(slot,week),capacity=stimulus?.performance?.capacity,targetWork=performanceStimulusWorkKm(stimulus,pace),goal=performanceGoalKey(req);
+  if(/cuestas/.test(l)&&!/umbral/.test(l)){const reps=Math.max(6,Math.round(stimulus?.performance?.value||8));return{segments:[sessionSegment("easy",total,easyText,"Rodaje")],structure:`${km(total)} @ ${easyText} incluyendo ${reps} × (20–25\" cuesta fuerte controlada · bajar caminando/trote muy suave)`,mainPace:easyText,performance:stimulus?.performance||null,workKm:0};}
+  if(/strides/.test(l)){const reps=Math.max(4,Math.round(stimulus?.performance?.value||6));return{segments:[sessionSegment("easy",total,easyText,"Rodaje")],structure:`${km(total)} @ ${easyText} incluyendo ${reps} × (20\" progresivos · recuperación completa)`,mainPace:easyText,performance:stimulus?.performance||null,workKm:0};}
+  const taperSpecific=week?.phase==="Taper"||/ritmo específico breve/.test(l);
+  if(taperSpecific||capacity==="marathonpace"||(/maratón|maraton|rcm/.test(l)&&capacity!=="threshold")){
+    const target=Number.isFinite(targetWork)?targetWork:(req?.type==="MARATHON"?Math.min(6,Math.max(2,total*.45)):Math.min(5,Math.max(2,total*.4))),p=sessionContinuousTargetPrescription(total,target,paceText,easyText,req?.type==="MARATHON"?"RCM":"Específico");
+    return{segments:p.segments,structure:`${km(p.wuKm)} WU + ${km(p.workKm)} @ ${paceText} + ${km(p.cdKm)} CD`,mainPace:paceText,performance:stimulus?.performance||null,workKm:p.workKm};
+  }
+  let p;
+  if(capacity==="threshold"||/umbral/.test(l)){
+    const target=Number.isFinite(targetWork)?targetWork:Math.max(3,total-4.5),reps=performanceThresholdReps(target,week?.weekIndex||week?.index);p=sessionTargetWorkPrescription(total,target,paceText,easyText,{preferredReps:reps,minRepKm:1.5,maxRepKm:3.5,recSec:120,step:.5});
+  }else if(/media/.test(l)){
+    const target=Number.isFinite(targetWork)?targetWork:Math.max(3,total-4.5),reps=target>=7?3:target>=5?3:2;p=sessionTargetWorkPrescription(total,target,paceText,easyText,{preferredReps:reps,minRepKm:1,maxRepKm:3,recSec:120,step:.5});
+  }else if(capacity==="vo2"||/5k|vo₂|vo2/.test(l)||capacity==="racepace"&&goal==="5K"){
+    const target=Number.isFinite(targetWork)?targetWork:Math.max(2.5,total-5),tpl=performanceChooseIntervalTemplate(goal,capacity==="racepace"?"racepace":"vo2",target,week?.weekIndex||week?.index);
+    if(tpl)p=sessionTargetWorkPrescription(total,tpl.workKm,paceText,easyText,{preferredReps:tpl.reps,minRepKm:tpl.repKm,maxRepKm:tpl.repKm,recSec:tpl.recSec,step:.1});
+    else{const reps=target>=5?6:5;p=sessionTargetWorkPrescription(total,target,paceText,easyText,{preferredReps:reps,minRepKm:.4,maxRepKm:1.2,recSec:75,step:.1});}
+  }else if(/10k/.test(l)||capacity==="racepace"&&goal==="10K"){
+    const target=Number.isFinite(targetWork)?targetWork:Math.max(3,total-4.8),tpl=performanceChooseIntervalTemplate(goal,"racepace",target,week?.weekIndex||week?.index);
+    if(tpl)p=sessionTargetWorkPrescription(total,tpl.workKm,paceText,easyText,{preferredReps:tpl.reps,minRepKm:tpl.repKm,maxRepKm:tpl.repKm,recSec:tpl.recSec,step:.1});
+    else{const reps=target>=6?5:4;p=sessionTargetWorkPrescription(total,target,paceText,easyText,{preferredReps:reps,minRepKm:.8,maxRepKm:1.6,recSec:90,step:.1});}
+  }else if(capacity==="aerobic"){
+    const target=Number.isFinite(targetWork)?targetWork:Math.max(3,total-3.5),c=sessionContinuousTargetPrescription(total,target,paceText,easyText,"Bloque");return{segments:c.segments,structure:`${km(c.wuKm)} WU + ${km(c.workKm)} @ ${paceText} + ${km(c.cdKm)} CD`,mainPace:paceText,performance:stimulus?.performance||null,workKm:c.workKm};
+  }else{
+    const target=Number.isFinite(targetWork)?targetWork:Math.max(2,total-4),p0=sessionContinuousTargetPrescription(total,target,paceText,easyText,"Bloque");return{segments:p0.segments,structure:`${km(p0.wuKm)} WU + ${km(p0.workKm)} @ ${paceText} + ${km(p0.cdKm)} CD`,mainPace:paceText,performance:stimulus?.performance||null,workKm:p0.workKm};
+  }
+  const main=p.reps===1?`${km(p.repKm)} @ ${paceText}`:`${p.reps} × (${km(p.repKm)} @ ${paceText} · ${recLabel(p.recSec)} trote suave)`;
+  return{segments:p.segments,structure:`${km(p.wuKm)} WU + ${main} + ${km(p.cdKm)} CD`,mainPace:paceText,performance:stimulus?.performance||null,workKm:p.workKm};
+}
+
+function progressionStatusMeta(code){
+  const map={ahead:{label:"Por delante del plan",tone:"positive"},ontrack:{label:"En trayectoria",tone:"positive"},uncertain:{label:"Progresión dudosa",tone:"neutral"},behind:{label:"Por debajo de lo previsto",tone:"negative"},insufficient:{label:"Sin evidencia suficiente",tone:"neutral"}};
+  return map[code]||map.insufficient;
+}
+function progressionExpectedRpe(cap){return({threshold:7.5,vo2:8.3,racepace:7.6,marathonpace:6.6,durability:6.4,neuromuscular:5.3,aerobic:6.0,specific:7.0})[cap]||7;}
+function progressionOutcomeCompletion(o){if(!o?.activity)return 0;if(o.session?.type==="strength")return 1;const r=Number(o.distanceRatio);return Number.isFinite(r)?performanceClamp(r,0,1.08):1;}
+function progressionCapacityLabel(cap,goal){
+  if(cap==="threshold")return"Umbral";if(cap==="vo2")return"VO₂ / potencia aeróbica";if(cap==="neuromuscular")return"Economía / velocidad";if(cap==="durability")return"Durabilidad";if(cap==="marathonpace")return"Ritmo maratón";if(cap==="racepace"||cap==="specific")return goal==="5K"?"Ritmo 5K":goal==="10K"?"Ritmo 10K":goal==="HALF"?"Ritmo media maratón":"Ritmo específico";if(cap==="aerobic")return"Aeróbico sostenido";return cap;
+}
+function progressionFormalReview(goal,today,manifest){
+  const start=String(goal?.startDate||"").slice(0,10);if(!start||today<start)return{index:0,key:null,due:false,days:0};
+  const days=Math.max(0,adaptiveDateDelta(today,start)),index=Math.floor(days/28);if(index<1)return{index:0,key:null,due:false,days};
+  const boundary=index*28,daysSince=days-boundary,key=`progress:w${String(index*4).padStart(2,"0")}`,consumed=new Set(manifest?.performanceCheckpoints||[]);
+  return{index,key,due:daysSince<=10&&!consumed.has(key),days,daysSince};
+}
+function buildPerformanceProgression(sessionPlan,outcomes,manifest,goal,today=fmtDate(new Date()),raceEvidence=null){
+  const windowStart=addDays(today,-(ATLAS_PROGRESSION_WINDOW_DAYS-1)),past=(outcomes||[]).filter(o=>o?.session?.date&&o.session.date<today&&o.session.date>=windowStart),runs=past.filter(o=>["easy","quality","long","race","raceA"].includes(o.session?.type)),key=runs.filter(o=>o.isKey),completed=runs.filter(o=>o.activity),completedKey=key.filter(o=>o.activity),plannedKm=runs.reduce((s,o)=>s+(Number(o.session?.distanceKm)||0),0),actualKm=runs.reduce((s,o)=>s+(Number(o.actualDistanceKm)||0),0),completion=runs.length?completed.length/runs.length:null,keyCompletion=key.length?completedKey.length/key.length:null,highCost=key.filter(o=>o.responseCost==="high").length;
+  const goalKey=String(goal?.type||"").toUpperCase(),by=new Map();
+  for(const o of past){const perf=o.session?.performance,cap=perf?.capacity,value=Number(perf?.value);if(!cap||!Number.isFinite(value)||value<=0)continue;const x=by.get(cap)||{capacity:cap,planned:0,achieved:0,rpes:[],high:0,count:0,completed:0};x.planned+=value;x.count++;if(o.activity){x.completed++;x.achieved+=value*progressionOutcomeCompletion(o);if(Number.isFinite(o.rpe))x.rpes.push(o.rpe);if(o.responseCost==="high")x.high++;}by.set(cap,x);}
+  const capacities=[...by.values()].map(x=>{const ratio=x.planned>0?x.achieved/x.planned:null,avgRpe=x.rpes.length?v2Mean(x.rpes):null,expected=progressionExpectedRpe(x.capacity);let code="insufficient";if(x.completed){if(ratio>=.98&&x.high===0&&Number.isFinite(avgRpe)&&avgRpe<=expected-.7)code="ahead";else if(ratio>=.85&&x.high<=1)code="ontrack";else if(ratio>=.65)code="uncertain";else code="behind";}return{...x,ratio,avgRpe,expected,status:code,label:progressionCapacityLabel(x.capacity,goalKey)};});
+  const racePending=(raceEvidence?.pending||[])[0]||null,raceAhead=!!racePending&&Number.isFinite(racePending.deltaPct)&&racePending.deltaPct<=-.01;
+  const aheadCaps=capacities.filter(x=>x.status==="ahead").length,onTrackCaps=capacities.filter(x=>x.status==="ontrack").length,formal=progressionFormalReview(goal,today,manifest);let status="insufficient";
+  if(runs.length>=6){if((completion??0)>=.92&&(keyCompletion??1)>=.88&&highCost<=1&&(aheadCaps>=1||raceAhead))status="ahead";else if((completion??0)>=.84&&(keyCompletion??1)>=.78&&highCost<=2)status="ontrack";else if((completion??0)>=.68&&(keyCompletion??1)>=.60)status="uncertain";else status="behind";}
+  const target=goal?.targetTimeSec?engineV2FormatTime(goal.targetTimeSec):engineV2GoalLabel(goalKey),meta=progressionStatusMeta(status),volumeRatio=plannedKm>0?actualKm/plannedKm:null;
+  let reading;
+  if(status==="ahead")reading=`Objetivo ${target} · ${meta.label}. Estás absorbiendo la programación y al menos una capacidad progresa con menor coste del previsto. ATLAS priorizará aumentar dosis antes que acelerar ritmos.`;
+  else if(status==="ontrack")reading=`Objetivo ${target} · ${meta.label}. La ejecución de las últimas cuatro semanas es compatible con la progresión prevista; no hay motivo para acelerar el plan por calendario.`;
+  else if(status==="uncertain")reading=`Objetivo ${target} · ${meta.label}. Hay adaptación, pero todavía no es suficientemente consistente para progresar la dosis con seguridad. ATLAS mantendrá o ajustará el siguiente bloque.`;
+  else if(status==="behind")reading=`Objetivo ${target} · ${meta.label}. La respuesta real no está cubriendo la dosis prevista; conviene revisar las próximas cuatro semanas antes de seguir progresando.`;
+  else reading=`Objetivo ${target} · todavía no hay suficientes sesiones realizadas para valorar con fiabilidad la trayectoria.`;
+  return{version:ATLAS_PROGRESSION_VERSION,status,label:meta.label,tone:meta.tone,reading,windowStart,today,formalReview:formal,reviewDue:formal.due,reviewKey:formal.key,completion,keyCompletion,plannedKm,actualKm,volumeRatio,highCost,capacities,aheadCaps,onTrackCaps,raceAhead,sessions:runs.length};
+}
+
+/* Wrap v1.4 adaptive evidence with the v1.6 performance evaluator. */
+function buildAdaptiveStateV1(sessionPlan,manifest,activities,profile,goal,secondary,availability,today=fmtDate(new Date())){
+  const base=buildAdaptiveStateLegacyV1(sessionPlan,manifest,activities,profile,goal,secondary,availability,today);if(!base?.ok)return base;
+  const progress=buildPerformanceProgression(sessionPlan,base.outcomes,manifest,goal,today,base.race),decision={...base.decision,reasons:[...(base.decision?.reasons||[])]};
+  if(progress.reviewDue&&!base.recovery?.degraded){
+    if(progress.status==="ahead"){
+      decision.level=Math.max(decision.level,2);decision.label="Replanificación parcial";decision.action="Progresar la dosis de las próximas 4 semanas";decision.reasons.unshift("Revisión de 4 semanas: rendimiento por delante del plan; progresar dosis sin acelerar automáticamente los ritmos");
+    }else if(progress.status==="behind"){
+      decision.level=Math.max(decision.level,2);decision.label="Replanificación parcial";decision.action="Recalcular las próximas 4 semanas";decision.reasons.unshift("Revisión de 4 semanas: la dosis prevista no se está consolidando al ritmo esperado");
+    }else if(progress.status==="uncertain"){
+      decision.level=Math.max(decision.level,1);decision.label="Ajuste local";decision.action="Mantener la progresión y revisar el siguiente microciclo";decision.reasons.unshift("Revisión de 4 semanas: evidencia todavía insuficiente para acelerar la dosis");
+    }
+  }
+  decision.reasons=[...new Set(decision.reasons)];
+  const evidence=[...(base.evidence||[]),{label:"Trayectoria objetivo",status:progress.tone,detail:`${progress.label}${Number.isFinite(progress.volumeRatio)?` · volumen ${formatNatural(progress.volumeRatio*100,0)} %`:""}${Number.isFinite(progress.keyCompletion)?` · claves ${formatNatural(progress.keyCompletion*100,0)} %`:""}`}];
+  return{...base,version:ATLAS_ADAPTIVE_VERSION,decision,evidence,performanceProgress:progress,reading:`Motor adaptativo 1.6 combina ejecución, recuperación y una revisión formal de rendimiento cada 4 semanas. Si vas por delante, ATLAS aumenta primero la dosis útil de las próximas cuatro semanas; los ritmos sólo se recalibran con evidencia suficientemente fuerte, especialmente checkpoints de carrera.`};
+}
+
+function progressionAdvanceStep(cap){return({threshold:2,vo2:2,racepace:.5,marathonpace:1,durability:1,neuromuscular:1,aerobic:3,specific:.5})[cap]||0;}
+function progressionCapState(progress,cap){return progress?.capacities?.find(x=>x.capacity===cap)||null;}
+function progressionAdvanceSession(session,progress,profile,req){
+  const s=revisionClone(session),perf=s.performance,cap=perf?.capacity,state=progressionCapState(progress,cap);if(!cap||state?.status!=="ahead")return s;
+  const step=progressionAdvanceStep(cap),old=Number(perf.value);if(!Number.isFinite(old)||step<=0)return s;const desired=Number(perf.desired),ceiling=Number.isFinite(desired)?desired+step:old+step,newValue=performanceRound(Math.min(old+step,ceiling),perf.unit==="km"?.5:1);if(newValue<=old+1e-9)return s;
+  const reason=`Progresión v1.6 · ${progressionCapacityLabel(cap,performanceGoalKey(req))} por delante del plan: aumentar dosis ${old} → ${newValue} ${perf.unit||""}`;
+  if(s.type==="quality"){
+    const label=performanceStripDistanceTitle(s.title),stim={label,kind:cap==="threshold"?"threshold":cap==="vo2"?"vo2":cap==="aerobic"?"aerobic":"racepace",performance:{...perf,value:newValue}},week={weekIndex:s.weekIndex,index:s.weekIndex,phase:s.phase,stimuli:[stim]},slot={title:label},p=sessionQualityPrescription(slot,s.distanceKm,week,profile,req);s.segments=p.segments;s.structure=p.structure;s.pace=p.mainPace||s.pace;s.performance={...perf,value:newValue,actualWorkKm:Number(p.workKm)||0};s._revisionReason=reason;return s;
+  }
+  if(s.type==="long"&&cap==="durability"){
+    const max=Math.max(0,(Number(s.distanceKm)||0)-10),v=Math.min(newValue,max);if(v<=old)return s;const ls={paceZone:perf.paceZone||s.performance?.paceZone||"steady",performance:{...perf,value:v}};s.structure=performanceLongStructure(s.distanceKm,ls,profile,req);s.performance={...perf,value:v};s.specificWorkKm=v;s._revisionReason=reason;return s;
+  }
+  if(s.type==="easy"&&cap==="neuromuscular"){
+    const reps=Math.round(newValue);s.performance={...perf,value:reps};s.structure=String(s.structure||"").replace(/\b\d+\s*×\s*\(20\"/i,`${reps} × (20\"`);s._revisionReason=reason;return s;
+  }
+  return s;
+}
+
+/* v1.6 extends a normal adaptive revision with positive progression when warranted. */
+function buildAdaptiveRevisionPlanV1(basePlan,generatedPlan,adaptive,profile,req,goal,today=fmtDate(new Date())){
+  const candidate=buildAdaptiveRevisionPlanLegacyV1(basePlan,generatedPlan,adaptive,profile,req,goal,today);if(!candidate?.ok)return candidate;
+  const progress=adaptive?.performanceProgress;if(!progress?.reviewDue||progress.status!=="ahead"||adaptive?.recovery?.degraded)return candidate;
+  const windowEnd=addDays(today,28),counts=new Map();candidate.sessions=candidate.sessions.map(s=>{
+    if(s.date<today||s.date>windowEnd||["race","raceA","strength"].includes(s.type))return s;const cap=s.performance?.capacity,state=progressionCapState(progress,cap);if(state?.status!=="ahead")return s;const used=counts.get(cap)||0,limit=cap==="durability"?1:2;if(used>=limit)return s;const x=progressionAdvanceSession(s,progress,profile,req);if(x._revisionReason){counts.set(cap,used+1);candidate.reasons[x.logicalId]=x._revisionReason;return x;}return s;
+  });
+  candidate.sessions.sort((a,b)=>a.date.localeCompare(b.date)||String(a.logicalId).localeCompare(String(b.logicalId)));
+  candidate.performanceCheckpointKeys=[...new Set([...(candidate.performanceCheckpointKeys||[]),progress.reviewKey].filter(Boolean))];candidate.reading=`${progress.label}. ATLAS propone progresar únicamente las capacidades que han mostrado evidencia positiva, manteniendo la arquitectura y el kilometraje total de las próximas cuatro semanas.`;candidate.fingerprint=revisionSessionFingerprint(goal,candidate.sessions);candidate.windowEnd=windowEnd;return candidate;
+}
+
+function revisionAdaptiveSignature(a=currentAdaptiveState){if(!a?.ok)return"none";return planStableHash(JSON.stringify({today:a.today,level:a.decision?.level,reasons:a.decision?.reasons||[],outcomes:(a.recentOutcomes||[]).map(o=>[o.session?.logicalId,o.session?.date,o.status,o.dateDelta,o.responseCost,o.rpe]),manual:(a.manual?.items||[]).map(x=>[x.action,x.date,x.type,x.losesStimulus,x.replacement]),race:(a.race?.pending||[]).map(x=>[x.key,x.level,x.actualSec,x.targetSec]),progress:a.performanceProgress?[a.performanceProgress.status,a.performanceProgress.reviewKey,a.performanceProgress.completion,a.performanceProgress.keyCompletion,a.performanceProgress.capacities.map(x=>[x.capacity,x.status,x.ratio,x.avgRpe])]:null,recovery:(a.recovery?.signals||[]).map(x=>[x.label,x.status])}));}
+
+function renderAdaptiveEngineCard(){
+  if(!ui.adaptiveEngineMeta)return;const p=currentAdaptiveState?.performanceProgress,g=currentEngineV2Goal;if(!p||p.status==="insufficient"){ui.adaptiveEngineMeta.textContent="";return;}const target=g?.targetTimeSec?engineV2FormatTime(g.targetTimeSec):engineV2GoalLabel(g?.type);ui.adaptiveEngineMeta.textContent=`Objetivo ${target} · ${p.label}`;
+}
+function renderPerformanceTrajectory(){
+  const status=$("adaptiveTrajectoryStatus"),windowEl=$("adaptiveTrajectoryWindow"),reading=$("adaptiveTrajectoryReading"),rows=$("adaptiveTrajectoryRows");if(!status||!windowEl||!reading||!rows)return;const p=currentAdaptiveState?.performanceProgress;if(!p){status.textContent="Sin evidencia suficiente";status.className="adaptive-trajectory-status neutral";windowEl.textContent="Últimos 28 días";reading.textContent="ATLAS necesita varias semanas de entrenamiento realizado para valorar la dirección del plan.";rows.innerHTML="";return;}
+  status.textContent=p.label;status.className=`adaptive-trajectory-status ${p.tone}`;windowEl.textContent=p.reviewDue?`Revisión formal · bloque ${p.formalReview.index}`:"Últimos 28 días";reading.textContent=p.reading;
+  const core=[{label:"Volumen",detail:Number.isFinite(p.volumeRatio)?`${formatNatural(p.actualKm,1)} / ${formatNatural(p.plannedKm,1)} km · ${formatNatural(p.volumeRatio*100,0)} %`:"Sin referencia suficiente",status:Number.isFinite(p.volumeRatio)?p.volumeRatio>=.9?"positive":p.volumeRatio>=.7?"neutral":"negative":"neutral"},...p.capacities.map(x=>({label:x.label,detail:`${Number.isFinite(x.ratio)?formatNatural(x.ratio*100,0)+" % de dosis":"—"}${Number.isFinite(x.avgRpe)?` · RPE ${formatNatural(x.avgRpe,1)}`:""}`,status:progressionStatusMeta(x.status).tone}))];
+  rows.innerHTML=core.map(x=>`<div class="engine-v2-row"><div class="engine-v2-row-key">${esc(x.label)}</div><div class="engine-v2-row-value ${adaptiveEvidenceTone(x.status)}">${adaptiveEvidenceSymbol(x.status)} ${esc(x.detail)}</div></div>`).join("");
+}
+function renderAdaptiveEngine(){renderAdaptiveEngineLegacy();renderPerformanceTrajectory();renderAdaptiveEngineCard();}
 
 </script>
 
@@ -9836,6 +10024,17 @@ html.atlas-main-scroll-locked,body.atlas-main-scroll-locked{overscroll-behavior:
   .profile-dashboard-performance-label{font-size:9px!important;}
   .profile-dashboard-performance-unit{font-size:6.8px!important;}
 }
+
+
+/* v0.107 · trajectory evaluator */
+.adaptive-trajectory-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:1px 0 7px}
+.adaptive-trajectory-status{font-size:16px;line-height:1.2;font-weight:790;letter-spacing:-.22px;color:#fff}
+.adaptive-trajectory-status.positive{color:#7ee2b8}.adaptive-trajectory-status.neutral{color:#ffd76a}.adaptive-trajectory-status.negative{color:#ff8d96}
+.adaptive-trajectory-window{font-size:10.5px;line-height:1.2;font-weight:680;color:var(--muted2);white-space:nowrap}
+.adaptive-trajectory-rows{margin-top:9px}
+#adaptiveTrajectoryCard .engine-v2-row{padding-top:7px!important;padding-bottom:7px!important}
+#adaptiveTrajectoryCard .engine-v2-row-key{font-size:11.5px!important;font-weight:740!important}
+#adaptiveTrajectoryCard .engine-v2-row-value{font-size:11px!important;line-height:1.3!important}
 </style>
 
 </body>
