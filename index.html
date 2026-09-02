@@ -1809,7 +1809,7 @@ html,body{overscroll-behavior-y:none}
 
 (()=>{
 "use strict";
-const APP_VERSION="0.107.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="0.107.1",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits","chats"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -6661,57 +6661,6 @@ async function clearData(){
     toast(`⚠️ ${error.message}`,true);
   }
 }
-})();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 installAtlasScrollAudit();
 
@@ -7223,6 +7172,59 @@ function renderPerformanceTrajectory(){
   rows.innerHTML=core.map(x=>`<div class="engine-v2-row"><div class="engine-v2-row-key">${esc(x.label)}</div><div class="engine-v2-row-value ${adaptiveEvidenceTone(x.status)}">${adaptiveEvidenceSymbol(x.status)} ${esc(x.detail)}</div></div>`).join("");
 }
 function renderAdaptiveEngine(){renderAdaptiveEngineLegacy();renderPerformanceTrajectory();renderAdaptiveEngineCard();}
+
+
+})();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 </script>
 
