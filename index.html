@@ -1816,7 +1816,7 @@ html,body{overscroll-behavior-y:none}
 
 (()=>{
 "use strict";
-const APP_VERSION="0.108.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="0.109.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits","chats"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -1844,7 +1844,7 @@ const ui={
  smartSyncBtn:$("smartSyncBtn"),testBtn:$("testBtn"),settingsBtn:$("settingsBtn"),fullSyncBtn:$("fullSyncBtn"),exportBtn:$("exportBtn"),importBtn:$("importBtn"),clearBtn:$("clearBtn"),fileInput:$("fileInput"),toast:$("toast"),
  settingsDialog:$("settingsDialog"),settingsForm:$("settingsForm"),workerUrl:$("workerUrl"),clientToken:$("clientToken"),oldestDate:$("oldestDate"),newestDate:$("newestDate"),historyStart:$("historyStart"),overlapDays:$("overlapDays"),metricDetail:$("metricDetail"),metricDetailBack:$("metricDetailBack"),metricDetailTitle:$("metricDetailTitle"),metricDetailEmoji:$("metricDetailEmoji"),metricPeriodControl:$("metricPeriodControl"),metricPrev:$("metricPrev"),metricNext:$("metricNext"),metricRangeLabel:$("metricRangeLabel"),metricChartScroll:$("metricChartScroll"),metricChart:$("metricChart"),metricChartReadout:$("metricChartReadout"),chartLegend:$("chartLegend"),detailStatLabel1:$("detailStatLabel1"),detailStatValue1:$("detailStatValue1"),detailStatLabel2:$("detailStatLabel2"),detailStatValue2:$("detailStatValue2"),detailStatLabel3:$("detailStatLabel3"),detailStatValue3:$("detailStatValue3"),detailStatSub1:$("detailStatSub1"),detailStatSub2:$("detailStatSub2"),detailStatSub3:$("detailStatSub3"),metricContext:$("metricContext"),metricDetailBottomBack:$("metricDetailBottomBack"),stateDetail:$("stateDetail"),stateDetailBack:$("stateDetailBack"),stateDetailBottomBack:$("stateDetailBottomBack"),stateDetailHero:$("stateDetailHero"),stateDetailRing:$("stateDetailRing"),stateDetailScore:$("stateDetailScore"),stateDetailWord:$("stateDetailWord"),stateDetailNote:$("stateDetailNote"),stateDetailMeta:$("stateDetailMeta"),stateFactors:$("stateFactors"),stateBaseScore:$("stateBaseScore"),stateRecoveryPenalty:$("stateRecoveryPenalty"),stateLimiter:$("stateLimiter")
 };
-let db,dbOpenPromise=null,toastTimer,currentActivities=[],currentWellness=[],currentGear=[],currentEvents=[],currentCachedVo2=null,currentEngineV2Goal=null,currentSecondaryGoals=[],currentAvailabilityExceptions=[],currentSecondaryEditId=null,currentAvailabilityEditWeek=null,currentAthleteProfileV2=null,currentGoalRequirements=null,currentGoalAssessment=null,currentMacroTrajectory=null,currentWeeklyTargets=null,currentCalendarSolution=null,currentSessionPlan=null,currentPlanManifest=null,currentPlanCloudMeta=null,currentAdaptiveState=null,currentPlanRevisionDraft=null,currentPlanRevisionHistory=[],currentPlanManualAction=null,currentPlanWeekStart=null,currentPlanEvent=null,currentPlanOutcome=null,currentPlanEditEvent=null,lastCalendarRefreshAt=0,currentActivityDetail=null,currentActivityMap=null,currentActivityStreams=null,currentActivityVo2=null,currentActivityChartKey=null,activityChartZoom=1,activityPinchStartDistance=0,activityPinchStartZoom=1,activityChartPointerStart=null,activityChartReadoutTimer=null,activityLapZoom=1,activityLapPinchStartDistance=0,activityLapPinchStartZoom=1,currentActivityLapIndex=null,activityLapMainFilter="all",currentRunningRecords=null,currentRecordsLoading=false,currentMetricDetail=null,currentMetricDays=30,currentMetricEnd=null,currentAtlasState=null,currentChartState=null,chartReadoutTimer=null,chartZoom=1,pinchStartDistance=0,pinchStartZoom=1,chartPointerStart=null,metricZoomRaf=0,metricZoomPending=null,activityZoomRaf=0,activityZoomPending=null,dataSyncPromise=null,calendarSyncPromise=null,planCloudSyncPromise=null,foregroundRefreshPromise=null,runtimeRefreshStarted=false,runtimeGuardsInstalled=false,initStarted=false,initCompleted=false,currentActivityRequestToken=0,assistantChats=[],currentAssistantChatId=null,assistantSending=false,assistantPendingError="",assistantScrollRaf=0,activityAiRequestToken=0,activityAiCache=new Map(),navGlassRaf=0;
+let db,dbOpenPromise=null,toastTimer,currentActivities=[],currentWellness=[],currentGear=[],currentEvents=[],currentCachedVo2=null,currentEngineV2Goal=null,currentSecondaryGoals=[],currentAvailabilityExceptions=[],currentSecondaryEditId=null,currentAvailabilityEditWeek=null,currentAthleteProfileV2=null,currentGoalRequirements=null,currentGoalAssessment=null,currentMacroTrajectory=null,currentWeeklyTargets=null,currentCalendarSolution=null,currentSessionPlan=null,currentPlanManifest=null,currentPlanCloudMeta=null,currentAdaptiveState=null,currentPlanRevisionDraft=null,currentPlanRevisionHistory=[],currentPlanManualAction=null,currentPlanWeekStart=null,currentPlanEvent=null,currentPlanOutcome=null,currentPlanEditEvent=null,lastCalendarRefreshAt=0,currentActivityDetail=null,currentActivityMap=null,currentActivityStreams=null,currentActivityVo2=null,currentActivityChartKey=null,activityChartZoom=1,activityPinchStartDistance=0,activityPinchStartZoom=1,activityChartPointerStart=null,activityChartReadoutTimer=null,activityLapZoom=1,activityLapPinchStartDistance=0,activityLapPinchStartZoom=1,currentActivityLapIndex=null,activityLapMainFilter="all",currentRunningRecords=null,currentRecordsLoading=false,currentMetricDetail=null,currentMetricDays=30,currentMetricEnd=null,currentAtlasState=null,currentChartState=null,chartReadoutTimer=null,chartZoom=1,pinchStartDistance=0,pinchStartZoom=1,chartPointerStart=null,metricZoomRaf=0,metricZoomPending=null,activityZoomRaf=0,activityZoomPending=null,dataSyncPromise=null,calendarSyncPromise=null,planCloudSyncPromise=null,foregroundRefreshPromise=null,runtimeRefreshStarted=false,runtimeGuardsInstalled=false,initStarted=false,initCompleted=false,currentActivityRequestToken=0,assistantChats=[],currentAssistantChatId=null,assistantSending=false,assistantPendingError="",assistantScrollRaf=0,activityAiRequestToken=0,activityAiCache=new Map(),navGlassRaf=0,vo2HistoryBackfillPromise=null,vo2HistoryBackfillTimer=null,vo2HistoryBackfillRange=null;
 window.addEventListener("DOMContentLoaded",()=>bootstrapAtlas().catch(reportFatalError));
 const CORE_UI_KEYS=["todayDate","lastActivityBtn","activitiesList","activityDetail","metricDetail","stateDetail","toast","settingsDialog"];
 function assertCoreUi(){const missing=CORE_UI_KEYS.filter(key=>!ui[key]);if(missing.length)throw new Error(`Interfaz incompleta: ${missing.join(", ")}`);return true;}
@@ -1973,6 +1973,14 @@ async function scheduleForegroundRefresh(force=false){
 }
 
 
+function syncActivityAiMarkWithNav(){
+  const source=document.querySelector('.nav-btn.ai-btn .ai-mark img'),mark=ui.activityAiBtn?.querySelector('.activity-ai-mark');
+  if(!source||!mark)return;
+  const clone=source.cloneNode(true);
+  clone.className="activity-ai-icon";clone.alt="Ʌ";clone.removeAttribute("style");
+  mark.replaceChildren(clone);
+}
+
 /* ===== Liquid Glass reactivo ===== */
 function updateNavGlassPoint(clientX=null,clientY=null){
   const nav=document.querySelector(".nav");
@@ -2036,6 +2044,7 @@ async function init(){
   ensureMainTabHeaders();
   bindEvents();
   initializeStaticUi();
+  syncActivityAiMarkWithNav();
   installNavGlassRefraction();
 
   db=await openDb();
@@ -2312,7 +2321,7 @@ function sameMonth(a,b){return String(a).slice(0,7)===String(b).slice(0,7);}
 function addMonthsISO(s,months){const[y,m,d]=String(s).split("-").map(Number),dt=new Date(Date.UTC(y,m-1,1));dt.setUTCMonth(dt.getUTCMonth()+months);const last=new Date(Date.UTC(dt.getUTCFullYear(),dt.getUTCMonth()+1,0)).getUTCDate();dt.setUTCDate(Math.min(d,last));return dt.toISOString().slice(0,10);}
 function shiftMetricPeriod(direction){if(currentMetricDays==="all")return;if(!currentMetricEnd)currentMetricEnd=fmtDate(new Date());const today=fmtDate(new Date());let next;if(currentMetricDays===30)next=addDays(currentMetricEnd,direction*30);else if(currentMetricDays===180)next=addMonthsISO(currentMetricEnd,direction*6);else if(currentMetricDays===365)next=addMonthsISO(currentMetricEnd,direction*12);else{const shift=Number(currentMetricDays)||7;next=addDays(currentMetricEnd,direction*shift);}if(next>today)next=today;currentMetricEnd=next;renderMetricDetail();}
 function metricWindow(){const today=fmtDate(new Date()),endBase=currentMetricEnd||today,key=METRIC_DETAIL_CONFIG[currentMetricDetail]?.key;if(currentMetricDays==="all")return{start:startOfYearISO(earliestMetricDate(key)||endBase),end:today};if(currentMetricDays===30)return{start:addDays(endBase,-29),end:endBase};if(currentMetricDays===180)return{start:startOfMonthISO(addMonthsISO(endBase,-6)),end:sameMonth(endBase,today)?today:endOfMonthISO(endBase)};if(currentMetricDays===365)return{start:startOfMonthISO(addMonthsISO(endBase,-12)),end:sameMonth(endBase,today)?today:endOfMonthISO(endBase)};const days=Number(currentMetricDays)||7,start=addDays(endBase,-(days-1));return{start,end:endBase};}
-function renderMetricDetail(){const cfg=METRIC_DETAIL_CONFIG[currentMetricDetail];if(!cfg)return;hideChartReadout();resetChartZoom();const range=metricWindow();ui.metricDetailTitle.textContent=cfg.title;ui.metricDetailEmoji.textContent=cfg.emoji;ui.metricRangeLabel.textContent=formatRangeLabel(range.start,range.end);const all=currentMetricDays==="all",today=fmtDate(new Date());ui.metricPrev.disabled=all;ui.metricNext.disabled=all||range.end>=today;const series=detailSeries(cfg.key,range.start,range.end,currentMetricDays);drawMetricChart(series,cfg.key,range);renderDetailStats(series,cfg.key);renderDetailExtras(cfg.key);}
+function renderMetricDetail(){const cfg=METRIC_DETAIL_CONFIG[currentMetricDetail];if(!cfg)return;hideChartReadout();resetChartZoom();const range=metricWindow();ui.metricDetailTitle.textContent=cfg.title;ui.metricDetailEmoji.textContent=cfg.emoji;ui.metricRangeLabel.textContent=formatRangeLabel(range.start,range.end);const all=currentMetricDays==="all",today=fmtDate(new Date());ui.metricPrev.disabled=all;ui.metricNext.disabled=all||range.end>=today;const series=detailSeries(cfg.key,range.start,range.end,currentMetricDays);drawMetricChart(series,cfg.key,range);renderDetailStats(series,cfg.key);renderDetailExtras(cfg.key);if(cfg.key==="vo2")scheduleVo2HistoryPrecisionBackfill(range,true);}
 function detailSeries(key,start,end,days){const well=[...currentWellness].filter(r=>{const d=String(r?.id||"").slice(0,10);return d&&d>=start&&d<=end;}).sort((a,b)=>String(a.id).localeCompare(String(b.id))),runs=currentActivities.filter(isRun).filter(r=>{const d=activityDate(r);return d&&d>=start&&d<=end;}).sort((a,b)=>activityStamp(a).localeCompare(activityStamp(b)));
  if(key==="sleep"){const daily=well.map(r=>{const value=num(pick(r,["sleepSecs","sleep_secs","sleep"]))/3600,q=sleepQualityInfo(r),score=getSleepScore(r);return{date:String(r.id).slice(0,10),value,score,quality:q?.label||"—",tone:q?.tone||"gray",bucket:"day"};}).filter(x=>x.value>0);if(days===180||days===365)return fillMonthGaps(start,end,aggregateSleepMonths(daily,start,end),"sleep");if(days==="all")return fillYearGaps(start,end,aggregateSleepYears(daily,start,end),"sleep");return fillDailyGaps(start,end,daily,"sleep");}
  if(key==="hrv")return well.map(r=>({date:String(r.id).slice(0,10),value:Number(pick(r,["hrv","hrvSDNN","hrv_sdnn"]))})).filter(x=>Number.isFinite(x.value)&&x.value>0);
@@ -2337,7 +2346,7 @@ function previousKnownVo2(beforeDate){const vals=[];for(const r of currentWellne
 function weekStart(date){const[y,m,d]=date.split("-").map(Number),dt=new Date(Date.UTC(y,m-1,d)),day=(dt.getUTCDay()+6)%7;dt.setUTCDate(dt.getUTCDate()-day);return dt.toISOString().slice(0,10);}
 function drawMetricChart(series,key,range){const svg=ui.metricChart,H=236,L=28,R=4,T=18,B=30,W=Math.max(1,Math.round((ui.metricChartScroll?.clientWidth||360)*chartZoom)),plotInset=8,plotX0=L+plotInset,plotW=W-plotX0-R,plotH=H-T-B;currentChartState={series,key,range,plotX0,plotW,W,isBar:key==="sleep"||key==="volume"};svg.setAttribute("viewBox",`0 0 ${W} ${H}`);svg.style.width=`${W}px`;svg.style.minWidth=`${W}px`;svg.innerHTML="";ui.chartLegend.className="chart-legend";ui.chartLegend.innerHTML="";if(!series.length){svg.innerHTML=`<text class="chart-empty" x="${W/2}" y="116" text-anchor="middle">Sin datos en este periodo</text>`;return;}
  const isBar=key==="sleep"||key==="volume",axis=metricAxisDomain(key,series,currentMetricDays),min=axis.min,max=axis.max,ticks=axis.ticks;Object.assign(currentChartState,{min,max,T,plotH});const y=v=>T+(max-v)/(max-min)*plotH,dateX=d=>{const total=Math.max(1,dateDiff(range.start,range.end)),pos=clamp(dateDiff(range.start,d),0,total);return plotX0+(pos/total)*plotW;},indexX=(i,count)=>plotX0+(plotW/Math.max(count,1))*(i+.5);let markup=`<defs><linearGradient id="metricAreaGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff453a" stop-opacity=".22"/><stop offset="100%" stop-color="#ff453a" stop-opacity="0"/></linearGradient><linearGradient id="metricFormaGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1d9bf0" stop-opacity=".18"/><stop offset="100%" stop-color="#1d9bf0" stop-opacity="0"/></linearGradient><linearGradient id="metricFatigaGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff9f0a" stop-opacity=".14"/><stop offset="100%" stop-color="#ff9f0a" stop-opacity="0"/></linearGradient><linearGradient id="metricFrescuraGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#30d158" stop-opacity=".14"/><stop offset="100%" stop-color="#30d158" stop-opacity="0"/></linearGradient></defs>`;
- for(const tick of ticks){const yy=y(tick),lab=key==="vo2"?formatDec(tick,2):formatNatural(tick,0);markup+=`<line class="chart-grid" x1="${plotX0}" y1="${yy}" x2="${W-R}" y2="${yy}"/><text class="chart-label" x="${L-1.5}" y="${yy+2.5}" text-anchor="end">${lab}</text>`;}
+ for(const tick of ticks){const yy=y(tick),lab=key==="vo2"?formatVo2Value(tick):formatNatural(tick,0);markup+=`<line class="chart-grid" x1="${plotX0}" y1="${yy}" x2="${W-R}" y2="${yy}"/><text class="chart-label" x="${L-1.5}" y="${yy+2.5}" text-anchor="end">${lab}</text>`;}
  markup+=`<line class="chart-axis-line" x1="${plotX0}" y1="${T}" x2="${plotX0}" y2="${T+plotH}"/>`;
  if(key==="hrv"){const refs=[];for(const d of series){const ref=garminLikeHrvBaseline(currentWellness,d.date);if(ref)refs.push({date:d.date,low:ref.low,high:ref.high});}if(refs.length>1){const top=refs.map(r=>`${dateX(r.date)},${y(r.high)}`).join(" "),bottom=[...refs].reverse().map(r=>`${dateX(r.date)},${y(r.low)}`).join(" ");markup+=`<polygon class="chart-band" points="${top} ${bottom}"/><polyline class="chart-band-edge" points="${refs.map(r=>`${dateX(r.date)},${y(r.high)}`).join(" ")}"/><polyline class="chart-band-edge" points="${refs.map(r=>`${dateX(r.date)},${y(r.low)}`).join(" ")}"/>`;}}
  if(key==="rhr"){const all=allMetricValues("rhr"),avg=all.length?all.reduce((a,b)=>a+b,0)/all.length:null;if(Number.isFinite(avg))markup+=`<line class="chart-ref" x1="${plotX0}" y1="${y(avg)}" x2="${W-R}" y2="${y(avg)}"/>`;}
@@ -2365,7 +2374,7 @@ function hideChartReadout(){clearTimeout(chartReadoutTimer);hideChartTouchMarker
 function showChartTouchMarker(item,key){const st=currentChartState;if(!st||st.isBar||!item||!Number.isFinite(st.min)||!Number.isFinite(st.max))return;hideChartTouchMarker();const total=Math.max(1,dateDiff(st.range.start,st.range.end)),xx=st.plotX0+(clamp(dateDiff(st.range.start,item.date),0,total)/total)*st.plotW,yy=v=>st.T+(st.max-v)/(st.max-st.min)*st.plotH;let circles="";if(key==="fresh"){for(const spec of [{field:"forma",klass:"chart-touch-point-forma"},{field:"fatiga",klass:"chart-touch-point-fatiga"},{field:"frescura",klass:"chart-touch-point-frescura"}]){const v=Number(item[spec.field]);if(Number.isFinite(v))circles+=`<circle class="${spec.klass}" cx="${xx}" cy="${yy(v)}" r="4"/>`;}}else if(Number.isFinite(Number(item.value))){circles=`<circle class="chart-touch-point" cx="${xx}" cy="${yy(Number(item.value))}" r="4"/>`;}if(!circles)return;ui.metricChart.insertAdjacentHTML("beforeend",`<g id="chartTouchMarker">${circles}</g>`);}
 let currentMetricTouchKey=null;
 function showChartTouchValue(e){const st=currentChartState;if(!st||!st.series?.length)return;const rect=ui.metricChart.getBoundingClientRect();if(!rect.width)return;const sx=clamp((e.clientX-rect.left)/rect.width*st.W,st.plotX0,st.plotX0+st.plotW);let item;if(st.isBar){const idx=clamp(Math.floor((sx-st.plotX0)/st.plotW*st.series.length),0,st.series.length-1);item=st.series[idx];}else{const total=Math.max(1,dateDiff(st.range.start,st.range.end));let best=null,bestDist=Infinity;for(const d of st.series){const x=st.plotX0+(clamp(dateDiff(st.range.start,d.date),0,total)/total)*st.plotW,dist=Math.abs(x-sx);if(dist<bestDist){bestDist=dist;best=d;}}item=best;}if(!item)return;const key=`${st.key}|${item.date}`;if(currentMetricTouchKey===key){hideChartReadout();return;}currentMetricTouchKey=key;hideChartTouchMarker();showChartTouchMarker(item,st.key);ui.metricChartReadout.textContent=chartTouchText(item,st.key);ui.metricChartReadout.classList.add("show");clearTimeout(chartReadoutTimer);chartReadoutTimer=setTimeout(hideChartReadout,4200);}
-function chartTouchText(item,key){const date=touchDateLabel(item.date);if(key==="sleep")return Number.isFinite(item.value)?`${date} · ${formatSleepDetail(item.value)}`:`${date} · Sin datos`;if(key==="volume")return Number.isFinite(item.value)?`${date} · ${formatNatural(item.value,1)} km`:`${date} · Sin datos`;if(key==="hrv")return`${date} · ${formatNatural(item.value,0)} ms`;if(key==="rhr")return`${date} · ${formatNatural(item.value,0)} ppm`;if(key==="vo2")return`${date} · ${formatDec(item.value,2)} ml/kg/min`;if(key==="fresh")return`${date} · Forma ${formatNatural(item.forma,2)} · Fatiga ${formatNatural(item.fatiga,2)} · Frescura ${signedNatural(item.frescura,2)}`;return`${date} · ${formatNatural(item.value,2)}`;}
+function chartTouchText(item,key){const date=touchDateLabel(item.date);if(key==="sleep")return Number.isFinite(item.value)?`${date} · ${formatSleepDetail(item.value)}`:`${date} · Sin datos`;if(key==="volume")return Number.isFinite(item.value)?`${date} · ${formatNatural(item.value,1)} km`:`${date} · Sin datos`;if(key==="hrv")return`${date} · ${formatNatural(item.value,0)} ms`;if(key==="rhr")return`${date} · ${formatNatural(item.value,0)} ppm`;if(key==="vo2")return`${date} · ${formatVo2Value(item.value)} ml/kg/min`;if(key==="fresh")return`${date} · Forma ${formatNatural(item.forma,2)} · Fatiga ${formatNatural(item.fatiga,2)} · Frescura ${signedNatural(item.frescura,2)}`;return`${date} · ${formatNatural(item.value,2)}`;}
 function touchDateLabel(s){const[y,m,d]=String(s).split("-").map(Number),month=new Intl.DateTimeFormat("es-ES",{month:"long"}).format(new Date(y,m-1,d));return`${d} de ${month} de ${y}`;}
 function barValueLabel(item,key,days){if(!Number.isFinite(item.value))return"";if(key==="sleep")return sleepBarLabel(item.value);return formatNatural(item.value,1);}
 function barValueFontSize(days,count,key){if(days===7)return 8.2; if(days===30)return 6.2; if(count>=12)return 5.8; if(count>=9)return 6.1; return 6.6;}
@@ -2383,10 +2392,10 @@ function renderDetailStats(series,key){ui.detailStatSub1.textContent="";ui.detai
  if(key==="volume"){const raw=rawVolumeDailyRange(range.start,range.end),bucket=series[0]?.bucket||"day",vals=series.map(x=>x.value).filter(Number.isFinite);const total=raw.reduce((a,b)=>a+b.value,0),avg=vals.reduce((a,b)=>a+b,0)/Math.max(1,vals.length),maxItem=raw.reduce((best,x)=>!best||x.value>best.value?x:best,null);ui.detailStatLabel1.textContent="Total";ui.detailStatLabel2.textContent=bucket==="year"?"Media/año":bucket==="month"?"Media/mes":"Media/día";ui.detailStatLabel3.textContent="Máximo en un día";ui.detailStatValue1.textContent=`${formatNatural(total,1)} km`;ui.detailStatValue2.textContent=`${formatNatural(avg,1)} km`;ui.detailStatValue3.textContent=maxItem?`${formatNatural(maxItem.value,1)} km`:"—";ui.detailStatSub3.textContent=maxItem?formatStatDate(maxItem.date):"";return;}
  const vals=series.map(x=>x.value).filter(Number.isFinite),avg=vals.reduce((a,b)=>a+b,0)/vals.length,minItem=series.filter(x=>Number.isFinite(x.value)).reduce((best,x)=>!best||x.value<best.value?x:best,null),maxItem=series.filter(x=>Number.isFinite(x.value)).reduce((best,x)=>!best||x.value>best.value?x:best,null);ui.detailStatLabel1.textContent="Media";ui.detailStatLabel2.textContent="Mínimo";ui.detailStatLabel3.textContent="Máximo";ui.detailStatValue1.textContent=detailValue(avg,key);ui.detailStatValue2.textContent=minItem?detailValue(minItem.value,key):"—";ui.detailStatValue3.textContent=maxItem?detailValue(maxItem.value,key):"—";ui.detailStatSub2.textContent=minItem?formatStatDate(minItem.date):"";ui.detailStatSub3.textContent=maxItem?formatStatDate(maxItem.date):"";}
 function renderDetailExtras(key){const explanations={sleep:"<strong>Sueño.</strong> La duración y la calidad del descanso condicionan la recuperación. Interpreta noches aisladas dentro de la tendencia de varias semanas.",hrv:"<strong>VFC.</strong> Refleja la variación entre latidos durante el descanso. Su tendencia frente a tu rango personal es más útil que un valor aislado.",rhr:"<strong>FC en reposo.</strong> Una subida sostenida respecto a tu nivel habitual puede acompañar fatiga, estrés o recuperación incompleta.",vo2:"<strong>VO₂ máx.</strong> Estima tu capacidad aeróbica máxima. Los cambios sostenidos son más relevantes que pequeñas variaciones entre carreras.",fresh:"<strong>Estado de forma.</strong> Forma representa carga crónica, Fatiga carga aguda y Frescura su diferencia. Deben interpretarse junto al contexto del entrenamiento.",volume:"<strong>Volumen.</strong> Resume la distancia de carrera acumulada. Observa su progresión junto con intensidad, carga y recuperación, no de forma aislada."};ui.metricContext.className="metric-context active";if(key!=="fresh"){ui.metricContext.innerHTML=`<div class="metric-explanation">${explanations[key]||""}</div>`;return;}ui.metricContext.innerHTML='<div class="fresh-zone-title">Intervalos de Frescura</div><div class="fresh-zone-row"><span class="fresh-zone-dot" style="background:var(--red)"></span><div class="fresh-zone-copy"><span class="fresh-zone-name">Alto riesgo</span><span class="fresh-zone-desc">Fatiga excesiva</span></div><span class="fresh-zone-range">&lt; −30</span></div><div class="fresh-zone-row"><span class="fresh-zone-dot" style="background:var(--green)"></span><div class="fresh-zone-copy"><span class="fresh-zone-name">Óptimo</span><span class="fresh-zone-desc">Carga productiva</span></div><span class="fresh-zone-range">−30 a −10</span></div><div class="fresh-zone-row"><span class="fresh-zone-dot" style="background:#8e8e93"></span><div class="fresh-zone-copy"><span class="fresh-zone-name">Zona gris</span><span class="fresh-zone-desc">Equilibrio neutro</span></div><span class="fresh-zone-range">−10 a +5</span></div><div class="fresh-zone-row"><span class="fresh-zone-dot" style="background:#1d9bf0"></span><div class="fresh-zone-copy"><span class="fresh-zone-name">Fresco</span><span class="fresh-zone-desc">Buena recuperación</span></div><span class="fresh-zone-range">+5 a +20</span></div><div class="fresh-zone-row"><span class="fresh-zone-dot" style="background:#636366"></span><div class="fresh-zone-copy"><span class="fresh-zone-name">Transición</span><span class="fresh-zone-desc">Carga baja</span></div><span class="fresh-zone-range">&gt; +20</span></div><div class="metric-explanation fresh-explanation">'+explanations.fresh+'</div>';}
-function detailValue(v,key){if(key==="sleep")return formatSleepDetail(v);if(key==="hrv")return`${formatNatural(v,0)} ms`;if(key==="rhr")return`${formatNatural(v,0)} ppm`;if(key==="vo2")return formatDec(v,2);return formatNatural(v,2);}
+function detailValue(v,key){if(key==="sleep")return formatSleepDetail(v);if(key==="hrv")return`${formatNatural(v,0)} ms`;if(key==="rhr")return`${formatNatural(v,0)} ppm`;if(key==="vo2")return formatVo2Value(v);return formatNatural(v,2);}
 function formatSleepDetail(hours){const total=Math.max(0,Math.round(Number(hours)*60)),h=Math.floor(total/60),m=total%60;return`${h} h ${m} min`;}
 function sleepBarLabel(hours){const total=Math.max(0,Math.round(Number(hours)*60)),h=Math.floor(total/60),m=total%60;return`${h}h${String(m).padStart(2,"0")}`;}
-function pointLabel(v,key){if(key==="vo2")return formatDec(v,2);return formatNatural(v,0);}
+function pointLabel(v,key){if(key==="vo2")return formatVo2Value(v);return formatNatural(v,0);}
 function dateDiff(a,b){const A=Date.parse(a+"T00:00:00Z"),B=Date.parse(b+"T00:00:00Z");return Math.round((B-A)/86400000);}
 function formatRangeLabel(start,end){return`${formatRangeDate(start)} – ${formatRangeDate(end)}`;}
 function formatRangeDate(s){const[y,m,d]=s.split("-").map(Number);return new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short",year:"numeric"}).format(new Date(y,m-1,d)).replace(".","");}
@@ -2915,11 +2924,22 @@ function validBootstrapPayload(payload){
 }
 async function commitSyncPayload(payload,bootstrap,{oldest,newest,mode}){
   const p=validateSyncPayload(payload),b=validBootstrapPayload(bootstrap)?bootstrap:null;
+  /* Preserve ATLAS-only activity enrichments across the overlapping Intervals sync.
+     Without this merge, the next sync replaced atlasVo2Max with the rounded remote row. */
+  const localActivities=await storeGetAll("activities").catch(()=>[]);
+  const localActivityMeta=new Map(localActivities.filter(x=>x&&x.id!=null).map(x=>[String(x.id),{atlasVo2Max:x.atlasVo2Max,atlasVo2CheckedAt:x.atlasVo2CheckedAt}]));
   const stores=["activities","wellness","meta",...(b?["athlete","gear","sportSettings"]:[])];
   const d=await ensureDb();
   const tx=d.transaction(stores,"readwrite");
   const activities=tx.objectStore("activities"),wellness=tx.objectStore("wellness"),meta=tx.objectStore("meta");
-  for(const row of p.activities)if(row&&row.id!=null)activities.put(row);
+  for(const row of p.activities){
+    if(!row||row.id==null)continue;
+    const saved=localActivityMeta.get(String(row.id)),next={...row};
+    const precise=Number(saved?.atlasVo2Max);
+    if(Number.isFinite(precise)&&precise>0)next.atlasVo2Max=precise;
+    if(saved?.atlasVo2CheckedAt)next.atlasVo2CheckedAt=saved.atlasVo2CheckedAt;
+    activities.put(next);
+  }
   for(const row of p.wellness)if(row&&row.id!=null)wellness.put(row);
   if(b){
     tx.objectStore("athlete").put({key:"me",data:b.athlete,updatedAt:b.syncedAt||new Date().toISOString()});
@@ -3292,7 +3312,7 @@ function renderProfilePanel(athlete){
   const avatar=$("profileDashboardAvatar");
   if(avatar)avatar.textContent=profileInitials(name);
   const dashVo2=$("profileDashboardVo2"),dashExperience=$("profileDashboardExperience");
-  if(dashVo2)dashVo2.textContent=Number.isFinite(vo2)?formatDec(vo2,2):"—";
+  if(dashVo2)dashVo2.textContent=Number.isFinite(vo2)?formatVo2Value(vo2):"—";
   if(dashExperience)dashExperience.textContent=firstActivity;
 
   const hh=$("profileHomeHeight"),hw=$("profileHomeWeight");
@@ -3304,7 +3324,7 @@ function renderProfilePanel(athlete){
   if(ui.profileLocation)ui.profileLocation.textContent=location;
   if(ui.profileHeight)ui.profileHeight.textContent=Number.isFinite(height)?`${formatNatural(height,2)} m`:"—";
   if(ui.profileWeight)ui.profileWeight.textContent=Number.isFinite(weight)?`${formatNatural(weight,1)} kg`:"—";
-  if(ui.profileVo2)ui.profileVo2.textContent=Number.isFinite(vo2)?formatDec(vo2,2):"—";
+  if(ui.profileVo2)ui.profileVo2.textContent=Number.isFinite(vo2)?formatVo2Value(vo2):"—";
   if(ui.profileThresholdHr)ui.profileThresholdHr.textContent=Number.isFinite(Number(sport?.lthr))?`${formatNatural(Number(sport.lthr),0)} ppm`:"—";
 
   const rows=[
@@ -3320,7 +3340,7 @@ function renderProfilePanel(athlete){
   const performance=$("profileDashboardPerformance");
   if(performance){
     const metrics=[
-      ["🫁","VO₂ máx.",Number.isFinite(vo2)?`${formatDec(vo2,2)} ml/kg/min`:"—"],
+      ["🫁","VO₂ máx.",Number.isFinite(vo2)?`${formatVo2Value(vo2)} ml/kg/min`:"—"],
       ["⚡","Umbral",Number.isFinite(thresholdSec)?`${formatPaceValue(thresholdSec)} min/km`:"—"],
       ["❤️","FC umbral",Number.isFinite(Number(sport?.lthr))?`${formatNatural(Number(sport.lthr),0)} ppm`:"—"],
       ["🔺","FC máx.",Number.isFinite(Number(sport?.max_hr))?`${formatNatural(Number(sport.max_hr),0)} ppm`:"—"]
@@ -3378,7 +3398,7 @@ function renderEvolutionPanel(){
   ui.evolutionSummary.innerHTML=[
     `<div class="performance-stat"><div class="performance-value">${formatNatural(kmWeek,1)}</div><div class="performance-label">km/sem · 28 d</div></div>`,
     `<div class="performance-stat"><div class="performance-value">${formatNatural(stats.freq,1)}</div><div class="performance-label">carreras/sem</div></div>`,
-    `<div class="performance-stat"><div class="performance-value">${Number.isFinite(vo2)?formatDec(vo2,2):"—"}</div><div class="performance-label">VO₂ máx.</div></div>`
+    `<div class="performance-stat"><div class="performance-value">${Number.isFinite(vo2)?formatVo2Value(vo2):"—"}</div><div class="performance-label">VO₂ máx.</div></div>`
   ].join("");
   const kmTone=!Number.isFinite(pct)?"flat":pct>8?"up":pct<-8?"down":"flat",freqDiff=stats.freq-stats.prevFreq,freqTone=freqDiff>.35?"up":freqDiff<-.35?"down":"flat";
   ui.performanceTrendList.innerHTML=[
@@ -3449,6 +3469,8 @@ async function refreshAll(){
       recordRuntimeAudit("vo2-refresh",error).catch(()=>{});
     });
   }
+  /* Recover precise historical Garmin VO₂ values gradually and cache them per activity. */
+  scheduleVo2HistoryPrecisionBackfill({start:"2018-01-01",end:fmtDate(new Date())},false);
   scheduleAtlasScrollAudit();
 }
 
@@ -3723,7 +3745,7 @@ function renderEngineV2Diagnostic(){
   ui.engineDiagCurrentVol.textContent=formatNatural(p.current.stableWeeklyKm,1);ui.engineDiagHistoricVol.textContent=formatNatural(p.historical.sustainableVolume8,1);ui.engineDiagWeeks.textContent=a?formatNatural(a.weeks,1):"—";
   ui.engineDiagCurrentRows.innerHTML=[engineV2Row("Últimos 14 días",`${formatNatural(p.current.weeklyKm14,1)} km/sem · ${formatNatural(p.current.frequency14,1)} días/sem`),engineV2Row("Base estable",`${formatNatural(p.current.stableWeeklyKm,1)} km/sem · ${formatNatural(p.current.stableFrequency,1)} días/sem`),engineV2Row("Arranque operativo",`${formatNatural(p.current.launchWeeklyKm,1)} km/sem · ${p.current.launchFrequency} días/sem`),engineV2Row("Tirada reciente",`${formatNatural(p.current.longest84,1)} km`),engineV2Row("Calidad reciente",`${formatNatural(p.current.qualityPerWeek28,1)} sesiones/sem`),engineV2Row("Ritmo fácil observado",engineV2FormatPace(p.current.easyPace)),engineV2Row("Tendencia 4 semanas",engineV2TrendLabel(p.current.trendRatio))].join("");
   ui.engineDiagHistoryRows.innerHTML=[engineV2Row("Volumen sostenido · 8 sem",`${formatNatural(p.historical.sustainableVolume8,1)} km/sem`),engineV2Row("Mejor bloque · 4 sem",`${formatNatural(p.historical.sustainableVolume4,1)} km/sem`),engineV2Row("Frecuencia · mejor bloque 4 sem",`${formatNatural(p.historical.sustainableFrequency4,1)} sesiones/sem`),engineV2Row("Frecuencia · mejor bloque 8 sem",`${formatNatural(p.historical.sustainableFrequency8,1)} sesiones/sem`),engineV2Row("Tirada habitual alta · P90",`${formatNatural(p.historical.longRunP90,1)} km`),engineV2Row("Tirada de entrenamiento demostrada",`${formatNatural(p.historical.longRunTrainingMax,1)} km`),engineV2Row("Histórico de carrera",`${formatNatural(p.historical.experienceYears,1)} años · ${p.historical.runsTotal} carreras`)].join("");
-  ui.engineDiagPerformanceRows.innerHTML=engineV2RaceRows(p)+[engineV2Row("Exponente distancia-tiempo",`${formatNatural(p.performance.exponent.value,3)} · confianza ${p.performance.exponent.confidence}`),engineV2Row("VO₂ máx. disponible",Number.isFinite(p.performance.vo2)?formatDec(p.performance.vo2,2):"—"),engineV2Row("Confianza del perfil",p.confidence)].join("");
+  ui.engineDiagPerformanceRows.innerHTML=engineV2RaceRows(p)+[engineV2Row("Exponente distancia-tiempo",`${formatNatural(p.performance.exponent.value,3)} · confianza ${p.performance.exponent.confidence}`),engineV2Row("VO₂ máx. disponible",Number.isFinite(p.performance.vo2)?formatVo2Value(p.performance.vo2):"—"),engineV2Row("Confianza del perfil",p.confidence)].join("");
   ui.engineDiagRecoveryRows.innerHTML=[engineV2Row("CTL",Number.isFinite(p.recovery.ctl)?formatNatural(p.recovery.ctl,1):"—"),engineV2Row("ATL",Number.isFinite(p.recovery.atl)?formatNatural(p.recovery.atl,1):"—"),engineV2Row("Frescura",Number.isFinite(p.recovery.freshness)?signedNatural(p.recovery.freshness,1):"—"),engineV2Row("VFC · 7 d",Number.isFinite(p.recovery.hrv7)?`${formatNatural(p.recovery.hrv7,1)} ms`:"—"),engineV2Row("FC reposo · 7 d",Number.isFinite(p.recovery.rhr7)?`${formatNatural(p.recovery.rhr7,1)} ppm`:"—"),engineV2Row("Sueño · 7 d",Number.isFinite(p.recovery.sleep7)?`${formatNatural(p.recovery.sleep7/3600,1)} h`:"—")].join("");
   if(r&&g){
     ui.engineDiagRequirementRows.innerHTML=[engineV2Row("Objetivo A",`${r.label} · ${engineV2FormatTime(r.targetTimeSec)}`),engineV2Row("Ritmo objetivo",engineV2FormatPace(r.targetPaceSecKm)),engineV2Row("Demanda deportiva",r.demand),engineV2Row("Frecuencia deseable",`${r.frequency[0]}–${r.frequency[1]} días/sem`),engineV2Row("Volumen principal",`${r.volume[0]}–${r.volume[1]} km/sem`),engineV2Row("Tirada larga de referencia",`${r.longKm[0]}–${r.longKm[1]} km`),engineV2Row("Estímulos clave",`${r.quality[0]}–${r.quality[1]} / sem según fase`),engineV2Row("Fuerza",`${r.strength[0]}–${r.strength[1]} / sem según fase`),engineV2Row("Bloque específico",`${r.specificWeeks[0]}–${r.specificWeeks[1]} semanas`),engineV2Row("Carreras B/C",currentSecondaryGoals.length?currentSecondaryGoals.map(g=>`${g.priority} ${engineV2GoalLabel(g.type)} · ${engineV2DateLabel(g.date)}`).join(" · "):"Ninguna")].join("");
@@ -5571,7 +5593,7 @@ function fitPlanDetailSummary(){
 }
 function planPaceMidpoint(text){const m=String(text||"").match(/(\d+):(\d{2})(?:\s*[–-]\s*(\d+):(\d{2}))?/);if(!m)return null;const a=Number(m[1])*60+Number(m[2]),b=m[3]!=null?Number(m[3])*60+Number(m[4]):a;return(a+b)/2;}
 function planWorkoutVisualRows(session){const segs=Array.isArray(session?.segments)?session.segments:[],rows=segs.map((seg,i)=>({index:i,d:Math.max(1,(Number(seg.distanceKm)||0)*1000),rawDistance:Math.max(1,(Number(seg.distanceKm)||0)*1000),p:planPaceMidpoint(seg.pace),label:seg.label||""})).filter(x=>Number.isFinite(x.p)&&x.d>0);if(rows.length)return rows;const d=(Number(session?.distanceKm)||0)*1000,p=planPaceMidpoint(session?.pace);return d>0&&Number.isFinite(p)?[{index:0,d,rawDistance:d,p,label:session?.title||"Entrenamiento"}]:[];}
-function renderPlanWorkoutBars(session){const card=ui.planWorkoutBarsCard,bars=ui.planWorkoutBars,axis=ui.planWorkoutPaceAxis,grid=ui.planWorkoutPaceGrid;if(!card||!bars||!axis||!grid)return;const rows=planWorkoutVisualRows(session);if(!rows.length){card.classList.add("hidden");bars.innerHTML="";axis.innerHTML="";grid.innerHTML="";return;}const scale=activityLapPaceScale(rows),total=Math.max(1,rows.reduce((sum,x)=>sum+x.d,0));card.classList.remove("hidden");bars.style.height=`${scale?.chartHeight||216}px`;bars.innerHTML=rows.map((row,i)=>{const share=row.d/total*100,h=scale.height(row.p),visual=activityPaceVisual(row.p,null);return`<div class="activity-lap-bar-wrap plan-workout-bar-wrap" style="flex-basis:${share.toFixed(5)}%"><div class="activity-lap-bar" style="height:${h.toFixed(2)}%;background:${visual.color}"></div><div class="activity-lap-bar-label">${i+1}</div></div>`;}).join("");axis.innerHTML=scale.ticks.map(v=>`<span class="activity-lap-pace-tick" style="top:${scale.top(v).toFixed(2)}%">${formatPaceValue(v)}</span>`).join("")+`<span class="activity-lap-pace-unit">/km</span>`;grid.innerHTML=scale.ticks.map(v=>`<span class="activity-lap-pace-grid-line" style="top:${scale.top(v).toFixed(2)}%"></span>`).join("");}
+function renderPlanWorkoutBars(session){const card=ui.planWorkoutBarsCard,bars=ui.planWorkoutBars,axis=ui.planWorkoutPaceAxis,grid=ui.planWorkoutPaceGrid;if(!card||!bars||!axis||!grid)return;const rows=planWorkoutVisualRows(session);if(!rows.length){card.classList.add("hidden");bars.innerHTML="";axis.innerHTML="";grid.innerHTML="";return;}const scale=activityLapPaceScale(rows),total=Math.max(1,rows.reduce((sum,x)=>sum+x.d,0));card.classList.remove("hidden");bars.style.height="184px";bars.innerHTML=rows.map((row,i)=>{const share=row.d/total*100,h=scale.height(row.p),visual=activityPaceVisual(row.p,null);return`<div class="activity-lap-bar-wrap plan-workout-bar-wrap" style="flex-basis:${share.toFixed(5)}%"><div class="activity-lap-bar" style="height:${h.toFixed(2)}%;background:${visual.color}"></div><div class="activity-lap-bar-label">${i+1}</div></div>`;}).join("");axis.innerHTML=scale.ticks.map(v=>`<span class="activity-lap-pace-tick" style="top:${scale.top(v).toFixed(2)}%">${formatPaceValue(v)}</span>`).join("")+`<span class="activity-lap-pace-unit">/km</span>`;grid.innerHTML=scale.ticks.map(v=>`<span class="activity-lap-pace-grid-line" style="top:${scale.top(v).toFixed(2)}%"></span>`).join("");}
 async function openPlanDetail(id){
   const idx=currentEvents.findIndex((e,i)=>planEventId(e,i)===String(id));if(idx<0)return;let e=currentEvents[idx];
   if(e?.id){try{const detail=await api(`/api/calendar-event?id=${encodeURIComponent(e.id)}`);if(detail?.event){e={...e,...detail.event};currentEvents[idx]=e;try{await storePut("events",e);}catch{}}}catch(error){console.warn("ɅTLɅS · detalle de sesión",error);}}
@@ -5919,6 +5941,14 @@ async function openActivityDetail(id){
     currentActivityStreams=streams;
     const v=Number(vo2?.vo2max);
     currentActivityVo2=Number.isFinite(v)&&v>0?v:null;
+    if(isRun(merged)){
+      const local=currentActivities.find(x=>String(x.id)===String(merged.id));
+      if(local){
+        local.atlasVo2CheckedAt=new Date().toISOString();
+        if(currentActivityVo2)local.atlasVo2Max=currentActivityVo2;
+        storePut("activities",local).catch(error=>console.warn("ɅTLɅS · histórico VO₂ actividad",error));
+      }
+    }
 
     renderActivityDetail(merged);
     renderActivityMap(streams,merged);
@@ -6016,7 +6046,7 @@ function renderActivityDetail(a){if(!currentActivityChartKey)currentActivityChar
   activityMetricHtml("⚡","Potencia",power?formatNatural(power,0):"—",power?"W":""),
   activityMetricHtml("🔥","Calorías",Number.isFinite(cal)&&cal>0?formatNatural(cal,0):"—",Number.isFinite(cal)&&cal>0?"kcal":""),
   activityMetricHtml("⛰️","Desnivel",Number.isFinite(elev)?formatNatural(elev,0):"—",Number.isFinite(elev)?"m":""),
-  activityMetricHtml("🫁","VO₂ máx.",vo2?formatDec(vo2,2):"—","")
+  activityMetricHtml("🫁","VO₂ máx.",vo2?formatVo2Value(vo2):"—","")
  ];ui.activityPrimary.innerHTML=metrics.join("");requestAnimationFrame(fitActivityMetricGrid);
  const perception=[];if(Number.isFinite(temp))perception.push(`🌡️ ${formatNatural(temp,1)} °C`);if(rpeLabel)perception.push(`🔥 ${rpeLabel}`);if(feel)perception.push(`🙂 ${feel}`);ui.activityPerception.classList.toggle("hidden",!perception.length);ui.activityPerception.innerHTML=perception.map(x=>`<span class="activity-perception-chip">${esc(x)}</span>`).join("");requestAnimationFrame(fitActivityTopMeta);
  ui.activityEquipment.classList.toggle("hidden",!gear.length);ui.activityEquipment.innerHTML=gear.map(g=>`<div class="activity-equipment-row"><div class="activity-equipment-icon">👟</div><div class="activity-equipment-name">${esc(g.name)}</div><div class="activity-equipment-km">${Number.isFinite(g.km)?`${formatNatural(g.km,1)} km`:""}</div></div>`).join("");
@@ -6373,7 +6403,7 @@ function renderToday(activities,wellness,cachedVo2){
  ui.sleepValue.innerHTML=sleep?formatSleepHM(sleep.value):"—";setTone(ui.sleepMeta,sleepQuality?.tone);ui.sleepMeta.textContent=sleepQuality?.label||"—";
  ui.hrvValue.innerHTML=vfc?`${formatDec(vfc.value,0)} <span class="metric-unit">ms</span>`:"—";setTone(ui.hrvMeta,null);ui.hrvMeta.textContent=hrvRef?`${formatDec(hrvRef.low,0)}–${formatDec(hrvRef.high,0)}`:"—";
  ui.rhrValue.innerHTML=rhr?`${formatDec(rhr.value,0)} <span class="metric-unit">ppm</span>`:"—";setTone(ui.rhrMeta,null);ui.rhrMeta.textContent=Number.isFinite(rhrMean)?`Media · ${formatDec(rhrMean,0)}`:"Media · —";
- ui.vo2Value.textContent=vo2?formatDec(vo2.value,2):"—";setTone(ui.vo2Meta,null);ui.vo2Meta.textContent="ml/kg/min";
+ ui.vo2Value.textContent=vo2?formatVo2Value(vo2.value):"—";setTone(ui.vo2Meta,null);ui.vo2Meta.textContent="ml/kg/min";
  ui.freshValue.textContent=fresh==null?"—":signedNatural(fresh,2);setTone(ui.freshMeta,freshZone?.tone);ui.freshMeta.textContent=freshZone?.label||"—";
  ui.volumeValue.innerHTML=`${formatNatural(dist/1000,1)} <span class="metric-unit">km</span>`;setTone(ui.volumeMeta,null);ui.volumeMeta.textContent="últ. 7 d";
  const state=computeAtlasState({activities,wellness:w,forma,fatiga,fresh,vfc,rhr,sleep,hrvRef,today});renderAtlasState(state);
@@ -6547,19 +6577,71 @@ async function refreshLatestRunVo2(run){
  if(!run?.id)return;
  try{
    const p=await api(`/api/activity-vo2max?id=${encodeURIComponent(run.id)}`),n=Number(p?.vo2max);
-   if(!Number.isFinite(n)||n<=0)return;
+   run.atlasVo2CheckedAt=new Date().toISOString();
+   if(!Number.isFinite(n)||n<=0){await storePut("activities",run).catch(()=>{});return;}
    const value={activityId:run.id,value:n,source:p.source||"activity",updatedAt:new Date().toISOString()};
    await storePut("meta",{key:"latestRunVo2",value});currentCachedVo2=value;
    try{run.atlasVo2Max=n;await storePut("activities",run);}catch(error){console.warn("ɅTLɅS · histórico VO₂",error);}
-   ui.vo2Value.textContent=formatDec(n,2);
+   ui.vo2Value.textContent=formatVo2Value(n);
    requestAnimationFrame(fitMetricTypography);
  }catch{}
+}
+function activityHasPreciseVo2(activity){const n=Number(activity?.atlasVo2Max);return Number.isFinite(n)&&n>0;}
+async function fetchAndPersistRunVo2Precision(run){
+  if(!run?.id)return false;
+  try{
+    const p=await api(`/api/activity-vo2max?id=${encodeURIComponent(run.id)}`),n=Number(p?.vo2max);
+    run.atlasVo2CheckedAt=new Date().toISOString();
+    if(Number.isFinite(n)&&n>0)run.atlasVo2Max=n;
+    await storePut("activities",run);
+    return Number.isFinite(n)&&n>0;
+  }catch(error){
+    if(Number(error?.status)===404){run.atlasVo2CheckedAt=new Date().toISOString();await storePut("activities",run).catch(()=>{});return false;}
+    throw error;
+  }
+}
+async function backfillVo2HistoryPrecision(range=null,limit=24){
+  if(vo2HistoryBackfillPromise||!atlasOnline()||!hasAtlasConnectionConfig())return null;
+  const start=range?.start||"0000-01-01",end=range?.end||"9999-12-31";
+  const candidates=[...currentActivities].filter(isRun).filter(a=>{const d=activityDate(a);return d&&d>=start&&d<=end&&!activityHasPreciseVo2(a)&&!a.atlasVo2CheckedAt;}).sort((a,b)=>activityStamp(b).localeCompare(activityStamp(a))).slice(0,Math.max(1,Number(limit)||24));
+  if(!candidates.length)return{checked:0,updated:0,remaining:0};
+  vo2HistoryBackfillPromise=(async()=>{
+    let cursor=0,updated=0,checked=0;
+    const worker=async()=>{while(cursor<candidates.length){const run=candidates[cursor++];try{if(await fetchAndPersistRunVo2Precision(run))updated++;checked++;}catch(error){console.warn("ɅTLɅS · recuperación histórica VO₂",error);break;}}};
+    await Promise.all(Array.from({length:Math.min(4,candidates.length)},worker));
+    const remaining=currentActivities.filter(isRun).filter(a=>{const d=activityDate(a);return d&&d>=start&&d<=end&&!activityHasPreciseVo2(a)&&!a.atlasVo2CheckedAt;}).length;
+    return{checked,updated,remaining};
+  })();
+  try{return await vo2HistoryBackfillPromise;}finally{vo2HistoryBackfillPromise=null;}
+}
+function scheduleVo2HistoryPrecisionBackfill(range=null,continuous=false){
+  if(!atlasOnline()||!hasAtlasConnectionConfig())return;
+  vo2HistoryBackfillRange=range?{start:range.start,end:range.end}:null;
+  if(vo2HistoryBackfillTimer)return;
+  vo2HistoryBackfillTimer=setTimeout(async()=>{
+    vo2HistoryBackfillTimer=null;
+    const activeRange=vo2HistoryBackfillRange;
+    if(vo2HistoryBackfillPromise){
+      if(continuous&&currentMetricDetail&&METRIC_DETAIL_CONFIG[currentMetricDetail]?.key==="vo2")setTimeout(()=>scheduleVo2HistoryPrecisionBackfill(activeRange,true),450);
+      return;
+    }
+    const result=await backfillVo2HistoryPrecision(activeRange,continuous?28:12).catch(()=>null);
+    if(result?.updated&&currentMetricDetail&&METRIC_DETAIL_CONFIG[currentMetricDetail]?.key==="vo2"){
+      const visible=metricWindow();
+      if(!activeRange||(visible.start===activeRange.start&&visible.end===activeRange.end)){
+        const series=detailSeries("vo2",visible.start,visible.end,currentMetricDays);
+        drawMetricChart(series,"vo2",visible);renderDetailStats(series,"vo2");
+      }
+    }
+    if(continuous&&result?.remaining>0&&currentMetricDetail&&METRIC_DETAIL_CONFIG[currentMetricDetail]?.key==="vo2")scheduleVo2HistoryPrecisionBackfill(activeRange,true);
+  },220);
 }
 function rollingMean(records,fields,anchor,days){if(!anchor)return null;const start=addDays(anchor,-(days-1)),vals=[];for(const r of records){const d=String(r?.id||"").slice(0,10);if(!d||d<start||d>anchor)continue;const n=Number(pick(r,fields));if(Number.isFinite(n)&&n>0)vals.push(n);}return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;}
 function formatSleepHM(secs){const total=Math.max(0,Math.round(num(secs)/60)),h=Math.floor(total/60),m=total%60;return `${h} <span class="metric-unit">h</span> ${m} <span class="metric-unit">m</span>`;}
 function formatDay(d){if(!d)return"—";try{return new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short"}).format(new Date(`${d}T12:00:00`));}catch{return d;}}
 function fullTodayDate(){const s=new Intl.DateTimeFormat("es-ES",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(new Date());return s.charAt(0).toUpperCase()+s.slice(1);}
 function formatDec(v,d=0){return Number(v).toLocaleString("es-ES",{minimumFractionDigits:d,maximumFractionDigits:d});}
+function formatVo2Value(v){const n=Number(v);if(!Number.isFinite(n))return"—";return n.toLocaleString("es-ES",{minimumFractionDigits:0,maximumFractionDigits:2});}
 function formatNatural(v,max=2){const n=Number(v);if(!Number.isFinite(n))return"—";return n.toLocaleString("es-ES",{minimumFractionDigits:0,maximumFractionDigits:max});}
 function round(v){return Math.round(Number(v));}
 function signedNatural(v,max=2){const n=Number(v);if(!Number.isFinite(n))return"—";return`${n>0?"+":""}${formatNatural(n,max)}`;}
@@ -10098,6 +10180,48 @@ html.atlas-main-scroll-locked,body.atlas-main-scroll-locked{overscroll-behavior:
 #planControlDetail .plan-goal-summary-item:nth-child(n+3)::after{content:"";position:absolute;left:10px;right:10px;top:0;height:var(--atlas-divider-w);background:var(--atlas-divider-strong);}
 
 @media(max-width:430px){.session-preview-load{font-size:11.8px}.plan-workout-bars{padding-left:40px}.plan-workout-bars .activity-lap-pace-axis{left:-38px!important;}}
+
+
+/* ===== ɅTLɅS v0.109 · últimos refinamientos ===== */
+/* Planned workout preview: slightly smaller plot with safe room for both axes. */
+.plan-workout-bars{padding-left:49px!important;padding-right:13px!important;margin-top:4px!important;margin-bottom:14px!important;}
+.plan-workout-bars-shell{min-height:202px!important;height:202px!important;}
+.plan-workout-bars-plot{height:184px!important;max-height:184px!important;padding-top:8px!important;padding-bottom:20px!important;box-sizing:border-box!important;}
+.plan-workout-bars .activity-lap-pace-axis{left:-47px!important;width:43px!important;top:8px!important;bottom:26px!important;font-size:8.2px!important;overflow:visible!important;}
+.plan-workout-bars .activity-lap-pace-grid{left:0!important;right:0!important;top:8px!important;bottom:26px!important;}
+.plan-workout-bars .activity-lap-pace-tick{font-size:8.2px!important;right:4px!important;}
+.plan-workout-bars .activity-lap-pace-unit{font-size:7.8px!important;right:4px!important;bottom:-18px!important;}
+.plan-workout-bars .activity-lap-bar-label{font-size:7.7px!important;bottom:-16px!important;}
+
+/* Activity AI uses exactly the same ATLAS image asset as the central Chat button. */
+.activity-title-row .activity-ai-btn{width:42px!important;height:42px!important;overflow:hidden!important;}
+.activity-ai-mark{width:42px!important;height:42px!important;display:grid!important;place-items:center!important;}
+.activity-ai-glyph{display:none!important;}
+.activity-ai-icon{display:block!important;width:31px!important;height:23px!important;object-fit:contain!important;object-position:center!important;margin:0!important;padding:0!important;transform:none!important;}
+
+/* Weekly Plan current-day highlight: one uniform tone across the whole row. */
+#view-plan .plan-day.today .plan-week-activity-row{
+  background:rgba(29,155,240,.14)!important;
+  box-shadow:inset 0 0 0 2px rgba(29,155,240,.40)!important;
+}
+#view-plan .plan-day.today .activity-row-date{
+  background:transparent!important;border-radius:0!important;margin:0!important;
+  width:var(--atlas-date-slot)!important;min-width:var(--atlas-date-slot)!important;max-width:var(--atlas-date-slot)!important;
+}
+
+/* Lap selection: highlight only the physical bar; detailed row remains strongly selected below. */
+.activity-lap-bar-wrap.selected{background:transparent!important;border-radius:0!important;box-shadow:none!important;}
+.activity-lap-bar-wrap.selected .activity-lap-bar{
+  background:#1d9bf0!important;filter:brightness(1.08)!important;transform:none!important;
+  outline:2px solid rgba(255,255,255,.30)!important;outline-offset:-1px!important;
+  box-shadow:0 0 12px rgba(29,155,240,.34)!important;
+}
+
+@media(max-width:430px){
+  .plan-workout-bars{padding-left:46px!important;padding-right:11px!important;}
+  .plan-workout-bars .activity-lap-pace-axis{left:-44px!important;width:40px!important;font-size:7.9px!important;}
+  .plan-workout-bars .activity-lap-pace-tick{font-size:7.9px!important;}
+}
 </style>
 
 </body>
