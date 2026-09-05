@@ -862,6 +862,41 @@ input[type="date"]::-webkit-date-and-time-value{display:flex!important;align-ite
 .engine-backtest-side{text-align:right}.engine-backtest-score{font-size:15px;line-height:1.1;font-weight:820;font-variant-numeric:tabular-nums}.engine-backtest-assessment{margin-top:3px;font-size:9.6px;color:var(--muted)}
 @media(max-width:390px){.engine-validation-score{font-size:19px}.engine-validation-label{font-size:9.1px}.engine-backtest-title{font-size:12.5px}}
 </style>
+
+<style id="atlas-v0118-plan-flow-fix">
+/* Adaptation is user-facing: technical validation remains automatic and out of the primary workflow. */
+#adaptiveEngineDetail #engineValidationCard,
+#adaptiveEngineDetail #engineBacktestCard,
+#adaptiveEngineDetail #engineIntegrityCard{display:none!important;}
+#adaptiveEngineDetail .adaptive-revision-card.config-dirty{
+  border-color:rgba(29,155,240,.62)!important;
+  box-shadow:0 16px 38px rgba(0,0,0,.34),0 0 0 1px rgba(29,155,240,.14),inset 0 1px 0 rgba(255,255,255,.08)!important;
+}
+#adaptiveEngineDetail .adaptive-revision-card.config-dirty .adaptive-revision-status{color:#d8ecfb!important;}
+
+/* Goal table: one shared divider only, inset from the outer border, and normal left alignment. */
+#planControlDetail .plan-goal-summary-item::before,
+#planControlDetail .plan-goal-summary-item::after{content:none!important;display:none!important;}
+#planControlDetail .plan-goal-summary::before{
+  content:""!important;display:block!important;position:absolute!important;z-index:3!important;pointer-events:none!important;
+  left:50%!important;top:10px!important;bottom:10px!important;width:var(--atlas-divider-w)!important;height:auto!important;
+  background:var(--atlas-divider-strong)!important;transform:translateX(-50%)!important;
+}
+#planControlDetail .plan-goal-summary::after{
+  content:""!important;display:block!important;position:absolute!important;z-index:3!important;pointer-events:none!important;
+  left:10px!important;right:10px!important;top:0!important;bottom:0!important;width:auto!important;height:auto!important;transform:none!important;
+  background:
+    linear-gradient(var(--atlas-divider-strong),var(--atlas-divider-strong)) 0 25%/100% var(--atlas-divider-w) no-repeat,
+    linear-gradient(var(--atlas-divider-strong),var(--atlas-divider-strong)) 0 50%/100% var(--atlas-divider-w) no-repeat,
+    linear-gradient(var(--atlas-divider-strong),var(--atlas-divider-strong)) 0 75%/100% var(--atlas-divider-w) no-repeat!important;
+}
+#planControlDetail .plan-goal-summary-item{
+  justify-content:flex-start!important;text-align:left!important;padding:10px 11px!important;
+}
+#planControlDetail .plan-goal-summary-copy{align-items:flex-start!important;text-align:left!important;min-width:0!important;}
+#planControlDetail .plan-goal-summary-key,
+#planControlDetail .plan-goal-summary-value{text-align:left!important;}
+</style>
 </head>
 <body>
 <main class="app">
@@ -1310,6 +1345,14 @@ input[type="date"]::-webkit-date-and-time-value{display:flex!important;align-ite
       <div class="plan-detail-stat"><div class="plan-detail-value" id="adaptiveLevel">—</div><div class="plan-detail-label">ajuste</div></div>
     </div>
     <div class="plan-detail-card"><div class="plan-detail-section-title">Decisión ATLAS</div><div id="adaptiveDecision"></div><div class="engine-v2-reading" id="adaptiveReading">—</div></div>
+    <div class="plan-detail-card adaptive-revision-card" id="adaptiveRevisionCard">
+      <div class="plan-detail-section-title">Cambios del plan</div>
+      <div class="adaptive-revision-status" id="adaptiveRevisionStatus">Sin cambios pendientes.</div>
+      <div id="adaptiveRevisionSummary"></div>
+      <div class="adaptive-revision-list" id="adaptiveRevisionDiff"></div>
+      <button class="adaptive-revision-btn primary" type="button" id="adaptiveRevisionPrepare">Recalcular futuro</button>
+      <div class="adaptive-revision-actions hidden" id="adaptiveRevisionActions"><button class="adaptive-revision-btn danger" type="button" id="adaptiveRevisionReject">Descartar</button><button class="adaptive-revision-btn primary" type="button" id="adaptiveRevisionApply">Aplicar en Intervals.icu</button></div>
+    </div>
     <div class="plan-detail-card" id="adaptiveTrajectoryCard">
       <div class="plan-detail-section-title">Trayectoria del objetivo</div>
       <div class="adaptive-trajectory-head"><div class="adaptive-trajectory-status" id="adaptiveTrajectoryStatus">Sin evidencia suficiente</div><div class="adaptive-trajectory-window" id="adaptiveTrajectoryWindow">Últimos 28 días</div></div>
@@ -1339,16 +1382,8 @@ input[type="date"]::-webkit-date-and-time-value{display:flex!important;align-ite
       <div class="engine-v2-reading" id="engineLiveReading">El seguimiento comenzará cuando se inicie el plan y comparará cada microciclo con lo realmente realizado.</div>
       <div class="engine-live-weeks" id="engineLiveWeeks"></div>
     </div>
-    <div class="plan-detail-card">
-      <div class="plan-detail-section-title">Revisión propuesta</div>
-      <div class="adaptive-revision-status" id="adaptiveRevisionStatus">Sin revisión pendiente.</div>
-      <div id="adaptiveRevisionSummary"></div>
-      <div class="adaptive-revision-list" id="adaptiveRevisionDiff"></div>
-      <button class="adaptive-revision-btn primary" type="button" id="adaptiveRevisionPrepare">Preparar revisión</button>
-      <div class="adaptive-revision-actions hidden" id="adaptiveRevisionActions"><button class="adaptive-revision-btn danger" type="button" id="adaptiveRevisionReject">Descartar</button><button class="adaptive-revision-btn primary" type="button" id="adaptiveRevisionApply">Aplicar en Intervals.icu</button></div>
-    </div>
-    <div class="plan-detail-card"><div class="plan-detail-section-title">Evidencia</div><div class="engine-v2-rows" id="adaptiveEvidenceRows"></div></div>
-    <div class="plan-detail-card"><div class="plan-detail-section-title">Sesiones recientes</div><div id="adaptiveOutcomes"></div></div>
+    <div class="plan-detail-card" id="adaptiveEvidenceCard"><div class="plan-detail-section-title">Evidencia</div><div class="engine-v2-rows" id="adaptiveEvidenceRows"></div></div>
+    <div class="plan-detail-card" id="adaptiveOutcomesCard"><div class="plan-detail-section-title">Sesiones recientes</div><div id="adaptiveOutcomes"></div></div>
     <div class="plan-detail-card hidden" id="adaptiveHistoryCard"><div class="plan-detail-section-title">Últimos cambios</div><div id="adaptiveHistory"></div></div>
     <div class="plan-detail-card engine-validation-card" id="engineValidationCard">
       <div class="plan-detail-section-title">Validación del entrenador</div>
@@ -1923,8 +1958,8 @@ html,body{overscroll-behavior-y:none}
 
 (()=>{
 "use strict";
-const APP_VERSION="0.117.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
-const ATLAS_RELEASE_STAGE="RC1",ATLAS_RELEASE_SESSION_KEY="releaseRuntimeSession",ATLAS_RELEASE_PREFLIGHT_KEY="releasePreflight",ATLAS_RELEASE_LKG_KEY="releaseLastKnownGood";
+const APP_VERSION="0.118.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const ATLAS_RELEASE_STAGE="RC2",ATLAS_RELEASE_SESSION_KEY="releaseRuntimeSession",ATLAS_RELEASE_PREFLIGHT_KEY="releasePreflight",ATLAS_RELEASE_LKG_KEY="releaseLastKnownGood";
 let currentReleasePreflight=null;
 /* v0.114 maintenance: historical engine declarations shadowed by later implementations were removed.
    Runtime behavior remains bound to the same latest canonical functions as v0.113. */
@@ -3884,7 +3919,33 @@ function renderEngineV2Diagnostic(){
 }
 async function openEngineV2GoalDialog(){const g=currentEngineV2Goal,today=fmtDate(new Date()),suggested=g?.startDate||engineV2DefaultPlanStart(today);ui.engineGoalType.value=g?.type||"HALF";ui.engineGoalDate.min=today;ui.engineGoalDate.value=g?.date||"";ui.engineGoalStartDate.min=g?.startDate&&g.startDate<today?g.startDate:today;ui.engineGoalStartDate.value=suggested;ui.engineGoalName.value=g?.name||"";ui.engineGoalTime.value=g?.targetTimeSec?engineV2FormatTime(g.targetTimeSec):"";const selected=new Set(g?.availableDays||[]);qsa('input[type="checkbox"]',ui.engineGoalDays).forEach(x=>x.checked=selected.has(Number(x.value)));ui.engineGoalDelete.classList.toggle("hidden",!g);renderSecondaryGoalList();ui.engineGoalDialog.showModal();}
 function collectEngineV2Days(){return qsa('input[type="checkbox"]:checked',ui.engineGoalDays).map(x=>Number(x.value)).filter(n=>n>=1&&n<=7).sort((a,b)=>a-b);}
-async function saveEngineV2Goal(event){if(!event.submitter||event.submitter.value!=="default")return;event.preventDefault();const type=ui.engineGoalType.value,date=ui.engineGoalDate.value,startDate=ui.engineGoalStartDate.value,name=ui.engineGoalName.value.trim(),targetTimeSec=engineV2ParseTime(ui.engineGoalTime.value),today=fmtDate(new Date());if(!date||date<today){toast("⚠️ Indica una fecha futura para la carrera.",true);return;}if(!startDate||startDate>=date){toast("⚠️ El inicio del plan debe ser anterior a la carrera.",true);return;}if(startDate<today&&startDate!==currentEngineV2Goal?.startDate){toast("⚠️ La nueva fecha de inicio no puede estar en el pasado.",true);return;}if(!Number.isFinite(targetTimeSec)||targetTimeSec<=0){toast("⚠️ Usa H:MM:SS o MM:SS para la marca objetivo.",true);return;}const previousGoal=currentEngineV2Goal?{...currentEngineV2Goal}:null,retargeting=Boolean(previousGoal&&previousGoal.startDate<today&&currentPlanManifest?.planId&&Number(previousGoal.targetTimeSec)!==Number(targetTimeSec));const goal={version:4,type,date,startDate,name:name||null,targetTimeSec,availableDays:collectEngineV2Days(),planId:currentEngineV2Goal?.planId||currentPlanManifest?.planId||null,updatedAt:new Date().toISOString(),retargetedAt:retargeting?new Date().toISOString():(previousGoal?.retargetedAt||null)};await storePut("meta",{key:"engineV2Goal",value:goal});currentEngineV2Goal=goal;currentGoalRequirements=buildGoalRequirementsV2(goal);currentGoalAssessment=assessGoalV2(currentAthleteProfileV2,currentGoalRequirements,goal);currentSecondaryGoals=normalizeSecondaryGoals(currentSecondaryGoals,goal);currentAvailabilityExceptions=normalizeAvailabilityExceptions(currentAvailabilityExceptions,goal);await persistEngineV2Constraints();await pushPlanStateCloudBestEffort();currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,goal);currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,goal,currentSecondaryGoals,currentAvailabilityExceptions);renderEngineV2Cards();renderAvailabilityCard();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderTrainingPacesCard();renderAdaptiveEngineCard();ui.engineGoalDialog.close();toast(retargeting?"✅ Objetivo actualizado · ATLAS recalcula el futuro desde tu rendimiento real y conserva el histórico realizado.":"✅ Plan actualizado.");}
+async function saveEngineV2Goal(event){
+  if(!event.submitter||event.submitter.value!=="default")return;
+  event.preventDefault();
+  const type=ui.engineGoalType.value,date=ui.engineGoalDate.value,startDate=ui.engineGoalStartDate.value,name=ui.engineGoalName.value.trim(),targetTimeSec=engineV2ParseTime(ui.engineGoalTime.value),today=fmtDate(new Date());
+  if(!date||date<today){toast("⚠️ Indica una fecha futura para la carrera.",true);return;}
+  if(!startDate||startDate>=date){toast("⚠️ El inicio del plan debe ser anterior a la carrera.",true);return;}
+  if(startDate<today&&startDate!==currentEngineV2Goal?.startDate){toast("⚠️ La nueva fecha de inicio no puede estar en el pasado.",true);return;}
+  if(!Number.isFinite(targetTimeSec)||targetTimeSec<=0){toast("⚠️ Usa H:MM:SS o MM:SS para la marca objetivo.",true);return;}
+  const previousGoal=currentEngineV2Goal?{...currentEngineV2Goal}:null;
+  const publishedGoalChanged=Boolean(currentPlanManifest?.status==="published"&&previousGoal&&(
+    previousGoal.type!==type||previousGoal.date!==date||previousGoal.startDate!==startDate||Number(previousGoal.targetTimeSec)!==Number(targetTimeSec)
+  ));
+  const retargeting=Boolean(previousGoal&&previousGoal.startDate<today&&currentPlanManifest?.planId&&Number(previousGoal.targetTimeSec)!==Number(targetTimeSec));
+  const goal={version:4,type,date,startDate,name:name||null,targetTimeSec,availableDays:collectEngineV2Days(),planId:currentEngineV2Goal?.planId||currentPlanManifest?.planId||null,updatedAt:new Date().toISOString(),retargetedAt:retargeting?new Date().toISOString():(previousGoal?.retargetedAt||null)};
+  await storePut("meta",{key:"engineV2Goal",value:goal});currentEngineV2Goal=goal;
+  if(publishedGoalChanged){
+    await storeDelete("meta","engineV2PlanRevisionDraft").catch(()=>{});
+    currentPlanRevisionDraft=null;
+  }
+  currentGoalRequirements=buildGoalRequirementsV2(goal);currentGoalAssessment=assessGoalV2(currentAthleteProfileV2,currentGoalRequirements,goal);currentSecondaryGoals=normalizeSecondaryGoals(currentSecondaryGoals,goal);currentAvailabilityExceptions=normalizeAvailabilityExceptions(currentAvailabilityExceptions,goal);
+  await persistEngineV2Constraints();await pushPlanStateCloudBestEffort();
+  currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,goal);currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,goal,currentSecondaryGoals,currentAvailabilityExceptions);
+  renderEngineV2Cards();renderAvailabilityCard();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderTrainingPacesCard();renderAdaptiveEngineCard();renderPlanPublicationStatus();
+  ui.engineGoalDialog.close();
+  if(publishedGoalChanged)toast(`✅ Objetivo actualizado a ${engineV2FormatTime(targetTimeSec)} · abre Adaptación → Cambios del plan para recalcular el futuro.`);
+  else toast(retargeting?"✅ Objetivo actualizado · ATLAS recalcula el futuro desde tu rendimiento real y conserva el histórico realizado.":"✅ Plan actualizado.");
+}
 async function deleteEngineV2Goal(){
   if(!currentEngineV2Goal)return;
   const planId=currentPlanManifest?.planId||currentEngineV2Goal?.planId||null,published=!!planId;
@@ -4801,7 +4862,7 @@ async function publishCurrentPlan(){
   if(!currentSessionPlan?.ok||!currentEngineV2Goal){toast("⚠️ No hay un plan válido para publicar.",true);return;}
   const publishState=currentPlanPublishState();
   if(publishState==="published"&&currentPlanManifest?.planId){try{ui.sessionPublishBtn.disabled=true;const expected=(currentPlanManifest.events||[]).map(e=>e.external_id).filter(Boolean);recordOpsEvent("plan-verify-start","Verificación de plan publicada",{planId:currentPlanManifest.planId,sessions:expected.length}).catch(()=>{});await verifyPlanEvents(currentPlanManifest.planId,currentEngineV2Goal,expected);currentPlanManifest={...currentPlanManifest,verifiedAt:new Date().toISOString()};await storePut("meta",{key:"engineV2PlanManifest",value:currentPlanManifest});await syncCalendar(false);renderPlanPublicationStatus();recordOpsEvent("plan-verify-success","Plan verificado en Intervals.icu",{planId:currentPlanManifest.planId,sessions:expected.length}).catch(()=>{});toast(`✅ Intervals.icu verificado · ${expected.length} sesiones.`);}catch(error){recordRuntimeAudit("plan-verify",error,{planId:currentPlanManifest?.planId}).catch(()=>{});toast(`⚠️ ${error.message}`,true);}finally{ui.sessionPublishBtn.disabled=false;renderPlanPublicationStatus();}return;}
-  if(publishState==="dirty"){if(ui.sessionGeneratorDetail&&!ui.sessionGeneratorDetail.classList.contains("hidden"))closeSessionGenerator();openAdaptiveEngine();toast("ℹ️ Prepara y revisa los cambios antes de actualizar Intervals.icu.");return;}
+  if(publishState==="dirty"){if(ui.sessionGeneratorDetail&&!ui.sessionGeneratorDetail.classList.contains("hidden"))closeSessionGenerator();openAdaptiveEngine();requestAnimationFrame(()=>$("adaptiveRevisionCard")?.scrollIntoView({block:"start",behavior:"smooth"}));toast("ℹ️ Cambios pendientes · pulsa Recalcular futuro, revisa la propuesta y después Aplicar en Intervals.icu.");return;}
   if(currentSessionPlan.audit?.some(x=>x.status==="bad")){toast("⚠️ Corrige primero los conflictos críticos del plan.",true);return;}
   const oldManifest=currentPlanManifest,planId=oldManifest?.planId||currentEngineV2Goal.planId||engineV2Uuid(),todayForPublish=fmtDate(new Date()),preservedPast=oldManifest?.status==="published"&&Array.isArray(oldManifest?.sessionSnapshot)?oldManifest.sessionSnapshot.filter(x=>String(x?.date||"")<todayForPublish).map(x=>({...x})):[],publishFuture=currentSessionPlan.sessions.filter(x=>String(x?.date||"")>=todayForPublish).map(x=>({...x})),publicationPlan={ok:true,sessions:[...preservedPast,...publishFuture].sort((a,b)=>String(a.date).localeCompare(String(b.date))||String(a.logicalId).localeCompare(String(b.logicalId)))},preflight=enginePublicationPreflight(publicationPlan,currentEngineV2Goal,oldManifest,todayForPublish);
   if(!preflight.ok){recordOpsEvent("plan-publish-blocked",preflight.blockers[0]?.detail||"Conflicto crítico de integridad",{blockers:preflight.blockers.map(x=>({key:x.key,detail:x.detail}))},"warn").catch(()=>{});toast(`⚠️ Publicación bloqueada: ${preflight.blockers[0]?.detail||"conflicto crítico de integridad"}.`,true);openAdaptiveEngine();return;}
@@ -5112,10 +5173,21 @@ function revisionChangeDate(c){const a=c.after||c.before;return String(a?.start_
 function revisionConfigurationSignature(goal=currentEngineV2Goal,secondary=currentSecondaryGoals,availability=currentAvailabilityExceptions){return planStableHash(JSON.stringify({goal:manifestGoalSnapshot(goal),secondary:manifestSecondarySnapshot(secondary),availability:manifestAvailabilitySnapshot(availability)}));}
 async function persistRevisionHistory(entry){currentPlanRevisionHistory=[...currentPlanRevisionHistory,entry].slice(-40);await storePut("meta",{key:"engineV2PlanRevisionHistory",value:currentPlanRevisionHistory});}
 async function prepareAdaptiveRevision(){
-  if(!currentAdaptiveState?.ok||currentAdaptiveState.decision.level===0){toast("✅ El plan actual no necesita revisión.");return;}if(currentPlanManifest?.status!=="published"){toast("⚠️ Publica primero el plan en Intervals.icu.",true);return;}
+  const a=currentAdaptiveState,config=a?.config||adaptiveConfigurationEvidence(currentPlanManifest,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions,currentSessionPlan),configChanged=!!config?.changed;
+  if((!a?.ok||a.decision.level===0)&&!configChanged){toast("✅ El plan actual no necesita revisión.");return;}
+  const adaptiveForRevision=a?.ok?a:{ok:true,config,recovery:{degraded:false,stronglyDegraded:false},manual:{items:[],keyLossItems:[],keyLosses:0},race:{pending:[],checkpoints:[]},recentOutcomes:[],decision:{level:0,reasons:[config?.detail||"Configuración modificada"],keyIssues:0,missed:0,costly:0}};
+  if(currentPlanManifest?.status!=="published"){toast("⚠️ Publica primero el plan en Intervals.icu.",true);return;}
   const base=authoritativePublishedPlan(currentSessionPlan,currentPlanManifest);if(!base?.ok||!base.sessions?.length){toast("⚠️ Falta la instantánea estructurada del plan publicado. Vuelve a publicar/verificar el plan.",true);return;}
-  try{ui.adaptiveRevisionPrepare.disabled=true;const candidate=buildAdaptiveRevisionPlanV1(base,currentSessionPlan,currentAdaptiveState,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);if(!candidate?.ok)throw new Error("No se pudo construir la revisión.");const gate=enginePublicationPreflight(candidate,currentEngineV2Goal,currentPlanManifest,candidate.today||fmtDate(new Date()));if(!gate.ok)throw new Error(`Revisión bloqueada por integridad: ${gate.blockers[0]?.detail||"conflicto crítico"}.`);const remote=await findRemotePlanEvents(currentPlanManifest.planId,currentEngineV2Goal),diff=buildPlanRevisionDiff(remote,candidate,currentPlanManifest.planId,currentEngineV2Goal,currentAdaptiveState);
-    const draft={version:1,id:engineV2Uuid(),status:"candidate",baseRevision:Number(currentPlanManifest.revision)||0,planId:currentPlanManifest.planId,level:currentAdaptiveState.decision.level,createdAt:new Date().toISOString(),reason:currentAdaptiveState.decision.reasons.join(" · "),configurationSignature:revisionConfigurationSignature(),adaptiveSignature:revisionAdaptiveSignature(),performanceCheckpointKeys:candidate.performanceCheckpointKeys||[],candidatePlan:candidate,changes:diff.changes,upserts:diff.upserts,deletes:diff.deletes};currentPlanRevisionDraft=draft;await storePut("meta",{key:"engineV2PlanRevisionDraft",value:draft});await pushPlanStateCloudBestEffort();renderAdaptiveRevision();recordOpsEvent("revision-prepared","Revisión adaptativa preparada",{id:draft.id,level:draft.level,changes:diff.changes.length,upserts:diff.upserts.length,deletes:diff.deletes.length}).catch(()=>{});toast(diff.changes.length?`✅ Revisión preparada · ${diff.changes.length} cambios.`:"✅ Revisión analizada · no hacen falta cambios de calendario.");
+  try{
+    ui.adaptiveRevisionPrepare.disabled=true;
+    const candidate=buildAdaptiveRevisionPlanV1(base,currentSessionPlan,adaptiveForRevision,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);if(!candidate?.ok)throw new Error("No se pudo construir la revisión.");
+    const gate=enginePublicationPreflight(candidate,currentEngineV2Goal,currentPlanManifest,candidate.today||fmtDate(new Date()));if(!gate.ok)throw new Error(`Revisión bloqueada por integridad: ${gate.blockers[0]?.detail||"conflicto crítico"}.`);
+    const remote=await findRemotePlanEvents(currentPlanManifest.planId,currentEngineV2Goal),diff=buildPlanRevisionDiff(remote,candidate,currentPlanManifest.planId,currentEngineV2Goal,adaptiveForRevision);
+    const level=Math.max(Number(a?.decision?.level)||0,Number(config?.level)||0),reason=configChanged?(config?.detail||config?.label||"Configuración del plan modificada"):(a?.decision?.reasons||[]).join(" · ");
+    const draft={version:2,id:engineV2Uuid(),status:"candidate",baseRevision:Number(currentPlanManifest.revision)||0,planId:currentPlanManifest.planId,level,createdAt:new Date().toISOString(),reason,configurationSignature:revisionConfigurationSignature(),adaptiveSignature:a?.ok?revisionAdaptiveSignature(a):null,performanceCheckpointKeys:candidate.performanceCheckpointKeys||[],candidatePlan:candidate,changes:diff.changes,upserts:diff.upserts,deletes:diff.deletes};
+    currentPlanRevisionDraft=draft;await storePut("meta",{key:"engineV2PlanRevisionDraft",value:draft});await pushPlanStateCloudBestEffort();renderAdaptiveRevision();
+    recordOpsEvent("revision-prepared",configChanged?"Revisión de configuración preparada":"Revisión adaptativa preparada",{id:draft.id,level:draft.level,changes:diff.changes.length,upserts:diff.upserts.length,deletes:diff.deletes.length,configChanged}).catch(()=>{});
+    toast(diff.changes.length?`✅ Revisión preparada · ${diff.changes.length} cambios futuros.`:"✅ Revisión analizada · no hacen falta cambios de calendario.");
   }catch(error){recordRuntimeAudit("revision-prepare",error).catch(()=>{});toast(`⚠️ ${error.message}`,true);}finally{ui.adaptiveRevisionPrepare.disabled=false;}
 }
 async function rejectAdaptiveRevision(){if(!currentPlanRevisionDraft)return;if(!confirm("¿Descartar esta propuesta de revisión? El calendario publicado no cambiará."))return;await persistRevisionHistory({id:currentPlanRevisionDraft.id,status:"rejected",level:currentPlanRevisionDraft.level,reason:currentPlanRevisionDraft.reason,changes:currentPlanRevisionDraft.changes.length,at:new Date().toISOString()});await storeDelete("meta","engineV2PlanRevisionDraft");currentPlanRevisionDraft=null;await pushPlanStateCloudBestEffort();renderAdaptiveRevision();toast("✅ Propuesta descartada.");}
@@ -5140,10 +5212,24 @@ async function applyAdaptiveRevision(){
   }catch(error){recordRuntimeAudit("revision-apply",error,{id:d.id,...counts}).catch(()=>{});currentPlanRevisionDraft={...applying,status:"error",error:String(error.message||error),updatedAt:new Date().toISOString()};await storePut("meta",{key:"engineV2PlanRevisionDraft",value:currentPlanRevisionDraft});await pushPlanStateCloudBestEffort();renderAdaptiveRevision();toast(`⚠️ ${error.message}`,true);}
 }
 function renderAdaptiveRevision(){
-  if(!ui.adaptiveRevisionStatus)return;const d=currentPlanRevisionDraft,a=currentAdaptiveState;ui.adaptiveRevisionSummary.innerHTML="";ui.adaptiveRevisionDiff.innerHTML="";ui.adaptiveRevisionActions.classList.add("hidden");ui.adaptiveRevisionPrepare.classList.remove("hidden");ui.adaptiveRevisionPrepare.disabled=false;
-  if(currentPlanManifest?.status!=="published"){ui.adaptiveRevisionStatus.textContent="Publica el plan para poder crear revisiones diferenciales.";ui.adaptiveRevisionPrepare.classList.add("hidden");return;}
-  if(d){const counts={m:d.changes.filter(x=>x.kind==="modified").length,a:d.changes.filter(x=>x.kind==="added").length,r:d.changes.filter(x=>x.kind==="removed").length};ui.adaptiveRevisionStatus.textContent=d.status==="error"?`La aplicación anterior quedó incompleta: ${d.error||"puedes reintentar"}.`:d.status==="applying"?"Aplicando y verificando la revisión…":`${adaptiveUserLevel(d.level)} · ${d.reason||"Revisión ATLAS"}`;ui.adaptiveRevisionSummary.innerHTML=`<div class="adaptive-revision-summary"><div class="adaptive-revision-stat"><div class="adaptive-revision-value">${counts.m}</div><div class="adaptive-revision-label">modificar</div></div><div class="adaptive-revision-stat"><div class="adaptive-revision-value">${counts.a}</div><div class="adaptive-revision-label">añadir</div></div><div class="adaptive-revision-stat"><div class="adaptive-revision-value">${counts.r}</div><div class="adaptive-revision-label">eliminar</div></div></div>`;const shown=d.changes.slice(0,18);ui.adaptiveRevisionDiff.innerHTML=shown.map(c=>{const before=c.before?.name||"—",after=c.after?.name||"—",date=revisionChangeDate(c);return`<div class="adaptive-revision-item"><div class="adaptive-revision-title">${esc(revisionChangeLabel(c))} · ${esc(after!=="—"?after:before)}</div><div class="adaptive-revision-meta">${esc(engineV2DateLabel(date))}${c.kind==="modified"&&before!==after?` · ${esc(before)} → ${esc(after)}`:""}</div><div class="adaptive-revision-reason">${esc(c.reason||"")}</div></div>`;}).join("")+(d.changes.length>shown.length?`<div class="macro-week-note">+ ${d.changes.length-shown.length} cambios más</div>`:"");ui.adaptiveRevisionPrepare.classList.add("hidden");ui.adaptiveRevisionActions.classList.remove("hidden");ui.adaptiveRevisionApply.disabled=d.status==="applying"||(!d.changes.length&&!(d.performanceCheckpointKeys||[]).length);ui.adaptiveRevisionReject.disabled=d.status==="applying";return;}
-  if(!a?.ok||a.decision.level===0){ui.adaptiveRevisionStatus.textContent="No se propone ninguna modificación del calendario.";ui.adaptiveRevisionPrepare.classList.add("hidden");return;}ui.adaptiveRevisionStatus.textContent=`${adaptiveUserLevel(a.decision.level)} · ${a.decision.action}. La propuesta se calcula antes de tocar Intervals.icu.`;ui.adaptiveRevisionPrepare.textContent="Preparar revisión";
+  if(!ui.adaptiveRevisionStatus)return;
+  const d=currentPlanRevisionDraft,a=currentAdaptiveState,config=a?.config||adaptiveConfigurationEvidence(currentPlanManifest,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions,currentSessionPlan),configChanged=!!config?.changed,card=$("adaptiveRevisionCard");
+  ui.adaptiveRevisionSummary.innerHTML="";ui.adaptiveRevisionDiff.innerHTML="";ui.adaptiveRevisionActions.classList.add("hidden");ui.adaptiveRevisionPrepare.classList.remove("hidden");ui.adaptiveRevisionPrepare.disabled=false;ui.adaptiveRevisionPrepare.textContent="Preparar revisión";card?.classList.toggle("config-dirty",configChanged&&!d);
+  if(currentPlanManifest?.status!=="published"){ui.adaptiveRevisionStatus.textContent="Publica el plan para poder comparar y aplicar cambios futuros.";ui.adaptiveRevisionPrepare.classList.add("hidden");return;}
+  if(d){
+    const counts={m:d.changes.filter(x=>x.kind==="modified").length,a:d.changes.filter(x=>x.kind==="added").length,r:d.changes.filter(x=>x.kind==="removed").length};
+    ui.adaptiveRevisionStatus.textContent=d.status==="error"?`La aplicación anterior quedó incompleta: ${d.error||"puedes reintentar"}.`:d.status==="applying"?"Aplicando y verificando la revisión…":`${adaptiveUserLevel(d.level)} · ${d.reason||"Revisión ATLAS"}`;
+    ui.adaptiveRevisionSummary.innerHTML=`<div class="adaptive-revision-summary"><div class="adaptive-revision-stat"><div class="adaptive-revision-value">${counts.m}</div><div class="adaptive-revision-label">modificar</div></div><div class="adaptive-revision-stat"><div class="adaptive-revision-value">${counts.a}</div><div class="adaptive-revision-label">añadir</div></div><div class="adaptive-revision-stat"><div class="adaptive-revision-value">${counts.r}</div><div class="adaptive-revision-label">eliminar</div></div></div>`;
+    const shown=d.changes.slice(0,18);ui.adaptiveRevisionDiff.innerHTML=shown.map(c=>{const before=c.before?.name||"—",after=c.after?.name||"—",date=revisionChangeDate(c);return`<div class="adaptive-revision-item"><div class="adaptive-revision-title">${esc(revisionChangeLabel(c))} · ${esc(after!=="—"?after:before)}</div><div class="adaptive-revision-meta">${esc(engineV2DateLabel(date))}${c.kind==="modified"&&before!==after?` · ${esc(before)} → ${esc(after)}`:""}</div><div class="adaptive-revision-reason">${esc(c.reason||"")}</div></div>`;}).join("")+(d.changes.length>shown.length?`<div class="macro-week-note">+ ${d.changes.length-shown.length} cambios más</div>`:"");
+    ui.adaptiveRevisionPrepare.classList.add("hidden");ui.adaptiveRevisionActions.classList.remove("hidden");ui.adaptiveRevisionApply.disabled=d.status==="applying"||(!d.changes.length&&!(d.performanceCheckpointKeys||[]).length);ui.adaptiveRevisionReject.disabled=d.status==="applying";return;
+  }
+  if(configChanged){
+    const target=currentEngineV2Goal?.targetTimeSec?engineV2FormatTime(currentEngineV2Goal.targetTimeSec):"nuevo objetivo";
+    ui.adaptiveRevisionStatus.textContent=`${config.label||"Plan modificado"}. ATLAS ya ha recalculado el plan local para ${target}; falta comparar el futuro con lo publicado en Intervals.icu.`;
+    ui.adaptiveRevisionPrepare.textContent="Recalcular futuro";return;
+  }
+  if(!a?.ok||a.decision.level===0){ui.adaptiveRevisionStatus.textContent="Plan alineado · no hay cambios pendientes.";ui.adaptiveRevisionPrepare.classList.add("hidden");return;}
+  ui.adaptiveRevisionStatus.textContent=`${adaptiveUserLevel(a.decision.level)} · ${a.decision.action}. La propuesta se calcula antes de tocar Intervals.icu.`;ui.adaptiveRevisionPrepare.textContent="Preparar revisión";
 }
 function adaptiveUserLevel(level,short=false){
   const full=["Sin cambios","Ajuste próximo","Revisión parcial","Revisión completa"],compact=["Ninguno","Próximo","Parcial","Completo"];const i=Math.max(0,Math.min(3,Number(level)||0));return(short?compact:full)[i];
@@ -7309,7 +7395,10 @@ function buildAdaptiveRevisionPlanV1(basePlan,generatedPlan,adaptive,profile,req
 function revisionAdaptiveSignature(a=currentAdaptiveState){if(!a?.ok)return"none";return planStableHash(JSON.stringify({today:a.today,level:a.decision?.level,reasons:a.decision?.reasons||[],outcomes:(a.recentOutcomes||[]).map(o=>[o.session?.logicalId,o.session?.date,o.status,o.dateDelta,o.responseCost,o.rpe]),manual:(a.manual?.items||[]).map(x=>[x.action,x.date,x.type,x.losesStimulus,x.replacement]),race:(a.race?.pending||[]).map(x=>[x.key,x.level,x.actualSec,x.targetSec]),progress:a.performanceProgress?[a.performanceProgress.status,a.performanceProgress.reviewKey,a.performanceProgress.completion,a.performanceProgress.keyCompletion,a.performanceProgress.capacities.map(x=>[x.capacity,x.status,x.ratio,x.avgRpe])]:null,recovery:(a.recovery?.signals||[]).map(x=>[x.label,x.status])}));}
 
 function renderAdaptiveEngineCard(){
-  if(!ui.adaptiveEngineMeta)return;const p=currentAdaptiveState?.performanceProgress,g=currentEngineV2Goal;if(!p||p.status==="insufficient"){ui.adaptiveEngineMeta.textContent="";return;}const target=g?.targetTimeSec?engineV2FormatTime(g.targetTimeSec):engineV2GoalLabel(g?.type);ui.adaptiveEngineMeta.textContent=`Objetivo ${target} · ${p.label}`;
+  if(!ui.adaptiveEngineMeta)return;const a=currentAdaptiveState,p=a?.performanceProgress,g=currentEngineV2Goal;
+  if(a?.config?.changed){ui.adaptiveEngineMeta.textContent=`Cambios pendientes · ${a.config.label||a.config.detail||"revisión necesaria"}`;return;}
+  if(!p||p.status==="insufficient"){ui.adaptiveEngineMeta.textContent="";return;}
+  const target=g?.targetTimeSec?engineV2FormatTime(g.targetTimeSec):engineV2GoalLabel(g?.type);ui.adaptiveEngineMeta.textContent=`Objetivo ${target} · ${p.label}`;
 }
 function renderPerformanceTrajectory(){
   const status=$("adaptiveTrajectoryStatus"),windowEl=$("adaptiveTrajectoryWindow"),reading=$("adaptiveTrajectoryReading"),rows=$("adaptiveTrajectoryRows");if(!status||!windowEl||!reading||!rows)return;const p=currentAdaptiveState?.performanceProgress;if(!p){status.textContent="Sin evidencia suficiente";status.className="adaptive-trajectory-status neutral";windowEl.textContent="Últimos 28 días";reading.textContent="ATLAS necesita varias semanas de entrenamiento realizado para valorar la dirección del plan.";rows.innerHTML="";return;}
@@ -7570,7 +7659,11 @@ function runEngineIntegritySuite(force=false){
 }
 function renderEngineIntegrity(){const r=currentEngineIntegrityReport,score=$("engineIntegrityScore"),block=$("engineIntegrityBlockers"),warn=$("engineIntegrityWarnings"),reading=$("engineIntegrityReading"),rows=$("engineIntegrityRows");if(!score||!block||!warn||!reading||!rows)return;if(!r){score.textContent="—";block.textContent="—";warn.textContent="—";rows.innerHTML="";return;}score.textContent=`${r.score}%`;block.textContent=String(r.blockers.length);warn.textContent=String(r.warnings.length);reading.textContent=r.blockers.length?`ATLAS ha bloqueado ${r.blockers.length} punto(s) crítico(s). Publicación y revisiones quedan protegidas por el preflight.`:r.warnings.length?`Pipeline operativo · ${r.warnings.length} aviso(s) no bloqueante(s) bajo vigilancia.`:"Pipeline íntegro: generación, adaptación, confianza y serialización superan la auditoría local.";rows.innerHTML=r.checks.map(x=>`<div class="engine-v2-row"><div class="engine-v2-row-key">${esc(x.label)}</div><div class="engine-v2-row-value ${x.status==="ok"?"good":x.status==="warn"?"mid":"bad"}">${x.status==="ok"?"✓":x.status==="warn"?"~":"!"} ${esc(x.detail)}</div></div>`).join("");}
 on($("engineIntegrityRun"),"click",()=>{currentEngineIntegrityReport=null;runEngineIntegritySuite(true);});
-function renderAdaptiveEngine(){renderAdaptiveEngineLegacy();renderPerformanceTrajectory();renderAdaptiveEngineCard();renderRaceReadiness();renderEngineLiveBlock();renderEngineValidation();renderEngineBacktest();renderEngineIntegrity();}
+function renderAdaptiveEngine(){
+  renderAdaptiveEngineLegacy();renderPerformanceTrajectory();renderAdaptiveEngineCard();renderRaceReadiness();renderEngineLiveBlock();renderEngineValidation();renderEngineBacktest();renderEngineIntegrity();
+  const today=fmtDate(new Date()),started=Boolean(currentEngineV2Goal?.startDate&&currentEngineV2Goal.startDate<=today);
+  $("adaptiveTrajectoryCard")?.classList.toggle("hidden",!started);$("engineLiveBlockCard")?.classList.toggle("hidden",!started);$("adaptiveEvidenceCard")?.classList.toggle("hidden",!started);$("adaptiveOutcomesCard")?.classList.toggle("hidden",!started);
+}
 
 /* ===== ɅTLɅS v0.117 · congelación funcional / release candidate ===== */
 async function beginReleaseSession(){
