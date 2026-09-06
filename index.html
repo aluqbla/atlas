@@ -863,43 +863,6 @@ input[type="date"]::-webkit-date-and-time-value{display:flex!important;align-ite
 @media(max-width:390px){.engine-validation-score{font-size:19px}.engine-validation-label{font-size:9.1px}.engine-backtest-title{font-size:12.5px}}
 </style>
 
-<style id="atlas-v0118-plan-flow-fix">
-/* Adaptation is user-facing: technical validation remains automatic and out of the primary workflow. */
-#adaptiveEngineDetail #engineValidationCard,
-#adaptiveEngineDetail #engineBacktestCard,
-#adaptiveEngineDetail #engineIntegrityCard{display:none!important;}
-#adaptiveEngineDetail .adaptive-revision-card.config-dirty{
-  border-color:rgba(29,155,240,.62)!important;
-  box-shadow:0 16px 38px rgba(0,0,0,.34),0 0 0 1px rgba(29,155,240,.14),inset 0 1px 0 rgba(255,255,255,.08)!important;
-}
-#adaptiveEngineDetail .adaptive-revision-card.config-dirty .adaptive-revision-status{color:#d8ecfb!important;}
-
-/* Goal table: one shared divider only, inset from the outer border, and normal left alignment. */
-#planControlDetail .plan-goal-summary-item::before,
-#planControlDetail .plan-goal-summary-item::after{content:none!important;display:none!important;}
-#planControlDetail .plan-goal-summary::before{
-  content:""!important;display:block!important;position:absolute!important;z-index:3!important;pointer-events:none!important;
-  left:50%!important;top:10px!important;bottom:10px!important;width:var(--atlas-divider-w)!important;height:auto!important;
-  background:var(--atlas-divider-strong)!important;transform:translateX(-50%)!important;
-}
-#planControlDetail .plan-goal-summary::after{
-  content:""!important;display:block!important;position:absolute!important;z-index:3!important;pointer-events:none!important;
-  left:10px!important;right:10px!important;top:0!important;bottom:0!important;width:auto!important;height:auto!important;transform:none!important;
-  background:
-    linear-gradient(var(--atlas-divider-strong),var(--atlas-divider-strong)) left 25%/calc(50% - 8px) var(--atlas-divider-w) no-repeat,
-    linear-gradient(var(--atlas-divider-strong),var(--atlas-divider-strong)) right 25%/calc(50% - 8px) var(--atlas-divider-w) no-repeat,
-    linear-gradient(var(--atlas-divider-strong),var(--atlas-divider-strong)) left 50%/calc(50% - 8px) var(--atlas-divider-w) no-repeat,
-    linear-gradient(var(--atlas-divider-strong),var(--atlas-divider-strong)) right 50%/calc(50% - 8px) var(--atlas-divider-w) no-repeat,
-    linear-gradient(var(--atlas-divider-strong),var(--atlas-divider-strong)) left 75%/calc(50% - 8px) var(--atlas-divider-w) no-repeat,
-    linear-gradient(var(--atlas-divider-strong),var(--atlas-divider-strong)) right 75%/calc(50% - 8px) var(--atlas-divider-w) no-repeat!important;
-}
-#planControlDetail .plan-goal-summary-item{
-  justify-content:flex-start!important;text-align:left!important;padding:10px 11px!important;
-}
-#planControlDetail .plan-goal-summary-copy{align-items:flex-start!important;text-align:left!important;min-width:0!important;}
-#planControlDetail .plan-goal-summary-key,
-#planControlDetail .plan-goal-summary-value{text-align:left!important;}
-</style>
 </head>
 <body>
 <main class="app">
@@ -1296,12 +1259,12 @@ input[type="date"]::-webkit-date-and-time-value{display:flex!important;align-ite
 
     <div class="plan-goal-area">
       <button class="engine-v2-card goal" id="engineGoalCard" type="button">
-        <span class="engine-v2-copy"><span class="engine-v2-title" id="engineGoalTitle">Definir objetivo principal</span><span class="engine-v2-meta" id="engineGoalMeta"></span><span class="plan-goal-summary" id="planGoalSummary"></span></span>
+        <span class="engine-v2-copy"><span class="engine-v2-title" id="engineGoalTitle">Definir objetivo principal</span><span class="engine-v2-meta" id="engineGoalMeta"></span><span class="atlas-plan-info-grid" id="planGoalSummary"></span></span>
         <span class="engine-v2-arrow">›</span>
       </button>
     </div>
 
-    <div class="plan-home-links">
+    <div class="atlas-plan-home-links">
       <button class="availability-card" id="availabilityCard" type="button">
         <span class="engine-v2-icon">📅</span>
         <span class="engine-v2-copy"><span class="engine-v2-title">Disponibilidad</span><span class="engine-v2-meta" id="availabilityMeta">Sin excepciones semanales</span></span>
@@ -1432,6 +1395,11 @@ input[type="date"]::-webkit-date-and-time-value{display:flex!important;align-ite
     <div class="plan-detail-title-wrap"><div class="plan-detail-icon">📝</div><div class="plan-detail-title" id="sessionGeneratorTitle">Sesiones propuestas</div></div>
     <div class="session-generator-plan-list"><div class="hidden" id="sessionGeneratorListTitle"></div><div id="sessionGeneratorList"></div></div>
     <div class="hidden"><span id="sessionGeneratorWeeks">—</span><span id="sessionGeneratorRuns">—</span><span id="sessionGeneratorStrength">—</span><div id="sessionGeneratorAudit"></div><div id="sessionGeneratorReading">—</div></div>
+    <div class="plan-detail-card atlas-ai-plan-card">
+      <div class="plan-detail-section-title">Motor 2.0</div>
+      <div class="plan-publish-status" id="sessionAiPlanStatus">Pendiente de generar con IA.</div>
+      <button class="plan-publish-btn atlas-ai-regenerate-btn" type="button" id="sessionAiRegenerateBtn">Regenerar plan con IA</button>
+    </div>
     <div class="plan-detail-card">
       <div class="plan-detail-section-title">Intervals.icu</div>
       <div class="plan-publish-status" id="sessionPublishStatus">Plan todavía no publicado.</div>
@@ -1528,7 +1496,7 @@ input[type="date"]::-webkit-date-and-time-value{display:flex!important;align-ite
   <button class="nav-btn" data-tab="data"><span class="nav-icon">👤</span><span class="nav-label">Perfil</span></button>
 </nav>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" popover="manual" role="status" aria-live="polite"></div>
 
 <dialog id="settingsDialog">
 <form class="sheet" method="dialog" id="settingsForm">
@@ -1962,7 +1930,7 @@ html,body{overscroll-behavior-y:none}
 
 (()=>{
 "use strict";
-const APP_VERSION="0.123.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="0.124.1",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const ATLAS_RELEASE_STAGE="RC2.3",ATLAS_RELEASE_SESSION_KEY="releaseRuntimeSession",ATLAS_RELEASE_PREFLIGHT_KEY="releasePreflight",ATLAS_RELEASE_LKG_KEY="releaseLastKnownGood";
 let currentReleasePreflight=null;
 /* v0.114 maintenance: historical engine declarations shadowed by later implementations were removed.
@@ -1982,7 +1950,7 @@ const ui={
  adaptiveRevisionStatus:$("adaptiveRevisionStatus"),adaptiveRevisionSummary:$("adaptiveRevisionSummary"),adaptiveRevisionDiff:$("adaptiveRevisionDiff"),adaptiveRevisionPrepare:$("adaptiveRevisionPrepare"),adaptiveRevisionActions:$("adaptiveRevisionActions"),adaptiveRevisionReject:$("adaptiveRevisionReject"),adaptiveRevisionApply:$("adaptiveRevisionApply"),
  adaptiveEngineCard:$("adaptiveEngineCard"),adaptiveEngineMeta:$("adaptiveEngineMeta"),adaptiveEngineDetail:$("adaptiveEngineDetail"),adaptiveEngineBack:$("adaptiveEngineBack"),adaptiveEngineBottomBack:$("adaptiveEngineBottomBack"),adaptiveEngineDate:$("adaptiveEngineDate"),adaptiveCompleted:$("adaptiveCompleted"),adaptiveKeyIssues:$("adaptiveKeyIssues"),adaptiveLevel:$("adaptiveLevel"),adaptiveDecision:$("adaptiveDecision"),adaptiveReading:$("adaptiveReading"),adaptiveEvidenceRows:$("adaptiveEvidenceRows"),adaptiveOutcomes:$("adaptiveOutcomes"),adaptiveHistoryCard:$("adaptiveHistoryCard"),adaptiveHistory:$("adaptiveHistory"),
  sessionPublishStatus:$("sessionPublishStatus"),sessionPublishBtn:$("sessionPublishBtn"),
- trainingPacesCard:$("trainingPacesCard"),trainingPacesMeta:$("trainingPacesMeta"),trainingPacesDetail:$("trainingPacesDetail"),trainingPacesBack:$("trainingPacesBack"),trainingPacesBottomBack:$("trainingPacesBottomBack"),trainingPacesList:$("trainingPacesList"),sessionGeneratorCard:$("sessionGeneratorCard"),sessionGeneratorCardTitle:$("sessionGeneratorCardTitle"),sessionGeneratorMeta:$("sessionGeneratorMeta"),sessionGeneratorDetail:$("sessionGeneratorDetail"),sessionGeneratorBack:$("sessionGeneratorBack"),sessionGeneratorBottomBack:$("sessionGeneratorBottomBack"),sessionGeneratorDate:$("sessionGeneratorDate"),sessionGeneratorTitle:$("sessionGeneratorTitle"),sessionGeneratorListTitle:$("sessionGeneratorListTitle"),sessionGeneratorWeeks:$("sessionGeneratorWeeks"),sessionGeneratorRuns:$("sessionGeneratorRuns"),sessionGeneratorStrength:$("sessionGeneratorStrength"),sessionGeneratorAudit:$("sessionGeneratorAudit"),sessionGeneratorList:$("sessionGeneratorList"),sessionGeneratorReading:$("sessionGeneratorReading"),
+ trainingPacesCard:$("trainingPacesCard"),trainingPacesMeta:$("trainingPacesMeta"),trainingPacesDetail:$("trainingPacesDetail"),trainingPacesBack:$("trainingPacesBack"),trainingPacesBottomBack:$("trainingPacesBottomBack"),trainingPacesList:$("trainingPacesList"),sessionGeneratorCard:$("sessionGeneratorCard"),sessionGeneratorCardTitle:$("sessionGeneratorCardTitle"),sessionGeneratorMeta:$("sessionGeneratorMeta"),sessionGeneratorDetail:$("sessionGeneratorDetail"),sessionGeneratorBack:$("sessionGeneratorBack"),sessionGeneratorBottomBack:$("sessionGeneratorBottomBack"),sessionGeneratorDate:$("sessionGeneratorDate"),sessionGeneratorTitle:$("sessionGeneratorTitle"),sessionGeneratorListTitle:$("sessionGeneratorListTitle"),sessionGeneratorWeeks:$("sessionGeneratorWeeks"),sessionGeneratorRuns:$("sessionGeneratorRuns"),sessionGeneratorStrength:$("sessionGeneratorStrength"),sessionGeneratorAudit:$("sessionGeneratorAudit"),sessionGeneratorList:$("sessionGeneratorList"),sessionGeneratorReading:$("sessionGeneratorReading"),sessionAiPlanStatus:$("sessionAiPlanStatus"),sessionAiRegenerateBtn:$("sessionAiRegenerateBtn"),
  calendarSolverCard:$("calendarSolverCard"),calendarSolverMeta:$("calendarSolverMeta"),calendarSolverDetail:$("calendarSolverDetail"),calendarSolverBack:$("calendarSolverBack"),calendarSolverBottomBack:$("calendarSolverBottomBack"),calendarSolverDate:$("calendarSolverDate"),calendarSolverWeeks:$("calendarSolverWeeks"),calendarSolverSessions:$("calendarSolverSessions"),calendarSolverConflicts:$("calendarSolverConflicts"),calendarSolverAudit:$("calendarSolverAudit"),calendarSolverWeeksList:$("calendarSolverWeeksList"),calendarSolverReading:$("calendarSolverReading"),
  weeklyTargetsCard:$("weeklyTargetsCard"),weeklyTargetsMeta:$("weeklyTargetsMeta"),weeklyTargetsDetail:$("weeklyTargetsDetail"),weeklyTargetsBack:$("weeklyTargetsBack"),weeklyTargetsBottomBack:$("weeklyTargetsBottomBack"),weeklyTargetsDate:$("weeklyTargetsDate"),weeklyTargetsWeeks:$("weeklyTargetsWeeks"),weeklyTargetsSpecific:$("weeklyTargetsSpecific"),weeklyTargetsRaces:$("weeklyTargetsRaces"),weeklyTargetsList:$("weeklyTargetsList"),weeklyTargetsReading:$("weeklyTargetsReading"),
  macroTrajectoryCard:$("macroTrajectoryCard"),macroTrajectoryMeta:$("macroTrajectoryMeta"),macroTrajectoryDetail:$("macroTrajectoryDetail"),macroTrajectoryBack:$("macroTrajectoryBack"),macroTrajectoryBottomBack:$("macroTrajectoryBottomBack"),macroTrajectoryDate:$("macroTrajectoryDate"),macroWeeks:$("macroWeeks"),macroPeakVolume:$("macroPeakVolume"),macroPeakLong:$("macroPeakLong"),macroArchitectureRows:$("macroArchitectureRows"),macroAuditRows:$("macroAuditRows"),macroWeeksList:$("macroWeeksList"),macroReading:$("macroReading"),
@@ -1994,7 +1962,7 @@ const ui={
  smartSyncBtn:$("smartSyncBtn"),testBtn:$("testBtn"),settingsBtn:$("settingsBtn"),fullSyncBtn:$("fullSyncBtn"),exportBtn:$("exportBtn"),importBtn:$("importBtn"),clearBtn:$("clearBtn"),fileInput:$("fileInput"),toast:$("toast"),
  settingsDialog:$("settingsDialog"),settingsForm:$("settingsForm"),workerUrl:$("workerUrl"),clientToken:$("clientToken"),oldestDate:$("oldestDate"),newestDate:$("newestDate"),historyStart:$("historyStart"),overlapDays:$("overlapDays"),metricDetail:$("metricDetail"),metricDetailBack:$("metricDetailBack"),metricDetailTitle:$("metricDetailTitle"),metricDetailEmoji:$("metricDetailEmoji"),metricPeriodControl:$("metricPeriodControl"),metricPrev:$("metricPrev"),metricNext:$("metricNext"),metricRangeLabel:$("metricRangeLabel"),metricChartScroll:$("metricChartScroll"),metricChart:$("metricChart"),metricChartReadout:$("metricChartReadout"),chartLegend:$("chartLegend"),detailStatLabel1:$("detailStatLabel1"),detailStatValue1:$("detailStatValue1"),detailStatLabel2:$("detailStatLabel2"),detailStatValue2:$("detailStatValue2"),detailStatLabel3:$("detailStatLabel3"),detailStatValue3:$("detailStatValue3"),detailStatSub1:$("detailStatSub1"),detailStatSub2:$("detailStatSub2"),detailStatSub3:$("detailStatSub3"),metricContext:$("metricContext"),metricDetailBottomBack:$("metricDetailBottomBack"),stateDetail:$("stateDetail"),stateDetailBack:$("stateDetailBack"),stateDetailBottomBack:$("stateDetailBottomBack"),stateDetailHero:$("stateDetailHero"),stateDetailRing:$("stateDetailRing"),stateDetailScore:$("stateDetailScore"),stateDetailWord:$("stateDetailWord"),stateDetailNote:$("stateDetailNote"),stateDetailMeta:$("stateDetailMeta"),stateFactors:$("stateFactors"),stateBaseScore:$("stateBaseScore"),stateRecoveryPenalty:$("stateRecoveryPenalty"),stateLimiter:$("stateLimiter")
 };
-let db,dbOpenPromise=null,toastTimer,currentActivities=[],currentWellness=[],currentGear=[],currentEvents=[],currentCachedVo2=null,currentEngineV2Goal=null,currentSecondaryGoals=[],currentAvailabilityExceptions=[],currentSecondaryEditId=null,currentAvailabilityEditWeek=null,currentAthleteProfileV2=null,currentGoalRequirements=null,currentGoalAssessment=null,currentMacroTrajectory=null,currentWeeklyTargets=null,currentCalendarSolution=null,currentSessionPlan=null,currentPlanManifest=null,currentPlanCloudMeta=null,currentAdaptiveState=null,currentPlanRevisionDraft=null,currentPlanRevisionHistory=[],currentPlanManualAction=null,currentPlanWeekStart=null,currentPlanEvent=null,currentPlanOutcome=null,currentPlanEditEvent=null,lastCalendarRefreshAt=0,currentActivityDetail=null,currentActivityMap=null,currentActivityStreams=null,currentActivityVo2=null,currentActivityChartKey=null,activityChartZoom=1,activityPinchStartDistance=0,activityPinchStartZoom=1,activityChartPointerStart=null,activityChartReadoutTimer=null,activityLapZoom=1,activityLapPinchStartDistance=0,activityLapPinchStartZoom=1,currentActivityLapIndex=null,activityLapMainFilter="all",currentRunningRecords=null,currentRecordsLoading=false,currentMetricDetail=null,currentMetricDays=30,currentMetricEnd=null,currentAtlasState=null,currentChartState=null,chartReadoutTimer=null,chartZoom=1,pinchStartDistance=0,pinchStartZoom=1,chartPointerStart=null,metricZoomRaf=0,metricZoomPending=null,activityZoomRaf=0,activityZoomPending=null,dataSyncPromise=null,calendarSyncPromise=null,planCloudSyncPromise=null,foregroundRefreshPromise=null,runtimeRefreshStarted=false,runtimeGuardsInstalled=false,atlasScrollAuditInstalled=false,initStarted=false,initCompleted=false,currentActivityRequestToken=0,assistantChats=[],currentAssistantChatId=null,assistantSending=false,assistantPendingError="",assistantScrollRaf=0,activityAiRequestToken=0,activityAiCache=new Map(),navGlassRaf=0,vo2HistoryBackfillPromise=null,vo2HistoryBackfillTimer=null,vo2HistoryBackfillRange=null;
+let db,dbOpenPromise=null,toastTimer,currentActivities=[],currentWellness=[],currentGear=[],currentEvents=[],currentCachedVo2=null,currentEngineV2Goal=null,currentSecondaryGoals=[],currentAvailabilityExceptions=[],currentSecondaryEditId=null,currentAvailabilityEditWeek=null,currentAthleteProfileV2=null,currentGoalRequirements=null,currentGoalAssessment=null,currentMacroTrajectory=null,currentWeeklyTargets=null,currentCalendarSolution=null,currentSessionPlan=null,currentPlanManifest=null,currentPlanCloudMeta=null,currentAdaptiveState=null,currentAiPlanV2=null,currentProfilePhotoObjectUrl=null,currentProfilePhotoRequestKey=null,currentPlanRevisionDraft=null,currentPlanRevisionHistory=[],currentPlanManualAction=null,currentPlanWeekStart=null,currentPlanEvent=null,currentPlanOutcome=null,currentPlanEditEvent=null,lastCalendarRefreshAt=0,currentActivityDetail=null,currentActivityMap=null,currentActivityStreams=null,currentActivityVo2=null,currentActivityChartKey=null,activityChartZoom=1,activityPinchStartDistance=0,activityPinchStartZoom=1,activityChartPointerStart=null,activityChartReadoutTimer=null,activityLapZoom=1,activityLapPinchStartDistance=0,activityLapPinchStartZoom=1,currentActivityLapIndex=null,activityLapMainFilter="all",currentRunningRecords=null,currentRecordsLoading=false,currentMetricDetail=null,currentMetricDays=30,currentMetricEnd=null,currentAtlasState=null,currentChartState=null,chartReadoutTimer=null,chartZoom=1,pinchStartDistance=0,pinchStartZoom=1,chartPointerStart=null,metricZoomRaf=0,metricZoomPending=null,activityZoomRaf=0,activityZoomPending=null,dataSyncPromise=null,calendarSyncPromise=null,planCloudSyncPromise=null,foregroundRefreshPromise=null,runtimeRefreshStarted=false,runtimeGuardsInstalled=false,atlasScrollAuditInstalled=false,initStarted=false,initCompleted=false,currentActivityRequestToken=0,assistantChats=[],currentAssistantChatId=null,assistantSending=false,assistantPendingError="",assistantScrollRaf=0,activityAiRequestToken=0,activityAiCache=new Map(),navGlassRaf=0,vo2HistoryBackfillPromise=null,vo2HistoryBackfillTimer=null,vo2HistoryBackfillRange=null;
 window.addEventListener("DOMContentLoaded",()=>bootstrapAtlas().catch(reportFatalError));
 const CORE_UI_KEYS=["todayDate","lastActivityBtn","activitiesList","activityDetail","metricDetail","stateDetail","toast","settingsDialog"];
 function assertCoreUi(){const missing=CORE_UI_KEYS.filter(key=>!ui[key]);if(missing.length)throw new Error(`Interfaz incompleta: ${missing.join(", ")}`);return true;}
@@ -2296,7 +2264,7 @@ function bindEvents(){
  on(ui.activityChartTabs,"click",e=>{const b=e.target.closest(".activity-chart-tab");if(!b)return;const key=b.dataset.key;if(currentActivityChartKey===key)return;currentActivityChartKey=key;activityChartZoom=1;if(ui.activityChartScroll)ui.activityChartScroll.scrollLeft=0;hideActivityChartReadout();renderActivityAnalysis();});
  on(ui.activityChart,"pointerdown",e=>{activityChartPointerStart={x:e.clientX,y:e.clientY};});on(ui.activityChart,"pointerup",handleActivityChartPointerUp);
  on(ui.activityChartScroll,"touchstart",handleActivityChartPinchStart,{passive:true});on(ui.activityChartScroll,"touchmove",handleActivityChartPinchMove,{passive:false});on(ui.activityChartScroll,"touchend",handleActivityChartPinchEnd,{passive:true});on(ui.activityChartScroll,"scroll",clampActivityChartScroll,{passive:true});on(ui.activityChartScroll,"dblclick",()=>setActivityChartZoom(1));on(ui.activityLapBars,"click",e=>{const b=e.target.closest("[data-lap-index]");if(b)selectActivityLap(b.dataset.lapIndex);});on(ui.activityLapsRows,"click",e=>{const r=e.target.closest("[data-lap-index]");if(r)selectActivityLap(r.dataset.lapIndex);});on(ui.activityLapBarsScroll,"touchstart",handleActivityLapPinchStart,{passive:true});on(ui.activityLapBarsScroll,"touchmove",handleActivityLapPinchMove,{passive:false});on(ui.activityLapBarsScroll,"touchend",handleActivityLapPinchEnd,{passive:true});on(ui.activityLapBarsScroll,"dblclick",()=>setActivityLapZoom(1));
- on(ui.secondaryGoalAdd,"click",()=>openSecondaryGoalDialog());on(ui.secondaryGoalList,"click",e=>{const b=e.target.closest("[data-secondary-goal-id]");if(b)openSecondaryGoalDialog(b.dataset.secondaryGoalId);});on(ui.secondaryGoalForm,"submit",saveSecondaryGoal);on(ui.secondaryGoalDelete,"click",deleteSecondaryGoal);on(ui.availabilityCard,"click",openAvailabilityDialog);on(ui.availabilityForm,"submit",saveAvailabilityException);on(ui.availabilityDelete,"click",deleteAvailabilityException);on(ui.availabilityWeekDate,"change",loadAvailabilityWeekFromInput);on(ui.availabilityExceptionsList,"click",e=>{const b=e.target.closest("[data-availability-week]");if(b)loadAvailabilityException(b.dataset.availabilityWeek);});on(ui.engineGoalCard,"click",openEngineV2GoalDialog);on(ui.engineGoalForm,"submit",saveEngineV2Goal);on(ui.engineGoalDelete,"click",deleteEngineV2Goal);on(ui.adaptiveRevisionPrepare,"click",prepareAdaptiveRevision);on(ui.adaptiveRevisionReject,"click",rejectAdaptiveRevision);on(ui.adaptiveRevisionApply,"click",applyAdaptiveRevision);on(ui.adaptiveEngineCard,"click",openAdaptiveEngine);on(ui.adaptiveEngineBack,"click",closeAdaptiveEngine);on(ui.adaptiveEngineBottomBack,"click",closeAdaptiveEngine);on(ui.sessionPublishBtn,"click",publishCurrentPlan);on(ui.trainingPacesCard,"click",openTrainingPaces);on(ui.trainingPacesBack,"click",closeTrainingPaces);on(ui.trainingPacesBottomBack,"click",closeTrainingPaces);on(ui.sessionGeneratorCard,"click",openSessionGenerator);on(ui.sessionGeneratorBack,"click",closeSessionGenerator);on(ui.sessionGeneratorBottomBack,"click",closeSessionGenerator);on(ui.calendarSolverCard,"click",openCalendarSolver);on(ui.calendarSolverBack,"click",closeCalendarSolver);on(ui.calendarSolverBottomBack,"click",closeCalendarSolver);on(ui.weeklyTargetsCard,"click",openWeeklyTargets);on(ui.weeklyTargetsBack,"click",closeWeeklyTargets);on(ui.weeklyTargetsBottomBack,"click",closeWeeklyTargets);on(ui.macroTrajectoryCard,"click",openMacroTrajectory);on(ui.macroTrajectoryBack,"click",closeMacroTrajectory);on(ui.macroTrajectoryBottomBack,"click",closeMacroTrajectory);on(ui.engineDiagnosticCard,"click",openEngineV2Diagnostic);on(ui.engineDiagnosticBack,"click",closeEngineV2Diagnostic);on(ui.engineDiagnosticBottomBack,"click",closeEngineV2Diagnostic);
+ on(ui.secondaryGoalAdd,"click",()=>openSecondaryGoalDialog());on(ui.secondaryGoalList,"click",e=>{const b=e.target.closest("[data-secondary-goal-id]");if(b)openSecondaryGoalDialog(b.dataset.secondaryGoalId);});on(ui.secondaryGoalForm,"submit",saveSecondaryGoal);on(ui.secondaryGoalDelete,"click",deleteSecondaryGoal);on(ui.availabilityCard,"click",openAvailabilityDialog);on(ui.availabilityForm,"submit",saveAvailabilityException);on(ui.availabilityDelete,"click",deleteAvailabilityException);on(ui.availabilityWeekDate,"change",loadAvailabilityWeekFromInput);on(ui.availabilityExceptionsList,"click",e=>{const b=e.target.closest("[data-availability-week]");if(b)loadAvailabilityException(b.dataset.availabilityWeek);});on(ui.engineGoalCard,"click",openEngineV2GoalDialog);on(ui.engineGoalForm,"submit",saveEngineV2Goal);on(ui.engineGoalDelete,"click",deleteEngineV2Goal);on(ui.adaptiveRevisionPrepare,"click",prepareAdaptiveRevision);on(ui.adaptiveRevisionReject,"click",rejectAdaptiveRevision);on(ui.adaptiveRevisionApply,"click",applyAdaptiveRevision);on(ui.adaptiveEngineCard,"click",openAdaptiveEngine);on(ui.adaptiveEngineBack,"click",closeAdaptiveEngine);on(ui.adaptiveEngineBottomBack,"click",closeAdaptiveEngine);on(ui.sessionPublishBtn,"click",publishCurrentPlan);on(ui.trainingPacesCard,"click",openTrainingPaces);on(ui.trainingPacesBack,"click",closeTrainingPaces);on(ui.trainingPacesBottomBack,"click",closeTrainingPaces);on(ui.sessionGeneratorCard,"click",openSessionGenerator);on(ui.sessionGeneratorBack,"click",closeSessionGenerator);on(ui.sessionGeneratorBottomBack,"click",closeSessionGenerator);on(ui.sessionAiRegenerateBtn,"click",regenerateAiPlanV2FromUi);on(ui.calendarSolverCard,"click",openCalendarSolver);on(ui.calendarSolverBack,"click",closeCalendarSolver);on(ui.calendarSolverBottomBack,"click",closeCalendarSolver);on(ui.weeklyTargetsCard,"click",openWeeklyTargets);on(ui.weeklyTargetsBack,"click",closeWeeklyTargets);on(ui.weeklyTargetsBottomBack,"click",closeWeeklyTargets);on(ui.macroTrajectoryCard,"click",openMacroTrajectory);on(ui.macroTrajectoryBack,"click",closeMacroTrajectory);on(ui.macroTrajectoryBottomBack,"click",closeMacroTrajectory);on(ui.engineDiagnosticCard,"click",openEngineV2Diagnostic);on(ui.engineDiagnosticBack,"click",closeEngineV2Diagnostic);on(ui.engineDiagnosticBottomBack,"click",closeEngineV2Diagnostic);
  on(ui.planAddBtn,"click",()=>openPlanEditor());on(ui.planEditorForm,"submit",savePlanEditor);on(ui.planDetailEdit,"click",()=>{if(currentPlanEvent)openPlanEditor(currentPlanEvent);});on(ui.planDetailDelete,"click",deleteCurrentPlanEvent);on(ui.planDetailMove,"click",()=>openPlanManualAction("move"));on(ui.planDetailUnavailable,"click",()=>openPlanManualAction("unavailable"));on(ui.planDetailReplace,"click",()=>openPlanManualAction("replace"));on(ui.planManualForm,"submit",applyPlanManualAction);on(ui.planManualDate,"change",renderPlanManualImpact);on(ui.planManualReplacement,"change",renderPlanManualImpact);
  on(ui.planOverviewCard,"click",openPlanControl);on(ui.planControlBack,"click",closePlanControl);on(ui.planControlBottomBack,"click",closePlanControl);on(ui.planPrev,"click",()=>shiftPlanWeek(-1));on(ui.planNext,"click",()=>shiftPlanWeek(1));on(ui.planToday,"click",()=>{currentPlanWeekStart=mondayOf(new Date());renderPlan();});on(ui.planDays,"click",e=>{const activity=e.target.closest("[data-activity-id]");if(activity){openActivityDetail(activity.dataset.activityId);return;}const planned=e.target.closest("[data-plan-event-id]");if(planned)openPlanDetail(planned.dataset.planEventId);});on(ui.planDetailBack,"click",closePlanDetail);on(ui.planDetailBottomBack,"click",closePlanDetail);on(ui.planDetailResultActivity,"click",()=>{const a=currentPlanOutcome?.activity;if(!a?.id)return;const id=String(a.id);closePlanDetail();openActivityDetail(id);});
  onAll(".metric-link","click",e=>openMetricDetail(e.currentTarget.dataset.metric));
@@ -2604,49 +2572,19 @@ function atlasSetOverflowClass(el,needsScroll){
 }
 
 function auditAtlasScrollState(){
-  atlasScrollAuditFrame=0;
-  const root=document.documentElement;
-  const overlay=atlasOpenOverlay();
-  refreshAtlasSubpageNav();
-
-  if(overlay){
-    root.classList.remove("atlas-main-scroll-locked");
-    document.body.classList.remove("atlas-main-scroll-locked");
-    document.body.style.overflow="hidden";
-
-    qsa(".metric-detail,.state-detail,.activity-detail,.plan-detail,.data-detail")
-      .filter(x=>x!==overlay)
-      .forEach(x=>x.classList.remove("atlas-scrollable","atlas-scroll-locked"));
-
-    overlay.classList.remove("atlas-scroll-locked");
-    overlay.classList.add("atlas-scrollable");
-
-    requestAnimationFrame(()=>{
-      atlasSetOverflowClass(overlay,overlay.scrollHeight>overlay.clientHeight+4);
-    });
-    return;
-  }
-
-  if(document.body.classList.contains("assistant-main-active")){
-    root.classList.add("atlas-main-scroll-locked");
-    document.body.classList.add("atlas-main-scroll-locked");
-    document.body.style.overflow="hidden";
-    return;
-  }
-
-  document.body.style.overflow="";
-  root.classList.remove("atlas-main-scroll-locked");
-  document.body.classList.remove("atlas-main-scroll-locked");
-
+  atlasScrollAuditFrame=0;refreshAtlasSubpageNav();
+  const overlay=atlasOpenOverlay(),root=document.documentElement,body=document.body;
+  if(overlay){root.classList.remove("atlas-root-fixed");body.classList.remove("atlas-root-fixed");atlasSetOverflowClass(overlay,overlay.scrollHeight>overlay.clientHeight+3);return;}
+  root.classList.add("atlas-root-fixed");body.classList.add("atlas-root-fixed");body.style.overflow="hidden";
+  const active=document.querySelector(".view.active");if(!active)return;
+  document.querySelectorAll(".view").forEach(v=>{if(v!==active){v.classList.remove("atlas-view-scrollable","atlas-view-locked");v.style.removeProperty("--atlas-view-height");}});
+  if(document.body.classList.contains("assistant-main-active")){active.classList.add("atlas-view-locked");return;}
   requestAnimationFrame(()=>{
-    const scrolling=document.scrollingElement||root;
-    const needs=scrolling.scrollHeight>window.innerHeight+4;
-    root.classList.toggle("atlas-main-scroll-locked",!needs);
-    document.body.classList.toggle("atlas-main-scroll-locked",!needs);
-    if(!needs&&scrolling.scrollTop)scrolling.scrollTop=0;
+    const nav=document.querySelector(".nav"),top=active.getBoundingClientRect().top,navTop=nav?.getBoundingClientRect().top||window.innerHeight,available=Math.max(0,Math.floor(navTop-top-4));
+    active.style.setProperty("--atlas-view-height",`${available}px`);active.classList.add("atlas-view-measured");
+    const needs=active.scrollHeight>active.clientHeight+3;active.classList.toggle("atlas-view-scrollable",needs);active.classList.toggle("atlas-view-locked",!needs);if(!needs&&active.scrollTop)active.scrollTop=0;
   });
 }
-
 function scheduleAtlasScrollAudit(){
   if(atlasScrollAuditFrame)return;
   atlasScrollAuditFrame=requestAnimationFrame(auditAtlasScrollState);
@@ -2658,6 +2596,10 @@ function installAtlasScrollAudit(){
   scheduleAtlasScrollAudit();
   window.addEventListener("resize",scheduleAtlasScrollAudit,{passive:true});
   window.addEventListener("orientationchange",scheduleAtlasScrollAudit,{passive:true});
+  let lockedTouchStart=null;
+  document.addEventListener("touchstart",e=>{const active=document.querySelector(".view.active.atlas-view-locked");lockedTouchStart=active&&e.touches?.length===1?{x:e.touches[0].clientX,y:e.touches[0].clientY}:null;},{passive:true});
+  document.addEventListener("touchmove",e=>{const active=document.querySelector(".view.active.atlas-view-locked");if(!active||atlasOpenOverlay()||!lockedTouchStart||e.touches?.length!==1)return;const dx=e.touches[0].clientX-lockedTouchStart.x,dy=e.touches[0].clientY-lockedTouchStart.y;if(Math.abs(dy)>Math.abs(dx)+2)e.preventDefault();},{passive:false});
+  document.addEventListener("touchend",()=>{lockedTouchStart=null;},{passive:true});
 
   if("ResizeObserver" in window){
     const ro=new ResizeObserver(scheduleAtlasScrollAudit);
@@ -2732,7 +2674,12 @@ function closeDataDetail(){
   refreshAtlasSubpageNav();scheduleAtlasScrollAudit();
 }
 function togglePanel(name){const target=$(`panel-${name}`);if(!target)return;const open=!target.classList.contains("active");document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));if(open){target.classList.add("active");if(name==="records")loadRunningRecords().catch(error=>{console.error("ɅTLɅS · mejores marcas",error);renderRunningRecordsError(error);});setTimeout(()=>target.scrollIntoView({behavior:"smooth",block:"nearest"}),20);}}
-function toast(message,isError=false){clearTimeout(toastTimer);if(!ui.toast){console[isError?"error":"log"](message);return;}ui.toast.textContent=message;ui.toast.className="toast show"+(isError?" error":"");toastTimer=setTimeout(()=>{if(ui.toast)ui.toast.className="toast";},2600);}
+function toast(message,isError=false,duration=3200){
+  clearTimeout(toastTimer);if(!ui.toast){console[isError?"error":"log"](message);return;}
+  ui.toast.textContent=message;ui.toast.className="toast show"+(isError?" error":"");
+  try{if(typeof ui.toast.showPopover==="function"&&!ui.toast.matches(":popover-open"))ui.toast.showPopover();}catch{}
+  if(duration>0)toastTimer=setTimeout(()=>{if(!ui.toast)return;ui.toast.className="toast";try{if(typeof ui.toast.hidePopover==="function"&&ui.toast.matches(":popover-open"))ui.toast.hidePopover();}catch{}},duration);
+}
 function openDb({timeoutMs=8000}={}){
   if(db)return Promise.resolve(db);
   if(dbOpenPromise)return dbOpenPromise;
@@ -2907,6 +2854,15 @@ async function apiRequest(path,{method="GET",body=null,timeoutMs=null,retries=nu
   throw lastError||new Error("No se ha podido completar la solicitud.");
 }
 async function api(path){return apiRequest(path);}
+async function apiBlobRequest(path,{timeoutMs=18000}={}){
+  if(!atlasOnline())throw new Error("Sin conexión a Internet.");
+  const{workerUrl,clientToken}=await apiConfig(),controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeoutMs);
+  try{
+    const r=await fetch(`${workerUrl}${path}`,{headers:{Authorization:`Bearer ${clientToken}`,Accept:"image/*"},cache:"no-store",signal:controller.signal});
+    if(!r.ok){const e=new Error(`Foto de perfil no disponible (${r.status}).`);e.status=r.status;throw e;}
+    const blob=await r.blob();if(!blob?.type?.startsWith("image/"))throw new Error("El Worker no ha devuelto una imagen válida.");return blob;
+  }finally{clearTimeout(timer);}
+}
 
 const PLAN_CLOUD_META_KEY="engineV2PlanCloudMeta";
 
@@ -2936,7 +2892,7 @@ async function readLocalPlanCloudState(){
   const[goal,secondary,availability,manifest,draft,history,meta]=await Promise.all([
     storeGet("meta","engineV2Goal"),storeGet("meta","engineV2SecondaryGoals"),storeGet("meta","engineV2AvailabilityExceptions"),
     storeGet("meta","engineV2PlanManifest"),storeGet("meta","engineV2PlanRevisionDraft"),storeGet("meta","engineV2PlanRevisionHistory"),
-    storeGet("meta",PLAN_CLOUD_META_KEY)
+    storeGet("meta",PLAN_CLOUD_META_KEY),storeGet("meta","engineV2AiPlan")
   ]);
   return{
     state:planCloudState(goal?.value||null,secondary?.value||[],availability?.value||[],manifest?.value||null,draft?.value||null,history?.value||[]),
@@ -3135,6 +3091,7 @@ async function performSync(oldest,newest,mode){
     recordRuntimeAudit("bootstrap-sync",error).catch(()=>{});
   }
   await commitSyncPayload(syncPayload,bootstrap,{oldest,newest,mode});
+  try{const pp=await api("/api/profile");if(pp?.profile)await storePut("profile",{key:"me",data:pp.profile,updatedAt:new Date().toISOString()});}catch(error){console.warn("ɅTLɅS · perfil",error);}
   await syncCalendar(false);
   await syncPlanStateFromCloud({startup:false}).catch(error=>{
     console.warn("ɅTLɅS · plan cloud durante sync",error);
@@ -3179,12 +3136,12 @@ async function refreshCalendarFromCloud(force=false){
 
 
 async function loadLocalSnapshot(){
-  const[activities,wellness,gear,sportSettings,events,profile,athlete,worker,cachedVo2,engineV2Goal,engineV2SecondaryGoals,engineV2AvailabilityExceptions,engineV2PlanManifest,engineV2PlanRevisionDraft,engineV2PlanRevisionHistory,engineV2PlanCloudMeta]=await Promise.all([
+  const[activities,wellness,gear,sportSettings,events,profile,athlete,worker,cachedVo2,engineV2Goal,engineV2SecondaryGoals,engineV2AvailabilityExceptions,engineV2PlanManifest,engineV2PlanRevisionDraft,engineV2PlanRevisionHistory,engineV2PlanCloudMeta,engineV2AiPlan]=await Promise.all([
     storeGetAll("activities"),storeGetAll("wellness"),storeGetAll("gear"),storeGetAll("sportSettings"),storeGetAll("events"),
     storeGet("profile","me"),storeGet("athlete","me"),storeGet("settings","workerUrl"),storeGet("meta","latestRunVo2"),storeGet("meta","engineV2Goal"),
-    storeGet("meta","engineV2SecondaryGoals"),storeGet("meta","engineV2AvailabilityExceptions"),storeGet("meta","engineV2PlanManifest"),storeGet("meta","engineV2PlanRevisionDraft"),storeGet("meta","engineV2PlanRevisionHistory"),storeGet("meta",PLAN_CLOUD_META_KEY)
+    storeGet("meta","engineV2SecondaryGoals"),storeGet("meta","engineV2AvailabilityExceptions"),storeGet("meta","engineV2PlanManifest"),storeGet("meta","engineV2PlanRevisionDraft"),storeGet("meta","engineV2PlanRevisionHistory"),storeGet("meta",PLAN_CLOUD_META_KEY),storeGet("meta","engineV2AiPlan")
   ]);
-  return{activities,wellness,gear,sportSettings,events,profile,athlete,worker,cachedVo2,engineV2Goal,engineV2SecondaryGoals,engineV2AvailabilityExceptions,engineV2PlanManifest,engineV2PlanRevisionDraft,engineV2PlanRevisionHistory,engineV2PlanCloudMeta};
+  return{activities,wellness,gear,sportSettings,events,profile,athlete,worker,cachedVo2,engineV2Goal,engineV2SecondaryGoals,engineV2AvailabilityExceptions,engineV2PlanManifest,engineV2PlanRevisionDraft,engineV2PlanRevisionHistory,engineV2PlanCloudMeta,engineV2AiPlan};
 }
 
 
@@ -3401,68 +3358,33 @@ function fitCommonTextWidth(elements,maxSize,minSize){
 }
 function fitProfileDashboardRecordsTypography(){
   const root=$("profileDashboardRecords");if(!root)return;
-  fitCommonTextWidth(root.querySelectorAll(".profile-dashboard-record-distance-label:not(.longest)"),15.5,10.5);
-  fitCommonTextWidth(root.querySelectorAll(".profile-dashboard-record-cell-mark"),17.5,12);
-  fitCommonTextWidth(root.querySelectorAll(".profile-dashboard-record-cell-meta"),11.5,8.5);
-  root.querySelectorAll(".profile-dashboard-record-distance-label.longest").forEach(el=>fitTextToWidth(el,12,9));
-  const distanceHead=root.querySelector(".profile-dashboard-record-head-distance");if(distanceHead)fitTextToWidth(distanceHead,15.5,11);
+  fitCommonTextWidth(root.querySelectorAll(".atlas-v124-record-distance.short"),38,25);
+  fitCommonTextWidth(root.querySelectorAll(".atlas-v124-record-mark"),17.5,12);
+  fitCommonTextWidth(root.querySelectorAll(".atlas-v124-record-meta"),11.5,8.5);
+  root.querySelectorAll(".atlas-v124-record-distance.longest").forEach(el=>fitTextToWidth(el,12,9));
+  const distanceHead=root.querySelector(".atlas-v124-record-head-distance");if(distanceHead)fitTextToWidth(distanceHead,15.5,11);
 }
 
 function renderProfileDashboardRecords(records=currentRunningRecords){
-  const box=$("profileDashboardRecords");
-  if(!box)return;
-
-  const source=Array.isArray(records)?records:[];
-  const runs=currentActivities.filter(isRun);
-  const longestTop=runs.map(a=>({
-    id:String(a.id),
-    meters:activityDistanceM(a),
-    secs:activityElapsedSec(a),
-    date:activityDate(a)
-  })).filter(x=>Number.isFinite(x.meters)&&x.meters>0)
-    .sort((a,b)=>b.meters-a.meters)
-    .slice(0,3);
-
-  const keys=["1k","5k","10k","half","marathon"];
-  const sections=keys.map(key=>source.find(x=>x.key===key)).filter(Boolean);
-  sections.push({key:"longest",label:"Distancia más larga",top:longestTop});
-
-  const head=`<div class="profile-dashboard-record-table-head">
-    <span class="profile-dashboard-record-head-distance">Distancia</span>
-    <span class="profile-dashboard-record-head-pos" aria-label="Primera marca">🥇</span>
-    <span class="profile-dashboard-record-head-pos" aria-label="Segunda marca">🥈</span>
-    <span class="profile-dashboard-record-head-pos" aria-label="Tercera marca">🥉</span>
-  </div>`;
-
+  const box=$("profileDashboardRecords");if(!box)return;
+  const source=Array.isArray(records)?records:[],runs=currentActivities.filter(isRun),longestTop=runs.map(a=>({id:String(a.id),meters:activityDistanceM(a),secs:activityElapsedSec(a),date:activityDate(a)})).filter(x=>Number.isFinite(x.meters)&&x.meters>0).sort((a,b)=>b.meters-a.meters).slice(0,3);
+  const keys=["1k","5k","10k","half","marathon"],sections=keys.map(key=>source.find(x=>x.key===key)).filter(Boolean);sections.push({key:"longest",label:"Distancia más larga",top:longestTop});
+  const head=`<div class="atlas-v124-record-head"><span class="atlas-v124-record-head-distance">Distancia</span><span aria-label="Primera marca">🥇</span><span aria-label="Segunda marca">🥈</span><span aria-label="Tercera marca">🥉</span></div>`;
   const rows=sections.map(section=>{
     const top=[section?.top?.[0]||null,section?.top?.[1]||null,section?.top?.[2]||null];
     const cells=top.map(best=>{
-      if(!best)return '<span class="profile-dashboard-record-cell empty">—</span>';
-
+      if(!best)return '<span class="atlas-v124-record-cell empty">—</span>';
       let mark="—",meta="—";
-      if(section.key==="longest"){
-        mark=Number.isFinite(best.meters)?`${formatNatural(best.meters/1000,2)} km`:"—";
-        const pace=best.secs>0&&best.meters>0?best.secs/(best.meters/1000):null;
-        meta=Number.isFinite(pace)?`${formatPaceValue(pace)} min/km`:"—";
-      }else{
-        if(!(best.secs>0))return '<span class="profile-dashboard-record-cell empty">—</span>';
-        mark=formatDuration(Math.round(best.secs));
-        const pace=section.meters>0?best.secs/(section.meters/1000):null;
-        meta=Number.isFinite(pace)?`${formatPaceValue(pace)} min/km`:"—";
-      }
-
-      const inner=`<span class="profile-dashboard-record-cell-mark">${esc(mark)}</span><span class="profile-dashboard-record-cell-meta">${esc(meta)}</span>`;
-      return best?.id?`<button class="profile-dashboard-record-cell" type="button" data-record-activity-id="${esc(best.id)}">${inner}</button>`:`<span class="profile-dashboard-record-cell">${inner}</span>`;
+      if(section.key==="longest"){mark=Number.isFinite(best.meters)?`${formatNatural(best.meters/1000,2)} km`:"—";const pace=best.secs>0&&best.meters>0?best.secs/(best.meters/1000):null;meta=Number.isFinite(pace)?`${formatPaceValue(pace)} min/km`:"—";}
+      else{if(!(best.secs>0))return '<span class="atlas-v124-record-cell empty">—</span>';mark=formatDuration(Math.round(best.secs));const pace=section.meters>0?best.secs/(section.meters/1000):null;meta=Number.isFinite(pace)?`${formatPaceValue(pace)} min/km`:"—";}
+      const inner=`<span class="atlas-v124-record-mark">${esc(mark)}</span><span class="atlas-v124-record-meta">${esc(meta)}</span>`;
+      return best?.id?`<button class="atlas-v124-record-cell" type="button" data-record-activity-id="${esc(best.id)}">${inner}</button>`:`<span class="atlas-v124-record-cell">${inner}</span>`;
     }).join("");
-
-    const distanceLabel=section.key==="longest"?'<span>Distancia</span><span>más larga</span>':section.key==="half"?'<span>Media</span><span>maratón</span>':esc(section.label);
-    const labelClass=section.key==="longest"?" longest":section.key==="half"?" half":["1k","5k","10k"].includes(section.key)?" short":"";
-    return `<div class="profile-dashboard-record-table-row"><div class="profile-dashboard-record-distance-label${labelClass}">${distanceLabel}</div>${cells}</div>`;
+    const distanceLabel=section.key==="longest"?'<span>Distancia</span><span>más larga</span>':section.key==="half"?'<span>Media</span><span>maratón</span>':esc(section.label),labelClass=section.key==="longest"?" longest":section.key==="half"?" half":["1k","5k","10k"].includes(section.key)?" short":"";
+    return `<div class="atlas-v124-record-row"><div class="atlas-v124-record-distance${labelClass}">${distanceLabel}</div>${cells}</div>`;
   }).join("");
-
-  box.innerHTML=head+rows;requestAnimationFrame(fitProfileDashboardRecordsTypography);
+  box.innerHTML=head+`<div class="atlas-v124-record-body">${rows}</div>`;requestAnimationFrame(fitProfileDashboardRecordsTypography);
 }
-
 function atlasLoadFocusIntensity(a){
   let x=Number(pick(a,["icu_intensity","intensity","intensity_factor","intensityFactor","if"]));
   if(!Number.isFinite(x)||x<=0)return null;
@@ -3498,14 +3420,35 @@ function atlasLoadFocus28(activities,anchor=fmtDate(new Date())){
 }
 function renderProfileLoadFocus(){
   const box=$("profileDashboardLoadFocus");if(!box)return;const f=atlasLoadFocus28(currentActivities),defs=[
-    ["anaerobic","Anaeróbico","🟣"],["high","Aeróbico alto","🟠"],["low","Aeróbico bajo","🔵"]
+    ["anaerobic","Anaeróbico"],["high","Aeróbico alto"],["low","Aeróbico bajo"]
   ];
   if(!(f.total>0)){box.innerHTML='<div class="profile-load-focus-empty">Todavía no hay carga de carrera suficiente en los últimos 28 días.</div>';return;}
-  box.innerHTML=`<div class="profile-load-focus-meta"><span>Últimos 28 días</span><strong>${formatNatural(f.total,0)} carga</strong></div><div class="profile-load-focus-rows">${defs.map(([key,label,emoji])=>`<div class="profile-load-focus-row"><div class="profile-load-focus-row-head"><span>${emoji} ${label}</span><strong>${formatNatural(f.pct[key],0)} %</strong></div><div class="profile-load-focus-track"><span class="profile-load-focus-fill ${key}" style="width:${clamp(f.pct[key],0,100).toFixed(1)}%"></span></div><div class="profile-load-focus-value">${formatNatural(f.sum[key],0)} de carga</div></div>`).join("")}</div><div class="profile-load-focus-reading">${esc(f.reading)}</div>`;
+  box.innerHTML=`<div class="profile-load-focus-meta"><span>Últimos 28 días</span><strong>${formatNatural(f.total,0)} carga</strong></div><div class="profile-load-focus-rows">${defs.map(([key,label])=>`<div class="profile-load-focus-row"><div class="profile-load-focus-row-head"><span>${label}</span><strong>${formatNatural(f.pct[key],0)} %</strong></div><div class="profile-load-focus-track"><span class="profile-load-focus-fill ${key}" style="width:${clamp(f.pct[key],0,100).toFixed(1)}%"></span></div><div class="profile-load-focus-value">${formatNatural(f.sum[key],0)} de carga</div></div>`).join("")}</div><div class="profile-load-focus-reading">${esc(f.reading)}</div>`;
 }
 
 function profileZoneColorEmoji(index){return ["🔵","🟢","🟡","🟠","🔴","🟣"][index]||"⚪";}
 function firstActivityDateLabel(){const dates=currentActivities.map(activityDate).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(String(d))).sort();return dates.length?engineV2DateLabel(dates[0]):"—";}
+
+function profilePhotoCandidateV124(a){
+  const vals=[a?.profile_medium,a?.profile_large,a?.profile_photo,a?.avatar_url,a?.photo_url,a?.picture,a?.avatar];
+  for(let v of vals){if(v&&typeof v==="object")v=v.medium||v.large||v.url||v.src;if(typeof v!=="string"||!v.trim())continue;v=v.trim();if(/no-profile-pic|default[-_]?profile|placeholder/i.test(v))continue;if(v.startsWith("//"))v=`https:${v}`;else if(v.startsWith("http://"))v=`https://${v.slice(7)}`;else if(v.startsWith("/"))v=`https://intervals.icu${v}`;return v;}return null;
+}
+function setProfileAvatarImageV124(avatar,url,name,onError=null){
+  avatar.replaceChildren();const img=document.createElement("img");img.alt=`Foto de perfil de ${name}`;img.decoding="async";img.loading="eager";if(onError)img.addEventListener("error",onError,{once:true});img.src=url;avatar.appendChild(img);
+}
+function renderProfileAvatarV124(a,name){
+  const avatar=$("profileDashboardAvatar");if(!avatar)return;avatar.replaceChildren();avatar.textContent=profileInitials(name);
+  const direct=profilePhotoCandidateV124(a),key=String(a?.id||a?.athlete_id||name||"me");
+  if(currentProfilePhotoObjectUrl&&currentProfilePhotoRequestKey===key){setProfileAvatarImageV124(avatar,currentProfilePhotoObjectUrl,name);return;}
+  if(currentProfilePhotoRequestKey===`loading:${key}`)return;currentProfilePhotoRequestKey=`loading:${key}`;
+  apiBlobRequest("/api/profile-photo").then(blob=>{
+    if(currentProfilePhotoObjectUrl)try{URL.revokeObjectURL(currentProfilePhotoObjectUrl);}catch{}
+    currentProfilePhotoObjectUrl=URL.createObjectURL(blob);currentProfilePhotoRequestKey=key;const target=$("profileDashboardAvatar");if(target)setProfileAvatarImageV124(target,currentProfilePhotoObjectUrl,name);
+  }).catch(()=>{
+    currentProfilePhotoRequestKey=key;const target=$("profileDashboardAvatar");if(!target)return;
+    if(direct)setProfileAvatarImageV124(target,direct,name,()=>{target.replaceChildren();target.textContent=profileInitials(name);});
+  });
+}
 function renderProfilePanel(athlete){
   const a=athlete||{},
     height=Number(a.height),
@@ -3520,7 +3463,7 @@ function renderProfilePanel(athlete){
   if(ui.dataHomeName)ui.dataHomeName.textContent=name;
   if(ui.profileTileNote)ui.profileTileNote.textContent=location;
   const avatar=$("profileDashboardAvatar");
-  if(avatar)avatar.textContent=profileInitials(name);
+  if(avatar)renderProfileAvatarV124(a,name);
   const dashVo2=$("profileDashboardVo2"),dashExperience=$("profileDashboardExperience");
   if(dashVo2)dashVo2.textContent=Number.isFinite(vo2)?formatVo2Value(vo2):"—";
   if(dashExperience)dashExperience.textContent=firstActivity;
@@ -3622,7 +3565,7 @@ function renderEvolutionPanel(){
   ui.evolutionNote.textContent="Rendimiento resume cambios relevantes; el detalle diario y mensual de volumen continúa en Hoy → Volumen.";
   if(ui.performanceHomeNote)ui.performanceHomeNote.textContent=`${formatNatural(kmWeek,1)} km/sem · ${formatNatural(stats.freq,1)} carreras/sem`;
 }function renderDataSummary({gear,sportSettings,profile,athlete,worker}){
-  const raw=athlete?.data||null,a=raw?{...raw,sportSettings:Array.isArray(sportSettings)?sportSettings:[]}:null;
+  const raw=athlete?.data||null,p=profile?.data&&typeof profile.data==="object"?profile.data:{},a={...p,...(raw||{}),sportSettings:Array.isArray(sportSettings)?sportSettings:((raw||p)?.sportSettings||[])};
   if(ui.connectionState)ui.connectionState.textContent=profile?.data?"Conectado":worker?.value?"Pendiente":"Sin configurar";
   if(ui.connectionTileNote)ui.connectionTileNote.textContent=profile?.data?"Intervals.icu conectado · copia local disponible":"Configura Intervals.icu";
   renderProfilePanel(a||{});
@@ -3631,13 +3574,13 @@ function renderEvolutionPanel(){
 }
 async function refreshAll(){
   const snapshot=await loadLocalSnapshot(),
-    {activities,wellness,gear,events,cachedVo2,engineV2Goal,engineV2SecondaryGoals,engineV2AvailabilityExceptions,engineV2PlanManifest,engineV2PlanRevisionDraft,engineV2PlanRevisionHistory,engineV2PlanCloudMeta}=snapshot;
+    {activities,wellness,gear,events,cachedVo2,engineV2Goal,engineV2SecondaryGoals,engineV2AvailabilityExceptions,engineV2PlanManifest,engineV2PlanRevisionDraft,engineV2PlanRevisionHistory,engineV2PlanCloudMeta,engineV2AiPlan}=snapshot;
 
   currentActivities=activities;currentWellness=wellness;currentGear=gear;currentEvents=events;currentCachedVo2=cachedVo2?.value||null;
   currentEngineV2Goal=engineV2Goal?.value||null;currentPlanManifest=engineV2PlanManifest?.value||null;
   currentPlanRevisionDraft=engineV2PlanRevisionDraft?.value||null;
   currentPlanRevisionHistory=Array.isArray(engineV2PlanRevisionHistory?.value)?engineV2PlanRevisionHistory.value:[];
-  currentPlanCloudMeta=engineV2PlanCloudMeta?.value||null;
+  currentPlanCloudMeta=engineV2PlanCloudMeta?.value||null;currentAiPlanV2=engineV2AiPlan?.value||null;
   currentSecondaryGoals=normalizeSecondaryGoals(engineV2SecondaryGoals?.value||[],currentEngineV2Goal);
   currentAvailabilityExceptions=normalizeAvailabilityExceptions(engineV2AvailabilityExceptions?.value||[],currentEngineV2Goal);
 
@@ -3649,6 +3592,7 @@ async function refreshAll(){
     currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);
     currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);
     currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);
+    if(aiPlanV2CacheMatches(currentAiPlanV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions))currentSessionPlan=currentAiPlanV2.plan;
     currentPlanManifest=await backfillManifestSessionSnapshot(currentPlanManifest,currentSessionPlan);
     currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);
   }catch(error){
@@ -3683,14 +3627,15 @@ async function refreshAll(){
   /* Recover precise historical Garmin VO₂ values gradually and cache them per activity. */
   scheduleVo2HistoryPrecisionBackfill({start:"2018-01-01",end:fmtDate(new Date())},false);
   scheduleAtlasScrollAudit();
+  scheduleAiPlanV2Autogen();
 }
 
 
 
 function fitPlanGoalSummaryTypography(){
   const box=$("planGoalSummary");if(!box)return;
-  fitCommonTextWidth(box.querySelectorAll(".plan-goal-summary-key"),12.5,9.5);
-  fitCommonTextWidth(box.querySelectorAll(".plan-goal-summary-value"),16.5,11.5);
+  fitCommonTextWidth(box.querySelectorAll(".atlas-plan-info-key"),12.5,9.5);
+  fitCommonTextWidth(box.querySelectorAll(".atlas-plan-info-value"),16.5,11.5);
 }
 function renderPlanOverview(){
   if(!ui.planOverviewTitle||!ui.planOverviewMeta)return;
@@ -3729,11 +3674,11 @@ function renderPlanOverview(){
       ];
 
     summary.innerHTML=items.map(([emoji,key,value])=>`
-      <span class="plan-goal-summary-item">
-        <span class="plan-goal-summary-emoji">${emoji}</span>
-        <span class="plan-goal-summary-copy">
-          <span class="plan-goal-summary-key">${esc(key)}</span>
-          <span class="plan-goal-summary-value">${esc(value)}</span>
+      <span class="atlas-plan-info-item">
+        <span class="atlas-plan-info-emoji">${emoji}</span>
+        <span class="atlas-plan-info-copy">
+          <span class="atlas-plan-info-key">${esc(key)}</span>
+          <span class="atlas-plan-info-value">${esc(value)}</span>
         </span>
       </span>`).join("");requestAnimationFrame(fitPlanGoalSummaryTypography);
   }
@@ -3986,7 +3931,7 @@ async function saveEngineV2Goal(event){
   }
   currentGoalRequirements=buildGoalRequirementsV2(goal);currentGoalAssessment=assessGoalV2(currentAthleteProfileV2,currentGoalRequirements,goal);currentSecondaryGoals=normalizeSecondaryGoals(currentSecondaryGoals,goal);currentAvailabilityExceptions=normalizeAvailabilityExceptions(currentAvailabilityExceptions,goal);
   await persistEngineV2Constraints();await pushPlanStateCloudBestEffort();
-  currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,goal);currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,goal,currentSecondaryGoals,currentAvailabilityExceptions);
+  currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,goal);await storeDelete("meta","engineV2AiPlan").catch(()=>{});currentAiPlanV2=null;await regenerateAiPlanV2({reason:"objetivo principal"});currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,goal,currentSecondaryGoals,currentAvailabilityExceptions);
   renderEngineV2Cards();renderAvailabilityCard();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderTrainingPacesCard();renderAdaptiveEngineCard();renderPlanPublicationStatus();
   ui.engineGoalDialog.close();
   if(publishedGoalChanged)toast(`✅ Objetivo actualizado a ${engineV2FormatTime(targetTimeSec)} · abre Adaptación → Cambios del plan para recalcular el futuro.`);
@@ -4004,8 +3949,8 @@ async function deleteEngineV2Goal(){
     let remoteDeleted=0;
     if(planId)remoteDeleted=await deletePublishedPlanRemote(planId,currentEngineV2Goal);
     await deletePlanStateCloud();
-    await storeDelete("meta","engineV2Goal");await storeDelete("meta","engineV2SecondaryGoals");await storeDelete("meta","engineV2AvailabilityExceptions");await storeDelete("meta","engineV2PlanManifest");await storeDelete("meta","engineV2PlanRevisionDraft");await storeDelete("meta","engineV2PlanRevisionHistory");
-    currentEngineV2Goal=null;currentSecondaryGoals=[];currentAvailabilityExceptions=[];currentPlanManifest=null;currentGoalRequirements=null;currentGoalAssessment=null;currentMacroTrajectory=null;currentWeeklyTargets=null;currentCalendarSolution=null;currentSessionPlan=null;currentAdaptiveState=null;currentPlanRevisionDraft=null;currentPlanRevisionHistory=[];
+    await storeDelete("meta","engineV2Goal");await storeDelete("meta","engineV2SecondaryGoals");await storeDelete("meta","engineV2AvailabilityExceptions");await storeDelete("meta","engineV2PlanManifest");await storeDelete("meta","engineV2PlanRevisionDraft");await storeDelete("meta","engineV2PlanRevisionHistory");await storeDelete("meta","engineV2AiPlan");
+    currentEngineV2Goal=null;currentSecondaryGoals=[];currentAvailabilityExceptions=[];currentPlanManifest=null;currentGoalRequirements=null;currentGoalAssessment=null;currentMacroTrajectory=null;currentWeeklyTargets=null;currentCalendarSolution=null;currentSessionPlan=null;currentAdaptiveState=null;currentPlanRevisionDraft=null;currentPlanRevisionHistory=[];currentAiPlanV2=null;
     renderEngineV2Cards();renderAvailabilityCard();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderTrainingPacesCard();renderAdaptiveEngineCard();renderPlanPublicationStatus();ui.engineGoalDialog.close();
     lastCalendarRefreshAt=Date.now();await syncCalendar(false);
     toast(remoteDeleted?`✅ Plan eliminado · ${remoteDeleted} sesiones retiradas de Intervals.icu.`:"✅ Plan eliminado.");
@@ -4065,13 +4010,13 @@ async function saveSecondaryGoal(event){
   const rawTime=ui.secondaryGoalTime.value.trim(),targetTimeSec=rawTime?engineV2ParseTime(rawTime):null;if(rawTime&&!Number.isFinite(targetTimeSec)){toast("⚠️ La marca opcional debe usar H:MM:SS o MM:SS.",true);return;}
   const existing=currentSecondaryEditId?currentSecondaryGoals.find(x=>x.id===currentSecondaryEditId):null,next={id:existing?.id||engineV2Uuid(),priority:ui.secondaryGoalPriority.value,type:ui.secondaryGoalType.value,date,name:ui.secondaryGoalName.value.trim()||null,intention:ui.secondaryGoalIntention.value,targetTimeSec:Number.isFinite(targetTimeSec)?targetTimeSec:null,createdAt:existing?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};
   currentSecondaryGoals=normalizeSecondaryGoals([...currentSecondaryGoals.filter(x=>x.id!==next.id),next],currentEngineV2Goal);await persistEngineV2Constraints();await pushPlanStateCloudBestEffort();
-  currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);
+  currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);await storeDelete("meta","engineV2AiPlan").catch(()=>{});currentAiPlanV2=null;await regenerateAiPlanV2({reason:"carreras o disponibilidad"});currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);
   renderEngineV2Cards();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderTrainingPacesCard();renderAdaptiveEngineCard();ui.secondaryGoalDialog.close();openEngineV2GoalDialog();toast(`✅ Carrera ${next.priority} integrada en la trayectoria.`);
 }
 async function deleteSecondaryGoal(){
   if(!currentSecondaryEditId)return;const g=currentSecondaryGoals.find(x=>x.id===currentSecondaryEditId);if(!g)return;
   if(!confirm(`¿Eliminar la carrera ${g.priority} del ${engineV2DateLabel(g.date)}?`))return;
-  currentSecondaryGoals=currentSecondaryGoals.filter(x=>x.id!==g.id);await persistEngineV2Constraints();await pushPlanStateCloudBestEffort();currentSecondaryEditId=null;currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);
+  currentSecondaryGoals=currentSecondaryGoals.filter(x=>x.id!==g.id);await persistEngineV2Constraints();await pushPlanStateCloudBestEffort();currentSecondaryEditId=null;currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);await storeDelete("meta","engineV2AiPlan").catch(()=>{});currentAiPlanV2=null;await regenerateAiPlanV2({reason:"carreras o disponibilidad"});currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);
   renderEngineV2Cards();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderTrainingPacesCard();renderAdaptiveEngineCard();ui.secondaryGoalDialog.close();openEngineV2GoalDialog();toast("✅ Carrera secundaria eliminada.");
 }
 function baseAvailabilityDays(){return Array.isArray(currentEngineV2Goal?.availableDays)&&currentEngineV2Goal.availableDays.length?[...currentEngineV2Goal.availableDays]:[1,2,3,4,5,6,7];}
@@ -4096,11 +4041,11 @@ async function saveAvailabilityException(event){
   if(!event.submitter||event.submitter.value!=="default")return;event.preventDefault();
   const weekStart=engineV2Monday(ui.availabilityWeekDate.value),min=engineV2Monday(engineV2ConfiguredPlanStart(currentEngineV2Goal)),max=engineV2Monday(currentEngineV2Goal?.date);if(!weekStart||weekStart<min||weekStart>max){toast("⚠️ La semana debe estar dentro del horizonte del objetivo A.",true);return;}
   const availableDays=qsa('input[type="checkbox"]:checked',ui.availabilityWeekDays).map(x=>Number(x.value)).sort((a,b)=>a-b),next={weekStart,availableDays,note:ui.availabilityNote.value.trim(),updatedAt:new Date().toISOString()};
-  currentAvailabilityExceptions=normalizeAvailabilityExceptions([...currentAvailabilityExceptions.filter(x=>x.weekStart!==weekStart),next],currentEngineV2Goal);await persistEngineV2Constraints();await pushPlanStateCloudBestEffort();currentAvailabilityEditWeek=weekStart;currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);
+  currentAvailabilityExceptions=normalizeAvailabilityExceptions([...currentAvailabilityExceptions.filter(x=>x.weekStart!==weekStart),next],currentEngineV2Goal);await persistEngineV2Constraints();await pushPlanStateCloudBestEffort();currentAvailabilityEditWeek=weekStart;currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);await storeDelete("meta","engineV2AiPlan").catch(()=>{});currentAiPlanV2=null;await regenerateAiPlanV2({reason:"carreras o disponibilidad"});currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);
   renderAvailabilityCard();renderAvailabilityExceptionList();renderMacroTrajectoryCard();renderWeeklyTargetsCard();renderCalendarSolverCard();renderSessionGeneratorCard();renderTrainingPacesCard();renderAdaptiveEngineCard();ui.availabilityDelete.classList.remove("hidden");toast("✅ Disponibilidad semanal actualizada.");
 }
 async function deleteAvailabilityException(){
-  const week=engineV2Monday(ui.availabilityWeekDate.value)||currentAvailabilityEditWeek;if(!week)return;currentAvailabilityExceptions=currentAvailabilityExceptions.filter(x=>x.weekStart!==week);await persistEngineV2Constraints();await pushPlanStateCloudBestEffort();currentAvailabilityEditWeek=null;currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);
+  const week=engineV2Monday(ui.availabilityWeekDate.value)||currentAvailabilityEditWeek;if(!week)return;currentAvailabilityExceptions=currentAvailabilityExceptions.filter(x=>x.weekStart!==week);await persistEngineV2Constraints();await pushPlanStateCloudBestEffort();currentAvailabilityEditWeek=null;currentMacroTrajectory=buildMacroTrajectoryV1(currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);currentWeeklyTargets=buildWeeklyTargetsV1(currentMacroTrajectory,currentGoalRequirements,currentEngineV2Goal);currentCalendarSolution=buildCalendarSolutionV1(currentWeeklyTargets,currentMacroTrajectory,currentEngineV2Goal);currentSessionPlan=buildSessionPlanV1(currentCalendarSolution,currentWeeklyTargets,currentAthleteProfileV2,currentGoalRequirements,currentEngineV2Goal);await storeDelete("meta","engineV2AiPlan").catch(()=>{});currentAiPlanV2=null;await regenerateAiPlanV2({reason:"carreras o disponibilidad"});currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);
   renderAvailabilityCard();renderAvailabilityExceptionList();renderWeeklyTargetsCard();renderCalendarSolverCard();renderAdaptiveEngineCard();setAvailabilityDayChecks(baseAvailabilityDays());ui.availabilityNote.value="";ui.availabilityDelete.classList.add("hidden");renderMacroTrajectoryCard();toast("✅ Excepción eliminada.");
 }
 function effectiveAvailabilityForWeek(goal,exceptions,weekStart){
@@ -4590,7 +4535,7 @@ function closeCalendarSolver(){ui.calendarSolverDetail.classList.add("hidden");u
 
 
 /* ===== Session Generator ATLAS ===== */
-const ATLAS_SESSION_GENERATOR_VERSION="1.7.0";
+const ATLAS_SESSION_GENERATOR_VERSION="2.0.1";
 const ATLAS_PUBLICATION_FORMAT_VERSION=4;
 function sessionClamp(n,min,max){return Math.max(min,Math.min(max,n));}
 function sessionRoundKm(n){return Math.round(n*2)/2;}function sessionRoundTotalKm(n){return Math.max(1,Math.round(Number(n)||0));}
@@ -4806,15 +4751,15 @@ function intervalsKmToken(value,max=2){
 function sessionIntervalsDescription(s,sessionPlan){
   const easy=sessionEasyPaceToken(sessionPlan),pace=intervalsPaceToken(s.pace),structure=String(s.structure||"").replace(/–/g,"-");
   if(s.type==="strength")return structure;
-  if(s.type==="easy")return`- ${intervalsKmToken(s.distanceKm,2)}km ${pace}/km Pace`;
+  if(s.type==="easy"){if(Array.isArray(s.segments)&&s.segments.length>1)return s.segments.map(seg=>{const pk=intervalsPaceToken(seg.pace)||easy,intensity=seg.kind==="warmup"?"warmup":seg.kind==="cooldown"?"cooldown":seg.kind==="recovery"?"recovery":"interval";if(Number.isFinite(Number(seg.durationSec))&&Number(seg.durationSec)>0)return`- ${Math.round(Number(seg.durationSec))}s ${pk}/km Pace intensity=${intensity}`;const km=intervalsKmToken(seg.distanceKm,2);return km?`- ${km}km ${pk}/km Pace intensity=${intensity}`:null;}).filter(Boolean).join("\n");return`- ${intervalsKmToken(s.distanceKm,2)}km ${pace}/km Pace`;}
   if(s.type==="race"||s.type==="raceA")return s.distanceKm&&pace?`- ${intervalsKmToken(s.distanceKm,2)}km ${pace}/km Pace\n\n${structure}`:structure;
   if(s.type==="quality"){
     if(/cuestas|progresivos|strides/i.test(structure))return structure.replace(/(\d),(\d+)\s*km/g,"$1.$2km");
     if(Array.isArray(s.segments)&&s.segments.length){
       return s.segments.map(seg=>{
         const pk=intervalsPaceToken(seg.pace)||easy,intensity=seg.kind==="warmup"?"warmup":seg.kind==="cooldown"?"cooldown":seg.kind==="recovery"?"recovery":"interval";
-        if(seg.kind==="recovery"&&Number.isFinite(Number(seg.durationSec)))return`- ${Math.round(Number(seg.durationSec))}s ${pk}/km Pace intensity=recovery`;
-        const km=intervalsKmToken(seg.distanceKm,2);return`- ${km}km ${pk}/km Pace intensity=${intensity}`;
+        if(Number.isFinite(Number(seg.durationSec))&&Number(seg.durationSec)>0)return`- ${Math.round(Number(seg.durationSec))}s ${pk}/km Pace intensity=${intensity}`;
+        const km=intervalsKmToken(seg.distanceKm,2);return km?`- ${km}km ${pk}/km Pace intensity=${intensity}`:null;
       }).join("\n");
     }
     let m=structure.match(/(\d+)\s*×\s*(\d+)'/);
@@ -4886,7 +4831,7 @@ function renderPlanPublicationStatus(){
   if(!currentSessionPlan?.ok){ui.sessionPublishStatus.textContent="No hay un plan válido para publicar.";ui.sessionPublishStatus.classList.add("bad");ui.sessionPublishBtn.textContent="Publicar plan en Intervals.icu";ui.sessionPublishBtn.disabled=true;return;}
   const hasBad=currentSessionPlan.audit?.some(x=>x.status==="bad");
   if(state==="published"){ui.sessionPublishStatus.textContent=`Sincronizado y verificado · ${count} sesiones.`;ui.sessionPublishStatus.classList.add("ok");ui.sessionPublishBtn.textContent="Verificar Intervals.icu";}
-  else if(state==="engine-update"){ui.sessionPublishStatus.textContent="El Motor de Entrenamiento se ha actualizado a v1.7.0: hace que la exigencia de la marca objetivo modifique también la dosis de calidad, añade Activación precompetición, protege el inicio del plan frente a la carga del día anterior y refuerza la publicación estructurada para Garmin. Revisa los entrenamientos antes de actualizar Intervals.icu.";ui.sessionPublishStatus.classList.add("warn");ui.sessionPublishBtn.textContent="Actualizar sesiones en Intervals.icu";}
+  else if(state==="engine-update"){ui.sessionPublishStatus.textContent="El Motor de Entrenamiento se ha actualizado a v2.0.0: la IA diseña la arquitectura específica de cada distancia y ATLAS calcula ritmos, compila los pasos y bloquea sesiones que incumplen las reglas deportivas. Revisa el nuevo plan antes de actualizar Intervals.icu.";ui.sessionPublishStatus.classList.add("warn");ui.sessionPublishBtn.textContent="Actualizar sesiones en Intervals.icu";}
   else if(state==="format-update"){ui.sessionPublishStatus.textContent="Hay que actualizar en Intervals.icu el formato técnico de las tiradas largas y sus bloques estructurados.";ui.sessionPublishStatus.classList.add("warn");ui.sessionPublishBtn.textContent="Corregir sesiones en Intervals.icu";}
   else if(state==="dirty"){ui.sessionPublishStatus.textContent="Hay cambios pendientes. Revísalos en Adaptación antes de modificar Intervals.icu.";ui.sessionPublishStatus.classList.add("warn");ui.sessionPublishBtn.textContent="Revisar cambios";}
   else if(state==="publishing"){ui.sessionPublishStatus.textContent="Publicación en curso…";ui.sessionPublishStatus.classList.add("warn");ui.sessionPublishBtn.textContent="Publicando…";}
@@ -4951,7 +4896,7 @@ async function publishCurrentPlan(){
     const failed={...draft,status:"error",error:String(error.message||error),updatedAt:new Date().toISOString()};currentPlanManifest=failed;await storePut("meta",{key:"engineV2PlanManifest",value:failed});renderPlanPublicationStatus();toast(`⚠️ ${error.message}`,true);
   }finally{ui.sessionPublishBtn.disabled=false;renderPlanPublicationStatus();}
 }
-function renderSessionGenerator(){const s=currentSessionPlan,state=currentPlanPublishState(),published=["published","dirty","error","format-update","engine-update"].includes(state),title=published?"Entrenamientos":"Entrenamientos propuestos";ui.sessionGeneratorDate.textContent="";if(ui.sessionGeneratorTitle)ui.sessionGeneratorTitle.textContent=title;if(ui.sessionGeneratorListTitle)ui.sessionGeneratorListTitle.textContent="";if(!s?.ok){ui.sessionGeneratorWeeks.textContent="—";ui.sessionGeneratorRuns.textContent="—";ui.sessionGeneratorStrength.textContent="—";ui.sessionGeneratorAudit.innerHTML="";ui.sessionGeneratorList.innerHTML='<div class="engine-list-empty">No hay distribución suficiente para generar sesiones.</div>';ui.sessionGeneratorReading.textContent="";return;}ui.sessionGeneratorWeeks.textContent=String(s.weeks.length);ui.sessionGeneratorRuns.textContent=String(s.runCount);ui.sessionGeneratorStrength.textContent=String(s.strengthCount);ui.sessionGeneratorAudit.innerHTML="";ui.sessionGeneratorList.innerHTML=s.weeks.map(w=>{const weeklyKm=(w.sessions||[]).reduce((sum,x)=>sum+(Number(x.distanceKm)||0),0),longKm=Math.max(0,...(w.sessions||[]).filter(x=>x.type==="long").map(x=>Number(x.distanceKm)||0));return`<div class="session-preview-week"><div class="session-preview-head"><div class="session-preview-date">${esc(sessionWeekCompactRange(w.start,w.end))}</div><div class="session-preview-title">Semana ${w.weekIndex} · ${esc(w.phase)} · ${esc(w.role)}</div><div class="session-preview-load">${formatNatural(weeklyKm,1)} km semanales · ${longKm?`Tirada larga ${formatNatural(longKm,1)} km`:"Sin tirada larga"}</div>${w.secondaryFocus?`<span class="secondary-focus-chip">🏁 ${esc(secondaryFocusLabel(w.secondaryFocus))} · ${w.secondaryFocus.weeksToRace} sem</span>`:""}</div>${renderSessionPreviewWeekDays(w)}</div>`;}).join("");ui.sessionGeneratorReading.textContent="";renderPlanPublicationStatus();requestAnimationFrame(fitSessionPreviewHeadings);}
+function renderSessionGenerator(){const s=currentSessionPlan,state=currentPlanPublishState(),published=["published","dirty","error","format-update","engine-update"].includes(state),title=published?"Entrenamientos":"Entrenamientos propuestos";ui.sessionGeneratorDate.textContent="";if(ui.sessionGeneratorTitle)ui.sessionGeneratorTitle.textContent=title;if(ui.sessionGeneratorListTitle)ui.sessionGeneratorListTitle.textContent="";if(ui.sessionAiPlanStatus){const aiOk=s?.source==="anthropic+atlas"&&aiPlanV2CacheMatches(currentAiPlanV2);ui.sessionAiPlanStatus.textContent=aiOk?`Plan diseñado por IA y validado por ATLAS · ${s.sessions?.length||0} sesiones.`:s?.source==="fallback-local"?"Vista local provisional. No publicable hasta validar un plan Motor 2.0.":"Pendiente de generar y validar con Motor 2.0.";}if(!s?.ok){ui.sessionGeneratorWeeks.textContent="—";ui.sessionGeneratorRuns.textContent="—";ui.sessionGeneratorStrength.textContent="—";ui.sessionGeneratorAudit.innerHTML="";ui.sessionGeneratorList.innerHTML='<div class="engine-list-empty">No hay distribución suficiente para generar sesiones.</div>';ui.sessionGeneratorReading.textContent="";return;}ui.sessionGeneratorWeeks.textContent=String(s.weeks.length);ui.sessionGeneratorRuns.textContent=String(s.runCount);ui.sessionGeneratorStrength.textContent=String(s.strengthCount);ui.sessionGeneratorAudit.innerHTML="";ui.sessionGeneratorList.innerHTML=s.weeks.map(w=>{const weeklyKm=(w.sessions||[]).reduce((sum,x)=>sum+(Number(x.distanceKm)||0),0),longKm=Math.max(0,...(w.sessions||[]).filter(x=>x.type==="long").map(x=>Number(x.distanceKm)||0));return`<div class="session-preview-week"><div class="session-preview-head"><div class="session-preview-date">${esc(sessionWeekCompactRange(w.start,w.end))}</div><div class="session-preview-title">Semana ${w.weekIndex} · ${esc(w.phase)} · ${esc(w.role)}</div><div class="session-preview-load">${formatNatural(weeklyKm,1)} km semanales · ${longKm?`Tirada larga ${formatNatural(longKm,1)} km`:"Sin tirada larga"}</div>${w.secondaryFocus?`<span class="secondary-focus-chip">🏁 ${esc(secondaryFocusLabel(w.secondaryFocus))} · ${w.secondaryFocus.weeksToRace} sem</span>`:""}</div>${renderSessionPreviewWeekDays(w)}</div>`;}).join("");ui.sessionGeneratorReading.textContent="";renderPlanPublicationStatus();requestAnimationFrame(fitSessionPreviewHeadings);}
 function renderSessionGeneratorCard(){
   if(ui.sessionGeneratorCardTitle)ui.sessionGeneratorCardTitle.textContent="Entrenamientos";
   if(ui.sessionGeneratorMeta)ui.sessionGeneratorMeta.textContent="";
@@ -7303,9 +7248,155 @@ function buildSessionPlanV1(calendar,weekly,profile,req,goal){
   add("Planificación rodante","ok",`Ventana cerrada ${ATLAS_PERFORMANCE_MODEL.rollingWindowWeeks} sem · semanas posteriores orientativas/provisionales y recalibrables`);
   add("Publicación","ok","Previsualización local · Intervals.icu sin cambios");
   const fingerprint=planStableHash(JSON.stringify({goal:[goal.type,goal.date,goal.startDate,goal.targetTimeSec],performanceModel:ATLAS_PERFORMANCE_MODEL.version,sessions:all.map(planSessionFingerprint)}));
-  return{ok:true,version:ATLAS_SESSION_GENERATOR_VERSION,performanceModelVersion:ATLAS_PERFORMANCE_MODEL.version,fingerprint,weeks,sessions:all,audit,coverage,runCount:all.filter(s=>["easy","quality","long","race","raceA"].includes(s.type)).length,strengthCount:all.filter(s=>s.type==="strength").length,reading:`Motor 1.7.0 · ${coverage.score}/100 de cobertura del objetivo. ATLAS programa dosis por capacidad, alterna formatos de calidad según distancia y fase, evalúa la progresión cada 4 semanas y puede adelantar la dosis de las próximas 4 semanas cuando la respuesta real lo justifica.`};
+  return{ok:true,version:ATLAS_SESSION_GENERATOR_VERSION,performanceModelVersion:ATLAS_PERFORMANCE_MODEL.version,fingerprint,weeks,sessions:all,audit,coverage,runCount:all.filter(s=>["easy","quality","long","race","raceA"].includes(s.type)).length,strengthCount:all.filter(s=>s.type==="strength").length,reading:`Generador local de respaldo 1.7 · ${coverage.score}/100 de cobertura del objetivo. Se utiliza sólo como vista provisional si el Motor 2.0 no dispone todavía de un plan IA validado.`};
 }
 
+
+
+
+/* ===== ɅTLɅS Motor 2.0 · IA planificadora + compilador + validador determinista ===== */
+const ATLAS_AI_PLAN_VERSION="2.0";
+let aiPlanV2GenerationPromise=null,aiPlanV2AutogenRequested=false;
+function aiPlanV2ConfigSignature(goal=currentEngineV2Goal,secondary=currentSecondaryGoals,availability=currentAvailabilityExceptions){return planStableHash(JSON.stringify({v:ATLAS_AI_PLAN_VERSION,goal:goal?{type:goal.type,date:goal.date,startDate:goal.startDate,targetTimeSec:goal.targetTimeSec,availableDays:goal.availableDays}:null,secondary:(secondary||[]).map(x=>({p:x.priority,t:x.type,d:x.date,i:x.intention,time:x.targetTimeSec||null})),availability:(availability||[]).map(x=>({w:x.weekStart,d:x.availableDays}))}));}
+function aiPlanV2CacheMatches(envelope,goal=currentEngineV2Goal,secondary=currentSecondaryGoals,availability=currentAvailabilityExceptions){return!!(envelope?.plan?.ok&&envelope.version===ATLAS_AI_PLAN_VERSION&&envelope.signature===aiPlanV2ConfigSignature(goal,secondary,availability));}
+function aiPlanV2RecentTrainingContext(){
+  const anchor=currentEngineV2Goal?.startDate||fmtDate(new Date()),oldest=addDays(anchor,-84),runs=(currentActivities||[]).filter(isRun).filter(a=>{const d=activityDate(a);return d&&d>=oldest&&d<anchor;}).sort((a,b)=>activityStamp(a).localeCompare(activityStamp(b))).slice(-48);
+  return runs.map(a=>{const d=activityDate(a),km=activityDistanceM(a)/1000,pace=activityPaceSecKm(a),load=Number(pick(a,["icu_training_load","training_load","load"])),name=String(activityName(a)||"");return{date:d,name:name.slice(0,80),km:Number.isFinite(km)?Number(km.toFixed(2)):null,paceSecKm:Number.isFinite(pace)?Math.round(pace):null,load:Number.isFinite(load)?Math.round(load):null,quality:/\b(x|×|series|interval|umbral|tempo|fartlek|vo2|400|800|1000|1k|2k|3k)\b/i.test(name),long:Number.isFinite(km)&&km>=Math.max(14,Number(currentAthleteProfileV2?.historical?.longRunP90||18)*.82)};});
+}
+function aiPlanV2QualityHistoryContext(){
+  const anchor=currentEngineV2Goal?.startDate||fmtDate(new Date()),oldest=addDays(anchor,-365);
+  return (currentActivities||[]).filter(isRun).filter(a=>{const d=activityDate(a),name=String(activityName(a)||"");return d&&d>=oldest&&d<anchor&&/\b(x|×|series|interval|umbral|tempo|fartlek|vo2|400|800|1000|1k|2k|3k)\b/i.test(name);}).sort((a,b)=>activityStamp(b).localeCompare(activityStamp(a))).slice(0,18).map(a=>({date:activityDate(a),name:String(activityName(a)||"").slice(0,90),km:Number((activityDistanceM(a)/1000).toFixed(2)),paceSecKm:Math.round(activityPaceSecKm(a)||0)||null,load:Math.round(Number(pick(a,["icu_training_load","training_load","load"]))||0)||null}));
+}
+function aiPlanV2AthleteContext(){const p=currentAthleteProfileV2||{},r=currentGoalRequirements||{},m=sessionPaceModel(p,r);return{current:{stableWeeklyKm:p.current?.stableWeeklyKm,launchWeeklyKm:p.current?.launchWeeklyKm,stableFrequency:p.current?.stableFrequency,launchFrequency:p.current?.launchFrequency,longest84:p.current?.longest84,qualityPerWeek28:p.current?.qualityPerWeek28,easyPace:p.current?.easyPace},historical:{sustainableVolume8:p.historical?.sustainableVolume8,sustainableFrequency8:p.historical?.sustainableFrequency8,longRunP90:p.historical?.longRunP90,longRunTrainingMax:p.historical?.longRunTrainingMax,experienceYears:p.historical?.experienceYears},performance:{raceAnchors:(p.performance?.raceAnchors||[]).slice(0,8),vo2:p.performance?.vo2},recovery:{ctl:p.recovery?.ctl,atl:p.recovery?.atl,freshness:p.recovery?.freshness},recentTraining:aiPlanV2RecentTrainingContext(),qualityHistory:aiPlanV2QualityHistoryContext(),paceModel:{easy:sessionRange(m.easyFast,m.easySlow),aerobic:sessionRange(m.steadyFast,m.steadySlow),MP:sessionRange(m.marathon-5,m.marathon+5),HM:sessionRange(m.half-5,m.half+7),threshold:sessionRange(m.threshold-4,m.threshold+4),tenK:sessionRange(m.ten-4,m.ten+4),fiveK:sessionRange(m.five-4,m.five+4)}};}
+function aiPlanV2WeekContext(){return(currentWeeklyTargets?.weeks||[]).map(w=>({weekIndex:w.weekIndex,start:w.start,end:w.end,phase:w.phase,role:w.role,targetKm:Math.round((Number(w.trainingVolume)||0)*10)/10,frequency:w.frequency,longRunKm:w.longRun,availableDays:effectiveAvailabilityForWeek(currentEngineV2Goal,currentAvailabilityExceptions,w.start).days,secondaryRaces:(w.secondaryRaces||[]).map(r=>({priority:r.priority,type:r.type,date:r.date,targetTimeSec:r.targetTimeSec||null})),raceWeek:!!w.raceWeek}));}
+function aiPlanV2Prompt(context,repair=null){
+  const schema={weeks:[{weekIndex:1,phase:"Base",focus:"adaptación principal",sessions:[{date:"YYYY-MM-DD",type:"easy|quality|long|strength|activation|race",title:"nombre concreto",km:10,capacity:"aerobic|threshold|vo2|racepace|marathonpace|neuromuscular|durability|null",steps:[{kind:"distance",km:2,zone:"EASY",label:"WU"},{kind:"repeat",reps:5,workKm:1,zone:"10K",recoverySec:90,recoveryZone:"EASY"},{kind:"distance",km:2,zone:"EASY",label:"CD"}]}]}]};
+  return `Actúa como entrenador de running de alto nivel. Diseña el plan COMPLETO, individualizado y específico para la distancia solicitada. Devuelve EXCLUSIVAMENTE JSON válido, sin markdown ni comentarios.\n\nOBJETIVO CLAVE: los planes de 5K, 10K, media y maratón NO pueden ser el mismo esqueleto con nombres cambiados. La arquitectura, la distribución de capacidades, las tiradas y la calidad deben responder a la fisiología y a la marca objetivo.\n\nPRINCIPIOS OBLIGATORIOS:\n- Variedad real y progresiva: umbral, VO2, intervalos cortos/largos, fartlek, economía/rectas, ritmo específico y, en maratón, durabilidad y bloques MP. No repitas la misma sesión semana tras semana.\n- 5K: prioridad a economía, VO2, velocidad aeróbica, umbral de soporte y trabajo a ritmo 5K FRACCIONADO. Prohibido un bloque continuo de 7 km a ritmo 5K; en semana de carrera el volumen específico baja mucho.\n- 10K: combinación de umbral, VO2 y repeticiones de 1–2 km a ritmo 10K, con velocidad de soporte.\n- Media: mucho umbral, bloques largos controlados, ritmo HM y resistencia específica.\n- Maratón: durabilidad, tiradas largas, MP en bloques/progresivos, umbral de soporte y velocidad suficiente para economía.\n- Las carreras B/C crean sus propios microbloques y después recuperación.\n- Taper: reduce volumen pero conserva frecuencia y chispa. D-1/D-2 pueden incluir una sesión llamada EXACTAMENTE “Activación”, corta y sin fatiga.\n- Nunca compenses entrenamiento perdido amontonando rodajes. Evita 3 rodajes fáciles consecutivos antes de competir.\n- Lee recentTraining y qualityHistory: el comienzo del plan debe respetar lo realizado en las 72 h anteriores y la dosis de calidad debe progresar desde lo que el atleta ha demostrado tolerar, sin copiar literalmente sus sesiones antiguas.\n- Usa la disponibilidad indicada y no pongas dos carreras el mismo día.\n- ATLAS calculará los ritmos: NO escribas ritmos numéricos. Usa solo zonas: RECOVERY, EASY, AEROBIC, MP, HM, THRESHOLD, 10K, 5K, VO2, STRIDE.\n- Cada sesión de calidad debe tener calentamiento y vuelta a la calma. En steps usa distance, repeat o durationRepeat.\n- La fuerza debe ser independiente de carrera; 1–2 sesiones según fase, reducida al acercarse las carreras.\n\nREFERENCIA DE CALIDAD DE DISEÑO: buscamos una evolución comparable a un buen plan que alterna, según fase, trabajos como 6×3 min, 5×1 km, 3×2 km, 8×400 m, 4×2 km, 6×1 km, 3×3 km, fartlek, progresivos, bloques de ritmo específico y tiradas específicas; NO copies esa secuencia, úsala como nivel de variedad.\n\nFORMATO: ${JSON.stringify(schema)}\nPara durationRepeat: {kind:"durationRepeat",reps:6,workSec:180,zone:"VO2",recoverySec:120,recoveryZone:"EASY"}. Para strides: usa durationRepeat con zone STRIDE. Para fuerza puede omitirse steps y km. Para carrera usa type race y la fecha exacta.\n\nCONTEXTO ATLAS:\n${JSON.stringify(context)}${repair?`\n\nCORRECCIÓN OBLIGATORIA: el intento anterior viola estas reglas: ${JSON.stringify(repair.violations)}. Corrige TODO el plan. Plan anterior: ${JSON.stringify(repair.plan)}`:""}`;
+}
+function aiPlanV2ExtractJson(text){let s=String(text||"").trim().replace(/^```(?:json)?/i,"").replace(/```$/i,"").trim(),a=s.indexOf("{"),b=s.lastIndexOf("}");if(a<0||b<=a)throw new Error("La IA no devolvió JSON de plan.");return JSON.parse(s.slice(a,b+1));}
+function aiZonePaceV2(zone){const m=sessionPaceModel(currentAthleteProfileV2,currentGoalRequirements),z=String(zone||"EASY").toUpperCase();if(z==="RECOVERY")return sessionRange(m.easySlow+10,m.easySlow+35);if(z==="EASY")return sessionRange(m.easyFast,m.easySlow);if(z==="AEROBIC")return sessionRange(m.steadyFast,m.steadySlow);if(z==="MP")return sessionRange(m.marathon-5,m.marathon+5);if(z==="HM")return sessionRange(m.half-5,m.half+7);if(z==="THRESHOLD")return sessionRange(m.threshold-4,m.threshold+4);if(z==="10K")return sessionRange(m.ten-4,m.ten+4);if(z==="5K"||z==="VO2")return sessionRange(m.five-4,m.five+4);if(z==="STRIDE")return sessionRange(Math.max(120,m.five-15),Math.max(125,m.five-5));return sessionRange(m.easyFast,m.easySlow);}
+function aiSegmentDistanceForTimeV2(sec,pace){const ranges=paceRangesFromText(pace),mid=ranges.length?(ranges[0].fast+ranges[0].slow)/2:360;return Math.max(.05,Number(((Number(sec)||0)/mid).toFixed(2)));}
+function aiStepsToSegmentsV2(steps){const out=[];for(const st of Array.isArray(steps)?steps:[]){const kind=String(st?.kind||"");if(kind==="distance"){const km=Number(st.km),pace=aiZonePaceV2(st.zone);if(km>0)out.push(sessionSegment(/wu|warm/i.test(st.label||"")?"warmup":/cd|cool/i.test(st.label||"")?"cooldown":"work",km,pace,st.label||st.zone));}else if(kind==="repeat"||kind==="durationRepeat"){const reps=Math.max(1,Math.min(20,Math.round(Number(st.reps)||1))),workPace=aiZonePaceV2(st.zone),recPace=aiZonePaceV2(st.recoveryZone||"EASY");for(let i=0;i<reps;i++){if(kind==="repeat"){const km=Number(st.workKm);if(km>0)out.push(sessionSegment("work",km,workPace,st.zone));}else{const sec=Math.max(10,Number(st.workSec)||0);if(sec)out.push(sessionSegment("work",aiSegmentDistanceForTimeV2(sec,workPace),workPace,st.zone,sec));}if(i<reps-1){if(Number(st.recoveryKm)>0)out.push(sessionSegment("recovery",Number(st.recoveryKm),recPace,"Recuperación"));else if(Number(st.recoverySec)>0){const sec=Number(st.recoverySec);out.push(sessionSegment("recovery",aiSegmentDistanceForTimeV2(sec,recPace),recPace,"Recuperación",sec));}}}}}return out;}
+function aiStructureV2(segments){return(segments||[]).map(s=>{const d=Number(s.distanceKm)||0,dist=Number.isFinite(Number(s.durationSec))&&Number(s.durationSec)>0?`${Math.round(Number(s.durationSec))} s`:`${formatNatural(d,2)} km`;return`${s.label||s.kind}: ${dist} @ ${s.pace||""}`;}).join(" + ");}
+function compileAiPlanV2(raw){
+  if(!raw||!Array.isArray(raw.weeks))throw new Error("Plan IA sin semanas.");const weeks=[],all=[];for(const rw of raw.weeks){const wi=Number(rw.weekIndex),wt=currentWeeklyTargets?.weeks?.find(w=>w.weekIndex===wi);if(!wt)continue;const sessions=[];let ordinal=0;for(const rs of Array.isArray(rw.sessions)?rw.sessions:[]){const requested=String(rs.type||"easy").toLowerCase(),isActivation=requested==="activation",type=isActivation?"easy":requested==="race"?(rs.date===currentEngineV2Goal?.date?"raceA":"race"):requested;if(!["easy","quality","long","strength","race","raceA"].includes(type))continue;const date=String(rs.date||"").slice(0,10);if(!/^\d{4}-\d{2}-\d{2}$/.test(date))continue;let segments=aiStepsToSegmentsV2(rs.steps),distance=Number(rs.km)||sessionSumSegments(segments),pace=null,structure="";if(type==="strength"){distance=null;structure=String(rs.structure||"Fuerza para corredor · 25–35 min · piernas, cadena posterior, gemelos y core");}else if(type==="race"||type==="raceA"){const race=type==="raceA"?currentEngineV2Goal:(currentSecondaryGoals||[]).find(g=>g.date===date),dm=engineV2GoalDistance(race?.type||currentEngineV2Goal?.type),pp=race?.targetTimeSec&&dm?race.targetTimeSec/(dm/1000):null;distance=dm?dm/1000:distance;pace=pp?engineV2FormatPace(pp):"Ritmo de competición";segments=[];structure=`Competición · ${formatNatural(distance,2)} km${pp?` @ ${engineV2FormatPace(pp)}`:""}`;}else{if(!segments.length&&distance>0)segments=[sessionSegment(type==="easy"?"work":"work",distance,aiZonePaceV2(type==="long"?"EASY":rs.zone||"EASY"),rs.title||type)];distance=sessionSumSegments(segments)||distance;const work=segments.filter(x=>x.kind==="work"),p=work[0]?.pace||segments[0]?.pace;pace=p||aiZonePaceV2("EASY");structure=aiStructureV2(segments);}
+      ordinal++;const workKm=segments.filter(x=>x.kind==="work").reduce((a,x)=>a+(Number(x.distanceKm)||0),0),capacity=rs.capacity||null,title=isActivation?"Activación":String(rs.title||({easy:"Rodaje fácil",quality:"Calidad",long:"Tirada larga",strength:"Fuerza",race:"Carrera",raceA:"Carrera objetivo"}[type]||"Sesión"));const x={weekIndex:wi,date,day:engineV2DayNumber(date),type,title,phase:String(rw.phase||wt.phase),role:wt.role,distanceKm:distance?Number(distance.toFixed(2)):null,pace,segments,structure,purpose:"",planningState:wt.planningState||"provisional",planningModel:ATLAS_AI_PLAN_VERSION,logicalId:`w${String(wi).padStart(2,"0")}-${type}-${String(ordinal).padStart(2,"0")}`,aiDesigned:true,isActivation};if(capacity)x.performance={model:ATLAS_AI_PLAN_VERSION,capacity,unit:"km",value:Number(workKm.toFixed(2)),actualWorkKm:Number(workKm.toFixed(2)),cost:isActivation?.15:.8};x.purpose=sessionPurposeDetailed(x,wt,currentGoalRequirements);sessions.push(x);all.push(x);}const trainingKm=sessions.filter(x=>["easy","quality","long"].includes(x.type)).reduce((a,x)=>a+(Number(x.distanceKm)||0),0);weeks.push({weekIndex:wi,start:wt.start,end:wt.end,phase:String(rw.phase||wt.phase),role:wt.role,focus:String(rw.focus||wt.primaryAdaptation||""),sessions,trainingKm,targetKm:wt.trainingVolume,planningState:wt.planningState,secondaryFocus:wt.secondaryFocus});}
+  const validation=validateAiPlanV2({weeks,sessions:all});const audit=[...validation.audit,{label:"Origen",status:"ok",detail:"Arquitectura diseñada por IA; ritmos, compilación y reglas de seguridad controlados por ATLAS"}],fingerprint=revisionSessionFingerprint(currentEngineV2Goal,all);return{ok:true,version:ATLAS_SESSION_GENERATOR_VERSION,performanceModelVersion:ATLAS_AI_PLAN_VERSION,source:"anthropic+atlas",fingerprint,weeks,sessions:all,audit,coverage:{score:validation.score,status:validation.bad.length?"bad":validation.warn.length?"warn":"ok",checks:[]},runCount:all.filter(s=>["easy","quality","long","race","raceA"].includes(s.type)).length,strengthCount:all.filter(s=>s.type==="strength").length,reading:`Motor 2.0 · plan específico ${currentGoalRequirements?.label||""}, diseñado por IA y validado por ATLAS. ${validation.bad.length?validation.bad.length+" bloqueo(s) pendiente(s).":"Sin bloqueos deterministas."}`};
+}
+function validateAiPlanV2(plan){
+  const audit=[],bad=[],warn=[],add=(label,status,detail)=>{audit.push({label,status,detail});(status==="bad"?bad:status==="warn"?warn:[]).push(detail);};
+  const all=Array.isArray(plan?.sessions)?plan.sessions:[],weeks=Array.isArray(plan?.weeks)?plan.weeks:[],goal=currentEngineV2Goal,goalType=String(goal?.type||"").toUpperCase(),raceKm=(engineV2GoalDistance(goalType)||0)/1000,expected=currentWeeklyTargets?.weeks||[];
+  const runTypes=new Set(["easy","quality","long","race","raceA"]);
+  const daysBetween=(a,b)=>Math.round((Date.parse(`${b}T12:00:00Z`)-Date.parse(`${a}T12:00:00Z`))/86400000);
+  const workKmFor=(sess,zones)=>{const set=new Set(zones.map(z=>String(z).toUpperCase()));return(sess.segments||[]).filter(x=>x.kind==="work"&&set.has(String(x.label||"").toUpperCase())).reduce((n,x)=>n+(Number(x.distanceKm)||0),0);};
+  const maxWorkSegment=(sess,zones)=>{const set=new Set(zones.map(z=>String(z).toUpperCase()));return Math.max(0,...(sess.segments||[]).filter(x=>x.kind==="work"&&set.has(String(x.label||"").toUpperCase())).map(x=>Number(x.distanceKm)||0));};
+
+  const expectedIdx=expected.map(w=>Number(w.weekIndex)),actualIdx=weeks.map(w=>Number(w.weekIndex)),missingWeeks=expectedIdx.filter(i=>!actualIdx.includes(i)),dupWeeks=actualIdx.filter((x,i,a)=>a.indexOf(x)!==i);
+  add("Cobertura semanal",missingWeeks.length||dupWeeks.length?"bad":"ok",missingWeeks.length||dupWeeks.length?`Faltan ${missingWeeks.length} semana(s) y hay ${dupWeeks.length} duplicada(s)`:`${expectedIdx.length} semanas completas`);
+
+  const outside=all.filter(sess=>{const w=expected.find(x=>Number(x.weekIndex)===Number(sess.weekIndex));return!w||sess.date<w.start||sess.date>w.end;});
+  add("Fechas de semana",outside.length?"bad":"ok",outside.length?`${outside.length} sesión(es) fuera de su semana`:"Todas las sesiones caen dentro de su semana");
+
+  const raceA=all.filter(sess=>sess.type==="raceA"&&sess.date===goal?.date);
+  add("Carrera A",raceA.length===1?"ok":"bad",raceA.length===1?"Objetivo A presente una sola vez":"Debe existir exactamente una carrera A en su fecha");
+
+  const missingSecondary=(currentSecondaryGoals||[]).filter(r=>!all.some(sess=>sess.type==="race"&&sess.date===r.date));
+  add("Carreras B/C",missingSecondary.length?"bad":"ok",missingSecondary.length?`${missingSecondary.length} carrera(s) secundaria(s) ausentes`:"Todas las carreras B/C están integradas");
+
+  const runDays=new Map();for(const sess of all.filter(x=>runTypes.has(x.type)))runDays.set(sess.date,(runDays.get(sess.date)||0)+1);
+  const duplicateRunDays=[...runDays].filter(([,n])=>n>1);
+  add("Una carrera por día",duplicateRunDays.length?"bad":"ok",duplicateRunDays.length?`${duplicateRunDays.length} día(s) contienen más de una sesión de carrera`:"No hay dobles sesiones de carrera");
+
+  const availabilityBad=all.filter(sess=>!["race","raceA"].includes(sess.type)&&!effectiveAvailabilityForWeek(goal,currentAvailabilityExceptions,engineV2Monday(sess.date)).days.includes(engineV2DayNumber(sess.date)));
+  add("Disponibilidad",availabilityBad.length?"bad":"ok",availabilityBad.length?`${availabilityBad.length} sesión(es) fuera de disponibilidad`:"Todas las sesiones respetan disponibilidad");
+
+  const qualityBad=all.filter(sess=>sess.type==="quality"&&!sess.isActivation&&(!(sess.segments||[]).some(x=>x.kind==="warmup")||!(sess.segments||[]).some(x=>x.kind==="cooldown")));
+  add("Calidad completa",qualityBad.length?"bad":"ok",qualityBad.length?`${qualityBad.length} sesión(es) de calidad sin WU o CD`:"Toda la calidad incluye calentamiento y vuelta a la calma");
+
+  const hard=all.filter(sess=>(sess.type==="quality"&&!sess.isActivation)||["long","race","raceA"].includes(sess.type)).sort((a,b)=>a.date.localeCompare(b.date));let adjacent=0;
+  for(let i=1;i<hard.length;i++)if(daysBetween(hard[i-1].date,hard[i].date)<2)adjacent++;
+  add("Separación de carga",adjacent?"bad":"ok",adjacent?`${adjacent} pareja(s) de estímulos duros separadas por <48 h`:"Los estímulos duros conservan recuperación suficiente");
+
+  const races=all.filter(sess=>["race","raceA"].includes(sess.type)),preRace=[],longRaceWeek=[],activationBad=[],easyPile=[];
+  for(const r of races){
+    for(const sess of all){
+      const d=daysBetween(sess.date,r.date);
+      if((d===1||d===2)&&((sess.type==="quality"&&!sess.isActivation)||sess.type==="long"))preRace.push(sess);
+      if(d>=0&&d<=6&&sess.type==="long")longRaceWeek.push(sess);
+      if(sess.isActivation&&(d<1||d>2||sess.title!=="Activación"||Number(sess.distanceKm)>Math.min(8,Math.max(4,raceKm*.8))))activationBad.push(sess);
+    }
+    const prior=all.filter(sess=>sess.type==="easy"&&!sess.isActivation&&daysBetween(sess.date,r.date)>=1&&daysBetween(sess.date,r.date)<=5).sort((a,b)=>a.date.localeCompare(b.date));
+    for(let i=2;i<prior.length;i++)if(daysBetween(prior[i-2].date,prior[i-1].date)===1&&daysBetween(prior[i-1].date,prior[i].date)===1){easyPile.push(r);break;}
+  }
+  add("Precompetición",preRace.length?"bad":"ok",preRace.length?`${preRace.length} sesión(es) exigentes en D-1/D-2`:"D-1/D-2 protegidos; Activación permitida");
+  add("Tirada en semana de carrera",longRaceWeek.length?"bad":"ok",longRaceWeek.length?`${longRaceWeek.length} tirada(s) larga(s) dentro de los 6 días previos a competir`:"No hay tiradas largas en los 6 días previos");
+  add("Activación",activationBad.length?"bad":"ok",activationBad.length?`${activationBad.length} Activación(es) fuera de D-1/D-2, mal nombradas o demasiado largas`:"Las activaciones son cortas y están colocadas en D-1/D-2");
+  add("Rodajes precompetición",easyPile.length?"bad":"ok",easyPile.length?`${easyPile.length} carrera(s) precedidas por 3 rodajes fáciles consecutivos`:"No se amontonan 3 rodajes fáciles antes de competir");
+
+  const caps={"5K":{specific:["5K"],normal:5,late:3,long:18,single:2.5,singleLate:1.6},"10K":{specific:["10K"],normal:8,late:5,long:22,single:3.2,singleLate:2.1},"HALF":{specific:["HM"],normal:12,late:7,long:28,single:7,singleLate:4},"MARATHON":{specific:["MP"],normal:20,late:8,long:35,single:18,singleLate:6}}[goalType]||{specific:[],normal:10,late:6,long:30,single:5,singleLate:3};
+  const specificBad=[],singleBad=[],longBad=all.filter(sess=>sess.type==="long"&&Number(sess.distanceKm)>caps.long+.1);
+  for(const sess of all.filter(x=>x.type==="quality")){
+    const d=daysBetween(sess.date,goal.date),late=d>=0&&d<=10,km=workKmFor(sess,caps.specific),single=maxWorkSegment(sess,caps.specific);
+    if(km>(late?caps.late:caps.normal)+.1)specificBad.push(sess);
+    if(single>(late?caps.singleLate:caps.single)+.1)singleBad.push(sess);
+  }
+  add("Dosis específica",specificBad.length?"bad":"ok",specificBad.length?`${specificBad.length} sesión(es) exceden la dosis específica máxima para ${goalType}`:"La dosis específica es compatible con la distancia y la fase");
+  add("Bloques específicos",singleBad.length?"bad":"ok",singleBad.length?`${singleBad.length} bloque(s) continuos demasiado largos a ritmo específico`:"No existen bloques continuos absurdos a ritmo de carrera");
+  add("Tirada larga",longBad.length?"bad":"ok",longBad.length?`${longBad.length} tirada(s) exceden ${caps.long} km para ${goalType}`:"Tiradas dentro del rango de la distancia");
+
+  if(goalType==="5K"){
+    const absurd=all.filter(sess=>sess.type==="quality"&&(workKmFor(sess,["5K"])+workKmFor(sess,["VO2"]))>5.1);
+    add("Regla 5K",absurd.length?"bad":"ok",absurd.length?"Trabajo R5K/VO₂ total superior a la propia carrera; sesión bloqueada":"Ninguna sesión reproduce el absurdo de 7 km continuos a R5K");
+  }
+
+  const weekQualityBad=[],raceWeekQualityBad=[];
+  for(const w of weeks){
+    const q=(w.sessions||[]).filter(sess=>sess.type==="quality"&&!sess.isActivation).length,r=(w.sessions||[]).some(sess=>["race","raceA"].includes(sess.type));
+    if(q>2)weekQualityBad.push(w);if(r&&q>1)raceWeekQualityBad.push(w);
+  }
+  add("Densidad de calidad",weekQualityBad.length?"bad":"ok",weekQualityBad.length?`${weekQualityBad.length} semana(s) superan 2 sesiones de calidad`:"Máximo 2 sesiones de calidad por semana");
+  add("Calidad en semana de carrera",raceWeekQualityBad.length?"bad":"ok",raceWeekQualityBad.length?`${raceWeekQualityBad.length} semana(s) de carrera contienen más de un recordatorio de calidad`:"La semana de carrera conserva chispa sin acumular calidad");
+
+  const q=all.filter(sess=>sess.type==="quality"&&!sess.isActivation),canonical=q.map(sess=>String(sess.structure||sess.title||"").toLowerCase().replace(/\d+(?:[.,]\d+)?/g,"#").replace(/\s+/g," ").trim()),unique=new Set(canonical),repeated=[];
+  for(let i=2;i<canonical.length;i++)if(canonical[i]&&canonical[i]===canonical[i-1]&&canonical[i]===canonical[i-2])repeated.push(canonical[i]);
+  const minVar=q.length>=10?5:q.length>=6?4:q.length>=3?3:Math.min(2,q.length);
+  add("Variedad de calidad",unique.size>=minVar?"ok":"warn",`${unique.size} formatos diferenciados para ${q.length} sesiones de calidad`);
+  add("Repetición de calidad",repeated.length?"warn":"ok",repeated.length?`${repeated.length} secuencia(s) repiten exactamente la misma estructura 3 veces seguidas`:"No se repite la misma calidad tres veces consecutivas");
+
+  const zoneTotals={VO2:0,"5K":0,"10K":0,THRESHOLD:0,HM:0,MP:0,STRIDE:0};for(const sess of q)for(const z of Object.keys(zoneTotals))zoneTotals[z]+=workKmFor(sess,[z]);
+  let specificityOk=true,specificityText="";
+  if(goalType==="5K"){specificityOk=zoneTotals.VO2>0&&zoneTotals["5K"]>0&&zoneTotals.THRESHOLD>0;specificityText="VO₂ + R5K + umbral";}
+  else if(goalType==="10K"){specificityOk=zoneTotals["10K"]>0&&zoneTotals.THRESHOLD>0&&(zoneTotals.VO2>0||zoneTotals["5K"]>0);specificityText="R10K + umbral + velocidad de soporte";}
+  else if(goalType==="HALF"){specificityOk=zoneTotals.HM>0&&zoneTotals.THRESHOLD>0;specificityText="RHM + umbral";}
+  else if(goalType==="MARATHON"){specificityOk=zoneTotals.MP>0&&zoneTotals.THRESHOLD>0;specificityText="RMP + umbral de soporte";}
+  add("Especificidad por distancia",specificityOk?"ok":"warn",specificityOk?`Plan contiene ${specificityText}`:`Falta presencia suficiente de ${specificityText||"capacidades específicas"}`);
+
+  const weeklyBad=weeks.filter(w=>{const target=Number(w.targetKm)||0;if(target<=0)return false;return Math.abs(Number(w.trainingKm)-target)>Math.max(6,target*.20);});
+  add("Volumen semanal",weeklyBad.length>2?"warn":"ok",weeklyBad.length?`${weeklyBad.length} semana(s) se desvían >20 % del objetivo estructural`:"Volumen compatible con la trayectoria");
+
+  const beforeStart=(currentActivities||[]).filter(isRun).filter(a=>{const d=activityDate(a);return d&&goal?.startDate&&d<goal.startDate&&d>=addDays(goal.startDate,-3);}),priorHard=beforeStart.filter(a=>{const km=activityDistanceM(a)/1000,load=Number(pick(a,["icu_training_load","training_load","load"])),name=String(activityName(a)||"");return km>=Math.max(14,Number(currentAthleteProfileV2?.historical?.longRunP90||18)*.82)||(Number.isFinite(load)&&load>=75)||/series|interval|umbral|tempo|fartlek|vo2/i.test(name);});
+  if(priorHard.length){
+    const lastPrior=[...priorHard].sort((a,b)=>activityDate(b).localeCompare(activityDate(a)))[0],firstHard=all.filter(sess=>(sess.type==="quality"&&!sess.isActivation)||sess.type==="long").sort((a,b)=>a.date.localeCompare(b.date))[0],gap=firstHard?daysBetween(activityDate(lastPrior),firstHard.date):99;
+    add("Entrada al plan",gap<2?"bad":"ok",gap<2?"Primer estímulo duro demasiado próximo a una carga fuerte realizada antes de comenzar":"El primer estímulo duro respeta la carga de los 3 días anteriores");
+  }
+
+  const score=Math.max(0,100-bad.length*12-warn.length*4);return{audit,bad,warn,score};
+}
+async function requestAiPlanV2(context,repair=null){const prompt=aiPlanV2Prompt(context,repair),result=await apiRequest("/api/chat",{method:"POST",body:{messages:[{role:"user",content:prompt}],context:{task:"atlas-training-plan-v2",goal:context.goal}},timeoutMs:150000,retries:0}),reply=String(result?.reply||"").trim();if(!reply)throw new Error("La IA no devolvió un plan.");return aiPlanV2ExtractJson(reply);}
+async function regenerateAiPlanV2({reason="configuración",silent=false}={}){
+  if(!currentEngineV2Goal||!currentWeeklyTargets?.ok)return currentSessionPlan;if(aiPlanV2GenerationPromise)return aiPlanV2GenerationPromise;
+  aiPlanV2GenerationPromise=(async()=>{const signature=aiPlanV2ConfigSignature(),context={goal:{type:currentEngineV2Goal.type,date:currentEngineV2Goal.date,startDate:currentEngineV2Goal.startDate,targetTimeSec:currentEngineV2Goal.targetTimeSec,availableDays:currentEngineV2Goal.availableDays},secondaryGoals:currentSecondaryGoals,athlete:aiPlanV2AthleteContext(),weeks:aiPlanV2WeekContext(),instruction:"Ritmos calculados por ATLAS; diseña estructura y dosis."};if(!silent)toast("🧠 Motor 2.0 · diseñando y validando el plan…",false,0);try{let raw=await requestAiPlanV2(context),plan=compileAiPlanV2(raw),validation=validateAiPlanV2(plan);if(validation.bad.length){raw=await requestAiPlanV2(context,{violations:validation.bad.slice(0,12),plan:raw});plan=compileAiPlanV2(raw);validation=validateAiPlanV2(plan);}if(validation.bad.length)throw new Error(`La revisión IA sigue incumpliendo ${validation.bad.length} regla(s) obligatoria(s).`);const envelope={version:ATLAS_AI_PLAN_VERSION,signature,generatedAt:new Date().toISOString(),reason,plan};await storePut("meta",{key:"engineV2AiPlan",value:envelope});currentAiPlanV2=envelope;currentSessionPlan=plan;currentAdaptiveState=buildAdaptiveStateV1(authoritativePublishedPlan(currentSessionPlan,currentPlanManifest),currentPlanManifest,currentActivities,currentAthleteProfileV2,currentEngineV2Goal,currentSecondaryGoals,currentAvailabilityExceptions);recordOpsEvent("training-engine",`Motor 2.0 generado · ${reason}`,{sessions:plan.sessions.length,weeks:plan.weeks.length,score:validation.score}).catch(()=>{});if(!silent)toast(`✅ Motor 2.0 · ${plan.sessions.length} sesiones diseñadas y validadas.`);return plan;}catch(error){console.error("ɅTLɅS · Motor 2.0",error);recordRuntimeAudit("training-engine",error).catch(()=>{});if(currentSessionPlan?.ok){currentSessionPlan={...currentSessionPlan,version:ATLAS_SESSION_GENERATOR_VERSION,source:"fallback-local",audit:[...(currentSessionPlan.audit||[]),{label:"Motor 2.0 IA",status:"bad",detail:`Plan IA no validado: ${error.message}. El plan local queda sólo como vista provisional y no se puede publicar.`}],reading:`Motor 2.0 no ha podido validar la propuesta de IA. Vista local provisional hasta regenerar.`};}if(!silent)toast(`⚠️ Motor 2.0: ${error.message}`,true,7000);return currentSessionPlan;}finally{aiPlanV2GenerationPromise=null;}})();return aiPlanV2GenerationPromise;
+}
+function scheduleAiPlanV2Autogen(){if(aiPlanV2AutogenRequested||!currentEngineV2Goal||aiPlanV2CacheMatches(currentAiPlanV2)||!atlasOnline())return;aiPlanV2AutogenRequested=true;setTimeout(()=>regenerateAiPlanV2({reason:"migración a Motor 2.0",silent:true}).then(()=>{renderSessionGeneratorCard();renderSessionGenerator();renderPlanOverview();renderPlanPublicationStatus();}).catch(()=>{}),900);}
+async function regenerateAiPlanV2FromUi(){
+  if(!currentEngineV2Goal)return toast("⚠️ Define primero el objetivo principal.",true);
+  const btn=ui.sessionAiRegenerateBtn;if(btn)btn.disabled=true;
+  try{
+    await storeDelete("meta","engineV2AiPlan").catch(()=>{});currentAiPlanV2=null;
+    await regenerateAiPlanV2({reason:"regeneración manual",silent:false});
+    renderSessionGeneratorCard();renderSessionGenerator();renderPlanOverview();renderPlanPublicationStatus();runEngineIntegritySuite(false);
+  }finally{if(btn)btn.disabled=false;}
+}
 
 
 /* ===== ɅTLɅS Motor v1.6 · Evaluador de Progresión + biblioteca de intervalos ===== */
@@ -7715,6 +7806,8 @@ function engineIntegrityPastCheck(plan,manifest,today){
 }
 function engineIntegrityPlanChecks(plan=currentSessionPlan,goal=currentEngineV2Goal,manifest=currentPlanManifest,today=fmtDate(new Date())){
   const checks=[];if(!plan?.ok||!goal){checks.push(engineIntegrityCheck("plan","Plan activo","bad","No existe un plan válido para auditar",true));return checks;}
+  const aiSourceOk=plan.source==="anthropic+atlas"&&aiPlanV2CacheMatches(currentAiPlanV2,goal,currentSecondaryGoals,currentAvailabilityExceptions);
+  checks.push(aiSourceOk?engineIntegrityCheck("motor2","Motor 2.0","ok","Plan IA vigente + validación determinista ATLAS"):engineIntegrityCheck("motor2","Motor 2.0","bad","El plan no procede de una generación IA vigente y validada; publicación bloqueada",true));
   const sessions=Array.isArray(plan.sessions)?plan.sessions:[],ids=sessions.map(x=>String(x?.logicalId||"")),dupes=ids.filter((id,i)=>id&&ids.indexOf(id)!==i),missing=ids.filter(x=>!x).length;
   checks.push(missing||dupes.length?engineIntegrityCheck("ids","Identidad de sesiones","bad",`${missing} sin ID · ${new Set(dupes).size} IDs duplicados`,true):engineIntegrityCheck("ids","Identidad de sesiones","ok",`${new Set(ids).size} logicalId únicos`));
   const start=String(goal.startDate||""),end=String(goal.date||""),outside=sessions.filter(x=>!x?.date||String(x.date)<start||String(x.date)>end),raceA=sessions.filter(x=>x.type==="raceA"),raceBad=raceA.length!==1||String(raceA[0]?.date||"")!==end;
@@ -10816,390 +10909,6 @@ html.atlas-main-scroll-locked,body.atlas-main-scroll-locked{overscroll-behavior:
 </style>
 
 
-<style id="atlas-v01181-plan-goal-table-final">
-/* RC2.2 — final authority for the Plan goal table. */
-#planControlDetail .plan-goal-summary{
-  position:relative!important;
-  display:grid!important;
-  grid-template-columns:repeat(2,minmax(0,1fr))!important;
-  gap:0!important;
-  width:100%!important;
-  max-width:none!important;
-  margin:0!important;
-  overflow:hidden!important;
-}
-/* Remove every legacy per-cell divider so only the shared grid remains. */
-#planControlDetail .plan-goal-summary-item{
-  position:relative!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:flex-start!important;
-  gap:8px!important;
-  min-width:0!important;
-  padding:10px 12px!important;
-  text-align:left!important;
-  border:0!important;
-}
-#planControlDetail .plan-goal-summary-item::before,
-#planControlDetail .plan-goal-summary-item::after{
-  content:none!important;
-  display:none!important;
-}
-#planControlDetail .plan-goal-summary-copy{
-  display:flex!important;
-  flex-direction:column!important;
-  align-items:flex-start!important;
-  justify-content:center!important;
-  min-width:0!important;
-  text-align:left!important;
-}
-#planControlDetail .plan-goal-summary-key,
-#planControlDetail .plan-goal-summary-value{
-  display:block!important;
-  width:100%!important;
-  margin-left:0!important;
-  margin-right:0!important;
-  text-align:left!important;
-}
-/* Exactly one vertical divider and three horizontal dividers, all inset from the outer edge. */
-#planControlDetail .plan-goal-summary::before{
-  content:""!important;
-  display:block!important;
-  position:absolute!important;
-  z-index:4!important;
-  pointer-events:none!important;
-  left:50%!important;
-  top:10px!important;
-  bottom:10px!important;
-  width:2px!important;
-  height:auto!important;
-  transform:translateX(-1px)!important;
-  background:var(--atlas-divider-strong,rgba(255,255,255,.18))!important;
-  border:0!important;
-}
-#planControlDetail .plan-goal-summary::after{
-  content:""!important;
-  display:block!important;
-  position:absolute!important;
-  z-index:4!important;
-  pointer-events:none!important;
-  left:10px!important;
-  right:10px!important;
-  top:0!important;
-  bottom:0!important;
-  width:auto!important;
-  height:auto!important;
-  transform:none!important;
-  border:0!important;
-  background:
-    linear-gradient(var(--atlas-divider-strong,rgba(255,255,255,.18)),var(--atlas-divider-strong,rgba(255,255,255,.18))) 0 25%/100% 2px no-repeat,
-    linear-gradient(var(--atlas-divider-strong,rgba(255,255,255,.18)),var(--atlas-divider-strong,rgba(255,255,255,.18))) 0 50%/100% 2px no-repeat,
-    linear-gradient(var(--atlas-divider-strong,rgba(255,255,255,.18)),var(--atlas-divider-strong,rgba(255,255,255,.18))) 0 75%/100% 2px no-repeat!important;
-}
-
-
-/* ===== ɅTLɅS v0.119 · VFC nocturna, mapa oscuro, foco de carga y sistema global de divisores ===== */
-:root{
-  --atlas-divider-v3:rgba(255,255,255,.20);
-  --atlas-divider-v3-soft:rgba(255,255,255,.15);
-  --atlas-divider-v3-w:2px;
-  --atlas-divider-v3-gap:10px;
-}
-
-/* Map restored to the original OpenStreetMap presentation. */
-
-/* Planned rest uses exactly the training-title typography, but muted. */
-#view-plan .plan-rest-copy{
-  height:auto!important;min-height:0!important;padding:2px 0!important;margin:0!important;overflow:visible!important;
-  font-size:17.5px!important;line-height:1.12!important;font-weight:780!important;letter-spacing:0!important;color:#71767b!important;
-}
-#view-plan .plan-rest-copy:empty{height:0!important;padding:0!important;overflow:hidden!important;}
-
-/* Activity AI: same asset/proportions as Chat, optically centered. */
-.activity-title-row .activity-ai-btn{width:42px!important;height:42px!important;border-radius:50%!important;padding:0!important;overflow:hidden!important;display:grid!important;place-items:center!important;}
-.activity-ai-mark{width:42px!important;height:42px!important;display:grid!important;place-items:center!important;overflow:hidden!important;transform:none!important;}
-.activity-ai-icon{display:block!important;width:28px!important;height:22px!important;object-fit:contain!important;object-position:50% 50%!important;margin:0!important;padding:0!important;transform:translateY(-1.5px)!important;}
-
-/* Load Focus. */
-.profile-load-focus{
-  border:2px solid var(--atlas-glass-border)!important;border-radius:18px!important;overflow:hidden!important;
-  background:var(--atlas-glass-bg-soft)!important;box-shadow:var(--atlas-depth-shadow)!important;
-  -webkit-backdrop-filter:blur(20px) saturate(165%)!important;backdrop-filter:blur(20px) saturate(165%)!important;
-  margin-bottom:12px!important;
-}
-.profile-load-focus-meta{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 12px;color:var(--muted2);font-size:10.5px;line-height:1.2;font-weight:720;}
-.profile-load-focus-meta strong{color:#fff;font-size:12px;font-weight:800;}
-.profile-load-focus-rows{padding:0 12px;}
-.profile-load-focus-row{position:relative;padding:9px 0;}
-.profile-load-focus-row+.profile-load-focus-row{border:0!important;background-image:linear-gradient(var(--atlas-divider-v3-soft),var(--atlas-divider-v3-soft))!important;background-position:center top!important;background-size:calc(100% - 20px) var(--atlas-divider-v3-w)!important;background-repeat:no-repeat!important;}
-.profile-load-focus-row-head{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#fff;font-size:12.5px;font-weight:760;}
-.profile-load-focus-row-head strong{font-size:13px;font-variant-numeric:tabular-nums;}
-.profile-load-focus-track{height:7px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:7px;}
-.profile-load-focus-fill{display:block;height:100%;border-radius:999px;}
-.profile-load-focus-fill.low{background:#1d9bf0}.profile-load-focus-fill.high{background:#ff9f0a}.profile-load-focus-fill.anaerobic{background:#bf5af2}
-.profile-load-focus-value{margin-top:4px;color:var(--muted);font-size:9.5px;font-weight:680;}
-.profile-load-focus-reading{margin:0 12px;padding:10px 0 11px;color:var(--muted2);font-size:10.8px;line-height:1.38;font-weight:620;border:0!important;background-image:linear-gradient(var(--atlas-divider-v3-soft),var(--atlas-divider-v3-soft))!important;background-position:center top!important;background-size:calc(100% - 20px) var(--atlas-divider-v3-w)!important;background-repeat:no-repeat!important;}
-.profile-load-focus-empty{padding:12px;color:var(--muted);font-size:11px;line-height:1.4;}
-
-/* ---- Divider system v3: no inner divider is allowed to touch an outer edge or another divider. ---- */
-
-/* Horizontal separators between list rows: inset from both sides. */
-:is(.pace-row,.adaptive-revision-item,.adaptive-outcome,.plan-week-calendar-session,.session-preview-week,.solver-week,.weekly-target-week,.macro-week,.plan-day-multi-item,.adaptive-history-item,.engine-v2-row,.plan-item,.plan-detail-step,.profile-insight-row,.record-row,.data-native-row,.data-trend-row,.profile-line,.activity-row,.activity-equipment-row,.activity-lap-group,.shoe-limit-row,.profile-zone-row,.profile-zone-section,.record-podium-row):not(:first-child){
-  border-top:0!important;
-  background-image:linear-gradient(var(--atlas-divider-v3-soft),var(--atlas-divider-v3-soft))!important;
-  background-position:center top!important;background-size:calc(100% - 20px) var(--atlas-divider-v3-w)!important;background-repeat:no-repeat!important;
-}
-.plan-week-calendar-session+.plan-week-calendar-session,.activity-lap-group+.activity-lap-group,.profile-home-links .data-native-row+.data-native-row{border-top:0!important;}
-
-/* Top divisions that are conceptually independent also stay inset. */
-.stat,.shoe-stats,.profile-home-grid{border-top:0!important;background-image:linear-gradient(var(--atlas-divider-v3-soft),var(--atlas-divider-v3-soft))!important;background-position:center top!important;background-size:calc(100% - 20px) var(--atlas-divider-v3-w)!important;background-repeat:no-repeat!important;}
-.activity-lap-bars-card{border-bottom:0!important;}
-
-/* Dedicated date/content separators in activity and Plan rows. */
-.activity-row-sep,.plan-day-sep,#sessionGeneratorList .plan-week-calendar-sep{
-  width:var(--atlas-divider-v3-w)!important;min-width:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;
-  align-self:stretch!important;margin-top:9px!important;margin-bottom:9px!important;border-radius:3px!important;
-}
-
-/* Metric separators: vertical only, always inset. */
-.metric-card:not(:last-child)::after,.today-hero-card .metric-card+.metric-card::before,.plan-summary-item+.plan-summary-item::before,.profile-dashboard-performance-cell+.profile-dashboard-performance-cell::before,.detail-stat+.detail-stat::before,.state-calc-item+.state-calc-item::before{
-  content:""!important;position:absolute!important;left:0!important;right:auto!important;top:10px!important;bottom:10px!important;width:var(--atlas-divider-v3-w)!important;height:auto!important;background:var(--atlas-divider-v3)!important;border:0!important;border-radius:3px!important;transform:none!important;
-}
-.metric-card:not(:last-child)::after{left:auto!important;right:0!important;}
-.today-hero-card .metric-card+.metric-card{border-left:0!important;}
-.profile-dashboard-performance-cell+.profile-dashboard-performance-cell{border-left:0!important;}
-.state-calc-item{position:relative!important;border:0!important;}
-.state-calc-item+.state-calc-item{border-left:0!important;}
-.detail-stat{position:relative!important;border:0!important;}
-.detail-stat:not(:last-child)::after{content:none!important;}
-
-/* Inline activity metrics: short 2 px strokes, never full-height. */
-.activity-row-stat+.activity-row-stat::before,.activity-mini-sep{width:var(--atlas-divider-v3-w)!important;height:13px!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
-
-/* 2×2 State factors: four independent segments; the cross never meets. */
-.state-factors.compact-grid{border-top:0!important;position:relative!important;}
-.state-factors.compact-grid::before,.state-factors.compact-grid::after{content:none!important;}
-.state-factors.compact-grid .state-factor{position:relative!important;border:0!important;}
-.state-factors.compact-grid .state-factor:nth-child(even)::before{content:""!important;position:absolute!important;left:0!important;top:10px!important;bottom:10px!important;width:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
-.state-factors.compact-grid .state-factor:nth-child(n+3)::after{content:""!important;position:absolute!important;left:10px!important;right:10px!important;top:0!important;height:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
-
-/* Activity primary 4×2 grid: cell-local segments rather than a crossing grid. */
-.activity-primary::after{content:none!important;}
-.activity-primary-item{position:relative!important;border:0!important;}
-.activity-primary-item:not(:nth-child(4n))::after{content:""!important;position:absolute!important;right:0!important;top:10px!important;bottom:10px!important;width:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
-.activity-primary-item:nth-child(n+5)::before{content:""!important;position:absolute!important;left:10px!important;right:10px!important;top:0!important;height:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
-
-/* Plan information table: central vertical + independent horizontal segments per cell. */
-#planControlDetail .plan-goal-summary{position:relative!important;}
-#planControlDetail .plan-goal-summary::before,#planControlDetail .plan-goal-summary::after{content:none!important;}
-#planControlDetail .plan-goal-summary-item{position:relative!important;border:0!important;background-image:none!important;text-align:left!important;}
-#planControlDetail .plan-goal-summary-item:nth-child(even)::before{content:""!important;position:absolute!important;left:0!important;top:10px!important;bottom:10px!important;width:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
-#planControlDetail .plan-goal-summary-item:nth-child(n+3)::after{content:""!important;position:absolute!important;left:10px!important;right:10px!important;top:0!important;height:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
-#planControlDetail .plan-goal-summary-item>*,#planControlDetail .plan-goal-summary-label,#planControlDetail .plan-goal-summary-value{text-align:left!important;justify-content:flex-start!important;margin-left:0!important;margin-right:0!important;}
-
-/* Records: horizontal dividers are split cell by cell; verticals are inset. */
-.profile-dashboard-record-table-head,.profile-dashboard-record-table-row{border-top:0!important;border-bottom:0!important;}
-.profile-dashboard-record-table-head>* ,.profile-dashboard-record-table-row>*{position:relative!important;}
-.profile-dashboard-record-table-head>*+*::before,.profile-dashboard-record-table-row>*+*::before{content:""!important;position:absolute!important;left:0!important;top:7px!important;bottom:7px!important;width:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
-.profile-dashboard-record-cell::before{left:0!important;top:7px!important;bottom:7px!important;width:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;}
-.profile-dashboard-record-table-row>*{background-image:linear-gradient(var(--atlas-divider-v3-soft),var(--atlas-divider-v3-soft))!important;background-position:center top!important;background-size:calc(100% - 16px) var(--atlas-divider-v3-w)!important;background-repeat:no-repeat!important;}
-.profile-dashboard-record-table-row:first-of-type>*{background-image:none!important;}
-.profile-dashboard-record-table-head>*{background-image:linear-gradient(var(--atlas-divider-v3-soft),var(--atlas-divider-v3-soft))!important;background-position:center bottom!important;background-size:calc(100% - 16px) var(--atlas-divider-v3-w)!important;background-repeat:no-repeat!important;}
-
-/* Zone boxes and generic table/list headers: inset horizontal strokes. */
-.profile-dashboard-zone-head,.performance-zone-head,.record-podium-head{border-bottom:0!important;background-image:linear-gradient(var(--atlas-divider-v3-soft),var(--atlas-divider-v3-soft))!important;background-position:center bottom!important;background-size:calc(100% - 20px) var(--atlas-divider-v3-w)!important;background-repeat:no-repeat!important;}
-.profile-dashboard-zone-row+.profile-dashboard-zone-row,.performance-zone-row+.performance-zone-row{border-top:0!important;background-image:linear-gradient(var(--atlas-divider-v3-soft),var(--atlas-divider-v3-soft))!important;background-position:center top!important;background-size:calc(100% - 20px) var(--atlas-divider-v3-w)!important;background-repeat:no-repeat!important;}
-
-/* Runtime/diagnostic 2×2 grids follow the same non-touching geometry. */
-.atlas-runtime-stat{position:relative!important;border:0!important;}
-.atlas-runtime-stat:nth-child(even)::before{content:""!important;position:absolute!important;left:0!important;top:10px!important;bottom:10px!important;width:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
-.atlas-runtime-stat:nth-child(n+3)::after{content:""!important;position:absolute!important;left:10px!important;right:10px!important;top:0!important;height:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
-
-/* Remove legacy full-edge interior borders that conflict with the new system. */
-.profile-home-stat+.profile-home-stat{border-left:0!important;position:relative!important;}
-.profile-home-stat+.profile-home-stat::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:var(--atlas-divider-v3-w);background:var(--atlas-divider-v3);border-radius:3px;}
-.plan-goal-summary{border-top:0!important;border-left:0!important;}
-.plan-goal-summary-item{border-right:0!important;border-bottom:0!important;}
-
-
-/* Divider v3 completion: clear legacy directional borders before drawing inset replacements. */
-:is(.pace-row,.adaptive-revision-item,.adaptive-outcome,.plan-week-calendar-session,.session-preview-week,.solver-week,.weekly-target-week,.macro-week,.plan-day-multi-item,.adaptive-history-item,.engine-v2-row,.plan-item,.plan-detail-step,.profile-insight-row,.record-row,.data-native-row,.data-trend-row,.profile-line,.activity-row,.activity-equipment-row,.activity-lap-group,.shoe-limit-row,.profile-zone-row,.profile-zone-section,.record-podium-row,.state-band-row){border-top:0!important;}
-.state-band-row:not(:first-child){background-image:linear-gradient(var(--atlas-divider-v3-soft),var(--atlas-divider-v3-soft))!important;background-position:center top!important;background-size:calc(100% - 20px) var(--atlas-divider-v3-w)!important;background-repeat:no-repeat!important;}
-.profile-metric+.profile-metric::before,.evolution-stat+.evolution-stat::before,.performance-stat+.performance-stat::before{content:""!important;position:absolute!important;left:0!important;top:10px!important;bottom:10px!important;width:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
-.profile-home-links .data-native-row{border-top:0!important;}
-
-
-/* ===== ɅTLɅS v0.120 · correcciones visuales + Motor 1.6.1 ===== */
-:root{--atlas-divider-v4:rgba(255,255,255,.23);--atlas-divider-v4-soft:rgba(255,255,255,.17);--atlas-divider-v4-w:2px;}
-
-/* AI de actividad: corrección óptica medida sobre la propia marca. El glifo estaba desplazado ~4 px a la derecha. */
-.activity-title-row .activity-ai-btn{display:grid!important;place-items:center!important;overflow:hidden!important;}
-.activity-title-row .activity-ai-mark{display:grid!important;place-items:center!important;width:42px!important;height:42px!important;overflow:hidden!important;}
-.activity-title-row .activity-ai-icon{display:block!important;width:28px!important;height:22px!important;margin:0!important;padding:0!important;object-fit:contain!important;object-position:center!important;transform:translate(-4px,-1.5px)!important;}
-
-/* Estado ATLAS: las cuatro métricas quedan limpias, sin divisores interiores. */
-.state-factors.compact-grid::before,.state-factors.compact-grid::after,
-.state-factors.compact-grid .state-factor::before,.state-factors.compact-grid .state-factor::after{content:none!important;display:none!important;background:none!important;}
-.state-factors.compact-grid .state-factor{border:0!important;background-image:none!important;}
-
-/* Métricas de la ficha de actividad: una única línea horizontal continua e insertada. */
-.activity-primary{position:relative!important;}
-.activity-primary::after{content:""!important;display:block!important;position:absolute!important;left:10px!important;right:10px!important;top:50%!important;height:var(--atlas-divider-v4-w)!important;background:var(--atlas-divider-v4)!important;border-radius:3px!important;pointer-events:none!important;z-index:3!important;}
-.activity-primary-item:nth-child(n+5)::before{content:none!important;display:none!important;}
-.activity-primary-item:not(:nth-child(4n))::after{width:var(--atlas-divider-v4-w)!important;background:var(--atlas-divider-v4)!important;top:9px!important;bottom:9px!important;}
-
-/* Calendarios: separadores horizontales tan sólidos como Hoy/Actividades, pero insertados. */
-#view-plan .plan-day+.plan-day,#sessionGeneratorList .plan-week-calendar-day+.plan-week-calendar-day{
-  border-top:0!important;
-  background-image:linear-gradient(var(--atlas-divider-v4-soft),var(--atlas-divider-v4-soft))!important;
-  background-position:center top!important;background-size:calc(100% - 20px) var(--atlas-divider-v4-w)!important;background-repeat:no-repeat!important;
-}
-
-/* Tabla del plan: 2 columnas × 4 filas, divisores visibles, únicos e insertados. */
-#planControlDetail .plan-goal-summary{position:relative!important;}
-#planControlDetail .plan-goal-summary-item{position:relative!important;border:0!important;background-image:none!important;}
-#planControlDetail .plan-goal-summary-item:nth-child(even)::before{content:""!important;display:block!important;position:absolute!important;left:0!important;top:9px!important;bottom:9px!important;width:var(--atlas-divider-v4-w)!important;background:var(--atlas-divider-v4)!important;border-radius:3px!important;z-index:4!important;}
-#planControlDetail .plan-goal-summary-item:nth-child(n+3){background-image:linear-gradient(var(--atlas-divider-v4),var(--atlas-divider-v4))!important;background-position:center top!important;background-size:calc(100% - 18px) var(--atlas-divider-v4-w)!important;background-repeat:no-repeat!important;}
-
-/* Mejores marcas: sin divisor horizontal bajo la cabecera; verticales continuas de arriba abajo. */
-.profile-dashboard-records{position:relative!important;}
-.profile-dashboard-records::after{
-  content:""!important;position:absolute!important;left:0!important;right:0!important;top:8px!important;bottom:8px!important;pointer-events:none!important;z-index:5!important;
-  background:
-    linear-gradient(var(--atlas-divider-v4),var(--atlas-divider-v4)) 25% 50%/var(--atlas-divider-v4-w) 100% no-repeat,
-    linear-gradient(var(--atlas-divider-v4),var(--atlas-divider-v4)) 50% 50%/var(--atlas-divider-v4-w) 100% no-repeat,
-    linear-gradient(var(--atlas-divider-v4),var(--atlas-divider-v4)) 75% 50%/var(--atlas-divider-v4-w) 100% no-repeat!important;
-}
-.profile-dashboard-record-table-head>*+*::before,.profile-dashboard-record-table-row>*+*::before,.profile-dashboard-record-cell::before{content:none!important;display:none!important;}
-.profile-dashboard-record-table-head,.profile-dashboard-record-table-head>*{border-bottom:0!important;background-image:none!important;}
-.profile-dashboard-record-distance-label.short{font-size:24px!important;line-height:1!important;font-weight:820!important;letter-spacing:-.55px!important;}
-
-/* Perfil: el divisor principal de la ficha superior gana cuerpo. */
-.profile-home-stat+.profile-home-stat::before{width:3px!important;background:var(--atlas-divider-v4)!important;top:8px!important;bottom:8px!important;}
-
-/* Bordes: todos los controles de Volver y superficies funcionales tienen el borde grueso común. */
-.metric-back,.plan-detail-back,.metric-footer-back,.assistant-history-back,
-.assistant-top-action,.plan-nav-btn,.range-arrow,.sync-quick{
-  border:2px solid var(--atlas-border-strong,rgba(255,255,255,.18))!important;
-}
-:is(.activity-ai-result,.activity-laps,.activity-equipment,.metric-context,.state-calc-grid,.state-bands,
-.profile-load-focus,.profile-dashboard-records,.profile-dashboard-zone-column,.profile-dashboard-performance,
-.detail-stats,.chart-card,.activity-chart-card,.activity-primary,.plan-goal-summary,.plan-summary,.plan-overview-card,
-.data-native-list,.data-system-card,.availability-card,.adaptive-card,.engine-v2-card,.weekly-target-card,.macro-card){
-  border-width:2px!important;border-style:solid!important;border-color:var(--atlas-border-strong,rgba(255,255,255,.18))!important;
-}
-
-/* Fichas diarias: un poco menos de aire vertical, misma estructura. */
-#view-today .activity-row,#view-activities .activity-row,#view-plan .plan-week-activity-row{
-  min-height:56px!important;padding-top:4px!important;padding-bottom:4px!important;
-}
-
-/* Foco de carga: orden visual Anaeróbico → Aeróbico alto → Aeróbico bajo se define en JS. */
-</style>
-
-
-<style id="atlas-v0122-user-request">
-:root{--atlas-v122-line:rgba(255,255,255,.16);--atlas-v122-line-strong:rgba(255,255,255,.22);--atlas-v122-w:2px}
-
-/* Liquid Glass estático: translúcido y sin refracción/blur móvil. */
-.nav{
-  --glass-x:50%!important;--glass-y:50%!important;--glass-flow:0px!important;
-  background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(20,27,34,.34) 38%,rgba(7,11,15,.42))!important;
-  -webkit-backdrop-filter:saturate(165%) brightness(.92)!important;
-  backdrop-filter:saturate(165%) brightness(.92)!important;
-  border:2px solid rgba(255,255,255,.19)!important;
-  box-shadow:0 14px 34px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.13)!important;
-}
-
-/* Scroll vertical sólo cuando realmente hace falta. */
-.atlas-scroll-locked{overflow-y:hidden!important;overscroll-behavior-y:none!important}
-html.atlas-main-scroll-locked,body.atlas-main-scroll-locked{overflow-y:hidden!important;overscroll-behavior-y:none!important}
-.atlas-scrollable{overflow-y:auto!important;-webkit-overflow-scrolling:touch!important}
-
-/* Actividades: chips superiores con borde de dos puntos. */
-.activity-detail-date,.activity-perception-chip{border:2px solid var(--atlas-v122-line-strong)!important}
-
-/* Calendario semanal: mismo lenguaje en Plan y Entrenamientos. */
-#view-plan .plan-days,#sessionGeneratorList .plan-week-calendar{
-  border:2px solid var(--atlas-v122-line)!important;border-radius:18px!important;overflow:hidden!important;
-  background:linear-gradient(180deg,rgba(16,23,30,.74),rgba(8,13,18,.68))!important;
-}
-#view-plan .plan-day,#sessionGeneratorList .plan-week-calendar-day{border:0!important;border-radius:0!important;background:transparent!important}
-#view-plan .plan-day+.plan-day,#sessionGeneratorList .plan-week-calendar-day+.plan-week-calendar-day{
-  border-top:0!important;background-image:linear-gradient(var(--atlas-v122-line),var(--atlas-v122-line))!important;
-  background-repeat:no-repeat!important;background-position:center top!important;background-size:calc(100% - 20px) 2px!important;
-}
-#view-plan .plan-day-sep,#sessionGeneratorList .plan-week-calendar-sep{width:2px!important;background:var(--atlas-v122-line)!important}
-#view-plan .plan-day.today{border-color:transparent!important;box-shadow:none!important;background:rgba(29,155,240,.055)!important}
-#view-plan .plan-day.today .plan-week-activity-row,#view-plan .plan-day.today .plan-day-head{box-shadow:none!important;border-color:transparent!important}
-
-/* Información del plan: divisores horizontales continuos y gruesos. */
-#planControlDetail .plan-goal-summary{
-  position:relative!important;border:2px solid var(--atlas-v122-line)!important;border-radius:18px!important;overflow:hidden!important;
-  border-top:2px solid var(--atlas-v122-line)!important;border-bottom:2px solid var(--atlas-v122-line)!important;
-}
-#planControlDetail .plan-goal-summary-item::before,#planControlDetail .plan-goal-summary-item::after{content:none!important;display:none!important}
-#planControlDetail .plan-goal-summary::before{
-  content:""!important;display:block!important;position:absolute!important;z-index:3!important;pointer-events:none!important;
-  left:50%!important;top:10px!important;bottom:10px!important;width:2px!important;background:var(--atlas-v122-line)!important;transform:translateX(-1px)!important;
-}
-#planControlDetail .plan-goal-summary::after{
-  content:""!important;display:block!important;position:absolute!important;z-index:3!important;pointer-events:none!important;
-  inset:0 10px!important;background:
-    linear-gradient(var(--atlas-v122-line),var(--atlas-v122-line)) center 25%/100% 2px no-repeat,
-    linear-gradient(var(--atlas-v122-line),var(--atlas-v122-line)) center 50%/100% 2px no-repeat,
-    linear-gradient(var(--atlas-v122-line),var(--atlas-v122-line)) center 75%/100% 2px no-repeat!important;
-}
-#planControlDetail .plan-control-group:not(:first-of-type),
-#planControlDetail .plan-analysis-details,
-.plan-detail-card,.engine-v2-card,.macro-card,.weekly-target-card,.calendar-solver-card,.session-generator-card,.adaptive-card,.availability-card{
-  border-width:2px!important;border-color:var(--atlas-v122-line)!important;
-}
-#planControlDetail .engine-v2-row+.engine-v2-row,
-#planControlDetail .macro-week+.macro-week,
-#planControlDetail .weekly-target-week+.weekly-target-week,
-#planControlDetail .solver-week+.solver-week,
-#planControlDetail .session-preview-week+.session-preview-week{
-  border-top:0!important;background-image:linear-gradient(var(--atlas-v122-line),var(--atlas-v122-line))!important;
-  background-position:center top!important;background-repeat:no-repeat!important;background-size:calc(100% - 20px) 2px!important;
-}
-
-/* Resumen distancia/tiempo/ritmo de un entrenamiento programado. */
-.plan-detail-summary{border:2px solid var(--atlas-v122-line-strong)!important}
-.plan-detail-stat+.plan-detail-stat::before{width:2px!important;top:9px!important;bottom:9px!important;background:var(--atlas-v122-line)!important}
-
-/* Mejores marcas: etiquetas cortas al máximo común y sin línea bajo cabecera. */
-.profile-dashboard-record-table-head{border-bottom:0!important;background-image:none!important;position:relative!important}
-.profile-dashboard-record-table-row{border-top:0!important;background-image:none!important}
-.profile-dashboard-record-distance-label.short{font-size:38px!important;line-height:.95!important;font-weight:850!important;letter-spacing:-1.4px!important;justify-content:center!important;text-align:center!important;padding:0 4px!important}
-.profile-dashboard-records::after{content:none!important;display:none!important}
-.profile-dashboard-record-table-head>*{position:relative!important}
-.profile-dashboard-record-table-head>*+*::before,
-.profile-dashboard-record-table-head + .profile-dashboard-record-table-row>*+*::before{
-  content:""!important;display:block!important;position:absolute!important;left:0!important;width:2px!important;background:var(--atlas-v122-line)!important;
-}
-.profile-dashboard-record-table-head>*+*::before{top:8px!important;bottom:0!important}
-.profile-dashboard-record-table-head + .profile-dashboard-record-table-row>*+*::before{top:0!important;bottom:8px!important}
-.profile-dashboard-record-table-head + .profile-dashboard-record-table-row~.profile-dashboard-record-table-row>*+*::before{content:none!important;display:none!important}
-
-/* Zonas: sin divisor inmediatamente bajo los títulos. */
-.profile-dashboard-zone-head,.performance-zone-head{border-bottom:0!important;background-image:none!important}
-
-/* Perfil: foto grande + identidad + localidad + zapatillas. */
-.profile-dashboard-card{grid-template-columns:98px minmax(0,1fr)!important;gap:15px!important;align-items:center!important;min-height:124px!important;padding:13px!important}
-.profile-dashboard-avatar{width:96px!important;height:96px!important;border-radius:50%!important;font-size:25px!important;overflow:hidden!important;border:2px solid rgba(255,255,255,.16)!important;background:rgba(255,255,255,.055)!important}
-.profile-dashboard-avatar img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;border-radius:inherit!important}
-.profile-dashboard-side{display:none!important}
-.profile-dashboard-name{font-size:22px!important}
-.profile-dashboard-shoes{margin-top:7px!important}
-
-/* Foco de carga: sólo barras y cifras. */
-.profile-load-focus-row+.profile-load-focus-row,.profile-load-focus-reading{border-top:0!important;background-image:none!important}
-.profile-load-focus-row{padding-top:7px!important;padding-bottom:7px!important}
-.profile-load-focus-reading{padding-top:7px!important}
-</style>
-
-
 <script id="atlas-v0122-engine-patch">
 /* ===== ɅTLɅS v0.122 · objetivo, activación, Garmin y arranque ===== */
 (function(){
@@ -11334,7 +11043,7 @@ html.atlas-main-scroll-locked,body.atlas-main-scroll-locked{overflow-y:hidden!im
   /* Intervals.icu: workout explícito + sintaxis estructurada; Garmin recibe pasos cuando Intervals construye workout_doc. */
   const atlasV122SessionIntervalsDescription=sessionIntervalsDescription;
   sessionIntervalsDescription=function(s,sessionPlan){
-    if(s?.activation){
+    if(s?.activation||s?.isActivation){
       const m=sessionPaceModel(currentAthleteProfileV2,currentGoalRequirements),easy=sessionEasyPaceToken(sessionPlan),fast=intervalsPaceToken(sessionRange(m.five-6,m.five+10))||easy,total=Math.max(4,Number(s.distanceKm)||5),lead=Math.max(2,total-1.2);
       return`- ${intervalsKmToken(lead,2)}km ${easy}/km Pace intensity=warmup\n\n4x\n- 20s ${fast}/km Pace intensity=interval\n- 60s ${easy}/km Pace intensity=recovery\n\n- 1km ${easy}/km Pace intensity=cooldown`;
     }
@@ -11358,18 +11067,7 @@ html.atlas-main-scroll-locked,body.atlas-main-scroll-locked{overflow-y:hidden!im
     return found;
   };
 
-  /* Perfil: fotografía real de Intervals cuando esté disponible. */
-  function atlasV122ProfilePhoto(a){
-    let raw=a?.profile_medium??a?.profile_large??a?.profile_photo??a?.avatar_url??a?.image_url??a?.photo_url??null;
-    if(raw&&typeof raw==="object")raw=raw.medium||raw.large||raw.url||raw.src||null;
-    if(typeof raw!=="string"||!raw.trim())return null;raw=raw.trim();if(raw.startsWith("/"))raw=`https://intervals.icu${raw}`;return raw;
-  }
-  const atlasV122RenderProfilePanel=renderProfilePanel;
-  renderProfilePanel=function(athlete){
-    atlasV122RenderProfilePanel(athlete);const a=athlete||{},name=a.name||profileLabel(null),avatar=$("profileDashboardAvatar");if(!avatar)return;
-    const photo=atlasV122ProfilePhoto(a);avatar.textContent="";
-    if(photo){const img=document.createElement("img");img.src=photo;img.alt=`Foto de perfil de ${name}`;img.referrerPolicy="no-referrer";img.addEventListener("error",()=>{avatar.textContent=profileInitials(name);},{once:true});avatar.appendChild(img);}else avatar.textContent=profileInitials(name);
-  };
+  /* Perfil v0.124+: no se reinstala el renderer antiguo. La foto la gestiona renderProfileAvatarV124. */
 
   /* Foco de carga: sin emojis ni separadores redundantes. */
   renderProfileLoadFocus=function(){
@@ -11383,10 +11081,10 @@ html.atlas-main-scroll-locked,body.atlas-main-scroll-locked{overflow-y:hidden!im
     const root=$("profileDashboardRecords");if(!root)return;
     fitCommonTextWidth(root.querySelectorAll(".profile-dashboard-record-distance-label.short"),38,24);
     fitCommonTextWidth(root.querySelectorAll(".profile-dashboard-record-distance-label:not(.short):not(.longest)"),15.5,10.5);
-    fitCommonTextWidth(root.querySelectorAll(".profile-dashboard-record-cell-mark"),17.5,12);
-    fitCommonTextWidth(root.querySelectorAll(".profile-dashboard-record-cell-meta"),11.5,8.5);
-    root.querySelectorAll(".profile-dashboard-record-distance-label.longest").forEach(el=>fitTextToWidth(el,12,9));
-    const distanceHead=root.querySelector(".profile-dashboard-record-head-distance");if(distanceHead)fitTextToWidth(distanceHead,15.5,11);
+    fitCommonTextWidth(root.querySelectorAll(".atlas-v124-record-mark"),17.5,12);
+    fitCommonTextWidth(root.querySelectorAll(".atlas-v124-record-meta"),11.5,8.5);
+    root.querySelectorAll(".atlas-v124-record-distance.longest").forEach(el=>fitTextToWidth(el,12,9));
+    const distanceHead=root.querySelector(".atlas-v124-record-head-distance");if(distanceHead)fitTextToWidth(distanceHead,15.5,11);
   };
 
   /* Refuerza el bloqueo de scroll en vistas que caben completas. */
@@ -11399,183 +11097,56 @@ html.atlas-main-scroll-locked,body.atlas-main-scroll-locked{overflow-y:hidden!im
 
 
 
-<style id="atlas-v0123-corrections">
-:root{--atlas-v123-line:rgba(255,255,255,.18);--atlas-v123-line-strong:rgba(255,255,255,.22);--atlas-v123-w:2px}
-
-/* Barra inferior: Liquid Glass translúcido, no transparente y sin blur reactivo. */
-.nav{
-  background:linear-gradient(180deg,rgba(48,59,70,.82),rgba(20,27,34,.80) 42%,rgba(8,12,16,.86))!important;
-  -webkit-backdrop-filter:saturate(150%) brightness(.92)!important;
-  backdrop-filter:saturate(150%) brightness(.92)!important;
-  border:2px solid rgba(255,255,255,.20)!important;
-  box-shadow:0 16px 38px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.14)!important;
-}
-
-/* iPhone: si la vista principal cabe por encima de la barra, no existe scroll ni rebote vertical. */
-html.atlas-main-scroll-locked,body.atlas-main-scroll-locked{
-  height:100dvh!important;max-height:100dvh!important;overflow:hidden!important;overscroll-behavior:none!important;
-}
-body.atlas-main-scroll-locked{position:fixed!important;inset:0!important;width:100%!important;touch-action:pan-x!important}
-body.atlas-main-scroll-locked .app{height:100dvh!important;min-height:100dvh!important;max-height:100dvh!important;overflow:hidden!important}
-
-/* Información del plan: exactamente 1 vertical central + 3 horizontales en dos tramos. */
-#planControlDetail .plan-goal-summary{
-  position:relative!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:0!important;
-  border:2px solid var(--atlas-v123-line)!important;border-radius:18px!important;overflow:hidden!important;background:#000!important;
-}
-#planControlDetail .plan-goal-summary-item{position:relative!important;border:0!important;background:transparent!important}
-#planControlDetail .plan-goal-summary-item::before,#planControlDetail .plan-goal-summary-item::after{content:none!important;display:none!important}
-#planControlDetail .plan-goal-summary::before{
-  content:""!important;display:block!important;position:absolute!important;z-index:4!important;pointer-events:none!important;
-  left:50%!important;top:10px!important;bottom:10px!important;width:2px!important;height:auto!important;
-  transform:translateX(-1px)!important;background:var(--atlas-v123-line)!important;
-}
-#planControlDetail .plan-goal-summary::after{
-  content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:4!important;pointer-events:none!important;
-  background:
-    linear-gradient(var(--atlas-v123-line),var(--atlas-v123-line)) left 10px top 25%/calc(50% - 18px) 2px no-repeat,
-    linear-gradient(var(--atlas-v123-line),var(--atlas-v123-line)) right 10px top 25%/calc(50% - 18px) 2px no-repeat,
-    linear-gradient(var(--atlas-v123-line),var(--atlas-v123-line)) left 10px top 50%/calc(50% - 18px) 2px no-repeat,
-    linear-gradient(var(--atlas-v123-line),var(--atlas-v123-line)) right 10px top 50%/calc(50% - 18px) 2px no-repeat,
-    linear-gradient(var(--atlas-v123-line),var(--atlas-v123-line)) left 10px top 75%/calc(50% - 18px) 2px no-repeat,
-    linear-gradient(var(--atlas-v123-line),var(--atlas-v123-line)) right 10px top 75%/calc(50% - 18px) 2px no-repeat!important;
-}
-
-/* Accesos de Plan: marco grueso, divisores gruesos inset y contenido centrado en altura. */
-#planControlDetail .plan-home-links{
-  border:2px solid var(--atlas-v123-line-strong)!important;border-radius:20px!important;overflow:hidden!important;
-}
-#planControlDetail .plan-home-links>button{
-  position:relative!important;min-height:60px!important;padding:10px 12px!important;margin:0!important;border:0!important;
-  align-items:center!important;align-content:center!important;background:transparent!important;box-shadow:none!important;
-}
-#planControlDetail .plan-home-links>button+button{
-  border-top:0!important;
-  background-image:linear-gradient(var(--atlas-v123-line),var(--atlas-v123-line))!important;
-  background-position:center top!important;background-repeat:no-repeat!important;background-size:calc(100% - 20px) 2px!important;
-}
-#planControlDetail .plan-home-links .engine-v2-copy,#planControlDetail .plan-home-links .engine-v2-icon,#planControlDetail .plan-home-links .engine-v2-arrow{align-self:center!important}
-
-/* Mejores marcas: cabecera sin divisores; verticales continuas desde 1K y horizontales sólo entre filas de marcas. */
-.profile-dashboard-records{position:relative!important}
-.profile-dashboard-record-table-head{border:0!important;background-image:none!important;position:relative!important;z-index:1!important}
-.profile-dashboard-record-table-head>*::before,.profile-dashboard-record-table-head>*::after,
-.profile-dashboard-record-cell::before,.profile-dashboard-record-cell::after{content:none!important;display:none!important}
-.profile-dashboard-record-table-row{position:relative!important;border-top:0!important;background-image:none!important;z-index:1!important}
-.profile-dashboard-record-table-row+.profile-dashboard-record-table-row{
-  background-image:linear-gradient(var(--atlas-v123-line),var(--atlas-v123-line))!important;
-  background-position:center top!important;background-repeat:no-repeat!important;background-size:calc(100% - 20px) 2px!important;
-}
-.profile-dashboard-record-vlines{position:absolute;z-index:3;left:0;right:0;top:51px;bottom:9px;pointer-events:none}
-.profile-dashboard-record-vlines>i{position:absolute;top:0;bottom:0;width:2px;border-radius:2px;background:var(--atlas-v123-line);transform:translateX(-1px)}
-.profile-dashboard-record-vlines>i:nth-child(1){left:25%}.profile-dashboard-record-vlines>i:nth-child(2){left:50%}.profile-dashboard-record-vlines>i:nth-child(3){left:75%}
-
-/* Foco de carga: las barras ya codifican el color; sin separadores adicionales. */
-.profile-load-focus-row+.profile-load-focus-row,.profile-load-focus-reading{border:0!important;background-image:none!important}
+<style id="atlas-v0124-clean-ui">
+:root{--atlas-v124-line:rgba(255,255,255,.21);--atlas-v124-line-strong:rgba(255,255,255,.28);--atlas-v124-w:2px}
+/* Root tabs never scroll the document. The active view owns the only permitted vertical scroll. */
+html.atlas-root-fixed,body.atlas-root-fixed{height:100dvh!important;max-height:100dvh!important;overflow:hidden!important;overscroll-behavior-y:none!important}
+body.atlas-root-fixed .app{height:100dvh!important;max-height:100dvh!important;overflow:hidden!important}
+.view.atlas-view-measured.active{height:var(--atlas-view-height)!important;max-height:var(--atlas-view-height)!important;min-height:0!important}
+.view.atlas-view-locked.active{overflow-y:hidden!important;overscroll-behavior-y:none!important;touch-action:pan-x!important}
+.view.atlas-view-scrollable.active{overflow-y:auto!important;overscroll-behavior-y:contain!important;-webkit-overflow-scrolling:touch!important}
+/* Static translucent Liquid Glass: readable, no pointer-dependent blur/refraction. */
+.nav{--glass-x:50%!important;--glass-y:50%!important;--glass-flow:0px!important;background:linear-gradient(180deg,rgba(38,46,55,.88),rgba(18,25,32,.90))!important;-webkit-backdrop-filter:saturate(145%)!important;backdrop-filter:saturate(145%)!important;border:2px solid rgba(255,255,255,.22)!important;box-shadow:0 14px 34px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.13)!important}
+/* Priority notices live in the browser top layer through Popover. */
+.toast[popover]{position:fixed!important;inset:auto 12px calc(env(safe-area-inset-bottom) + 90px) 12px!important;margin:0 auto!important;max-width:520px!important;z-index:2147483647!important;border:2px solid rgba(255,255,255,.22)!important}
+.toast[popover]::backdrop{background:transparent!important}
+/* Profile photo. */
+.profile-dashboard-card{grid-template-columns:104px minmax(0,1fr)!important;gap:16px!important;align-items:center!important;min-height:132px!important;padding:13px!important}
+.profile-dashboard-avatar{width:102px!important;height:102px!important;border-radius:50%!important;font-size:25px!important;overflow:hidden!important;border:2px solid rgba(255,255,255,.18)!important;background:rgba(255,255,255,.055)!important}
+.profile-dashboard-avatar img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;border-radius:inherit!important}
+.profile-dashboard-side{display:none!important}.profile-dashboard-name{font-size:22px!important}.profile-dashboard-shoes{margin-top:7px!important}
+/* Foco: only names, values and bars. */
+.profile-load-focus-row+.profile-load-focus-row,.profile-load-focus-reading{border:0!important;background-image:none!important}.profile-load-focus-row{padding-block:7px!important}.profile-load-focus-reading{padding-top:7px!important}
+/* Records rebuilt with a dedicated body: no line in header, no line above 1K, 3 continuous verticals from row 2 area to the bottom. */
+.profile-dashboard-records{position:relative!important;overflow:hidden!important}
+.atlas-v124-record-head,.atlas-v124-record-row{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;align-items:stretch!important}
+.atlas-v124-record-head{min-height:49px!important;align-items:center!important;border:0!important;background:none!important;text-align:center!important;font-size:25px!important;line-height:1!important;font-weight:800!important}
+.atlas-v124-record-head-distance{font-size:12px!important;color:var(--muted2)!important;font-weight:780!important}
+.atlas-v124-record-body{position:relative!important}
+.atlas-v124-record-body::after{content:""!important;position:absolute!important;left:0!important;right:0!important;top:8px!important;bottom:8px!important;pointer-events:none!important;z-index:3!important;background:linear-gradient(var(--atlas-v124-line),var(--atlas-v124-line)) 25% 50%/2px 100% no-repeat,linear-gradient(var(--atlas-v124-line),var(--atlas-v124-line)) 50% 50%/2px 100% no-repeat,linear-gradient(var(--atlas-v124-line),var(--atlas-v124-line)) 75% 50%/2px 100% no-repeat!important}
+.atlas-v124-record-row{position:relative!important;min-height:61px!important;border:0!important;background:none!important}
+.atlas-v124-record-row+.atlas-v124-record-row::before{content:"";position:absolute;left:10px;right:10px;top:0;height:2px;background:var(--atlas-v124-line);border-radius:2px;z-index:4}
+.atlas-v124-record-distance,.atlas-v124-record-cell{position:relative!important;z-index:5!important;min-width:0!important;border:0!important;background:transparent!important;color:#fff!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;text-align:center!important;padding:7px 5px!important}
+.atlas-v124-record-distance{font-weight:800!important;font-size:13px!important;line-height:1.05!important}.atlas-v124-record-distance.short{font-size:38px!important;line-height:.92!important;letter-spacing:-1.2px!important}.atlas-v124-record-distance.longest{font-size:11px!important}.atlas-v124-record-mark{font-size:17px!important;font-weight:820!important;line-height:1.05!important;white-space:nowrap!important}.atlas-v124-record-meta{font-size:10px!important;color:var(--muted2)!important;margin-top:4px!important;white-space:nowrap!important}.atlas-v124-record-cell.empty{color:var(--muted)!important}
+/* Zones: no horizontal line under the two headings. */
+.profile-dashboard-zone-head,.performance-zone-head{border-bottom:0!important;background-image:none!important}
+/* Plan info is a new isolated component: exactly one central vertical and three horizontal separators split into left/right sections. */
+#planControlDetail #engineGoalCard{display:block!important;width:100%!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;background-image:none!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+#planControlDetail #engineGoalCard .engine-v2-copy{display:block!important;width:100%!important}#planControlDetail #engineGoalCard .engine-v2-title{display:block!important;padding:0 3px 8px!important;font-size:19px!important;line-height:1.15!important;text-align:left!important}
+.atlas-plan-info-grid{position:relative!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:0!important;width:100%!important;margin:0!important;border:2px solid var(--atlas-v124-line)!important;border-radius:18px!important;overflow:hidden!important;background:rgba(14,20,26,.72)!important}
+.atlas-plan-info-grid::before{content:"";position:absolute;left:50%;top:10px;bottom:10px;width:2px;transform:translateX(-1px);background:var(--atlas-v124-line);z-index:4;pointer-events:none}
+.atlas-plan-info-grid::after{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;background:linear-gradient(var(--atlas-v124-line),var(--atlas-v124-line)) left 10px top 25%/calc(50% - 18px) 2px no-repeat,linear-gradient(var(--atlas-v124-line),var(--atlas-v124-line)) right 10px top 25%/calc(50% - 18px) 2px no-repeat,linear-gradient(var(--atlas-v124-line),var(--atlas-v124-line)) left 10px top 50%/calc(50% - 18px) 2px no-repeat,linear-gradient(var(--atlas-v124-line),var(--atlas-v124-line)) right 10px top 50%/calc(50% - 18px) 2px no-repeat,linear-gradient(var(--atlas-v124-line),var(--atlas-v124-line)) left 10px top 75%/calc(50% - 18px) 2px no-repeat,linear-gradient(var(--atlas-v124-line),var(--atlas-v124-line)) right 10px top 75%/calc(50% - 18px) 2px no-repeat!important}
+.atlas-plan-info-item{min-width:0!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:7px!important;padding:10px 11px!important;border:0!important;background:transparent!important}.atlas-plan-info-emoji{font-size:18px!important;line-height:1!important}.atlas-plan-info-copy{display:flex!important;flex-direction:column!important;align-items:flex-start!important;min-width:0!important}.atlas-plan-info-key{font-size:11.5px!important;line-height:1.2!important;font-weight:700!important;color:var(--muted2)!important}.atlas-plan-info-value{font-size:16px!important;line-height:1.25!important;font-weight:800!important;color:#fff!important;white-space:nowrap!important}
+/* The four Plan links are also isolated: thick frame, inset thick separators, vertically centered text. */
+#planControlDetail .atlas-plan-home-links{border:2px solid var(--atlas-v124-line-strong)!important;border-radius:20px!important;overflow:hidden!important;background:rgba(14,20,26,.70)!important;margin-bottom:10px!important}
+#planControlDetail .atlas-plan-home-links>button{position:relative!important;min-height:60px!important;padding:10px 12px!important;margin:0!important;border:0!important;background:transparent!important;background-image:none!important;box-shadow:none!important;display:flex!important;align-items:center!important}
+#planControlDetail .atlas-plan-home-links>button+button::before{content:"";position:absolute;left:10px;right:10px;top:0;height:2px;background:var(--atlas-v124-line);border-radius:2px}
+#planControlDetail .atlas-plan-home-links .engine-v2-copy{align-self:center!important;display:flex!important;justify-content:center!important;min-height:38px!important}#planControlDetail .atlas-plan-home-links .engine-v2-title{margin:auto 0!important}#planControlDetail .atlas-plan-home-links .engine-v2-icon,#planControlDetail .atlas-plan-home-links .engine-v2-arrow{align-self:center!important}
+.atlas-ai-plan-card{margin-top:10px!important}.atlas-ai-regenerate-btn{margin-top:10px!important}
+/* Weekly calendar / session list and activity metric edges. */
+#view-plan .plan-days,#sessionGeneratorList .plan-week-calendar{border:2px solid var(--atlas-v124-line)!important;border-radius:18px!important;overflow:hidden!important;background:rgba(12,18,24,.72)!important}#view-plan .plan-day,#sessionGeneratorList .plan-week-calendar-day{border:0!important;border-radius:0!important;background:transparent!important}#view-plan .plan-day+.plan-day,#sessionGeneratorList .plan-week-calendar-day+.plan-week-calendar-day{border-top:0!important;background-image:linear-gradient(var(--atlas-v124-line),var(--atlas-v124-line))!important;background-repeat:no-repeat!important;background-position:center top!important;background-size:calc(100% - 20px) 2px!important}#view-plan .plan-day.today{box-shadow:none!important;border-color:transparent!important;background:rgba(29,155,240,.055)!important}#view-plan .plan-day.today .plan-week-activity-row{box-shadow:none!important;border-color:transparent!important}
+.activity-detail-date,.activity-perception-chip,.plan-detail-summary{border-width:2px!important;border-color:var(--atlas-v124-line-strong)!important}.plan-detail-stat+.plan-detail-stat::before{width:2px!important;top:9px!important;bottom:9px!important;background:var(--atlas-v124-line)!important}
 </style>
-
-<script id="atlas-v0123-corrections-script">
-/* ===== ɅTLɅS v0.123 · perfil, tablas, scroll y refinamientos ===== */
-(function(){
-  "use strict";
-
-  /* Perfil: combina el atleta del bootstrap con /api/profile y normaliza URLs antiguas http://. */
-  function atlasV123ProfileObject(value){
-    if(!value||typeof value!=="object")return{};
-    return value.athlete&&typeof value.athlete==="object"?{...value,...value.athlete}:value;
-  }
-  function atlasV123PhotoFrom(value){
-    const a=atlasV123ProfileObject(value),candidates=[a.profile_medium,a.profile,a.profile_large,a.profile_photo,a.avatar_url,a.image_url,a.photo_url,a.picture,a.avatar];
-    for(let raw of candidates){
-      if(raw&&typeof raw==="object")raw=raw.medium||raw.large||raw.url||raw.src||null;
-      if(typeof raw!=="string"||!raw.trim())continue;
-      raw=raw.trim();
-      if(raw.startsWith("//"))raw=`https:${raw}`;
-      else if(raw.startsWith("http://"))raw=`https://${raw.slice(7)}`;
-      else if(raw.startsWith("/"))raw=`https://intervals.icu${raw}`;
-      return raw;
-    }
-    return null;
-  }
-  function atlasV123MergedAthlete(snapshot){
-    const athlete=atlasV123ProfileObject(snapshot?.athlete?.data||snapshot?.athlete||{}),profile=atlasV123ProfileObject(snapshot?.profile?.data||snapshot?.profile||{});
-    const photo=atlasV123PhotoFrom(athlete)||atlasV123PhotoFrom(profile);
-    return{...profile,...athlete,
-      profile_medium:photo||athlete.profile_medium||profile.profile_medium||null,
-      sportSettings:Array.isArray(snapshot?.sportSettings)?snapshot.sportSettings:(athlete.sportSettings||profile.sportSettings||[])
-    };
-  }
-  function atlasV123PaintAvatar(athlete){
-    const avatar=$("profileDashboardAvatar");if(!avatar)return;
-    const a=atlasV123ProfileObject(athlete),name=a.name||profileLabel(null),photo=atlasV123PhotoFrom(a);
-    avatar.replaceChildren();
-    if(!photo){avatar.textContent=profileInitials(name);return;}
-    const img=document.createElement("img");img.alt=`Foto de perfil de ${name}`;img.decoding="async";img.loading="eager";
-    img.addEventListener("error",()=>{avatar.replaceChildren();avatar.textContent=profileInitials(name);},{once:true});
-    img.src=photo;avatar.appendChild(img);
-  }
-
-  const atlasV123RenderProfilePanel=renderProfilePanel;
-  renderProfilePanel=function(athlete){atlasV123RenderProfilePanel(athlete);atlasV123PaintAvatar(athlete);};
-
-  const atlasV123RenderDataSummary=renderDataSummary;
-  renderDataSummary=function(snapshot){
-    atlasV123RenderDataSummary(snapshot);
-    const merged=atlasV123MergedAthlete(snapshot);
-    renderProfilePanel(merged);
-    renderShoesPanel(snapshot?.gear||currentGear);
-  };
-
-  const atlasV123PerformSync=performSync;
-  performSync=async function(oldest,newest,mode){
-    const result=await atlasV123PerformSync(oldest,newest,mode);
-    try{
-      const pp=await apiRequest("/api/profile",{timeoutMs:12000,retries:1});
-      if(pp?.profile){await storePut("profile",{key:"me",data:pp.profile,updatedAt:new Date().toISOString()});await refreshAll();}
-    }catch(error){console.warn("ɅTLɅS · actualización de foto/perfil",error);}
-    return result;
-  };
-
-  /* Foco de carga sin emojis, incluso si una versión previa ya pintó el panel. */
-  renderProfileLoadFocus=function(){
-    const box=$("profileDashboardLoadFocus");if(!box)return;const f=atlasLoadFocus28(currentActivities),defs=[["anaerobic","Anaeróbico"],["high","Aeróbico alto"],["low","Aeróbico bajo"]];
-    if(!(f.total>0)){box.innerHTML='<div class="profile-load-focus-empty">Todavía no hay carga de carrera suficiente en los últimos 28 días.</div>';return;}
-    box.innerHTML=`<div class="profile-load-focus-meta"><span>Últimos 28 días</span><strong>${formatNatural(f.total,0)} carga</strong></div><div class="profile-load-focus-rows">${defs.map(([key,label])=>`<div class="profile-load-focus-row"><div class="profile-load-focus-row-head"><span>${label}</span><strong>${formatNatural(f.pct[key],0)} %</strong></div><div class="profile-load-focus-track"><span class="profile-load-focus-fill ${key}" style="width:${clamp(f.pct[key],0,100).toFixed(1)}%"></span></div><div class="profile-load-focus-value">${formatNatural(f.sum[key],0)} de carga</div></div>`).join("")}</div><div class="profile-load-focus-reading">${esc(f.reading)}</div>`;
-  };
-
-  /* Mejores marcas: tres líneas verticales únicas y continuas desde la fila 1K. */
-  const atlasV123RenderRecords=renderProfileDashboardRecords;
-  renderProfileDashboardRecords=function(records=currentRunningRecords){
-    atlasV123RenderRecords(records);const box=$("profileDashboardRecords");if(!box)return;
-    box.querySelector(".profile-dashboard-record-vlines")?.remove();
-    if(box.querySelector(".profile-dashboard-record-table-row"))box.insertAdjacentHTML("beforeend",'<span class="profile-dashboard-record-vlines" aria-hidden="true"><i></i><i></i><i></i></span>');
-  };
-
-  /* Scroll principal: se mide la vista activa respecto al borde superior real de la barra, no el padding global del body. */
-  const atlasV123AuditAtlasScrollState=auditAtlasScrollState;
-  auditAtlasScrollState=function(){
-    const overlay=atlasOpenOverlay();
-    if(overlay||document.body.classList.contains("assistant-main-active")){return atlasV123AuditAtlasScrollState();}
-    atlasScrollAuditFrame=0;refreshAtlasSubpageNav();
-    const root=document.documentElement,body=document.body;
-    root.classList.remove("atlas-main-scroll-locked");body.classList.remove("atlas-main-scroll-locked");body.style.overflow="";
-    requestAnimationFrame(()=>{
-      const active=document.querySelector(".view.active"),nav=document.querySelector(".nav"),scrolling=document.scrollingElement||root;
-      if(!active){return atlasV123AuditAtlasScrollState();}
-      const activeRect=active.getBoundingClientRect(),navRect=nav?.getBoundingClientRect();
-      const bottomLimit=navRect&&navRect.height>0?navRect.top-4:window.innerHeight-4;
-      const needs=activeRect.bottom>bottomLimit+2;
-      root.classList.toggle("atlas-main-scroll-locked",!needs);body.classList.toggle("atlas-main-scroll-locked",!needs);
-      body.style.overflow=needs?"":"hidden";
-      if(!needs&&scrolling.scrollTop)scrolling.scrollTop=0;
-    });
-  };
-
-  /* Repinta las dos piezas afectadas si la vista ya estaba construida. */
-  try{renderProfileLoadFocus();renderProfileDashboardRecords();}catch{}
-  scheduleAtlasScrollAudit();
-})();
-</script>
 
 </body>
 </html>
