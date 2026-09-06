@@ -1962,7 +1962,7 @@ html,body{overscroll-behavior-y:none}
 
 (()=>{
 "use strict";
-const APP_VERSION="0.122.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="0.123.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const ATLAS_RELEASE_STAGE="RC2.3",ATLAS_RELEASE_SESSION_KEY="releaseRuntimeSession",ATLAS_RELEASE_PREFLIGHT_KEY="releasePreflight",ATLAS_RELEASE_LKG_KEY="releaseLastKnownGood";
 let currentReleasePreflight=null;
 /* v0.114 maintenance: historical engine declarations shadowed by later implementations were removed.
@@ -11393,6 +11393,186 @@ html.atlas-main-scroll-locked,body.atlas-main-scroll-locked{overflow-y:hidden!im
   const atlasV122AtlasSetOverflowClass=atlasSetOverflowClass;
   atlasSetOverflowClass=function(el,needsScroll){atlasV122AtlasSetOverflowClass(el,needsScroll);if(el)el.style.overflowY=needsScroll?"auto":"hidden";};
 
+  scheduleAtlasScrollAudit();
+})();
+</script>
+
+
+
+<style id="atlas-v0123-corrections">
+:root{--atlas-v123-line:rgba(255,255,255,.18);--atlas-v123-line-strong:rgba(255,255,255,.22);--atlas-v123-w:2px}
+
+/* Barra inferior: Liquid Glass translúcido, no transparente y sin blur reactivo. */
+.nav{
+  background:linear-gradient(180deg,rgba(48,59,70,.82),rgba(20,27,34,.80) 42%,rgba(8,12,16,.86))!important;
+  -webkit-backdrop-filter:saturate(150%) brightness(.92)!important;
+  backdrop-filter:saturate(150%) brightness(.92)!important;
+  border:2px solid rgba(255,255,255,.20)!important;
+  box-shadow:0 16px 38px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.14)!important;
+}
+
+/* iPhone: si la vista principal cabe por encima de la barra, no existe scroll ni rebote vertical. */
+html.atlas-main-scroll-locked,body.atlas-main-scroll-locked{
+  height:100dvh!important;max-height:100dvh!important;overflow:hidden!important;overscroll-behavior:none!important;
+}
+body.atlas-main-scroll-locked{position:fixed!important;inset:0!important;width:100%!important;touch-action:pan-x!important}
+body.atlas-main-scroll-locked .app{height:100dvh!important;min-height:100dvh!important;max-height:100dvh!important;overflow:hidden!important}
+
+/* Información del plan: exactamente 1 vertical central + 3 horizontales en dos tramos. */
+#planControlDetail .plan-goal-summary{
+  position:relative!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:0!important;
+  border:2px solid var(--atlas-v123-line)!important;border-radius:18px!important;overflow:hidden!important;background:#000!important;
+}
+#planControlDetail .plan-goal-summary-item{position:relative!important;border:0!important;background:transparent!important}
+#planControlDetail .plan-goal-summary-item::before,#planControlDetail .plan-goal-summary-item::after{content:none!important;display:none!important}
+#planControlDetail .plan-goal-summary::before{
+  content:""!important;display:block!important;position:absolute!important;z-index:4!important;pointer-events:none!important;
+  left:50%!important;top:10px!important;bottom:10px!important;width:2px!important;height:auto!important;
+  transform:translateX(-1px)!important;background:var(--atlas-v123-line)!important;
+}
+#planControlDetail .plan-goal-summary::after{
+  content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:4!important;pointer-events:none!important;
+  background:
+    linear-gradient(var(--atlas-v123-line),var(--atlas-v123-line)) left 10px top 25%/calc(50% - 18px) 2px no-repeat,
+    linear-gradient(var(--atlas-v123-line),var(--atlas-v123-line)) right 10px top 25%/calc(50% - 18px) 2px no-repeat,
+    linear-gradient(var(--atlas-v123-line),var(--atlas-v123-line)) left 10px top 50%/calc(50% - 18px) 2px no-repeat,
+    linear-gradient(var(--atlas-v123-line),var(--atlas-v123-line)) right 10px top 50%/calc(50% - 18px) 2px no-repeat,
+    linear-gradient(var(--atlas-v123-line),var(--atlas-v123-line)) left 10px top 75%/calc(50% - 18px) 2px no-repeat,
+    linear-gradient(var(--atlas-v123-line),var(--atlas-v123-line)) right 10px top 75%/calc(50% - 18px) 2px no-repeat!important;
+}
+
+/* Accesos de Plan: marco grueso, divisores gruesos inset y contenido centrado en altura. */
+#planControlDetail .plan-home-links{
+  border:2px solid var(--atlas-v123-line-strong)!important;border-radius:20px!important;overflow:hidden!important;
+}
+#planControlDetail .plan-home-links>button{
+  position:relative!important;min-height:60px!important;padding:10px 12px!important;margin:0!important;border:0!important;
+  align-items:center!important;align-content:center!important;background:transparent!important;box-shadow:none!important;
+}
+#planControlDetail .plan-home-links>button+button{
+  border-top:0!important;
+  background-image:linear-gradient(var(--atlas-v123-line),var(--atlas-v123-line))!important;
+  background-position:center top!important;background-repeat:no-repeat!important;background-size:calc(100% - 20px) 2px!important;
+}
+#planControlDetail .plan-home-links .engine-v2-copy,#planControlDetail .plan-home-links .engine-v2-icon,#planControlDetail .plan-home-links .engine-v2-arrow{align-self:center!important}
+
+/* Mejores marcas: cabecera sin divisores; verticales continuas desde 1K y horizontales sólo entre filas de marcas. */
+.profile-dashboard-records{position:relative!important}
+.profile-dashboard-record-table-head{border:0!important;background-image:none!important;position:relative!important;z-index:1!important}
+.profile-dashboard-record-table-head>*::before,.profile-dashboard-record-table-head>*::after,
+.profile-dashboard-record-cell::before,.profile-dashboard-record-cell::after{content:none!important;display:none!important}
+.profile-dashboard-record-table-row{position:relative!important;border-top:0!important;background-image:none!important;z-index:1!important}
+.profile-dashboard-record-table-row+.profile-dashboard-record-table-row{
+  background-image:linear-gradient(var(--atlas-v123-line),var(--atlas-v123-line))!important;
+  background-position:center top!important;background-repeat:no-repeat!important;background-size:calc(100% - 20px) 2px!important;
+}
+.profile-dashboard-record-vlines{position:absolute;z-index:3;left:0;right:0;top:51px;bottom:9px;pointer-events:none}
+.profile-dashboard-record-vlines>i{position:absolute;top:0;bottom:0;width:2px;border-radius:2px;background:var(--atlas-v123-line);transform:translateX(-1px)}
+.profile-dashboard-record-vlines>i:nth-child(1){left:25%}.profile-dashboard-record-vlines>i:nth-child(2){left:50%}.profile-dashboard-record-vlines>i:nth-child(3){left:75%}
+
+/* Foco de carga: las barras ya codifican el color; sin separadores adicionales. */
+.profile-load-focus-row+.profile-load-focus-row,.profile-load-focus-reading{border:0!important;background-image:none!important}
+</style>
+
+<script id="atlas-v0123-corrections-script">
+/* ===== ɅTLɅS v0.123 · perfil, tablas, scroll y refinamientos ===== */
+(function(){
+  "use strict";
+
+  /* Perfil: combina el atleta del bootstrap con /api/profile y normaliza URLs antiguas http://. */
+  function atlasV123ProfileObject(value){
+    if(!value||typeof value!=="object")return{};
+    return value.athlete&&typeof value.athlete==="object"?{...value,...value.athlete}:value;
+  }
+  function atlasV123PhotoFrom(value){
+    const a=atlasV123ProfileObject(value),candidates=[a.profile_medium,a.profile,a.profile_large,a.profile_photo,a.avatar_url,a.image_url,a.photo_url,a.picture,a.avatar];
+    for(let raw of candidates){
+      if(raw&&typeof raw==="object")raw=raw.medium||raw.large||raw.url||raw.src||null;
+      if(typeof raw!=="string"||!raw.trim())continue;
+      raw=raw.trim();
+      if(raw.startsWith("//"))raw=`https:${raw}`;
+      else if(raw.startsWith("http://"))raw=`https://${raw.slice(7)}`;
+      else if(raw.startsWith("/"))raw=`https://intervals.icu${raw}`;
+      return raw;
+    }
+    return null;
+  }
+  function atlasV123MergedAthlete(snapshot){
+    const athlete=atlasV123ProfileObject(snapshot?.athlete?.data||snapshot?.athlete||{}),profile=atlasV123ProfileObject(snapshot?.profile?.data||snapshot?.profile||{});
+    const photo=atlasV123PhotoFrom(athlete)||atlasV123PhotoFrom(profile);
+    return{...profile,...athlete,
+      profile_medium:photo||athlete.profile_medium||profile.profile_medium||null,
+      sportSettings:Array.isArray(snapshot?.sportSettings)?snapshot.sportSettings:(athlete.sportSettings||profile.sportSettings||[])
+    };
+  }
+  function atlasV123PaintAvatar(athlete){
+    const avatar=$("profileDashboardAvatar");if(!avatar)return;
+    const a=atlasV123ProfileObject(athlete),name=a.name||profileLabel(null),photo=atlasV123PhotoFrom(a);
+    avatar.replaceChildren();
+    if(!photo){avatar.textContent=profileInitials(name);return;}
+    const img=document.createElement("img");img.alt=`Foto de perfil de ${name}`;img.decoding="async";img.loading="eager";
+    img.addEventListener("error",()=>{avatar.replaceChildren();avatar.textContent=profileInitials(name);},{once:true});
+    img.src=photo;avatar.appendChild(img);
+  }
+
+  const atlasV123RenderProfilePanel=renderProfilePanel;
+  renderProfilePanel=function(athlete){atlasV123RenderProfilePanel(athlete);atlasV123PaintAvatar(athlete);};
+
+  const atlasV123RenderDataSummary=renderDataSummary;
+  renderDataSummary=function(snapshot){
+    atlasV123RenderDataSummary(snapshot);
+    const merged=atlasV123MergedAthlete(snapshot);
+    renderProfilePanel(merged);
+    renderShoesPanel(snapshot?.gear||currentGear);
+  };
+
+  const atlasV123PerformSync=performSync;
+  performSync=async function(oldest,newest,mode){
+    const result=await atlasV123PerformSync(oldest,newest,mode);
+    try{
+      const pp=await apiRequest("/api/profile",{timeoutMs:12000,retries:1});
+      if(pp?.profile){await storePut("profile",{key:"me",data:pp.profile,updatedAt:new Date().toISOString()});await refreshAll();}
+    }catch(error){console.warn("ɅTLɅS · actualización de foto/perfil",error);}
+    return result;
+  };
+
+  /* Foco de carga sin emojis, incluso si una versión previa ya pintó el panel. */
+  renderProfileLoadFocus=function(){
+    const box=$("profileDashboardLoadFocus");if(!box)return;const f=atlasLoadFocus28(currentActivities),defs=[["anaerobic","Anaeróbico"],["high","Aeróbico alto"],["low","Aeróbico bajo"]];
+    if(!(f.total>0)){box.innerHTML='<div class="profile-load-focus-empty">Todavía no hay carga de carrera suficiente en los últimos 28 días.</div>';return;}
+    box.innerHTML=`<div class="profile-load-focus-meta"><span>Últimos 28 días</span><strong>${formatNatural(f.total,0)} carga</strong></div><div class="profile-load-focus-rows">${defs.map(([key,label])=>`<div class="profile-load-focus-row"><div class="profile-load-focus-row-head"><span>${label}</span><strong>${formatNatural(f.pct[key],0)} %</strong></div><div class="profile-load-focus-track"><span class="profile-load-focus-fill ${key}" style="width:${clamp(f.pct[key],0,100).toFixed(1)}%"></span></div><div class="profile-load-focus-value">${formatNatural(f.sum[key],0)} de carga</div></div>`).join("")}</div><div class="profile-load-focus-reading">${esc(f.reading)}</div>`;
+  };
+
+  /* Mejores marcas: tres líneas verticales únicas y continuas desde la fila 1K. */
+  const atlasV123RenderRecords=renderProfileDashboardRecords;
+  renderProfileDashboardRecords=function(records=currentRunningRecords){
+    atlasV123RenderRecords(records);const box=$("profileDashboardRecords");if(!box)return;
+    box.querySelector(".profile-dashboard-record-vlines")?.remove();
+    if(box.querySelector(".profile-dashboard-record-table-row"))box.insertAdjacentHTML("beforeend",'<span class="profile-dashboard-record-vlines" aria-hidden="true"><i></i><i></i><i></i></span>');
+  };
+
+  /* Scroll principal: se mide la vista activa respecto al borde superior real de la barra, no el padding global del body. */
+  const atlasV123AuditAtlasScrollState=auditAtlasScrollState;
+  auditAtlasScrollState=function(){
+    const overlay=atlasOpenOverlay();
+    if(overlay||document.body.classList.contains("assistant-main-active")){return atlasV123AuditAtlasScrollState();}
+    atlasScrollAuditFrame=0;refreshAtlasSubpageNav();
+    const root=document.documentElement,body=document.body;
+    root.classList.remove("atlas-main-scroll-locked");body.classList.remove("atlas-main-scroll-locked");body.style.overflow="";
+    requestAnimationFrame(()=>{
+      const active=document.querySelector(".view.active"),nav=document.querySelector(".nav"),scrolling=document.scrollingElement||root;
+      if(!active){return atlasV123AuditAtlasScrollState();}
+      const activeRect=active.getBoundingClientRect(),navRect=nav?.getBoundingClientRect();
+      const bottomLimit=navRect&&navRect.height>0?navRect.top-4:window.innerHeight-4;
+      const needs=activeRect.bottom>bottomLimit+2;
+      root.classList.toggle("atlas-main-scroll-locked",!needs);body.classList.toggle("atlas-main-scroll-locked",!needs);
+      body.style.overflow=needs?"":"hidden";
+      if(!needs&&scrolling.scrollTop)scrolling.scrollTop=0;
+    });
+  };
+
+  /* Repinta las dos piezas afectadas si la vista ya estaba construida. */
+  try{renderProfileLoadFocus();renderProfileDashboardRecords();}catch{}
   scheduleAtlasScrollAudit();
 })();
 </script>
