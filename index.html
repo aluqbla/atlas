@@ -1017,6 +1017,11 @@ input[type="date"]::-webkit-date-and-time-value{display:flex!important;align-ite
     </div>
     <div class="profile-dashboard-performance" id="profileDashboardPerformance"></div>
 
+    <div class="profile-dashboard-section-head compact-only-title">
+      <span>Foco de carga</span>
+    </div>
+    <div class="profile-load-focus" id="profileDashboardLoadFocus"><div class="profile-load-focus-empty">Calculando…</div></div>
+
     <div class="profile-dashboard-section-title">Zonas</div>
     <div class="profile-dashboard-zones" id="profileDashboardZones"></div>
 
@@ -1961,7 +1966,7 @@ html,body{overscroll-behavior-y:none}
 
 (()=>{
 "use strict";
-const APP_VERSION="0.118.2",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="0.119.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const ATLAS_RELEASE_STAGE="RC2.2",ATLAS_RELEASE_SESSION_KEY="releaseRuntimeSession",ATLAS_RELEASE_PREFLIGHT_KEY="releasePreflight",ATLAS_RELEASE_LKG_KEY="releaseLastKnownGood";
 let currentReleasePreflight=null;
 /* v0.114 maintenance: historical engine declarations shadowed by later implementations were removed.
@@ -2445,7 +2450,7 @@ function assistantMetricText(valueEl,metaEl){const value=String(valueEl?.textCon
 function assistantActivitySummary(a){const pace=activityPaceSecKm(a),distance=activityDistanceM(a),hr=Number(pick(a,["average_heartrate","average_hr"])),cadence=Number(pick(a,["average_cadence","cadence"])),gain=Number(pick(a,["total_elevation_gain","elevation_gain"])),load=Number(pick(a,["icu_training_load","training_load"])),duration=Number(pick(a,["moving_time","elapsed_time","duration"]));return{id:String(a?.id||""),date:activityDate(a)||null,name:activityName(a),type:activityType(a),distanceKm:Number.isFinite(distance)?Math.round(distance/10)/100:null,duration:Number.isFinite(duration)&&duration>0?formatDuration(duration):null,pace:Number.isFinite(pace)?`${formatPaceValue(pace)} min/km`:null,averageHr:Number.isFinite(hr)&&hr>0?Math.round(hr):null,cadence:Number.isFinite(cadence)&&cadence>0?Math.round(cadence):null,elevationGain:Number.isFinite(gain)?Math.round(gain):null,trainingLoad:Number.isFinite(load)?Math.round(load*10)/10:null};}
 function assistantWellnessSummary(row){const date=String(row?.id||"").slice(0,10),hrv=Number(pick(row,["hrv","hrvSDNN","hrv_sdnn"])),rhr=Number(pick(row,["restingHR","resting_hr","restingHr"])),sleep=Number(pick(row,["sleepSecs","sleep_secs","sleep"])),sleepScore=Number(pick(row,["sleepScore","sleep_score"])),ctl=Number(pick(row,["ctl","ctlLoad","icu_ctl"])),atl=Number(pick(row,["atl","atlLoad","icu_atl"]));return{date:date||null,hrv:Number.isFinite(hrv)&&hrv>0?Math.round(hrv*10)/10:null,restingHr:Number.isFinite(rhr)&&rhr>0?Math.round(rhr):null,sleep:Number.isFinite(sleep)&&sleep>0?formatSleepHM(sleep):null,sleepScore:Number.isFinite(sleepScore)&&sleepScore>=0?Math.round(sleepScore):null,ctl:Number.isFinite(ctl)?Math.round(ctl*10)/10:null,atl:Number.isFinite(atl)?Math.round(atl*10)/10:null,freshness:Number.isFinite(ctl)&&Number.isFinite(atl)?Math.round((ctl-atl)*10)/10:null};}
 function assistantSessionSummary(s){if(!s)return null;return{date:s.date||null,type:s.type||null,title:s.title||s.name||null,distanceKm:Number.isFinite(Number(s.distanceKm))?Math.round(Number(s.distanceKm)*10)/10:null,pace:s.pace||null,structure:s.structure||null,purpose:s.purpose||null};}
-async function buildAssistantContext(){const athleteRecord=await storeGet("athlete","me").catch(()=>null),athlete=athleteRecord?.data||athleteRecord||{},sport=runningSportSettings(athlete)||{},zones=profileZoneRows(sport),activities=[...currentActivities].sort((a,b)=>activityStamp(b).localeCompare(activityStamp(a))),runs=activities.filter(isRun),runKm=runs.reduce((sum,a)=>sum+(activityDistanceM(a)||0),0)/1000,wellness=[...currentWellness].sort((a,b)=>String(b?.id||"").localeCompare(String(a?.id||""))),today=fmtDate(new Date()),futureSessions=(currentPlanManifest?.sessionSnapshot||[]).filter(s=>s?.date&&s.date>=today).sort((a,b)=>String(a.date).localeCompare(String(b.date))).slice(0,20).map(assistantSessionSummary).filter(Boolean),shoes=(currentGear||[]).filter(gearIsShoes).map(g=>({name:g.name||"Zapatillas",km:Number.isFinite(gearDistanceKm(g))?Math.round(gearDistanceKm(g)):null,activities:Number.isFinite(Number(g.activities))?Number(g.activities):null,retired:Boolean(g.retired)})).slice(0,12),state=currentAtlasState?{score:currentAtlasState.score,status:currentAtlasState.band?.label||null,note:currentAtlasState.note||null,baseScore:currentAtlasState.baseScore,components:currentAtlasState.components||null,recoveryPenalty:currentAtlasState.recovery?.penalty||0,limiter:currentAtlasState.limiter||null,hrv7:currentAtlasState.hrv7,hrvBaseline:currentAtlasState.hrvBaseline,rhrDelta:currentAtlasState.rhrDelta,freshness:currentAtlasState.fresh,sleepHours:currentAtlasState.sleepHours,sleepQuality:currentAtlasState.sleepQuality?.label||null}:null;return{generatedAt:new Date().toISOString(),appVersion:APP_VERSION,state,todayMetrics:{sleep:assistantMetricText(ui.sleepValue,ui.sleepMeta),hrv:assistantMetricText(ui.hrvValue,ui.hrvMeta),restingHr:assistantMetricText(ui.rhrValue,ui.rhrMeta),vo2max:assistantMetricText(ui.vo2Value,ui.vo2Meta),freshness:assistantMetricText(ui.freshValue,ui.freshMeta),volume7d:assistantMetricText(ui.volumeValue,ui.volumeMeta)},profile:{name:athlete?.name||null,height:Number.isFinite(Number(athlete?.height))?Number(athlete.height):null,weight:Number.isFinite(Number(athlete?.icu_weight??athlete?.weight))?Number(athlete.icu_weight??athlete.weight):null,runner:currentAthleteProfileV2||null,zones:{pace:zones.pace||[],heartRate:zones.hr||[]},shoes},activities:{total:activities.length,runs:runs.length,runDistanceKm:Math.round(runKm*10)/10,oldest:activities.length?activityDate(activities[activities.length-1]):null,newest:activities.length?activityDate(activities[0]):null,recent:activities.slice(0,60).map(assistantActivitySummary)},wellnessRecent:wellness.slice(0,60).map(assistantWellnessSummary),plan:{goal:currentEngineV2Goal||null,secondaryGoals:currentSecondaryGoals||[],assessment:currentGoalAssessment||null,availabilityExceptions:currentAvailabilityExceptions||[],upcoming:futureSessions,adaptive:currentAdaptiveState?{level:currentAdaptiveState.level||null,decision:currentAdaptiveState.decision||null,reading:currentAdaptiveState.reading||null,keyIssues:currentAdaptiveState.keyIssues||null}:null}};}
+async function buildAssistantContext(){const athleteRecord=await storeGet("athlete","me").catch(()=>null),athlete=athleteRecord?.data||athleteRecord||{},sport=runningSportSettings(athlete)||{},zones=profileZoneRows(sport),activities=[...currentActivities].sort((a,b)=>activityStamp(b).localeCompare(activityStamp(a))),runs=activities.filter(isRun),runKm=runs.reduce((sum,a)=>sum+(activityDistanceM(a)||0),0)/1000,wellness=[...currentWellness].sort((a,b)=>String(b?.id||"").localeCompare(String(a?.id||""))),today=fmtDate(new Date()),futureSessions=(currentPlanManifest?.sessionSnapshot||[]).filter(s=>s?.date&&s.date>=today).sort((a,b)=>String(a.date).localeCompare(String(b.date))).slice(0,20).map(assistantSessionSummary).filter(Boolean),shoes=(currentGear||[]).filter(gearIsShoes).map(g=>({name:g.name||"Zapatillas",km:Number.isFinite(gearDistanceKm(g))?Math.round(gearDistanceKm(g)):null,activities:Number.isFinite(Number(g.activities))?Number(g.activities):null,retired:Boolean(g.retired)})).slice(0,12),state=currentAtlasState?{score:currentAtlasState.score,status:currentAtlasState.band?.label||null,note:currentAtlasState.note||null,baseScore:currentAtlasState.baseScore,components:currentAtlasState.components||null,recoveryPenalty:currentAtlasState.recovery?.penalty||0,limiter:currentAtlasState.limiter||null,hrvLatest:currentAtlasState.hrvLatest,hrv7:currentAtlasState.hrv7,hrvBaseline:currentAtlasState.hrvBaseline,rhrDelta:currentAtlasState.rhrDelta,freshness:currentAtlasState.fresh,sleepHours:currentAtlasState.sleepHours,sleepQuality:currentAtlasState.sleepQuality?.label||null}:null;return{generatedAt:new Date().toISOString(),appVersion:APP_VERSION,state,todayMetrics:{sleep:assistantMetricText(ui.sleepValue,ui.sleepMeta),hrv:assistantMetricText(ui.hrvValue,ui.hrvMeta),restingHr:assistantMetricText(ui.rhrValue,ui.rhrMeta),vo2max:assistantMetricText(ui.vo2Value,ui.vo2Meta),freshness:assistantMetricText(ui.freshValue,ui.freshMeta),volume7d:assistantMetricText(ui.volumeValue,ui.volumeMeta)},profile:{name:athlete?.name||null,height:Number.isFinite(Number(athlete?.height))?Number(athlete.height):null,weight:Number.isFinite(Number(athlete?.icu_weight??athlete?.weight))?Number(athlete.icu_weight??athlete.weight):null,runner:currentAthleteProfileV2||null,zones:{pace:zones.pace||[],heartRate:zones.hr||[]},shoes},activities:{total:activities.length,runs:runs.length,runDistanceKm:Math.round(runKm*10)/10,oldest:activities.length?activityDate(activities[activities.length-1]):null,newest:activities.length?activityDate(activities[0]):null,recent:activities.slice(0,60).map(assistantActivitySummary)},wellnessRecent:wellness.slice(0,60).map(assistantWellnessSummary),plan:{goal:currentEngineV2Goal||null,secondaryGoals:currentSecondaryGoals||[],assessment:currentGoalAssessment||null,availabilityExceptions:currentAvailabilityExceptions||[],upcoming:futureSessions,adaptive:currentAdaptiveState?{level:currentAdaptiveState.level||null,decision:currentAdaptiveState.decision||null,reading:currentAdaptiveState.reading||null,keyIssues:currentAdaptiveState.keyIssues||null}:null}};}
 async function sendAssistantMessage(event){event?.preventDefault();if(assistantSending)return;const text=String(ui.assistantInput?.value||"").trim();if(!text)return;assistantPendingError="";let chat=currentAssistantChat();if(!chat){const now=new Date().toISOString();chat={id:assistantId(),title:assistantChatTitle(text),createdAt:now,updatedAt:now,messages:[]};currentAssistantChatId=chat.id;assistantChats.unshift(chat);}chat.messages.push({role:"user",content:text,at:new Date().toISOString()});chat.title=chat.messages.filter(m=>m.role==="user").length===1?assistantChatTitle(text):(chat.title||assistantChatTitle(text));if(ui.assistantInput){ui.assistantInput.value="";resizeAssistantInput();}await persistAssistantChat(chat);assistantSending=true;renderAssistantChat();requestAnimationFrame(()=>scrollAssistantToBottom(true));try{const context=await buildAssistantContext(),history=chat.messages.filter(m=>m&&["user","assistant"].includes(m.role)&&String(m.content||"").trim()).slice(-20).map(m=>({role:m.role,content:String(m.content).slice(0,8000)})),result=await apiRequest("/api/chat",{method:"POST",body:{messages:history,context},timeoutMs:90000,retries:0}),reply=String(result?.reply||"").trim();if(!reply)throw new Error("ATLAS no ha recibido una respuesta válida del modelo.");chat.messages.push({role:"assistant",content:reply,cost:result?.cost||null,at:new Date().toISOString()});await persistAssistantChat(chat);}catch(error){console.error("ɅTLɅS · IA",error);recordRuntimeAudit("assistant-chat",error).catch(()=>{});assistantPendingError=error?.status===503?"La IA todavía no está conectada en el Worker.":`No he podido responder: ${error?.message||"error de conexión"}`;}finally{assistantSending=false;renderAssistantChat();requestAnimationFrame(()=>scrollAssistantToBottom(true));ui.assistantInput?.focus();}}
 
 
@@ -3462,6 +3467,47 @@ function renderProfileDashboardRecords(records=currentRunningRecords){
   box.innerHTML=head+rows;requestAnimationFrame(fitProfileDashboardRecordsTypography);
 }
 
+function atlasLoadFocusIntensity(a){
+  let x=Number(pick(a,["icu_intensity","intensity","intensity_factor","intensityFactor","if"]));
+  if(!Number.isFinite(x)||x<=0)return null;
+  if(x>2)x/=100;
+  return clamp(x,.35,1.35);
+}
+function atlasLoadFocusMix(a){
+  const text=`${activityName(a)||""} ${String(pick(a,["workout_type","type","category"])||"")}`.toLowerCase(),km=(activityDistanceM(a)||0)/1000,intensity=atlasLoadFocusIntensity(a);
+  if(/sprint|anaer|vo2|v02|serie|series|interval|repet|300\s*m|400\s*m|500\s*m|600\s*m|800\s*m|1000\s*m/.test(text))return{low:.08,high:.34,anaerobic:.58};
+  if(/umbral|threshold|tempo|ritmo 10k|ritmo 5k|progresiv|fartlek|ritmo media|ritmo marat|espec[ií]fic/.test(text))return{low:.15,high:.75,anaerobic:.10};
+  if(/race|carrera|competici/.test(text)){if(km&&km<=12)return{low:.05,high:.45,anaerobic:.50};if(km&&km<=25)return{low:.10,high:.82,anaerobic:.08};return{low:.28,high:.69,anaerobic:.03};}
+  if(/recuper|f[aá]cil|easy|suave|rodaje|tirada larga|long/.test(text))return{low:.88,high:.12,anaerobic:0};
+  if(Number.isFinite(intensity)){if(intensity<.78)return{low:.92,high:.08,anaerobic:0};if(intensity<.92)return{low:.25,high:.72,anaerobic:.03};if(intensity<1.02)return{low:.10,high:.70,anaerobic:.20};return{low:.05,high:.38,anaerobic:.57};}
+  return{low:.70,high:.27,anaerobic:.03};
+}
+function atlasLoadFocus28(activities,anchor=fmtDate(new Date())){
+  const start=addDays(anchor,-27),sum={low:0,high:0,anaerobic:0},used=[];
+  for(const a of (activities||[])){
+    if(!isRun(a))continue;const d=activityDate(a);if(!d||d<start||d>anchor)continue;
+    const load=Number(pick(a,["icu_training_load","training_load","load"]));if(!Number.isFinite(load)||load<=0)continue;
+    const mix=atlasLoadFocusMix(a);sum.low+=load*mix.low;sum.high+=load*mix.high;sum.anaerobic+=load*mix.anaerobic;used.push(a);
+  }
+  const total=sum.low+sum.high+sum.anaerobic,pct={low:total?sum.low/total*100:0,high:total?sum.high/total*100:0,anaerobic:total?sum.anaerobic/total*100:0};
+  let reading="Sin carga suficiente para valorar el foco.";
+  if(total>=20){
+    if(pct.anaerobic>20)reading="Predomina el estímulo anaeróbico: conviene que la base aeróbica siga sosteniendo la carga rápida.";
+    else if(pct.high>42)reading="Predomina el aeróbico alto: buena especificidad, pero vigila que no desplace demasiado al volumen fácil.";
+    else if(pct.low<50)reading="Falta algo de aeróbico bajo para equilibrar y absorber mejor la calidad.";
+    else if(pct.anaerobic<4)reading="Base aeróbica sólida; falta una pequeña dosis de estímulo anaeróbico cuando la fase del plan lo permita.";
+    else reading="Distribución equilibrada para desarrollar base, capacidad aeróbica alta y velocidad sin que un estímulo domine en exceso.";
+  }
+  return{start,anchor,sum,total,pct,count:used.length,reading};
+}
+function renderProfileLoadFocus(){
+  const box=$("profileDashboardLoadFocus");if(!box)return;const f=atlasLoadFocus28(currentActivities),defs=[
+    ["low","Aeróbico bajo","🔵"],["high","Aeróbico alto","🟠"],["anaerobic","Anaeróbico","🟣"]
+  ];
+  if(!(f.total>0)){box.innerHTML='<div class="profile-load-focus-empty">Todavía no hay carga de carrera suficiente en los últimos 28 días.</div>';return;}
+  box.innerHTML=`<div class="profile-load-focus-meta"><span>Últimos 28 días</span><strong>${formatNatural(f.total,0)} carga</strong></div><div class="profile-load-focus-rows">${defs.map(([key,label,emoji])=>`<div class="profile-load-focus-row"><div class="profile-load-focus-row-head"><span>${emoji} ${label}</span><strong>${formatNatural(f.pct[key],0)} %</strong></div><div class="profile-load-focus-track"><span class="profile-load-focus-fill ${key}" style="width:${clamp(f.pct[key],0,100).toFixed(1)}%"></span></div><div class="profile-load-focus-value">${formatNatural(f.sum[key],0)} de carga</div></div>`).join("")}</div><div class="profile-load-focus-reading">${esc(f.reading)}</div>`;
+}
+
 function profileZoneColorEmoji(index){return ["🔵","🟢","🟡","🟠","🔴","🟣"][index]||"⚪";}
 function firstActivityDateLabel(){const dates=currentActivities.map(activityDate).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(String(d))).sort();return dates.length?engineV2DateLabel(dates[0]):"—";}
 function renderProfilePanel(athlete){
@@ -3555,6 +3601,7 @@ function renderProfilePanel(athlete){
 
   if($("performanceCadenceInsight"))$("performanceCadenceInsight").innerHTML="";
   if(ui.profileCadenceInsight)ui.profileCadenceInsight.innerHTML="";
+  renderProfileLoadFocus();
   renderProfileDashboardRecords();
 }function evolutionWindowStats(runs,anchor,days=28){
   const end=anchor,start=addDays(anchor,-(days-1)),prevEnd=addDays(start,-1),prevStart=addDays(prevEnd,-(days-1)),now=v2RunsBetween(runs,start,end),prev=v2RunsBetween(runs,prevStart,prevEnd);
@@ -3807,7 +3854,7 @@ function atlasRecoverySnapshot(activities,wellness,anchor=fmtDate(new Date())){
   const healthDate=rows.length?v2WellnessDate(rows[0]):null,wellnessAgeDays=healthDate?Math.max(0,Math.round((new Date(`${anchor}T12:00:00`)-new Date(`${healthDate}T12:00:00`))/86400000)):null;
   const hrv=atlasLatestWellnessMetric(rows,"hrv",anchor),rhr=atlasLatestWellnessMetric(rows,"rhr",anchor),sleep=atlasLatestWellnessMetric(rows,"sleep",anchor),sleepScore=atlasLatestWellnessMetric(rows,"sleepScore",anchor);
   const ctl=atlasLatestWellnessMetric(rows,"ctl",anchor)?.value??null,atl=atlasLatestWellnessMetric(rows,"atl",anchor)?.value??null,form=atlasLatestWellnessMetric(rows,"form",anchor)?.value??null;
-  const hrv7=v2MeanWellness(rows,"hrv",anchor,7,3),hrv28=v2MeanWellness(rows,"hrv",anchor,28,10),hrvBaseline=garminLikeHrvBaseline(rows,hrv?.date||healthDate||anchor);
+  const hrv7=v2MeanWellness(rows,"hrv",anchor,7,3),hrv28=v2MeanWellness(rows,"hrv",anchor,28,10),hrvBaselineAnchor=hrv?.date?addDays(hrv.date,-1):(healthDate?addDays(healthDate,-1):anchor),hrvBaseline=garminLikeHrvBaseline(rows,hrvBaselineAnchor)||garminLikeHrvBaseline(rows,hrv?.date||healthDate||anchor);
   const rhr7=v2MeanWellness(rows,"rhr",anchor,7,3),rhr28=v2MeanWellness(rows,"rhr",anchor,28,10),rhrDelta=Number.isFinite(rhr7)&&Number.isFinite(rhr28)?rhr7-rhr28:null;
   const sleep7=v2MeanWellness(rows,"sleep",anchor,7,3),sleepScore7=v2MeanWellness(rows,"sleepScore",anchor,7,3),latestSleepRecord=sleep?.record||sleepScore?.record||rows[0]||null;
   const freshness=Number.isFinite(form)?form:(Number.isFinite(ctl)&&Number.isFinite(atl)?ctl-atl:null),acute=acuteRecovery(activities||[]);
@@ -6531,7 +6578,7 @@ function renderActivityLaps(){
   requestAnimationFrame(fitActivityLapTableText);updateActivityLapSelection(rows);
 }
 function normalizeLatLngStreams(payload){const raw=payload?.streams??payload?.data??payload;if(!raw)return[];let lat=null,lng=null;if(Array.isArray(raw)){const s=raw.find(x=>String(x?.type||x?.name||"").toLowerCase()==="latlng");if(s){lat=s.data||s.values||null;lng=s.data2||s.values2||null;}}else if(raw.latlng){if(Array.isArray(raw.latlng)&&Array.isArray(raw.latlng[0]))return raw.latlng.filter(p=>Array.isArray(p)&&Number.isFinite(Number(p[0]))&&Number.isFinite(Number(p[1]))).map(p=>[Number(p[0]),Number(p[1])]);lat=raw.latlng.data||raw.latlng.latitude||null;lng=raw.latlng.data2||raw.latlng.longitude||null;}if(Array.isArray(lat)&&Array.isArray(lng))return lat.map((v,i)=>[Number(v),Number(lng[i])]).filter(p=>Number.isFinite(p[0])&&Number.isFinite(p[1])&&Math.abs(p[0])<=90&&Math.abs(p[1])<=180&&(p[0]!==0||p[1]!==0));return[];}
-function renderActivityMap(payload,a=currentActivityDetail){if(currentActivityMap){currentActivityMap.remove();currentActivityMap=null;}if(!a||!sportTypicallyGps(a)){ui.activityMap.classList.add("hidden");ui.activityMap.innerHTML="";return;}ui.activityMap.classList.remove("hidden");const pts=normalizeLatLngStreams(payload);if(pts.length<2){ui.activityMap.innerHTML='<div class="activity-map-empty">Recorrido no disponible para esta actividad.</div>';return;}if(!window.L){ui.activityMap.innerHTML='<div class="activity-map-empty">No se ha podido cargar el mapa.</div>';return;}ui.activityMap.innerHTML="";currentActivityMap=L.map(ui.activityMap,{zoomControl:false,attributionControl:true});L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"&copy; OpenStreetMap"}).addTo(currentActivityMap);const route=L.polyline(pts,{weight:4.5,opacity:.9,color:"#ff453a",lineCap:"round",lineJoin:"round"}).addTo(currentActivityMap),startIcon=L.divIcon({className:"atlas-map-icon",html:'<div class="atlas-route-pin atlas-route-start">▶</div>',iconSize:[27,27],iconAnchor:[13.5,13.5]}),finishIcon=L.divIcon({className:"atlas-map-icon",html:'<div class="atlas-route-pin atlas-route-finish">🏁</div>',iconSize:[27,27],iconAnchor:[13.5,13.5]});L.marker(pts[0],{icon:startIcon,title:"Inicio"}).addTo(currentActivityMap);L.marker(pts[pts.length-1],{icon:finishIcon,title:"Final"}).addTo(currentActivityMap);currentActivityMap.fitBounds(route.getBounds(),{padding:[18,18]});setTimeout(()=>currentActivityMap?.invalidateSize(),80);}
+function renderActivityMap(payload,a=currentActivityDetail){if(currentActivityMap){currentActivityMap.remove();currentActivityMap=null;}if(!a||!sportTypicallyGps(a)){ui.activityMap.classList.add("hidden");ui.activityMap.innerHTML="";return;}ui.activityMap.classList.remove("hidden");const pts=normalizeLatLngStreams(payload);if(pts.length<2){ui.activityMap.innerHTML='<div class="activity-map-empty">Recorrido no disponible para esta actividad.</div>';return;}if(!window.L){ui.activityMap.innerHTML='<div class="activity-map-empty">No se ha podido cargar el mapa.</div>';return;}ui.activityMap.innerHTML="";currentActivityMap=L.map(ui.activityMap,{zoomControl:false,attributionControl:true});L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",{subdomains:"abcd",maxZoom:20,attribution:"&copy; OpenStreetMap &copy; CARTO",className:"atlas-dark-map-tiles"}).addTo(currentActivityMap);const route=L.polyline(pts,{weight:4.5,opacity:.9,color:"#ff453a",lineCap:"round",lineJoin:"round"}).addTo(currentActivityMap),startIcon=L.divIcon({className:"atlas-map-icon",html:'<div class="atlas-route-pin atlas-route-start">▶</div>',iconSize:[27,27],iconAnchor:[13.5,13.5]}),finishIcon=L.divIcon({className:"atlas-map-icon",html:'<div class="atlas-route-pin atlas-route-finish">🏁</div>',iconSize:[27,27],iconAnchor:[13.5,13.5]});L.marker(pts[0],{icon:startIcon,title:"Inicio"}).addTo(currentActivityMap);L.marker(pts[pts.length-1],{icon:finishIcon,title:"Final"}).addTo(currentActivityMap);currentActivityMap.fitBounds(route.getBounds(),{padding:[18,18]});setTimeout(()=>currentActivityMap?.invalidateSize(),80);}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 
 /* ===== Hoy: métricas y estado ATLAS ===== */
@@ -6598,7 +6645,9 @@ function freshnessZone(value){
 function computeAtlasState({activities,wellness,forma,fatiga,fresh,vfc,rhr,sleep,hrvRef,today}){
  const r=atlasRecoverySnapshot(activities,wellness,today),weights={hrv:30,sleep:25,rhr:20,fresh:25},parts=[];
  if(r.stale)return null;
- const hrvScore=scoreHrv(r.hrv7,r.hrvBaseline);if(Number.isFinite(hrvScore))parts.push({key:"hrv",score:hrvScore,weight:weights.hrv});
+ const hrvLatestScore=scoreHrv(r.hrvLatest,r.hrvBaseline),hrvTrendScore=scoreHrv(r.hrv7,r.hrvBaseline);
+ const hrvScore=Number.isFinite(hrvLatestScore)&&Number.isFinite(hrvTrendScore)?hrvLatestScore*.75+hrvTrendScore*.25:Number.isFinite(hrvLatestScore)?hrvLatestScore:hrvTrendScore;
+ if(Number.isFinite(hrvScore))parts.push({key:"hrv",score:hrvScore,weight:weights.hrv});
  const rawSleepScore=Number.isFinite(r.sleepScoreLatest)?r.sleepScoreLatest:getSleepScore(r.latestSleepRecord),sleepComponent=scoreSleep(rawSleepScore,r.latestSleepRecord);
  if(Number.isFinite(sleepComponent))parts.push({key:"sleep",score:sleepComponent,weight:weights.sleep});
  const rhrScore=scoreRestingHr(r.rhrDelta);if(Number.isFinite(rhrScore))parts.push({key:"rhr",score:rhrScore,weight:weights.rhr});
@@ -6607,7 +6656,8 @@ function computeAtlasState({activities,wellness,forma,fatiga,fresh,vfc,rhr,sleep
  const baseScore=parts.reduce((s,p)=>s+p.score*p.weight,0)/totalWeight;let score=baseScore,recovery=r.acute;score-=recovery.penalty;
  const caps=[];
  if(Number.isFinite(rawSleepScore)){if(rawSleepScore<35)caps.push({cap:34,reason:"Sueño muy bajo"});else if(rawSleepScore<50)caps.push({cap:54,reason:"Sueño bajo"});else if(rawSleepScore<60)caps.push({cap:69,reason:"Sueño insuficiente"});}
- if(Number.isFinite(r.hrv7)&&r.hrvBaseline){if(r.hrv7<r.hrvBaseline.low*.88)caps.push({cap:54,reason:"VFC deprimida"});else if(r.hrv7<r.hrvBaseline.low*.95)caps.push({cap:69,reason:"VFC por debajo del rango"});}
+ if(Number.isFinite(r.hrvLatest)&&r.hrvBaseline){if(r.hrvLatest<r.hrvBaseline.low*.80)caps.push({cap:54,reason:"VFC de la última noche muy deprimida"});else if(r.hrvLatest<r.hrvBaseline.low*.90)caps.push({cap:69,reason:"VFC de la última noche deprimida"});}
+ if(Number.isFinite(r.hrv7)&&r.hrvBaseline&&r.hrv7<r.hrvBaseline.low*.90)caps.push({cap:69,reason:"Tendencia de VFC deprimida"});
  if(Number.isFinite(r.rhrDelta)){if(r.rhrDelta>=6)caps.push({cap:34,reason:"Reposo muy elevado"});else if(r.rhrDelta>=4)caps.push({cap:54,reason:"Reposo elevado"});else if(r.rhrDelta>=3)caps.push({cap:69,reason:"Reposo por encima de tu media"});}
  if(Number.isFinite(r.freshness)){if(r.freshness<-35)caps.push({cap:34,reason:"Fatiga muy alta"});else if(r.freshness<-30)caps.push({cap:54,reason:"Fatiga elevada"});}
  if(recovery.penalty>=14)caps.push({cap:69,reason:"Recuperación aguda en curso"});
@@ -6615,7 +6665,7 @@ function computeAtlasState({activities,wellness,forma,fatiga,fresh,vfc,rhr,sleep
  score=Math.round(clamp(score,0,100));
  const band=atlasBand(score),note=limiter?limiter.reason:recovery.penalty>=3?`Recuperación en curso · −${Math.round(recovery.penalty)}`:band.note;
  const sleepHours=Number.isFinite(r.sleepLatest)?r.sleepLatest/3600:null,sleepQuality=sleepQualityInfo(r.latestSleepRecord);
- return{score,band,note,components:Object.fromEntries(parts.map(p=>[p.key,Math.round(p.score)])),recovery,hrv7:r.hrv7,hrvBaseline:r.hrvBaseline,rhrDelta:r.rhrDelta,rhr7:r.rhr7,rhr28:r.rhr28,baseScore,limiter,sleepScore:rawSleepScore,sleepHours,sleepQuality,fresh:r.freshness,totalWeight,healthDate:r.healthDate};
+ return{score,band,note,components:Object.fromEntries(parts.map(p=>[p.key,Math.round(p.score)])),recovery,hrvLatest:r.hrvLatest,hrvDate:r.hrvDate,hrv7:r.hrv7,hrvBaseline:r.hrvBaseline,rhrDelta:r.rhrDelta,rhr7:r.rhr7,rhr28:r.rhr28,baseScore,limiter,sleepScore:rawSleepScore,sleepHours,sleepQuality,fresh:r.freshness,totalWeight,healthDate:r.healthDate};
 }
 function renderAtlasState(state){currentAtlasState=state;
  if(!state){ui.trainingStateScore.textContent="—";ui.trainingStateBtn.className="training-state";ui.trainingStateCircle.style.setProperty("--score-pct","0%");ui.trainingStateWord.textContent="Sin datos";ui.trainingStateNote.textContent="Necesito más métricas recientes";if(ui.stateDetail?.classList.contains("open"))renderStateDetail();return;}
@@ -6647,7 +6697,7 @@ function renderStateDetail(){const s=currentAtlasState;if(!s){ui.stateDetailHero
  ui.stateDetailHero.className=`state-detail-card state-${s.band.tone}`;ui.stateDetailRing.style.setProperty("--score-pct",`${s.score}%`);ui.stateDetailScore.textContent=String(s.score);ui.stateDetailWord.textContent=s.band.label;ui.stateDetailNote.textContent=atlasStateMicroInsight(s);ui.stateDetailMeta.textContent=fullTodayDate();
  const sleepContext=()=>{const parts=[];if(Number.isFinite(s.sleepHours))parts.push(formatSleepHM(s.sleepHours*3600));if(s.sleepQuality?.label)parts.push(s.sleepQuality.label);if(Number.isFinite(s.sleepScore))parts.push(`puntuación ${formatNatural(s.sleepScore,0)}`);return parts.length?parts.join(" · "):"Sin datos recientes";};
  const defs=[
-  {key:"hrv",icon:"🫀",name:"VFC",weight:30,context:()=>Number.isFinite(s.hrv7)?`Media 7 días · ${formatNatural(s.hrv7,1)} ms${s.hrvBaseline?` · base ${formatNatural(s.hrvBaseline.low,0)}–${formatNatural(s.hrvBaseline.high,0)}`:""}`:"Sin datos recientes"},
+  {key:"hrv",icon:"🫀",name:"VFC",weight:30,context:()=>Number.isFinite(s.hrvLatest)?`Última noche · ${formatNatural(s.hrvLatest,1)} ms${Number.isFinite(s.hrv7)?` · media 7 d ${formatNatural(s.hrv7,1)}`:""}${s.hrvBaseline?` · base ${formatNatural(s.hrvBaseline.low,0)}–${formatNatural(s.hrvBaseline.high,0)}`:""}`:"Sin datos recientes"},
   {key:"sleep",icon:"💤",name:"Sueño",weight:25,context:sleepContext},
   {key:"rhr",icon:"❤️",name:"Reposo",weight:20,context:()=>Number.isFinite(s.rhrDelta)?`Media 7 d vs 28 d · ${signedNatural(s.rhrDelta,1)} ppm`:"Sin referencia suficiente"},
   {key:"fresh",icon:"⚡",name:"Frescura",weight:25,context:()=>Number.isFinite(s.fresh)?`${signedNatural(s.fresh,2)} · ${freshnessZone(s.fresh)?.label||"—"}`:"Sin datos recientes"}
@@ -10816,6 +10866,141 @@ html.atlas-main-scroll-locked,body.atlas-main-scroll-locked{overscroll-behavior:
     linear-gradient(var(--atlas-divider-strong,rgba(255,255,255,.18)),var(--atlas-divider-strong,rgba(255,255,255,.18))) 0 50%/100% 2px no-repeat,
     linear-gradient(var(--atlas-divider-strong,rgba(255,255,255,.18)),var(--atlas-divider-strong,rgba(255,255,255,.18))) 0 75%/100% 2px no-repeat!important;
 }
+
+
+/* ===== ɅTLɅS v0.119 · VFC nocturna, mapa oscuro, foco de carga y sistema global de divisores ===== */
+:root{
+  --atlas-divider-v3:rgba(255,255,255,.20);
+  --atlas-divider-v3-soft:rgba(255,255,255,.15);
+  --atlas-divider-v3-w:2px;
+  --atlas-divider-v3-gap:10px;
+}
+
+/* Map: dark canvas and discreet attribution. */
+.activity-map{background:#070a0d!important;}
+.activity-map .leaflet-container{background:#070a0d!important;}
+.activity-map .leaflet-control-attribution{background:rgba(0,0,0,.58)!important;color:#8b949a!important;font-size:8px!important;}
+.activity-map .leaflet-control-attribution a{color:#aab0b4!important;}
+
+/* Planned rest uses exactly the training-title typography, but muted. */
+#view-plan .plan-rest-copy{
+  height:auto!important;min-height:0!important;padding:2px 0!important;margin:0!important;overflow:visible!important;
+  font-size:17.5px!important;line-height:1.12!important;font-weight:780!important;letter-spacing:0!important;color:#71767b!important;
+}
+#view-plan .plan-rest-copy:empty{height:0!important;padding:0!important;overflow:hidden!important;}
+
+/* Activity AI: same asset/proportions as Chat, optically centered. */
+.activity-title-row .activity-ai-btn{width:42px!important;height:42px!important;border-radius:50%!important;padding:0!important;overflow:hidden!important;display:grid!important;place-items:center!important;}
+.activity-ai-mark{width:42px!important;height:42px!important;display:grid!important;place-items:center!important;overflow:hidden!important;transform:none!important;}
+.activity-ai-icon{display:block!important;width:28px!important;height:22px!important;object-fit:contain!important;object-position:50% 50%!important;margin:0!important;padding:0!important;transform:translateY(-1.5px)!important;}
+
+/* Load Focus. */
+.profile-load-focus{
+  border:2px solid var(--atlas-glass-border)!important;border-radius:18px!important;overflow:hidden!important;
+  background:var(--atlas-glass-bg-soft)!important;box-shadow:var(--atlas-depth-shadow)!important;
+  -webkit-backdrop-filter:blur(20px) saturate(165%)!important;backdrop-filter:blur(20px) saturate(165%)!important;
+  margin-bottom:12px!important;
+}
+.profile-load-focus-meta{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 12px;color:var(--muted2);font-size:10.5px;line-height:1.2;font-weight:720;}
+.profile-load-focus-meta strong{color:#fff;font-size:12px;font-weight:800;}
+.profile-load-focus-rows{padding:0 12px;}
+.profile-load-focus-row{position:relative;padding:9px 0;}
+.profile-load-focus-row+.profile-load-focus-row{border:0!important;background-image:linear-gradient(var(--atlas-divider-v3-soft),var(--atlas-divider-v3-soft))!important;background-position:center top!important;background-size:calc(100% - 20px) var(--atlas-divider-v3-w)!important;background-repeat:no-repeat!important;}
+.profile-load-focus-row-head{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#fff;font-size:12.5px;font-weight:760;}
+.profile-load-focus-row-head strong{font-size:13px;font-variant-numeric:tabular-nums;}
+.profile-load-focus-track{height:7px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:7px;}
+.profile-load-focus-fill{display:block;height:100%;border-radius:999px;}
+.profile-load-focus-fill.low{background:#1d9bf0}.profile-load-focus-fill.high{background:#ff9f0a}.profile-load-focus-fill.anaerobic{background:#bf5af2}
+.profile-load-focus-value{margin-top:4px;color:var(--muted);font-size:9.5px;font-weight:680;}
+.profile-load-focus-reading{margin:0 12px;padding:10px 0 11px;color:var(--muted2);font-size:10.8px;line-height:1.38;font-weight:620;border:0!important;background-image:linear-gradient(var(--atlas-divider-v3-soft),var(--atlas-divider-v3-soft))!important;background-position:center top!important;background-size:calc(100% - 20px) var(--atlas-divider-v3-w)!important;background-repeat:no-repeat!important;}
+.profile-load-focus-empty{padding:12px;color:var(--muted);font-size:11px;line-height:1.4;}
+
+/* ---- Divider system v3: no inner divider is allowed to touch an outer edge or another divider. ---- */
+
+/* Horizontal separators between list rows: inset from both sides. */
+:is(.pace-row,.adaptive-revision-item,.adaptive-outcome,.plan-week-calendar-session,.session-preview-week,.solver-week,.weekly-target-week,.macro-week,.plan-day-multi-item,.adaptive-history-item,.engine-v2-row,.plan-item,.plan-detail-step,.profile-insight-row,.record-row,.data-native-row,.data-trend-row,.profile-line,.activity-row,.activity-equipment-row,.activity-lap-group,.shoe-limit-row,.profile-zone-row,.profile-zone-section,.record-podium-row):not(:first-child){
+  border-top:0!important;
+  background-image:linear-gradient(var(--atlas-divider-v3-soft),var(--atlas-divider-v3-soft))!important;
+  background-position:center top!important;background-size:calc(100% - 20px) var(--atlas-divider-v3-w)!important;background-repeat:no-repeat!important;
+}
+.plan-week-calendar-session+.plan-week-calendar-session,.activity-lap-group+.activity-lap-group,.profile-home-links .data-native-row+.data-native-row{border-top:0!important;}
+
+/* Top divisions that are conceptually independent also stay inset. */
+.stat,.shoe-stats,.profile-home-grid{border-top:0!important;background-image:linear-gradient(var(--atlas-divider-v3-soft),var(--atlas-divider-v3-soft))!important;background-position:center top!important;background-size:calc(100% - 20px) var(--atlas-divider-v3-w)!important;background-repeat:no-repeat!important;}
+.activity-lap-bars-card{border-bottom:0!important;}
+
+/* Dedicated date/content separators in activity and Plan rows. */
+.activity-row-sep,.plan-day-sep,#sessionGeneratorList .plan-week-calendar-sep{
+  width:var(--atlas-divider-v3-w)!important;min-width:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;
+  align-self:stretch!important;margin-top:9px!important;margin-bottom:9px!important;border-radius:3px!important;
+}
+
+/* Metric separators: vertical only, always inset. */
+.metric-card:not(:last-child)::after,.today-hero-card .metric-card+.metric-card::before,.plan-summary-item+.plan-summary-item::before,.profile-dashboard-performance-cell+.profile-dashboard-performance-cell::before,.detail-stat+.detail-stat::before,.state-calc-item+.state-calc-item::before{
+  content:""!important;position:absolute!important;left:0!important;right:auto!important;top:10px!important;bottom:10px!important;width:var(--atlas-divider-v3-w)!important;height:auto!important;background:var(--atlas-divider-v3)!important;border:0!important;border-radius:3px!important;transform:none!important;
+}
+.metric-card:not(:last-child)::after{left:auto!important;right:0!important;}
+.today-hero-card .metric-card+.metric-card{border-left:0!important;}
+.profile-dashboard-performance-cell+.profile-dashboard-performance-cell{border-left:0!important;}
+.state-calc-item{position:relative!important;border:0!important;}
+.state-calc-item+.state-calc-item{border-left:0!important;}
+.detail-stat{position:relative!important;border:0!important;}
+.detail-stat:not(:last-child)::after{content:none!important;}
+
+/* Inline activity metrics: short 2 px strokes, never full-height. */
+.activity-row-stat+.activity-row-stat::before,.activity-mini-sep{width:var(--atlas-divider-v3-w)!important;height:13px!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
+
+/* 2×2 State factors: four independent segments; the cross never meets. */
+.state-factors.compact-grid{border-top:0!important;position:relative!important;}
+.state-factors.compact-grid::before,.state-factors.compact-grid::after{content:none!important;}
+.state-factors.compact-grid .state-factor{position:relative!important;border:0!important;}
+.state-factors.compact-grid .state-factor:nth-child(even)::before{content:""!important;position:absolute!important;left:0!important;top:10px!important;bottom:10px!important;width:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
+.state-factors.compact-grid .state-factor:nth-child(n+3)::after{content:""!important;position:absolute!important;left:10px!important;right:10px!important;top:0!important;height:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
+
+/* Activity primary 4×2 grid: cell-local segments rather than a crossing grid. */
+.activity-primary::after{content:none!important;}
+.activity-primary-item{position:relative!important;border:0!important;}
+.activity-primary-item:not(:nth-child(4n))::after{content:""!important;position:absolute!important;right:0!important;top:10px!important;bottom:10px!important;width:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
+.activity-primary-item:nth-child(n+5)::before{content:""!important;position:absolute!important;left:10px!important;right:10px!important;top:0!important;height:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
+
+/* Plan information table: central vertical + independent horizontal segments per cell. */
+#planControlDetail .plan-goal-summary{position:relative!important;}
+#planControlDetail .plan-goal-summary::before,#planControlDetail .plan-goal-summary::after{content:none!important;}
+#planControlDetail .plan-goal-summary-item{position:relative!important;border:0!important;background-image:none!important;text-align:left!important;}
+#planControlDetail .plan-goal-summary-item:nth-child(even)::before{content:""!important;position:absolute!important;left:0!important;top:10px!important;bottom:10px!important;width:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
+#planControlDetail .plan-goal-summary-item:nth-child(n+3)::after{content:""!important;position:absolute!important;left:10px!important;right:10px!important;top:0!important;height:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
+#planControlDetail .plan-goal-summary-item>*,#planControlDetail .plan-goal-summary-label,#planControlDetail .plan-goal-summary-value{text-align:left!important;justify-content:flex-start!important;margin-left:0!important;margin-right:0!important;}
+
+/* Records: horizontal dividers are split cell by cell; verticals are inset. */
+.profile-dashboard-record-table-head,.profile-dashboard-record-table-row{border-top:0!important;border-bottom:0!important;}
+.profile-dashboard-record-table-head>* ,.profile-dashboard-record-table-row>*{position:relative!important;}
+.profile-dashboard-record-table-head>*+*::before,.profile-dashboard-record-table-row>*+*::before{content:""!important;position:absolute!important;left:0!important;top:7px!important;bottom:7px!important;width:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
+.profile-dashboard-record-cell::before{left:0!important;top:7px!important;bottom:7px!important;width:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;}
+.profile-dashboard-record-table-row>*{background-image:linear-gradient(var(--atlas-divider-v3-soft),var(--atlas-divider-v3-soft))!important;background-position:center top!important;background-size:calc(100% - 16px) var(--atlas-divider-v3-w)!important;background-repeat:no-repeat!important;}
+.profile-dashboard-record-table-row:first-of-type>*{background-image:none!important;}
+.profile-dashboard-record-table-head>*{background-image:linear-gradient(var(--atlas-divider-v3-soft),var(--atlas-divider-v3-soft))!important;background-position:center bottom!important;background-size:calc(100% - 16px) var(--atlas-divider-v3-w)!important;background-repeat:no-repeat!important;}
+
+/* Zone boxes and generic table/list headers: inset horizontal strokes. */
+.profile-dashboard-zone-head,.performance-zone-head,.record-podium-head{border-bottom:0!important;background-image:linear-gradient(var(--atlas-divider-v3-soft),var(--atlas-divider-v3-soft))!important;background-position:center bottom!important;background-size:calc(100% - 20px) var(--atlas-divider-v3-w)!important;background-repeat:no-repeat!important;}
+.profile-dashboard-zone-row+.profile-dashboard-zone-row,.performance-zone-row+.performance-zone-row{border-top:0!important;background-image:linear-gradient(var(--atlas-divider-v3-soft),var(--atlas-divider-v3-soft))!important;background-position:center top!important;background-size:calc(100% - 20px) var(--atlas-divider-v3-w)!important;background-repeat:no-repeat!important;}
+
+/* Runtime/diagnostic 2×2 grids follow the same non-touching geometry. */
+.atlas-runtime-stat{position:relative!important;border:0!important;}
+.atlas-runtime-stat:nth-child(even)::before{content:""!important;position:absolute!important;left:0!important;top:10px!important;bottom:10px!important;width:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
+.atlas-runtime-stat:nth-child(n+3)::after{content:""!important;position:absolute!important;left:10px!important;right:10px!important;top:0!important;height:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
+
+/* Remove legacy full-edge interior borders that conflict with the new system. */
+.profile-home-stat+.profile-home-stat{border-left:0!important;position:relative!important;}
+.profile-home-stat+.profile-home-stat::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:var(--atlas-divider-v3-w);background:var(--atlas-divider-v3);border-radius:3px;}
+.plan-goal-summary{border-top:0!important;border-left:0!important;}
+.plan-goal-summary-item{border-right:0!important;border-bottom:0!important;}
+
+
+/* Divider v3 completion: clear legacy directional borders before drawing inset replacements. */
+:is(.pace-row,.adaptive-revision-item,.adaptive-outcome,.plan-week-calendar-session,.session-preview-week,.solver-week,.weekly-target-week,.macro-week,.plan-day-multi-item,.adaptive-history-item,.engine-v2-row,.plan-item,.plan-detail-step,.profile-insight-row,.record-row,.data-native-row,.data-trend-row,.profile-line,.activity-row,.activity-equipment-row,.activity-lap-group,.shoe-limit-row,.profile-zone-row,.profile-zone-section,.record-podium-row,.state-band-row){border-top:0!important;}
+.state-band-row:not(:first-child){background-image:linear-gradient(var(--atlas-divider-v3-soft),var(--atlas-divider-v3-soft))!important;background-position:center top!important;background-size:calc(100% - 20px) var(--atlas-divider-v3-w)!important;background-repeat:no-repeat!important;}
+.profile-metric+.profile-metric::before,.evolution-stat+.evolution-stat::before,.performance-stat+.performance-stat::before{content:""!important;position:absolute!important;left:0!important;top:10px!important;bottom:10px!important;width:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
+.profile-home-links .data-native-row{border-top:0!important;}
 </style>
 
 </body>
