@@ -1966,7 +1966,7 @@ html,body{overscroll-behavior-y:none}
 
 (()=>{
 "use strict";
-const APP_VERSION="0.119.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="0.121.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const ATLAS_RELEASE_STAGE="RC2.2",ATLAS_RELEASE_SESSION_KEY="releaseRuntimeSession",ATLAS_RELEASE_PREFLIGHT_KEY="releasePreflight",ATLAS_RELEASE_LKG_KEY="releaseLastKnownGood";
 let currentReleasePreflight=null;
 /* v0.114 maintenance: historical engine declarations shadowed by later implementations were removed.
@@ -3460,7 +3460,7 @@ function renderProfileDashboardRecords(records=currentRunningRecords){
     }).join("");
 
     const distanceLabel=section.key==="longest"?'<span>Distancia</span><span>más larga</span>':section.key==="half"?'<span>Media</span><span>maratón</span>':esc(section.label);
-    const labelClass=section.key==="longest"?" longest":section.key==="half"?" half":"";
+    const labelClass=section.key==="longest"?" longest":section.key==="half"?" half":["1k","5k","10k"].includes(section.key)?" short":"";
     return `<div class="profile-dashboard-record-table-row"><div class="profile-dashboard-record-distance-label${labelClass}">${distanceLabel}</div>${cells}</div>`;
   }).join("");
 
@@ -3502,7 +3502,7 @@ function atlasLoadFocus28(activities,anchor=fmtDate(new Date())){
 }
 function renderProfileLoadFocus(){
   const box=$("profileDashboardLoadFocus");if(!box)return;const f=atlasLoadFocus28(currentActivities),defs=[
-    ["low","Aeróbico bajo","🔵"],["high","Aeróbico alto","🟠"],["anaerobic","Anaeróbico","🟣"]
+    ["anaerobic","Anaeróbico","🟣"],["high","Aeróbico alto","🟠"],["low","Aeróbico bajo","🔵"]
   ];
   if(!(f.total>0)){box.innerHTML='<div class="profile-load-focus-empty">Todavía no hay carga de carrera suficiente en los últimos 28 días.</div>';return;}
   box.innerHTML=`<div class="profile-load-focus-meta"><span>Últimos 28 días</span><strong>${formatNatural(f.total,0)} carga</strong></div><div class="profile-load-focus-rows">${defs.map(([key,label,emoji])=>`<div class="profile-load-focus-row"><div class="profile-load-focus-row-head"><span>${emoji} ${label}</span><strong>${formatNatural(f.pct[key],0)} %</strong></div><div class="profile-load-focus-track"><span class="profile-load-focus-fill ${key}" style="width:${clamp(f.pct[key],0,100).toFixed(1)}%"></span></div><div class="profile-load-focus-value">${formatNatural(f.sum[key],0)} de carga</div></div>`).join("")}</div><div class="profile-load-focus-reading">${esc(f.reading)}</div>`;
@@ -4350,7 +4350,15 @@ function weeklyStimuli(type,week,p,count){
   }
   if(week.phase==="Base"){
     const threshold={kind:"threshold",label:"Umbral controlado",dose:"15–25 min controlados"},hills={kind:"neuromuscular",label:"Rodaje + cuestas",dose:"8 × 20–25 s · recuperación completa"},vo2={kind:"vo2",label:"VO₂ introductorio",dose:"12–18 min de trabajo"},strides={kind:"neuromuscular",label:"Strides",dose:"6 × 20 s · recuperación completa"};
-    if(week.kind==="download"||p<.25)return[hills];
+    if(week.kind==="download")return[hills];
+    if(type==="MARATHON"){
+      /* En maratón, la Base no puede encadenar varias semanas sólo con cuestas: tras la primera exposición neuromuscular aparece trabajo metabólico controlado. */
+      if(p<.12)return[hills];
+      if(p<.45)return[threshold,strides];
+      const main=week.index%2===1?vo2:threshold;
+      return[main,strides];
+    }
+    if(p<.25)return[hills];
     const main=p>=.55&&week.index%2===1?vo2:threshold;
     return[main,strides];
   }
@@ -4586,8 +4594,8 @@ function closeCalendarSolver(){ui.calendarSolverDetail.classList.add("hidden");u
 
 
 /* ===== Session Generator ATLAS ===== */
-const ATLAS_SESSION_GENERATOR_VERSION="1.6";
-const ATLAS_PUBLICATION_FORMAT_VERSION=2;
+const ATLAS_SESSION_GENERATOR_VERSION="1.6.1";
+const ATLAS_PUBLICATION_FORMAT_VERSION=3;
 function sessionClamp(n,min,max){return Math.max(min,Math.min(max,n));}
 function sessionRoundKm(n){return Math.round(n*2)/2;}function sessionRoundTotalKm(n){return Math.max(1,Math.round(Number(n)||0));}
 function sessionKmFromText(text){const m=String(text||"").replace(",",".").match(/(\d+(?:\.\d+)?)\s*km/i);return m?Number(m[1]):0;}
@@ -4822,7 +4830,14 @@ function sessionIntervalsDescription(s,sessionPlan){
     }
     return structure.replace(/(\d),(\d+)\s*km/g,"$1.$2km");
   }
-  if(s.type==="long")return structure.replace(/(\d),(\d+)\s*km/g,"$1.$2km").replace(/\smin\/km/g,"/km Pace");
+  if(s.type==="long"){
+    const segments=Array.isArray(s.segments)&&s.segments.length?s.segments:null;
+    if(segments){
+      return segments.map(seg=>{const pk=intervalsPaceToken(seg.pace)||easy,dist=intervalsKmToken(seg.distanceKm,2);return dist?`- ${dist}km ${pk}/km Pace`:null;}).filter(Boolean).join("\n");
+    }
+    const pk=pace||easy,dist=intervalsKmToken(s.distanceKm,2);
+    return dist?`- ${dist}km ${pk}/km Pace`:structure.replace(/(\d),(\d+)\s*km/g,"$1.$2km").replace(/\smin\/km/g,"/km Pace");
+  }
   return structure;
 }
 
@@ -4875,8 +4890,8 @@ function renderPlanPublicationStatus(){
   if(!currentSessionPlan?.ok){ui.sessionPublishStatus.textContent="No hay un plan válido para publicar.";ui.sessionPublishStatus.classList.add("bad");ui.sessionPublishBtn.textContent="Publicar plan en Intervals.icu";ui.sessionPublishBtn.disabled=true;return;}
   const hasBad=currentSessionPlan.audit?.some(x=>x.status==="bad");
   if(state==="published"){ui.sessionPublishStatus.textContent=`Sincronizado y verificado · ${count} sesiones.`;ui.sessionPublishStatus.classList.add("ok");ui.sessionPublishBtn.textContent="Verificar Intervals.icu";}
-  else if(state==="engine-update"){ui.sessionPublishStatus.textContent="El Motor de Entrenamiento se ha actualizado a v1.6: programa dosis de estímulo por capacidad, progresa cada capacidad de forma independiente, trata el futuro lejano como provisional y audita si el plan cubre realmente el objetivo. Revisa los entrenamientos antes de actualizar Intervals.icu.";ui.sessionPublishStatus.classList.add("warn");ui.sessionPublishBtn.textContent="Actualizar sesiones en Intervals.icu";}
-  else if(state==="format-update"){ui.sessionPublishStatus.textContent="Hay que corregir en Intervals.icu el formato técnico de las distancias decimales.";ui.sessionPublishStatus.classList.add("warn");ui.sessionPublishBtn.textContent="Corregir sesiones en Intervals.icu";}
+  else if(state==="engine-update"){ui.sessionPublishStatus.textContent="El Motor de Entrenamiento se ha actualizado a v1.6.1: refuerza la calidad metabólica progresiva en la Base de maratón, distingue los rodajes cortos de recuperación de los rodajes fáciles ordinarios y conserva la programación por dosis y capacidades. Revisa los entrenamientos antes de actualizar Intervals.icu.";ui.sessionPublishStatus.classList.add("warn");ui.sessionPublishBtn.textContent="Actualizar sesiones en Intervals.icu";}
+  else if(state==="format-update"){ui.sessionPublishStatus.textContent="Hay que actualizar en Intervals.icu el formato técnico de las tiradas largas y sus bloques estructurados.";ui.sessionPublishStatus.classList.add("warn");ui.sessionPublishBtn.textContent="Corregir sesiones en Intervals.icu";}
   else if(state==="dirty"){ui.sessionPublishStatus.textContent="Hay cambios pendientes. Revísalos en Adaptación antes de modificar Intervals.icu.";ui.sessionPublishStatus.classList.add("warn");ui.sessionPublishBtn.textContent="Revisar cambios";}
   else if(state==="publishing"){ui.sessionPublishStatus.textContent="Publicación en curso…";ui.sessionPublishStatus.classList.add("warn");ui.sessionPublishBtn.textContent="Publicando…";}
   else if(state==="error"){ui.sessionPublishStatus.textContent="La última publicación quedó incompleta. Reintentar usa los mismos identificadores y no debe duplicar sesiones.";ui.sessionPublishStatus.classList.add("bad");ui.sessionPublishBtn.textContent="Reintentar publicación";}
@@ -6578,7 +6593,7 @@ function renderActivityLaps(){
   requestAnimationFrame(fitActivityLapTableText);updateActivityLapSelection(rows);
 }
 function normalizeLatLngStreams(payload){const raw=payload?.streams??payload?.data??payload;if(!raw)return[];let lat=null,lng=null;if(Array.isArray(raw)){const s=raw.find(x=>String(x?.type||x?.name||"").toLowerCase()==="latlng");if(s){lat=s.data||s.values||null;lng=s.data2||s.values2||null;}}else if(raw.latlng){if(Array.isArray(raw.latlng)&&Array.isArray(raw.latlng[0]))return raw.latlng.filter(p=>Array.isArray(p)&&Number.isFinite(Number(p[0]))&&Number.isFinite(Number(p[1]))).map(p=>[Number(p[0]),Number(p[1])]);lat=raw.latlng.data||raw.latlng.latitude||null;lng=raw.latlng.data2||raw.latlng.longitude||null;}if(Array.isArray(lat)&&Array.isArray(lng))return lat.map((v,i)=>[Number(v),Number(lng[i])]).filter(p=>Number.isFinite(p[0])&&Number.isFinite(p[1])&&Math.abs(p[0])<=90&&Math.abs(p[1])<=180&&(p[0]!==0||p[1]!==0));return[];}
-function renderActivityMap(payload,a=currentActivityDetail){if(currentActivityMap){currentActivityMap.remove();currentActivityMap=null;}if(!a||!sportTypicallyGps(a)){ui.activityMap.classList.add("hidden");ui.activityMap.innerHTML="";return;}ui.activityMap.classList.remove("hidden");const pts=normalizeLatLngStreams(payload);if(pts.length<2){ui.activityMap.innerHTML='<div class="activity-map-empty">Recorrido no disponible para esta actividad.</div>';return;}if(!window.L){ui.activityMap.innerHTML='<div class="activity-map-empty">No se ha podido cargar el mapa.</div>';return;}ui.activityMap.innerHTML="";currentActivityMap=L.map(ui.activityMap,{zoomControl:false,attributionControl:true});L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",{subdomains:"abcd",maxZoom:20,attribution:"&copy; OpenStreetMap &copy; CARTO",className:"atlas-dark-map-tiles"}).addTo(currentActivityMap);const route=L.polyline(pts,{weight:4.5,opacity:.9,color:"#ff453a",lineCap:"round",lineJoin:"round"}).addTo(currentActivityMap),startIcon=L.divIcon({className:"atlas-map-icon",html:'<div class="atlas-route-pin atlas-route-start">▶</div>',iconSize:[27,27],iconAnchor:[13.5,13.5]}),finishIcon=L.divIcon({className:"atlas-map-icon",html:'<div class="atlas-route-pin atlas-route-finish">🏁</div>',iconSize:[27,27],iconAnchor:[13.5,13.5]});L.marker(pts[0],{icon:startIcon,title:"Inicio"}).addTo(currentActivityMap);L.marker(pts[pts.length-1],{icon:finishIcon,title:"Final"}).addTo(currentActivityMap);currentActivityMap.fitBounds(route.getBounds(),{padding:[18,18]});setTimeout(()=>currentActivityMap?.invalidateSize(),80);}
+function renderActivityMap(payload,a=currentActivityDetail){if(currentActivityMap){currentActivityMap.remove();currentActivityMap=null;}if(!a||!sportTypicallyGps(a)){ui.activityMap.classList.add("hidden");ui.activityMap.innerHTML="";return;}ui.activityMap.classList.remove("hidden");const pts=normalizeLatLngStreams(payload);if(pts.length<2){ui.activityMap.innerHTML='<div class="activity-map-empty">Recorrido no disponible para esta actividad.</div>';return;}if(!window.L){ui.activityMap.innerHTML='<div class="activity-map-empty">No se ha podido cargar el mapa.</div>';return;}ui.activityMap.innerHTML="";currentActivityMap=L.map(ui.activityMap,{zoomControl:false,attributionControl:true});L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"&copy; OpenStreetMap"}).addTo(currentActivityMap);const route=L.polyline(pts,{weight:4.5,opacity:.9,color:"#ff453a",lineCap:"round",lineJoin:"round"}).addTo(currentActivityMap),startIcon=L.divIcon({className:"atlas-map-icon",html:'<div class="atlas-route-pin atlas-route-start">▶</div>',iconSize:[27,27],iconAnchor:[13.5,13.5]}),finishIcon=L.divIcon({className:"atlas-map-icon",html:'<div class="atlas-route-pin atlas-route-finish">🏁</div>',iconSize:[27,27],iconAnchor:[13.5,13.5]});L.marker(pts[0],{icon:startIcon,title:"Inicio"}).addTo(currentActivityMap);L.marker(pts[pts.length-1],{icon:finishIcon,title:"Final"}).addTo(currentActivityMap);currentActivityMap.fitBounds(route.getBounds(),{padding:[18,18]});setTimeout(()=>currentActivityMap?.invalidateSize(),80);}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 
 /* ===== Hoy: métricas y estado ATLAS ===== */
@@ -6996,7 +7011,7 @@ installAtlasScrollAudit();
 
 /* ===== ɅTLɅS Training Engine v1.6 · adaptive performance programming ===== */
 const ATLAS_PERFORMANCE_MODEL={
-  version:"1.1",
+  version:"1.2",
   rollingWindowWeeks:4,
   guidedWindowWeeks:8,
   capacities:{
@@ -7214,6 +7229,20 @@ function sessionLongStructure(totalKm,text,profile,req,longStimulus=null){
   if(/progresiva/.test(t)){const finish=Math.min(8,Math.max(4,Math.round(total*.25)));return`${km(total-finish)} @ ${easy} + ${km(finish)} progresivos @ ${sessionRange(m.steadySlow,m.steadyFast)}`;}
   return`${km(total)} @ ${easy}`;
 }
+function sessionLongPrescription(totalKm,text,profile,req,longStimulus=null){
+  const m=sessionPaceModel(profile,req),easy=sessionRange(m.easyFast,m.easySlow),total=macroLongRound(totalKm),t=String(text||"").toLowerCase(),structure=sessionLongStructure(total,text,profile,req,longStimulus);
+  let segments=[];
+  if(longStimulus){
+    const work=sessionClamp(Number(longStimulus?.performance?.value)||0,0,Math.max(0,total-4));
+    if(work>0&&longStimulus.paceZone==="marathon"){const post=2,pre=Number((total-work-post).toFixed(2));segments=[sessionSegment("easy",pre,easy,"Tirada fácil"),sessionSegment("work",work,sessionRange(m.marathon-5,m.marathon+5),"RCM"),sessionSegment("easy",post,easy,"Final fácil")];}
+    else if(work>0&&longStimulus.paceZone==="half"){const pre=Number((total-work).toFixed(2));segments=[sessionSegment("easy",pre,easy,"Tirada fácil"),sessionSegment("work",work,sessionRange(m.half-5,m.half+7),"RHM")];}
+    else if(work>0){const pre=Number((total-work).toFixed(2));segments=[sessionSegment("easy",pre,easy,"Tirada fácil"),sessionSegment("work",work,sessionRange(m.steadySlow,m.steadyFast),"Progresivo")];}
+  }else if(/bloques rcm/.test(t)){const work=Math.min(total-4,total>=28?10:total>=24?8:6),post=2,pre=Number((total-work-post).toFixed(2));segments=[sessionSegment("easy",pre,easy,"Tirada fácil"),sessionSegment("work",work,sessionRange(m.marathon-5,m.marathon+5),"RCM"),sessionSegment("easy",post,easy,"Final fácil")];}
+  else if(/rhm/.test(t)){const work=Math.min(6,Math.max(3,Math.round(total*.25))),pre=Number((total-work).toFixed(2));segments=[sessionSegment("easy",pre,easy,"Tirada fácil"),sessionSegment("work",work,sessionRange(m.half-5,m.half+7),"RHM")];}
+  else if(/progresiva/.test(t)){const work=Math.min(8,Math.max(4,Math.round(total*.25))),pre=Number((total-work).toFixed(2));segments=[sessionSegment("easy",pre,easy,"Tirada fácil"),sessionSegment("work",work,sessionRange(m.steadySlow,m.steadyFast),"Progresivo")];}
+  if(!segments.length)segments=[sessionSegment("easy",total,easy,"Tirada larga")];
+  return{structure,segments};
+}
 function performanceCoverageAudit(weeks,all,req,goal){
   const checks=[],add=(label,status,detail,weight)=>checks.push({label,status,detail,weight}),type=String(req?.type||goal?.type||"").toUpperCase(),longs=all.filter(s=>s.type==="long"),qualities=all.filter(s=>s.type==="quality"),strength=all.filter(s=>s.type==="strength"),caps=new Set(all.map(s=>s.performance?.capacity).filter(Boolean)),peak=Math.max(0,...weeks.map(w=>Number(w.targetKm)||0)),maxLong=Math.max(0,...longs.map(s=>Number(s.distanceKm)||0)),long20=longs.filter(s=>Number(s.distanceKm)>=20).length,long25=longs.filter(s=>Number(s.distanceKm)>=25).length,long28=longs.filter(s=>Number(s.distanceKm)>=28).length,threshold=qualities.filter(s=>s.performance?.capacity==="threshold"),vo2=qualities.filter(s=>s.performance?.capacity==="vo2"),neuro=all.filter(s=>s.performance?.capacity==="neuromuscular"||/cuesta|progresivos|strides/i.test(String(s.structure||""))),specificKm=all.reduce((sum,s)=>sum+(s.performance?.capacity==="marathonpace"?Number(s.performance?.actualWorkKm||s.performance?.value)||0:0)+(s.performance?.capacity==="durability"&&s.performance?.paceZone==="marathon"?Number(s.specificWorkKm)||0:0),0),taperWeeks=weeks.filter(w=>w.phase==="Taper"),volRef=Number(req?.volume?.[0])||0,longRef=Number(req?.longKm?.[0])||0;
   add("Volumen para el objetivo",peak>=volRef?"ok":"warn",`${formatNatural(peak,1)} km/sem de pico · referencia del objetivo ≥${formatNatural(volRef,0)}`,15);
@@ -7222,6 +7251,10 @@ function performanceCoverageAudit(weeks,all,req,goal){
     add("Ritmo maratón",specificKm>=30?"ok":specificKm>=20?"warn":"bad",`${formatNatural(specificKm,1)} km específicos programados entre calidad y tiradas`,17);
     add("Umbral de soporte",threshold.length>=4?"ok":"warn",`${threshold.length} exposiciones · suficiente para sostener el techo aeróbico sin dominar el plan`,10);
     add("Economía / VO₂",vo2.length+neuro.length>=4?"ok":"warn",`${vo2.length} sesiones VO₂ · ${neuro.length} exposiciones neuromusculares`,10);
+    const baseWeeks=weeks.filter(w=>w.phase==="Base").length,baseMetabolic=qualities.filter(s=>s.phase==="Base"&&["threshold","vo2","racepace"].includes(s.performance?.capacity)).length;
+    add("Calidad en Base",baseMetabolic>=Math.max(2,Math.ceil(baseWeeks*.45))?"ok":"warn",`${baseMetabolic} exposiciones metabólicas en ${baseWeeks} semanas de Base; las cuestas complementan, no sustituyen sistemáticamente, al umbral/VO₂`,8);
+    const shortEasy=all.filter(s=>s.type==="easy"&&Number(s.distanceKm)<5),shortByWeek=new Map();for(const x of shortEasy)shortByWeek.set(x.weekIndex,(shortByWeek.get(x.weekIndex)||0)+1);const repeatedShort=[...shortByWeek.values()].filter(n=>n>1).length;
+    add("Rodajes cortos",repeatedShort===0?"ok":"warn",repeatedShort?`${repeatedShort} semana(s) acumulan más de un rodaje <5 km: revisar si se está rellenando volumen`:`${shortEasy.length} rodaje(s) <5 km en todo el plan; se aceptan como recuperación/frecuencia si no se acumulan en la misma semana`,6);
   }else{
     add("Tirada / resistencia",maxLong>=longRef?"ok":"warn",`Máxima ${formatNatural(maxLong,0)} km · referencia ≥${formatNatural(longRef,0)}`,15);
     add("Calidad específica",qualities.length>=Math.max(4,Math.floor(weeks.length/3))?"ok":"warn",`${qualities.length} sesiones de calidad en ${weeks.length} semanas`,15);
@@ -7244,11 +7277,11 @@ function buildSessionPlanV1(calendar,weekly,profile,req,goal){
     for(const day of sw.days){for(const slot of day.slots){
       let x={weekIndex:sw.weekIndex,date:day.date,day:day.day,type:slot.type,title:slot.title,phase:wt.phase,role:wt.role,distanceKm:null,pace:null,structure:"",purpose:wt.primaryAdaptation,planningState:wt.planningState||"provisional",planningModel:ATLAS_PERFORMANCE_MODEL.version,checkpoint:wt.checkpoint||null};
       if(slot.type==="easy"){
-        const km=alloc.get(`${slot.date}|easy`)||5,m=sessionPaceModel(profile,req),hasStrides=/strides/i.test(String(slot.meta||""));x.distanceKm=sessionRoundTotalKm(km);x.pace=sessionRange(m.easyFast,m.easySlow);x.title=`Rodaje fácil · ${formatNatural(x.distanceKm,0)} km`;x.structure=hasStrides?`${formatNatural(x.distanceKm,0)} km @ ${x.pace} incluyendo 6 × (20\" progresivos · recuperación completa)`:`${formatNatural(x.distanceKm,0)} km @ ${x.pace}`;if(hasStrides)x.performance={model:ATLAS_PERFORMANCE_MODEL.version,capacity:"neuromuscular",unit:"rep",value:6,cost:.2};
+        const km=alloc.get(`${slot.date}|easy`)||5,m=sessionPaceModel(profile,req),hasStrides=/strides/i.test(String(slot.meta||""));x.distanceKm=sessionRoundTotalKm(km);x.pace=sessionRange(m.easyFast,m.easySlow);x.title=`${x.distanceKm<5?"Rodaje de recuperación":"Rodaje fácil"} · ${formatNatural(x.distanceKm,0)} km`;x.structure=hasStrides?`${formatNatural(x.distanceKm,0)} km @ ${x.pace} incluyendo 6 × (20\" progresivos · recuperación completa)`:`${formatNatural(x.distanceKm,0)} km @ ${x.pace}`;if(hasStrides)x.performance={model:ATLAS_PERFORMANCE_MODEL.version,capacity:"neuromuscular",unit:"rep",value:6,cost:.2};
       }else if(slot.type==="quality"){
         const km=alloc.get(`${slot.date}|quality|${slot.title}`)||8,prescription=sessionQualityPrescription(slot,km,wt,profile,req),perf=prescription.performance?{...prescription.performance,actualWorkKm:Number(prescription.workKm)||0}:null;x.distanceKm=sessionSumSegments(prescription.segments);x.pace=prescription.mainPace||sessionRange(sessionStimulusPace(slot,wt,profile,req)-4,sessionStimulusPace(slot,wt,profile,req)+4);x.segments=prescription.segments;x.title=`${slot.title} · ${formatNatural(x.distanceKm,0)} km`;x.structure=prescription.structure;x.performance=perf;
       }else if(slot.type==="long"){
-        const km=macroLongRound(alloc.get(`${slot.date}|long`)||sessionKmFromText(slot.meta)),m=sessionPaceModel(profile,req),ls=wt.longStimulus;x.distanceKm=km;x.pace=ls||/rcm|maratón|maraton|progresiva|rhm/i.test(slot.meta)?`${sessionRange(m.easyFast,m.easySlow)} + específico`:sessionRange(m.easyFast,m.easySlow);x.title=`Tirada larga · ${formatNatural(km,0)} km`;x.structure=sessionLongStructure(km,slot.meta,profile,req,ls);if(ls){x.performance={...ls.performance,paceZone:ls.paceZone};x.specificWorkKm=Number(ls.performance?.value)||0;}
+        const km=macroLongRound(alloc.get(`${slot.date}|long`)||sessionKmFromText(slot.meta)),m=sessionPaceModel(profile,req),ls=wt.longStimulus,longPrescription=sessionLongPrescription(km,slot.meta,profile,req,ls);x.distanceKm=km;x.pace=ls||/rcm|maratón|maraton|progresiva|rhm/i.test(slot.meta)?`${sessionRange(m.easyFast,m.easySlow)} + específico`:sessionRange(m.easyFast,m.easySlow);x.title=`Tirada larga · ${formatNatural(km,0)} km`;x.structure=longPrescription.structure;x.segments=longPrescription.segments;if(ls){x.performance={...ls.performance,paceZone:ls.paceZone};x.specificWorkKm=Number(ls.performance?.value)||0;}
       }else if(slot.type==="strength"){
         const strength=sessionStrengthPrescription(wt);x.title="Fuerza";x.strengthSummary=strength.summary;x.strengthItems=strength.items;x.structure=sessionStrengthStructure(wt);x.purpose="Fuerza específica para corredor · sesión independiente";
       }else if(slot.type==="race"||slot.type==="raceA"){
@@ -7262,8 +7295,9 @@ function buildSessionPlanV1(calendar,weekly,profile,req,goal){
     const trainingKm=sessions.filter(s=>["easy","quality","long"].includes(s.type)).reduce((a,s)=>a+(s.distanceKm||0),0);
     weeks.push({weekIndex:sw.weekIndex,start:sw.start,end:sw.end,phase:wt.phase,role:wt.role,secondaryFocus:wt.secondaryFocus,sessions,trainingKm,targetKm:wt.trainingVolume,planningState:wt.planningState,checkpoint:wt.checkpoint,longStimulus:wt.longStimulus});
   }
-  const audit=[],add=(label,status,detail)=>audit.push({label,status,detail}),segmentBad=all.filter(s=>Array.isArray(s.segments)&&Math.abs(sessionSumSegments(s.segments)-Number(s.distanceKm||0))>.05),volumeBad=weeks.filter(w=>Math.abs(w.trainingKm-w.targetKm)>1.25),pairedStrength=weeks.flatMap(w=>w.sessions).filter(s=>s.type==="strength"&&weeks.find(x=>x.weekIndex===s.weekIndex)?.sessions.some(r=>r.date===s.date&&["easy","quality","long","race","raceA"].includes(r.type)));
+  const audit=[],add=(label,status,detail)=>audit.push({label,status,detail}),segmentBad=all.filter(s=>Array.isArray(s.segments)&&Math.abs(sessionSumSegments(s.segments)-Number(s.distanceKm||0))>.05),volumeBad=weeks.filter(w=>Math.abs(w.trainingKm-w.targetKm)>1.25),pairedStrength=weeks.flatMap(w=>w.sessions).filter(s=>s.type==="strength"&&weeks.find(x=>x.weekIndex===s.weekIndex)?.sessions.some(r=>r.date===s.date&&["easy","quality","long","race","raceA"].includes(r.type))),longFormatBad=all.filter(s=>s.type==="long"&&(!Array.isArray(s.segments)||!s.segments.length||Math.abs(sessionSumSegments(s.segments)-Number(s.distanceKm||0))>.05));
   add("Coherencia de sesiones",segmentBad.length?"bad":"ok",segmentBad.length?`${segmentBad.length} sesión(es) no cuadran entre título y segmentos`:"Título, dosis, segmentos y distancia total coinciden");
+  add("Tiradas estructuradas",longFormatBad.length?"bad":"ok",longFormatBad.length?`${longFormatBad.length} tirada(s) sin pasos estructurados válidos`:"Todas las tiradas largas tienen pasos compatibles con la publicación estructurada en Intervals.icu");
   add("Volumen semanal",volumeBad.length>2?"warn":"ok",volumeBad.length?`${volumeBad.length} semana(s) se desvían >1,25 km por redondeo/estructura`:"Sesiones coherentes con el volumen objetivo");
   add("Fuerza independiente",pairedStrength.length?"bad":"ok",pairedStrength.length?`${pairedStrength.length} sesión(es) comparte(n) día con carrera`:"Toda la fuerza queda en días sin carrera");
   const races=all.filter(s=>s.type==="race"),raceAdjacent=races.flatMap(r=>all.filter(s=>s!==r&&solverDateDiff(s.date,r.date)===1&&["quality","long","strength"].includes(s.type)));
@@ -7273,7 +7307,7 @@ function buildSessionPlanV1(calendar,weekly,profile,req,goal){
   add("Planificación rodante","ok",`Ventana cerrada ${ATLAS_PERFORMANCE_MODEL.rollingWindowWeeks} sem · semanas posteriores orientativas/provisionales y recalibrables`);
   add("Publicación","ok","Previsualización local · Intervals.icu sin cambios");
   const fingerprint=planStableHash(JSON.stringify({goal:[goal.type,goal.date,goal.startDate,goal.targetTimeSec],performanceModel:ATLAS_PERFORMANCE_MODEL.version,sessions:all.map(planSessionFingerprint)}));
-  return{ok:true,version:ATLAS_SESSION_GENERATOR_VERSION,performanceModelVersion:ATLAS_PERFORMANCE_MODEL.version,fingerprint,weeks,sessions:all,audit,coverage,runCount:all.filter(s=>["easy","quality","long","race","raceA"].includes(s.type)).length,strengthCount:all.filter(s=>s.type==="strength").length,reading:`Motor 1.6 · ${coverage.score}/100 de cobertura del objetivo. ATLAS programa dosis por capacidad, alterna formatos de calidad según distancia y fase, evalúa la progresión cada 4 semanas y puede adelantar la dosis de las próximas 4 semanas cuando la respuesta real lo justifica.`};
+  return{ok:true,version:ATLAS_SESSION_GENERATOR_VERSION,performanceModelVersion:ATLAS_PERFORMANCE_MODEL.version,fingerprint,weeks,sessions:all,audit,coverage,runCount:all.filter(s=>["easy","quality","long","race","raceA"].includes(s.type)).length,strengthCount:all.filter(s=>s.type==="strength").length,reading:`Motor 1.6.1 · ${coverage.score}/100 de cobertura del objetivo. ATLAS programa dosis por capacidad, alterna formatos de calidad según distancia y fase, evalúa la progresión cada 4 semanas y puede adelantar la dosis de las próximas 4 semanas cuando la respuesta real lo justifica.`};
 }
 
 
@@ -10876,11 +10910,7 @@ html.atlas-main-scroll-locked,body.atlas-main-scroll-locked{overscroll-behavior:
   --atlas-divider-v3-gap:10px;
 }
 
-/* Map: dark canvas and discreet attribution. */
-.activity-map{background:#070a0d!important;}
-.activity-map .leaflet-container{background:#070a0d!important;}
-.activity-map .leaflet-control-attribution{background:rgba(0,0,0,.58)!important;color:#8b949a!important;font-size:8px!important;}
-.activity-map .leaflet-control-attribution a{color:#aab0b4!important;}
+/* Map restored to the original OpenStreetMap presentation. */
 
 /* Planned rest uses exactly the training-title typography, but muted. */
 #view-plan .plan-rest-copy{
@@ -11001,6 +11031,74 @@ html.atlas-main-scroll-locked,body.atlas-main-scroll-locked{overscroll-behavior:
 .state-band-row:not(:first-child){background-image:linear-gradient(var(--atlas-divider-v3-soft),var(--atlas-divider-v3-soft))!important;background-position:center top!important;background-size:calc(100% - 20px) var(--atlas-divider-v3-w)!important;background-repeat:no-repeat!important;}
 .profile-metric+.profile-metric::before,.evolution-stat+.evolution-stat::before,.performance-stat+.performance-stat::before{content:""!important;position:absolute!important;left:0!important;top:10px!important;bottom:10px!important;width:var(--atlas-divider-v3-w)!important;background:var(--atlas-divider-v3)!important;border-radius:3px!important;}
 .profile-home-links .data-native-row{border-top:0!important;}
+
+
+/* ===== ɅTLɅS v0.120 · correcciones visuales + Motor 1.6.1 ===== */
+:root{--atlas-divider-v4:rgba(255,255,255,.23);--atlas-divider-v4-soft:rgba(255,255,255,.17);--atlas-divider-v4-w:2px;}
+
+/* AI de actividad: corrección óptica medida sobre la propia marca. El glifo estaba desplazado ~4 px a la derecha. */
+.activity-title-row .activity-ai-btn{display:grid!important;place-items:center!important;overflow:hidden!important;}
+.activity-title-row .activity-ai-mark{display:grid!important;place-items:center!important;width:42px!important;height:42px!important;overflow:hidden!important;}
+.activity-title-row .activity-ai-icon{display:block!important;width:28px!important;height:22px!important;margin:0!important;padding:0!important;object-fit:contain!important;object-position:center!important;transform:translate(-4px,-1.5px)!important;}
+
+/* Estado ATLAS: las cuatro métricas quedan limpias, sin divisores interiores. */
+.state-factors.compact-grid::before,.state-factors.compact-grid::after,
+.state-factors.compact-grid .state-factor::before,.state-factors.compact-grid .state-factor::after{content:none!important;display:none!important;background:none!important;}
+.state-factors.compact-grid .state-factor{border:0!important;background-image:none!important;}
+
+/* Métricas de la ficha de actividad: una única línea horizontal continua e insertada. */
+.activity-primary{position:relative!important;}
+.activity-primary::after{content:""!important;display:block!important;position:absolute!important;left:10px!important;right:10px!important;top:50%!important;height:var(--atlas-divider-v4-w)!important;background:var(--atlas-divider-v4)!important;border-radius:3px!important;pointer-events:none!important;z-index:3!important;}
+.activity-primary-item:nth-child(n+5)::before{content:none!important;display:none!important;}
+.activity-primary-item:not(:nth-child(4n))::after{width:var(--atlas-divider-v4-w)!important;background:var(--atlas-divider-v4)!important;top:9px!important;bottom:9px!important;}
+
+/* Calendarios: separadores horizontales tan sólidos como Hoy/Actividades, pero insertados. */
+#view-plan .plan-day+.plan-day,#sessionGeneratorList .plan-week-calendar-day+.plan-week-calendar-day{
+  border-top:0!important;
+  background-image:linear-gradient(var(--atlas-divider-v4-soft),var(--atlas-divider-v4-soft))!important;
+  background-position:center top!important;background-size:calc(100% - 20px) var(--atlas-divider-v4-w)!important;background-repeat:no-repeat!important;
+}
+
+/* Tabla del plan: 2 columnas × 4 filas, divisores visibles, únicos e insertados. */
+#planControlDetail .plan-goal-summary{position:relative!important;}
+#planControlDetail .plan-goal-summary-item{position:relative!important;border:0!important;background-image:none!important;}
+#planControlDetail .plan-goal-summary-item:nth-child(even)::before{content:""!important;display:block!important;position:absolute!important;left:0!important;top:9px!important;bottom:9px!important;width:var(--atlas-divider-v4-w)!important;background:var(--atlas-divider-v4)!important;border-radius:3px!important;z-index:4!important;}
+#planControlDetail .plan-goal-summary-item:nth-child(n+3){background-image:linear-gradient(var(--atlas-divider-v4),var(--atlas-divider-v4))!important;background-position:center top!important;background-size:calc(100% - 18px) var(--atlas-divider-v4-w)!important;background-repeat:no-repeat!important;}
+
+/* Mejores marcas: sin divisor horizontal bajo la cabecera; verticales continuas de arriba abajo. */
+.profile-dashboard-records{position:relative!important;}
+.profile-dashboard-records::after{
+  content:""!important;position:absolute!important;left:0!important;right:0!important;top:8px!important;bottom:8px!important;pointer-events:none!important;z-index:5!important;
+  background:
+    linear-gradient(var(--atlas-divider-v4),var(--atlas-divider-v4)) 25% 50%/var(--atlas-divider-v4-w) 100% no-repeat,
+    linear-gradient(var(--atlas-divider-v4),var(--atlas-divider-v4)) 50% 50%/var(--atlas-divider-v4-w) 100% no-repeat,
+    linear-gradient(var(--atlas-divider-v4),var(--atlas-divider-v4)) 75% 50%/var(--atlas-divider-v4-w) 100% no-repeat!important;
+}
+.profile-dashboard-record-table-head>*+*::before,.profile-dashboard-record-table-row>*+*::before,.profile-dashboard-record-cell::before{content:none!important;display:none!important;}
+.profile-dashboard-record-table-head,.profile-dashboard-record-table-head>*{border-bottom:0!important;background-image:none!important;}
+.profile-dashboard-record-distance-label.short{font-size:24px!important;line-height:1!important;font-weight:820!important;letter-spacing:-.55px!important;}
+
+/* Perfil: el divisor principal de la ficha superior gana cuerpo. */
+.profile-home-stat+.profile-home-stat::before{width:3px!important;background:var(--atlas-divider-v4)!important;top:8px!important;bottom:8px!important;}
+
+/* Bordes: todos los controles de Volver y superficies funcionales tienen el borde grueso común. */
+.metric-back,.plan-detail-back,.metric-footer-back,.assistant-history-back,
+.assistant-top-action,.plan-nav-btn,.range-arrow,.sync-quick{
+  border:2px solid var(--atlas-border-strong,rgba(255,255,255,.18))!important;
+}
+:is(.activity-ai-result,.activity-laps,.activity-equipment,.metric-context,.state-calc-grid,.state-bands,
+.profile-load-focus,.profile-dashboard-records,.profile-dashboard-zone-column,.profile-dashboard-performance,
+.detail-stats,.chart-card,.activity-chart-card,.activity-primary,.plan-goal-summary,.plan-summary,.plan-overview-card,
+.data-native-list,.data-system-card,.availability-card,.adaptive-card,.engine-v2-card,.weekly-target-card,.macro-card){
+  border-width:2px!important;border-style:solid!important;border-color:var(--atlas-border-strong,rgba(255,255,255,.18))!important;
+}
+
+/* Fichas diarias: un poco menos de aire vertical, misma estructura. */
+#view-today .activity-row,#view-activities .activity-row,#view-plan .plan-week-activity-row{
+  min-height:56px!important;padding-top:4px!important;padding-bottom:4px!important;
+}
+
+/* Foco de carga: orden visual Anaeróbico → Aeróbico alto → Aeróbico bajo se define en JS. */
 </style>
 
 </body>
