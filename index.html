@@ -1930,7 +1930,7 @@ html,body{overscroll-behavior-y:none}
 
 (()=>{
 "use strict";
-const APP_VERSION="0.125.3",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="0.125.4",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const ATLAS_RELEASE_STAGE="RC2.3",ATLAS_RELEASE_SESSION_KEY="releaseRuntimeSession",ATLAS_RELEASE_PREFLIGHT_KEY="releasePreflight",ATLAS_RELEASE_LKG_KEY="releaseLastKnownGood";
 let currentReleasePreflight=null;
 /* v0.114 maintenance: historical engine declarations shadowed by later implementations were removed.
@@ -11307,5 +11307,111 @@ body.atlas-subpage-open .nav{display:none!important}
 })();
 </script>
 
+
+
+<!-- ===== ɅTLɅS v0.125.4 · NATURAL SCROLL RESET ===== -->
+<style id="atlas-v01254-natural-scroll">
+/*
+   Temporary canonical scrolling model before the full application rewrite:
+   - the document owns vertical scrolling everywhere;
+   - no view is ever height-locked;
+   - no synthetic bottom reserve is used;
+   - the floating tab bar remains fixed above the document.
+*/
+html,
+body,
+html.atlas-main-scroll-locked,
+body.atlas-main-scroll-locked,
+html.atlas-root-fixed,
+body.atlas-root-fixed{
+  position:static!important;
+  inset:auto!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:100%!important;
+  max-height:none!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+  touch-action:auto!important;
+  background:#000!important;
+}
+body{min-height:100dvh!important;}
+.app,
+body.assistant-main-active .app{
+  position:relative!important;
+  inset:auto!important;
+  width:100%!important;
+  max-width:430px!important;
+  height:auto!important;
+  min-height:100dvh!important;
+  max-height:none!important;
+  margin:0 auto!important;
+  padding:max(10px,calc(env(safe-area-inset-top) + 8px)) 12px calc(var(--atlas-nav-h) + env(safe-area-inset-bottom) + 24px)!important;
+  overflow:visible!important;
+  overscroll-behavior:auto!important;
+}
+.view,
+.view.active,
+.view.atlas-view-locked.active,
+.view.atlas-view-scrollable.active{
+  position:relative!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:visible!important;
+  overscroll-behavior:auto!important;
+  touch-action:auto!important;
+  padding-bottom:0!important;
+}
+body.assistant-main-active{
+  position:static!important;
+  height:auto!important;
+  min-height:100dvh!important;
+  max-height:none!important;
+  overflow-y:auto!important;
+}
+#view-assistant.active{
+  position:relative!important;
+  z-index:auto!important;
+  inset:auto!important;
+  height:auto!important;
+  min-height:calc(100dvh - env(safe-area-inset-top) - var(--atlas-nav-h) - 32px)!important;
+  max-height:none!important;
+  overflow:visible!important;
+}
+/* Keep the tab bar floating; it never participates in page layout. */
+.nav{
+  position:fixed!important;
+  left:50%!important;
+  bottom:var(--atlas-nav-bottom)!important;
+  transform:translateX(-50%)!important;
+  z-index:1000!important;
+}
+</style>
+<script id="atlas-v01254-natural-scroll-script">
+/* Disable the legacy scroll auditor completely. The document now scrolls naturally. */
+auditAtlasScrollState=function(){
+  atlasScrollAuditFrame=0;
+  try{refreshAtlasSubpageNav();}catch(_e){}
+  const root=document.documentElement,body=document.body;
+  root.classList.remove('atlas-main-scroll-locked','atlas-root-fixed');
+  body.classList.remove('atlas-main-scroll-locked','atlas-root-fixed');
+  root.style.removeProperty('overflow');
+  root.style.removeProperty('position');
+  body.style.removeProperty('overflow');
+  body.style.removeProperty('position');
+  document.querySelectorAll('.view').forEach(v=>{
+    v.classList.remove('atlas-view-scrollable','atlas-view-locked');
+    v.style.removeProperty('overflow-y');
+    v.style.removeProperty('overscroll-behavior-y');
+    v.style.removeProperty('padding-bottom');
+    v.style.removeProperty('height');
+    v.style.removeProperty('max-height');
+  });
+};
+requestAnimationFrame(()=>auditAtlasScrollState());
+</script>
 </body>
 </html>
