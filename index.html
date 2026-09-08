@@ -593,8 +593,8 @@ html[data-theme="light"] .athlete-model-entry,html[data-theme="light"] .athlete-
 
 (()=>{
 "use strict";
-const APP_VERSION="1.3.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
-const ATLAS_RELEASE_STAGE="TRAINING_ENGINE_RACE_DEMAND_V1";
+const APP_VERSION="1.3.1",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const ATLAS_RELEASE_STAGE="TRAINING_ENGINE_RACE_DEMAND_V1_STABILITY";
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits","chats"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -2182,6 +2182,22 @@ function refreshRaceDemandModel(model=currentAthleteModel){currentRaceDemandMode
 function openAthleteModelDetail(){if(!ui.athleteModelDetail)return;ui.athleteModelDetail.classList.remove("hidden");ui.athleteModelDetail.setAttribute("aria-hidden","false");setAtlasSubpageNavHidden(true);document.body.style.overflow="hidden";renderAthleteModelDetail();ui.athleteModelDetail.scrollTop=0;}
 function closeAthleteModelDetail(){if(!ui.athleteModelDetail||ui.athleteModelDetail.classList.contains("hidden"))return;ui.athleteModelDetail.classList.add("hidden");ui.athleteModelDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";refreshAtlasSubpageNav();}
 async function refreshAthleteModel(snapshot=null){try{const snap=snapshot||await loadLocalSnapshot(),cached=await storeGet("meta",RUN_RECORDS_CACHE_KEY).catch(()=>null),records=Array.isArray(currentRunningRecords)?currentRunningRecords:(Array.isArray(cached?.value?.records)?cached.value.records:[]),model=buildAthleteModel({activities:snap.activities||currentActivities,wellness:snap.wellness||currentWellness,athlete:snap.athlete,sportSettings:snap.sportSettings,records});currentAthleteModel=model;renderAthleteModelEntry(model);if(!ui.athleteModelDetail?.classList.contains("hidden"))renderAthleteModelDetail();const demand=refreshRaceDemandModel(model);await storePut("meta",{key:ATHLETE_MODEL_META_KEY,value:model});if(demand)await storePut("meta",{key:RACE_DEMAND_META_KEY,value:demand});return model;}catch(error){console.error("ɅTLɅS · modelo del atleta",error);recordRuntimeAudit("athlete-model",error).catch(()=>{});renderAthleteModelEntry(null);currentRaceDemandModel=null;renderRaceDemandEntry(null);return null;}}
+
+async function refreshAll(){
+  const snapshot=await loadLocalSnapshot(),{activities,wellness,gear,events,cachedVo2}=snapshot;
+  currentActivities=activities;currentWellness=wellness;currentGear=gear;currentEvents=events;currentCachedVo2=cachedVo2?.value||null;
+  if(!currentPlanWeekStart)currentPlanWeekStart=mondayOf(new Date());
+  safeUiRender("filtros actividades",()=>initActivityFilters());
+  safeUiRender("actividades",()=>renderActivities());
+  safeUiRender("hoy",()=>renderToday(activities,wellness,currentCachedVo2));
+  safeUiRender("plan",()=>renderPlan());
+  safeUiRender("perfil",()=>renderDataSummary(snapshot));
+  refreshAthleteModel(snapshot).catch(error=>recordRuntimeAudit("athlete-model-refresh",error).catch(()=>{}));
+  const latestRun=activities.filter(isRun).sort((a,b)=>activityStamp(b).localeCompare(activityStamp(a)))[0]||null;
+  if(latestRun?.id&&currentCachedVo2?.activityId!==latestRun.id)refreshLatestRunVo2(latestRun).catch(error=>recordRuntimeAudit("vo2-refresh",error).catch(()=>{}));
+  scheduleVo2HistoryPrecisionBackfill({start:"2018-01-01",end:fmtDate(new Date())},false);
+  scheduleLayoutRefresh();
+}
 
 
 /* Plan: calendario sincronizado desde Intervals.icu. */
