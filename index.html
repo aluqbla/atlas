@@ -789,8 +789,8 @@ html[data-theme="light"] .plan-strength-card{background:linear-gradient(145deg,r
 
 (()=>{
 "use strict";
-const APP_VERSION="1.15.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
-const ATLAS_RELEASE_STAGE="TRAINING_ENGINE_COACHING_REFINEMENT_V6";
+const APP_VERSION="1.16.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const ATLAS_RELEASE_STAGE="TRAINING_ENGINE_COACHING_REFINEMENT_V7";
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits","chats"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -4015,6 +4015,92 @@ atlasHuman=function({head=[90,20],torso='M86 29 Q90 26 94 29 L101 57 Q90 63 79 5
 
 const atlasOpenSessionDetailV115=openAtlasSessionDetail;
 openAtlasSessionDetail=function(id){atlasOpenSessionDetailV115(id);const e=currentPlanEvent;if(!e)return;const pace=sessionSynthPaceLabel(e);if(ui.planDetailTarget)ui.planDetailTarget.innerHTML=pace?planPaceHtml(pace):'—';if(ui.planDetailDistance&&e.distanceIncludesEstimatedRecoveries)ui.planDetailDistance.textContent=`${Math.round(Number(e.distanceM||0)/1000)} km`;if(ui.planDetailDuration&&Number(e.durationSec)>0)ui.planDetailDuration.textContent=formatDuration(Number(e.durationSec));renderPlanWorkoutBars();requestAnimationFrame(()=>{fitPlanDetailMetrics();fitAtlasStructureBlocks();});};
+
+
+/* ===== ɅTLɅS v1.16 · transiciones de carreras B + carga pico contextual ===== */
+function atlasSecondaryTransitionSpecV116(race){
+  const km=Number(race?.distanceM||0)/1000;
+  if(km>=30)return{postMin:20,postMax:28,postFactor:.58,postRuns:3,bridgeFactor:1.28,bridgeLong:16,secondFactor:1.20,secondLong:20,recoveryDays:7};
+  if(km>=18)return{postMin:26,postMax:30,postFactor:.65,postRuns:3,bridgeFactor:1.34,bridgeLong:18,secondFactor:1.24,secondLong:22,recoveryDays:6};
+  if(km>=9)return{postMin:30,postMax:38,postFactor:.78,postRuns:4,bridgeFactor:1.28,bridgeLong:20,secondFactor:1.18,secondLong:24,recoveryDays:4};
+  return{postMin:32,postMax:42,postFactor:.84,postRuns:4,bridgeFactor:1.22,bridgeLong:22,secondFactor:1.16,secondLong:24,recoveryDays:3};
+}
+function atlasMarathonPeakCapV116(model,plan){
+  if(!model||!plan||model.athleteProfile?.tier!=="experienced"||plan.goalMode!=="time")return null;
+  const km=Number(plan.distanceM||0)/1000,pace=Number(plan.targetTimeSec)/(km||1);if(!(km>=30&&km<=43&&Number.isFinite(pace)))return null;
+  const stable=Number(model.athleteProfile?.stableKm),peak12=Number(model.athleteProfile?.peak12);let cap=72;
+  if((Number.isFinite(stable)&&stable>=28)||(Number.isFinite(peak12)&&peak12>=45))cap=76;
+  if((Number.isFinite(stable)&&stable>=38)||(Number.isFinite(peak12)&&peak12>=55))cap=80;
+  if(pace<=255)cap+=4;else if(pace<=275)cap+=2;
+  return Math.min(84,cap);
+}
+function atlasRefineWeeklyV116(model,plan){
+  if(!model?.weeks?.length||!plan)return model;
+  const peakCap=atlasMarathonPeakCapV116(model,plan);
+  if(Number.isFinite(peakCap)){
+    model.objectivePeakKm=Math.min(Number(model.objectivePeakKm)||peakCap,peakCap);
+    for(const w of model.weeks){
+      if(!w.races?.primary&&Number(w.targetKm)>peakCap)atlasScaleWeekTarget(w,peakCap);
+      if(!w.races?.primary&&Number(w.longRunKm)>=24&&Number(w.targetKm)>0){
+        const shareLimit=Number(w.longRunKm)>=30?.44:.43,minWeek=atlasEvenKm(Number(w.longRunKm)/shareLimit,Number(w.targetKm));
+        if(minWeek>Number(w.targetKm))atlasScaleWeekTarget(w,Math.min(peakCap,minWeek));
+      }
+      w.objectivePeakKm=model.objectivePeakKm;
+    }
+  }
+  for(const race of plan.intermediateRaces||[]){
+    if(!atlasSecondaryHardRace(race))continue;
+    const ri=model.weeks.findIndex(w=>race.date>=w.startDate&&race.date<=w.endDate);if(ri<0)continue;
+    const spec=atlasSecondaryTransitionSpecV116(race),rw=model.weeks[ri],post=model.weeks[ri+1],bridge=model.weeks[ri+2],second=model.weeks[ri+3];
+    if(rw){rw.secondaryPriority="B";rw.secondaryRaceRole="competición secundaria subordinada al objetivo principal";}
+    if(post&&!post.races?.primary){
+      const base=Math.round((Number(rw?.targetKm)||Number(post.targetKm)||spec.postMin)*spec.postFactor),target=atlasEvenKm(clamp(base,spec.postMin,spec.postMax),spec.postMin);
+      atlasScaleWeekTarget(post,target);post.longRunKm=0;post.backToBackKm=0;post.qualitySessions=0;post.strengthSessions=0;post.deload=true;post.secondaryHardRaceRecovery={...race};post.secondaryRecoveryRebuild=true;post.runSessions=Math.min(spec.postRuns,Number(post.availableDates?.length)||spec.postRuns);post.sessions=post.runSessions;
+    }
+    if(post&&bridge&&!bridge.races?.primary){
+      const cap=Math.max(Number(post.targetKm)+6,atlasEvenKm(Number(post.targetKm)*spec.bridgeFactor,Number(post.targetKm)+6));
+      if(Number(bridge.targetKm)>cap)atlasScaleWeekTarget(bridge,cap);bridge.longRunKm=Math.min(Number(bridge.longRunKm)||0,spec.bridgeLong);bridge.qualitySessions=Math.min(1,Number(bridge.qualitySessions)||0);bridge.backToBackKm=0;bridge.secondaryRecoveryBridge={...race};
+    }
+    if(bridge&&second&&!second.races?.primary){
+      const cap=Math.max(Number(bridge.targetKm)+6,atlasEvenKm(Number(bridge.targetKm)*spec.secondFactor,Number(bridge.targetKm)+6));
+      if(Number(second.targetKm)>cap)atlasScaleWeekTarget(second,cap);second.longRunKm=Math.min(Number(second.longRunKm)||0,spec.secondLong);second.qualitySessions=Math.min(1,Number(second.qualitySessions)||0);second.secondaryRecoveryBridge2={...race};
+    }
+  }
+  model.version="ATLAS_WEEKLY_ALLOCATOR_V8";
+  model.summary={...(model.summary||{}),peakWeekKm:Math.max(0,...model.weeks.map(w=>Number(w.targetKm)||0)),strengthSessions:model.weeks.reduce((n,w)=>n+Number(w.strengthSessions||0),0)};
+  model.policy={...(model.policy||{}),contextualMarathonPeak:true,secondaryRacesAreBRaces:true,postSecondaryWeekBudgeted:true,postSecondaryRampSmoothed:true};
+  return model;
+}
+const atlasBuildWeeklyV115=buildWeeklyAllocatorModel;
+buildWeeklyAllocatorModel=function(athlete,demand,adaptation,macro,plan){return atlasRefineWeeklyV116(atlasBuildWeeklyV115(athlete,demand,adaptation,macro,plan),plan);};
+
+function atlasPickSpreadDatesV116(dates,count){
+  const rows=[...(dates||[])].sort();if(count<=0||!rows.length)return[];if(count>=rows.length)return rows;
+  const out=[];for(let i=0;i<count;i++){const idx=Math.round(i*(rows.length-1)/Math.max(1,count-1)),d=rows[idx];if(!out.includes(d))out.push(d);}for(const d of rows){if(out.length>=count)break;if(!out.includes(d))out.push(d);}return out.sort();
+}
+function atlasRecoveryDistancesV116(total,count){
+  total=atlasEvenKm(total,Math.max(6,count*6));if(count<=1)return[total];const shares=count===3?[.22,.30,.48]:count===4?[.17,.22,.28,.33]:Array.from({length:count},(_,i)=>(i+1));const sumShares=shares.reduce((a,b)=>a+b,0),out=[];let used=0;
+  for(let i=0;i<count-1;i++){const v=atlasEvenKm(total*(shares[i]/sumShares),6);out.push(v);used+=v;}let last=total-used;if(last<6){const need=6-last;for(let i=out.length-1;i>=0&&last<6;i--){const take=Math.min(out[i]-6,need);if(take>0){out[i]-=take;last+=take;}}}out.push(Math.max(6,last));return out;
+}
+function atlasRebuildPostSecondaryWeeksV116(model,weekly,plan,athlete){
+  if(!model?.sessions||!weekly?.weeks||!plan)return model;
+  for(const race of plan.intermediateRaces||[]){
+    if(!atlasSecondaryHardRace(race))continue;
+    const ri=weekly.weeks.findIndex(w=>race.date>=w.startDate&&race.date<=w.endDate),post=weekly.weeks[ri+1];if(!post?.secondaryRecoveryRebuild)continue;
+    const mw=model.weeks?.find(w=>w.weekKey===post.weekKey);if(!mw)continue;
+    const existingIds=new Set(mw.sessions||[]),preserved=model.sessions.filter(s=>existingIds.has(s.id)&&String(s.kind).startsWith("race-"));if(preserved.length)continue;
+    model.sessions=model.sessions.filter(s=>!existingIds.has(s.id));mw.sessions=[];
+    const spec=atlasSecondaryTransitionSpecV116(race),minRest=Number(race.distanceM||0)/1000>=18?2:1,candidate=(post.availableDates||[]).filter(d=>d>race.date&&dateDiff(race.date,d)>=minRest),count=Math.min(spec.postRuns,candidate.length),dates=atlasPickSpreadDatesV116(candidate,count);if(!dates.length)continue;
+    const target=atlasEvenKm(post.targetKm,Math.max(6,dates.length*6)),distances=atlasRecoveryDistancesV116(target,dates.length),paces=sessionSynthPaces(athlete,plan,post,weekly.weeks.length);
+    dates.forEach((date,i)=>{const dist=distances[i],id=`atlas:${plan.id}:${post.weekKey}:secondary-recovery-v116:${race.date}:${i}`;let s=i===0?sessionSynthRecovery(id,date,dist,paces,post):sessionSynthEasy(id,date,dist,paces,post,false);if(i===dates.length-1&&dist>=12)s.name="Rodaje aeróbico";s.purpose=i===0?`Recuperación activa tras ${race.name}; carrera muy suave y sin objetivos de ritmo.`:`Reintroducir volumen de forma progresiva después de ${race.name}, sin trabajo de calidad.`;s.secondaryRecoveryFor=race.date;model.sessions.push(s);mw.sessions.push(id);});
+  }
+  model.sessions.sort((a,b)=>a.date.localeCompare(b.date)||a.kind.localeCompare(b.kind));return model;
+}
+function atlasAuditWeeklyBudgetV116(model,weekly){
+  if(!model?.weeks||!weekly?.weeks)return model;for(const mw of model.weeks){const w=weekly.weeks.find(x=>x.weekKey===mw.weekKey);if(!w)continue;const ss=(mw.sessions||[]).map(id=>model.sessions.find(s=>s.id===id)).filter(Boolean),km=ss.reduce((n,s)=>n+(Number(s.distanceM)>0?Number(s.distanceM)/1000:0),0);mw.targetKm=Number(w.targetKm)||mw.targetKm;mw.budgetDeltaKm=Math.round((km-Number(w.targetKm||0))*10)/10;}return model;
+}
+const atlasBuildSessionV115=buildSessionSynthesizerModel;
+buildSessionSynthesizerModel=function(athlete,demand,adaptation,macro,weekly,plan){let model=atlasBuildSessionV115(athlete,demand,adaptation,macro,weekly,plan);model=atlasRebuildPostSecondaryWeeksV116(model,weekly,plan,athlete);model=atlasNormalizeModelMetrics(model,athlete);model=atlasAuditWeeklyBudgetV116(model,weekly);if(model){model.version="ATLAS_SESSION_SYNTHESIZER_V8";model.policy={...(model.policy||{}),secondaryRecoveryRebuiltWithinWeeklyBudget:true,secondaryRacePriorityB:true,postRaceLongRunRemoved:true,weeklyBudgetAudit:true};}return model;};
 
 })();
 </script></body>
