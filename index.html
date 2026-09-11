@@ -270,6 +270,41 @@ html[data-theme="light"] .plan-structure-continuous{color:#0f1419!important}
 .atlas-pose-a,.atlas-pose-b{animation-duration:2.7s!important;animation-timing-function:cubic-bezier(.42,0,.18,1)!important}.atlas-pose-a{animation-name:atlasPosePremiumA!important}.atlas-pose-b{animation-name:atlasPosePremiumB!important}@keyframes atlasPosePremiumA{0%,34%{opacity:1;transform:translateY(0) scale(1)}48%,84%{opacity:.08;transform:translateY(1px) scale(.995)}100%{opacity:1;transform:translateY(0) scale(1)}}@keyframes atlasPosePremiumB{0%,34%{opacity:.06;transform:translateY(-1px) scale(.995)}48%,84%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:.06;transform:translateY(-1px) scale(.995)}}
 html[data-theme="light"] .plan-strength-card{background:linear-gradient(145deg,rgba(15,20,25,.035),rgba(15,20,25,.012))!important;border-color:rgba(15,20,25,.08)!important}
 </style>
+
+<style>
+/* ===== ɅTLɅS v1.17.0 · campos unificados + información del plan ===== */
+:root{--atlas-field-bg:#1c1c1e;--atlas-field-bg-active:#252529}
+html[data-theme="light"]{--atlas-field-bg:#f2f2f7;--atlas-field-bg-active:#e9e9ef}
+:where(input:not([type="file"]):not([type="checkbox"]):not([type="radio"]),select,textarea:not(.assistant-input)),
+.new-plan-input,.new-plan-select,.new-plan-time-part,.training-plan-publication-btn,
+.new-plan-goal-tabs button:not(.active),.new-plan-weekday:not(.active),.training-plan-weekday-edit:not(.active),
+.shoe-limit-input,.activities-select,.activities-search{
+  background:var(--atlas-field-bg)!important;border:0!important;box-shadow:none!important
+}
+:where(input:not([type="file"]):not([type="checkbox"]):not([type="radio"]),select,textarea:not(.assistant-input)):focus,
+.new-plan-input:focus,.new-plan-select:focus,.new-plan-time-part:focus{background:var(--atlas-field-bg-active)!important;outline:none!important}
+.new-plan-input[type="date"],input[type="date"]{min-height:56px!important;height:56px!important;padding-top:0!important;padding-bottom:0!important;line-height:56px!important;font-size:18px!important;font-weight:790!important;text-align:center!important;text-align-last:center!important}
+.new-plan-input[type="date"]::-webkit-date-and-time-value,input[type="date"]::-webkit-date-and-time-value{height:56px!important;min-height:56px!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:0!important;margin:0!important;text-align:center!important}
+.new-plan-time-part{height:56px!important;min-height:56px!important;padding:0 8px!important;font-size:21px!important;line-height:56px!important;font-weight:820!important;text-align:center!important}
+.training-plan-publication-btn{min-height:50px!important;font-size:15px!important;color:var(--blue)!important}
+.training-plan-info{position:relative!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:0!important;overflow:visible!important}
+.training-plan-info::before{content:"";position:absolute;left:50%;top:10px;bottom:10px;width:2px;transform:translateX(-1px);background:var(--line);border-radius:2px;pointer-events:none}
+.training-plan-info-row{position:relative!important;display:grid!important;grid-template-columns:31px minmax(0,1fr)!important;grid-template-rows:auto auto!important;grid-template-areas:"emoji label" "emoji value"!important;align-items:center!important;column-gap:8px!important;row-gap:3px!important;min-height:82px!important;padding:12px 10px!important}
+.training-plan-info-row::before{content:none!important}
+.training-plan-info-row:nth-child(n+3)::after{content:"";position:absolute;left:10px;right:10px;top:0;height:2px;background:var(--line);border-radius:2px}
+.training-plan-info-row:last-child:nth-child(odd){grid-column:1/-1!important;grid-template-columns:31px minmax(0,1fr)!important}
+.training-plan-info-row:last-child:nth-child(odd)::after{left:10px;right:10px}
+.training-plan-info-emoji{grid-area:emoji!important;align-self:center!important;font-size:23px!important;line-height:1!important;text-align:center!important;color:inherit!important}
+.training-plan-info-label{grid-area:label!important;font-size:11px!important;line-height:1.15!important;color:var(--muted2)!important;font-weight:720!important}
+.training-plan-info-row strong{grid-area:value!important;font-size:16px!important;line-height:1.15!important;color:#fff!important;font-weight:820!important;text-align:left!important;white-space:normal!important;overflow-wrap:anywhere!important}
+.training-plan-intermediate-row{min-height:68px!important;padding:12px 3px!important}
+.training-plan-intermediate-row strong{font-size:18px!important;line-height:1.18!important;font-weight:820!important}
+.training-plan-intermediate-row span{font-size:12.5px!important;line-height:1.3!important}
+.training-plan-intermediate-side{font-size:13px!important}
+.training-plan-intermediate-empty{font-size:14px!important;padding:14px 3px!important}
+html[data-theme="light"] .training-plan-info-row strong{color:#0f1419!important}
+@media(max-width:370px){.training-plan-info-row{padding-left:7px!important;padding-right:7px!important;grid-template-columns:27px minmax(0,1fr)!important}.training-plan-info-emoji{font-size:20px!important}.training-plan-info-row strong{font-size:14.5px!important}}
+</style>
 </head>
 <body>
 <main class="app">
@@ -368,8 +403,8 @@ html[data-theme="light"] .plan-strength-card{background:linear-gradient(145deg,r
 <form class="new-plan-form" id="newPlanForm">
 <div class="new-plan-section"><div class="new-plan-section-title">Carrera</div>
 <label class="new-plan-field"><span>Nombre de la carrera</span><input class="new-plan-input" id="newPlanName" maxlength="80" required></label>
-<label class="new-plan-field"><span>Distancia</span><select class="new-plan-select" id="newPlanDistance" required><option value="" selected hidden></option><option value="5k">5K</option><option value="10k">10K</option><option value="half">Media maratón</option><option value="marathon">Maratón</option><option value="other">Otra</option></select></label>
-<label class="new-plan-field hidden" id="newPlanCustomDistanceWrap"><span>Kilómetros</span><input class="new-plan-input" id="newPlanCustomDistance" type="number" inputmode="decimal" min="0.1" max="1000" step="0.1"></label>
+<label class="new-plan-field"><span>Distancia</span><select class="new-plan-select" id="newPlanDistance" required><option value="" selected hidden></option><option value="5k">5K</option><option value="10k">10K</option><option value="half">Media maratón</option><option value="marathon">Maratón</option><option value="other">Otros</option></select></label>
+<label class="new-plan-field hidden" id="newPlanCustomDistanceWrap"><span>Kilómetros</span><input class="new-plan-input" id="newPlanCustomDistance" placeholder="Ej.: 1, 2, 15, 60" type="number" inputmode="decimal" min="0.1" max="1000" step="0.1"></label>
 <div class="new-plan-grid"><label class="new-plan-field"><span>Inicio del plan</span><input class="new-plan-input" id="newPlanStartDate" type="date" required></label><label class="new-plan-field"><span>Fecha de la carrera</span><input class="new-plan-input" id="newPlanRaceDate" type="date" required></label></div>
 </div>
 <div class="new-plan-section"><div class="new-plan-section-title">Objetivo</div><div class="new-plan-goal-tabs" id="newPlanGoalTabs"><button data-goal-mode="time" type="button">Tiempo objetivo</button><button data-goal-mode="finish" type="button">Terminar</button></div><div class="new-plan-time-selector hidden" id="newPlanTargetTimeWrap"><label class="new-plan-time-unit"><span>h</span><input class="new-plan-time-part" id="newPlanTargetHours" type="number" inputmode="numeric" min="0" max="99"></label><span class="new-plan-time-colon">:</span><label class="new-plan-time-unit"><span>min</span><input class="new-plan-time-part" id="newPlanTargetMinutes" type="number" inputmode="numeric" min="0" max="59"></label><span class="new-plan-time-colon">:</span><label class="new-plan-time-unit"><span>s</span><input class="new-plan-time-part" id="newPlanTargetSeconds" type="number" inputmode="numeric" min="0" max="59"></label></div></div>
@@ -385,8 +420,8 @@ html[data-theme="light"] .plan-strength-card{background:linear-gradient(145deg,r
 <div class="metric-detail-head"><div class="metric-back-row"><button aria-label="Volver" class="metric-back" id="trainingPlanSecondaryBack">‹</button></div><div class="new-plan-title">Carreras secundarias</div></div>
 <div class="secondary-editor-list" id="secondaryEditorList"></div>
 <div class="secondary-editor-form">
-<div class="new-plan-grid"><label class="new-plan-field"><span>Nombre</span><input class="new-plan-input" id="secondaryEditorName" maxlength="70"></label><label class="new-plan-field"><span>Distancia</span><select class="new-plan-select" id="secondaryEditorDistance"><option value="" selected hidden></option><option value="5k">5K</option><option value="10k">10K</option><option value="half">Media maratón</option><option value="marathon">Maratón</option><option value="other">Otra</option></select></label></div>
-<label class="new-plan-field hidden" id="secondaryEditorCustomWrap"><span>Kilómetros</span><input class="new-plan-input" id="secondaryEditorCustomKm" type="number" inputmode="decimal" min="0.1" max="1000" step="0.1"></label>
+<div class="new-plan-grid"><label class="new-plan-field"><span>Nombre</span><input class="new-plan-input" id="secondaryEditorName" maxlength="70"></label><label class="new-plan-field"><span>Distancia</span><select class="new-plan-select" id="secondaryEditorDistance"><option value="" selected hidden></option><option value="5k">5K</option><option value="10k">10K</option><option value="half">Media maratón</option><option value="marathon">Maratón</option><option value="other">Otros</option></select></label></div>
+<label class="new-plan-field hidden" id="secondaryEditorCustomWrap"><span>Kilómetros</span><input class="new-plan-input" id="secondaryEditorCustomKm" placeholder="Ej.: 1, 2, 15, 60" type="number" inputmode="decimal" min="0.1" max="1000" step="0.1"></label>
 <label class="new-plan-field"><span>Fecha</span><input class="new-plan-input" id="secondaryEditorDate" type="date"></label>
 <div class="new-plan-goal-tabs" id="secondaryEditorGoalTabs"><button data-secondary-editor-goal="time" type="button">Tiempo objetivo</button><button data-secondary-editor-goal="finish" type="button">Terminar</button></div>
 <div class="new-plan-time-selector hidden" id="secondaryEditorTimeWrap"><label class="new-plan-time-unit"><span>h</span><input class="new-plan-time-part" id="secondaryEditorHours" type="number" inputmode="numeric" min="0" max="99"></label><span class="new-plan-time-colon">:</span><label class="new-plan-time-unit"><span>min</span><input class="new-plan-time-part" id="secondaryEditorMinutes" type="number" inputmode="numeric" min="0" max="59"></label><span class="new-plan-time-colon">:</span><label class="new-plan-time-unit"><span>s</span><input class="new-plan-time-part" id="secondaryEditorSeconds" type="number" inputmode="numeric" min="0" max="59"></label></div>
@@ -789,8 +824,8 @@ html[data-theme="light"] .plan-strength-card{background:linear-gradient(145deg,r
 
 (()=>{
 "use strict";
-const APP_VERSION="1.16.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
-const ATLAS_RELEASE_STAGE="TRAINING_ENGINE_COACHING_REFINEMENT_V7";
+const APP_VERSION="1.19.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const ATLAS_RELEASE_STAGE="TRAINING_ENGINE_CONTINUOUS_DISTANCE_AND_PLAN_CLOUD_V9";
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits","chats"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
 const $=id=>document.getElementById(id);
@@ -1176,7 +1211,13 @@ async function scheduleForegroundRefresh(force=false){
   refreshTodayIfLoaded();
   if(!atlasOnline()||!hasAtlasConnectionConfig())return false;
   if(foregroundRefreshPromise)return foregroundRefreshPromise;
-  foregroundRefreshPromise=refreshCalendarFromCloud(force).catch(error=>{console.warn("ɅTLɅS · calendario en primer plano",error);return false;});
+  foregroundRefreshPromise=(async()=>{
+    let planChanged=false;
+    try{planChanged=await syncTrainingPlansCloud({startup:false});}catch(error){recordRuntimeAudit("foreground-training-plan-cloud",error).catch(()=>{});}
+    try{await refreshCalendarFromCloud(force);}catch(error){console.warn("ɅTLɅS · calendario en primer plano",error);}
+    if(planChanged)await refreshAll();
+    return planChanged;
+  })();
   try{return await foregroundRefreshPromise;}finally{foregroundRefreshPromise=null;}
 }
 
@@ -1896,6 +1937,8 @@ async function smartSyncCore(showToast=true){
 async function smartSync(){return smartSyncCore(true);}
 async function startupIntervalsSync(){
   if(!hasAtlasConnectionConfig()||!atlasOnline())return false;
+  const changed=await syncTrainingPlansCloud({startup:true}).catch(error=>{recordRuntimeAudit("startup-training-plan-cloud",error).catch(()=>{});return false;});
+  if(changed){await refreshAll();}
   return smartSyncCore(false);
 }
 async function fullSync(){await busy(async()=>{try{const oldest=ui.oldestDate.value,newest=ui.newestDate.value;validateRange(oldest,newest);await writeSettingsAtomically({manualOldest:oldest,manualNewest:newest});await performSync(oldest,newest,"manual");toast("✅ Rango actualizado.");}catch(e){recordRuntimeAudit("manual-sync",e).catch(()=>{});toast(`⚠️ ${e.message}`,true);}});}
@@ -2401,10 +2444,72 @@ function renderDataSummary({gear,sportSettings,profile,athlete,worker}){
 
 /* ===== Experiencia de Plan · definición del objetivo ===== */
 const TRAINING_PLANS_META_KEY="trainingPlansV1",TRAINING_PLANS_VERSION="ATLAS_TRAINING_PLANS_V2";
+
+const TRAINING_PLANS_CLOUD_META_KEY="trainingPlansCloudV1",TRAINING_PLANS_CLOUD_SCHEMA="ATLAS_TRAINING_PLANS_CLOUD_V1";
+let trainingPlansCloudSyncPromise=null,trainingPlansCloudPushTimer=null;
+function trainingPlansLocalEnvelope(updatedAt=new Date().toISOString()){return{version:TRAINING_PLANS_VERSION,activeId:currentTrainingPlanId,updatedAt,plans:currentTrainingPlans};}
+function trainingPlansCloudManifestFromEnvelope(value){return{schema:TRAINING_PLANS_CLOUD_SCHEMA,version:TRAINING_PLANS_VERSION,activeId:value?.activeId||null,updatedAt:value?.updatedAt||new Date().toISOString(),plans:Array.isArray(value?.plans)?value.plans:[]};}
+function trainingPlansCloudState(manifest){return{version:2,goal:null,secondaryGoals:[],availabilityExceptions:[],planManifest:manifest,planRevisionDraft:null,planRevisionHistory:[]};}
+function trainingPlansCloudExtract(remote){const m=remote?.state?.planManifest;return m&&m.schema===TRAINING_PLANS_CLOUD_SCHEMA&&Array.isArray(m.plans)?m:null;}
+function trainingPlanCloudStamp(value){const t=Date.parse(value||"");return Number.isFinite(t)?t:0;}
+async function readTrainingPlansCloudMeta(){return(await storeGet("meta",TRAINING_PLANS_CLOUD_META_KEY).catch(()=>null))?.value||null;}
+async function writeTrainingPlansCloudMeta(value){await storePut("meta",{key:TRAINING_PLANS_CLOUD_META_KEY,value});return value;}
+async function markTrainingPlansCloudDirty(updatedAt){const prev=await readTrainingPlansCloudMeta()||{};await writeTrainingPlansCloudMeta({...prev,schema:TRAINING_PLANS_CLOUD_SCHEMA,dirty:true,dirtyAt:updatedAt||new Date().toISOString()});}
+function scheduleTrainingPlansCloudPush(delay=450){if(trainingPlansCloudPushTimer)clearTimeout(trainingPlansCloudPushTimer);trainingPlansCloudPushTimer=setTimeout(()=>{trainingPlansCloudPushTimer=null;pushTrainingPlansCloudBestEffort().catch(error=>recordRuntimeAudit("training-plan-cloud-push",error).catch(()=>{}));},delay);}
+async function applyTrainingPlansCloudManifest(manifest,remote){
+  const value={version:TRAINING_PLANS_VERSION,activeId:manifest?.activeId||null,updatedAt:manifest?.updatedAt||remote?.updatedAt||new Date().toISOString(),plans:Array.isArray(manifest?.plans)?manifest.plans:[]};
+  await storePut("meta",{key:TRAINING_PLANS_META_KEY,value});
+  await writeTrainingPlansCloudMeta({schema:TRAINING_PLANS_CLOUD_SCHEMA,revision:Number(remote?.revision)||0,updatedAt:remote?.updatedAt||value.updatedAt,dirty:false});
+  await loadTrainingPlans();return true;
+}
+async function pushTrainingPlansCloudBestEffort({remote=null}={}){
+  if(!atlasOnline()||!hasAtlasConnectionConfig())return false;
+  const localRow=await storeGet("meta",TRAINING_PLANS_META_KEY).catch(()=>null),localValue=localRow?.value||trainingPlansLocalEnvelope(),meta=await readTrainingPlansCloudMeta()||{};
+  const currentRemote=remote||await apiRequest("/api/plan-state",{timeoutMs:12000,retries:1});
+  const manifest=trainingPlansCloudManifestFromEnvelope(localValue),baseRevision=Math.max(Number(meta.revision)||0,Number(currentRemote?.revision)||0);
+  const res=await apiRequest("/api/plan-state",{method:"PUT",body:{baseRevision,state:trainingPlansCloudState(manifest)},timeoutMs:20000,retries:0});
+  await writeTrainingPlansCloudMeta({schema:TRAINING_PLANS_CLOUD_SCHEMA,revision:Number(res?.revision)||baseRevision+1,updatedAt:res?.updatedAt||manifest.updatedAt,dirty:false});
+  return false;
+}
+async function syncTrainingPlansCloud({startup=false}={}){
+  if(trainingPlansCloudSyncPromise)return trainingPlansCloudSyncPromise;
+  if(!atlasOnline()||!hasAtlasConnectionConfig())return false;
+  trainingPlansCloudSyncPromise=(async()=>{
+    const [localRow,meta,remote]=await Promise.all([storeGet("meta",TRAINING_PLANS_META_KEY).catch(()=>null),readTrainingPlansCloudMeta(),apiRequest("/api/plan-state",{timeoutMs:12000,retries:1})]);
+    const localValue=localRow?.value||{version:TRAINING_PLANS_VERSION,activeId:null,updatedAt:null,plans:[]},remoteManifest=trainingPlansCloudExtract(remote),localHas=Array.isArray(localValue.plans)&&localValue.plans.length>0,dirty=!!meta?.dirty;
+    if(!remoteManifest){if(localHas||dirty){await pushTrainingPlansCloudBestEffort({remote});}return false;}
+    const localTs=trainingPlanCloudStamp(localValue.updatedAt),remoteTs=trainingPlanCloudStamp(remoteManifest.updatedAt||remote.updatedAt),remoteRevision=Number(remote?.revision)||0,localRevision=Number(meta?.revision)||0;
+    if(dirty){if(remoteRevision>localRevision&&remoteTs>localTs)return applyTrainingPlansCloudManifest(remoteManifest,remote);await pushTrainingPlansCloudBestEffort({remote});return false;}
+    if(!localHas&&remoteManifest.plans.length)return applyTrainingPlansCloudManifest(remoteManifest,remote);
+    if(remoteRevision>localRevision){if(remoteTs>=localTs)return applyTrainingPlansCloudManifest(remoteManifest,remote);if(localTs>remoteTs){await pushTrainingPlansCloudBestEffort({remote});return false;}}
+    if(localTs>remoteTs&&localHas){await pushTrainingPlansCloudBestEffort({remote});return false;}
+    if(remoteRevision!==localRevision)await writeTrainingPlansCloudMeta({schema:TRAINING_PLANS_CLOUD_SCHEMA,revision:remoteRevision,updatedAt:remote?.updatedAt||remoteManifest.updatedAt,dirty:false});
+    return false;
+  })();
+  try{return await trainingPlansCloudSyncPromise;}catch(error){if(!startup)throw error;recordRuntimeAudit("startup-training-plan-cloud",error).catch(()=>{});return false;}finally{trainingPlansCloudSyncPromise=null;}
+}
+
 const TRAINING_PLAN_DAY_NAMES={1:"Lun",2:"Mar",3:"Mié",4:"Jue",5:"Vie",6:"Sáb",7:"Dom"};
 function trainingPlanId(){try{return crypto.randomUUID();}catch{return`plan-${Date.now()}-${Math.random().toString(36).slice(2,9)}`;}}
 function activeTrainingPlan(){return currentTrainingPlans.find(p=>p.id===currentTrainingPlanId)||currentTrainingPlans[0]||null;}
-function trainingPlanCustomDemandBase(distanceM){const anchors=Object.values(RACE_DEMAND_DEFS).sort((a,b)=>a.distanceM-b.distanceM),d=Math.max(100,Number(distanceM)||21097.5);if(d<=anchors[0].distanceM)return{...anchors[0].base};if(d>=anchors.at(-1).distanceM){const over=Math.log(d/anchors.at(-1).distanceM),m=anchors.at(-1).base;return{speed:clamp(m.speed-over*18,20,100),aerobicPower:clamp(m.aerobicPower-over*8,35,100),threshold:clamp(m.threshold-over*12,45,100),durability:100,fueling:100};}let a=anchors[0],b=anchors[1];for(let i=0;i<anchors.length-1;i++)if(d>=anchors[i].distanceM&&d<=anchors[i+1].distanceM){a=anchors[i];b=anchors[i+1];break;}const t=(Math.log(d)-Math.log(a.distanceM))/(Math.log(b.distanceM)-Math.log(a.distanceM)),out={};for(const k of Object.keys(a.base))out[k]=a.base[k]+(b.base[k]-a.base[k])*t;return out;}
+const ATLAS_CONTINUOUS_DISTANCE_ANCHORS=[
+  {distanceM:1000,base:{speed:100,aerobicPower:96,threshold:58,durability:20,fueling:0}},
+  {distanceM:2000,base:{speed:99,aerobicPower:100,threshold:70,durability:28,fueling:0}},
+  {distanceM:5000,base:{...RACE_DEMAND_DEFS["5k"].base}},
+  {distanceM:10000,base:{...RACE_DEMAND_DEFS["10k"].base}},
+  {distanceM:15000,base:{speed:70,aerobicPower:84,threshold:100,durability:76,fueling:18}},
+  {distanceM:21097.5,base:{...RACE_DEMAND_DEFS.half.base}},
+  {distanceM:42195,base:{...RACE_DEMAND_DEFS.marathon.base}},
+  {distanceM:60000,base:{speed:32,aerobicPower:52,threshold:66,durability:100,fueling:100}},
+  {distanceM:100000,base:{speed:24,aerobicPower:44,threshold:56,durability:100,fueling:100}}
+];
+function trainingPlanCustomDemandBase(distanceM){
+  const anchors=ATLAS_CONTINUOUS_DISTANCE_ANCHORS,d=Math.max(100,Number(distanceM)||21097.5);
+  if(d<=anchors[0].distanceM){const m=anchors[0].base,under=Math.max(0,Math.log(anchors[0].distanceM/d));return{speed:100,aerobicPower:clamp(m.aerobicPower-under*5,82,100),threshold:clamp(m.threshold-under*12,35,100),durability:clamp(m.durability-under*8,8,100),fueling:0};}
+  if(d>=anchors.at(-1).distanceM){const over=Math.log(d/anchors.at(-1).distanceM),m=anchors.at(-1).base;return{speed:clamp(m.speed-over*10,12,100),aerobicPower:clamp(m.aerobicPower-over*6,30,100),threshold:clamp(m.threshold-over*8,40,100),durability:100,fueling:100};}
+  let a=anchors[0],b=anchors[1];for(let i=0;i<anchors.length-1;i++)if(d>=anchors[i].distanceM&&d<=anchors[i+1].distanceM){a=anchors[i];b=anchors[i+1];break;}
+  const t=(Math.log(d)-Math.log(a.distanceM))/(Math.log(b.distanceM)-Math.log(a.distanceM)),out={};for(const k of Object.keys(a.base))out[k]=a.base[k]+(b.base[k]-a.base[k])*t;return out;
+}
 function trainingPlanDistanceDef(key,source=null){if(RACE_DEMAND_DEFS[key])return RACE_DEMAND_DEFS[key];const d=typeof source==="object"?Number(source?.distanceM):Number(source),km=Number.isFinite(d)&&d>0?d/1000:null;return{label:km?`${formatNatural(km,1)} km`:"Otra distancia",distanceM:km?d:0,base:trainingPlanCustomDemandBase(d)};}
 function trainingPlanDistanceLabel(plan){return trainingPlanDistanceDef(plan?.distanceKey,plan).label;}
 function trainingPlanTimePartsToSec(h,m,s){const hh=Number(h||0),mm=Number(m||0),ss=Number(s||0);if(![hh,mm,ss].every(Number.isFinite)||hh<0||mm<0||ss<0||mm>59||ss>59)return null;const total=hh*3600+mm*60+ss;return total>0?Math.round(total):null;}
@@ -2415,8 +2520,21 @@ function trainingPlanStatus(plan){const today=fmtDate(new Date());if(!plan?.race
 function trainingPlanWeekKey(date){return fmtDate(mondayOf(date instanceof Date?date:new Date(`${date}T12:00:00`)));}
 function trainingPlanWeekDays(plan,weekKey){const override=plan?.availabilityByWeek?.[weekKey];return Array.isArray(override)?override:[...(plan?.availableDays||[])];}
 function trainingPlanTargetPace(plan){return Number(plan?.targetTimeSec)>0&&Number(plan?.distanceM)>0?Number(plan.targetTimeSec)/(Number(plan.distanceM)/1000):null;}
-async function loadTrainingPlans(){const row=await storeGet("meta",TRAINING_PLANS_META_KEY).catch(()=>null),value=row?.value||{},plans=Array.isArray(value?.plans)?value.plans:[];currentTrainingPlans=plans.filter(p=>p&&p.id&&p.name&&(RACE_DEMAND_DEFS[p.distanceKey]||(p.distanceKey==="other"&&Number(p.distanceM)>0))).map(p=>({...p,availabilityByWeek:p.availabilityByWeek||{},intermediateRaces:Array.isArray(p.intermediateRaces)?p.intermediateRaces:[]}));currentTrainingPlanId=value?.activeId&&currentTrainingPlans.some(p=>p.id===value.activeId)?value.activeId:(currentTrainingPlans[0]?.id||null);renderTrainingPlanHome();}
-async function persistTrainingPlans(){await storePut("meta",{key:TRAINING_PLANS_META_KEY,value:{version:TRAINING_PLANS_VERSION,activeId:currentTrainingPlanId,updatedAt:new Date().toISOString(),plans:currentTrainingPlans}});}
+async function normalizeTrainingPlanDistanceV119(plan){
+  if(!plan||typeof plan!=="object")return plan;
+  const legacy={"1k":1000,"2k":2000,"15k":15000},legacyM=legacy[plan.distanceKey];
+  const normalizeRace=r=>{if(!r||typeof r!=="object")return r;const m=legacy[r.distanceKey];return m?{...r,distanceKey:"other",distanceM:Number(r.distanceM)||m}:r;};
+  const next=legacyM?{...plan,distanceKey:"other",distanceM:Number(plan.distanceM)||legacyM}:{...plan};
+  next.intermediateRaces=Array.isArray(next.intermediateRaces)?next.intermediateRaces.map(normalizeRace):[];
+  return next;
+}
+async function loadTrainingPlans(){
+  const row=await storeGet("meta",TRAINING_PLANS_META_KEY).catch(()=>null),value=row?.value||{},plans=Array.isArray(value?.plans)?value.plans:[];
+  currentTrainingPlans=plans.map(normalizeTrainingPlanDistanceV119).filter(p=>p&&p.id&&p.name&&(RACE_DEMAND_DEFS[p.distanceKey]||(p.distanceKey==="other"&&Number(p.distanceM)>0))).map(p=>({...p,availabilityByWeek:p.availabilityByWeek||{},intermediateRaces:Array.isArray(p.intermediateRaces)?p.intermediateRaces:[]}));
+  currentTrainingPlanId=value?.activeId&&currentTrainingPlans.some(p=>p.id===value.activeId)?value.activeId:(currentTrainingPlans[0]?.id||null);
+  renderTrainingPlanHome();
+}
+async function persistTrainingPlans({fromCloud=false}={}){const value=trainingPlansLocalEnvelope();await storePut("meta",{key:TRAINING_PLANS_META_KEY,value});if(!fromCloud){await markTrainingPlansCloudDirty(value.updatedAt).catch(()=>{});scheduleTrainingPlansCloudPush();}return value;}
 function renderTrainingPlanHome(){if(!ui.trainingPlanList)return;ui.trainingPlanList.innerHTML=currentTrainingPlans.map(plan=>`<button class="training-plan-row" type="button" data-training-plan-id="${esc(plan.id)}"><span class="training-plan-row-name">${esc(plan.name)}</span><span class="training-plan-row-chevron">›</span></button>`).join("");requestAnimationFrame(fitTrainingPlanTypography);}
 function trainingPlanRouteInfoRows(plan){const r=plan?.routeProfile;if(!r)return[];const rows=[{l:"Recorrido",v:r.fileName||r.format||"Archivo adjunto"}];if(Number.isFinite(Number(r.distanceKm)))rows.push({l:"Distancia del recorrido",v:`${formatNatural(Number(r.distanceKm),1)} km`});if(Number.isFinite(Number(r.elevationGainM)))rows.push({l:"Desnivel positivo",v:`+${formatNatural(Number(r.elevationGainM),0)} m`});if(Number.isFinite(Number(r.elevationLossM)))rows.push({l:"Desnivel negativo",v:`−${formatNatural(Number(r.elevationLossM),0)} m`});return rows;}
 function collapseTrainingPlanSections(){qsa("[data-training-plan-section]",ui.trainingPlanWorkspace).forEach(section=>{section.classList.remove("open");section.querySelector("[data-training-plan-section-body]")?.classList.add("hidden");});}
@@ -3721,6 +3839,8 @@ async function importDatabase(e){
     currentRunningRecords=null;currentRecordsLoading=false;currentAthleteModel=null;currentRaceDemandModel=null;currentAdaptationModel=null;currentMacroPlannerModel=null;currentWeeklyAllocatorModel=null;activityAiCache.clear();
     await loadSettingsIntoForm();
     await loadTrainingPlans();
+    const restoredPlans=await storeGet("meta",TRAINING_PLANS_META_KEY).catch(()=>null);
+    if(restoredPlans?.value){await markTrainingPlansCloudDirty(restoredPlans.value.updatedAt||new Date().toISOString()).catch(()=>{});scheduleTrainingPlansCloudPush(150);}
     await refreshAll();
     await initializeAssistantChat();
     scheduleLayoutRefresh();
@@ -4101,6 +4221,274 @@ function atlasAuditWeeklyBudgetV116(model,weekly){
 }
 const atlasBuildSessionV115=buildSessionSynthesizerModel;
 buildSessionSynthesizerModel=function(athlete,demand,adaptation,macro,weekly,plan){let model=atlasBuildSessionV115(athlete,demand,adaptation,macro,weekly,plan);model=atlasRebuildPostSecondaryWeeksV116(model,weekly,plan,athlete);model=atlasNormalizeModelMetrics(model,athlete);model=atlasAuditWeeklyBudgetV116(model,weekly);if(model){model.version="ATLAS_SESSION_SYNTHESIZER_V8";model.policy={...(model.policy||{}),secondaryRecoveryRebuiltWithinWeeklyBudget:true,secondaryRacePriorityB:true,postRaceLongRunRemoved:true,weeklyBudgetAudit:true};}return model;};
+
+
+/* ===== ɅTLɅS v1.17.0 · frecuencia, taper y coherencia visual ===== */
+function atlasRaceThresholdEvidenceV117(athlete){
+  const rec=athlete?.performance?.records||{},samples=[];
+  const add=(seconds,km)=>{seconds=Number(seconds);if(!(seconds>0&&km>0))return;const hourDistance=km*Math.pow(3600/seconds,1/1.06);if(hourDistance>0)samples.push(3600/hourDistance);};
+  add(rec?.fiveK?.secs,5);add(rec?.tenK?.secs,10);add(rec?.half?.secs,21.0975);add(rec?.marathon?.secs,42.195);
+  if(!samples.length)return Number(athlete?.performance?.thresholdPaceRaceSecKm??athlete?.performance?.thresholdPaceSecKm)||null;
+  samples.sort((a,b)=>a-b);const mid=Math.floor(samples.length/2),race=samples.length%2?samples[mid]:(samples[mid-1]+samples[mid])/2,configured=Number(athlete?.performance?.thresholdPaceSecKm);
+  if(!Number.isFinite(configured)||Math.abs(configured-race)/race>.045)return race;
+  return configured;
+}
+
+/* El estado actual fija el punto de partida y la velocidad de progresión; el objetivo fija el destino. */
+sessionSynthEffectiveThreshold=function(athlete,plan,week,totalWeeks){
+  const current=atlasRaceThresholdEvidenceV117(athlete),goal=sessionSynthGoalThreshold(plan);
+  if(!Number.isFinite(goal))return Number.isFinite(current)?current:null;if(!Number.isFinite(current))return goal;
+  const overall=clamp(((Number(week?.index)||1)-1)/Math.max(1,(Number(totalWeeks)||1)-1),0,1),phase=week?.phaseKey;
+  const phaseWeight=phase==='consolidate'?0:phase==='base'?.10+.20*overall:phase==='develop'?.34+.28*overall:phase==='specific'?.68+.24*overall:phase==='taper'?.90:.35;
+  return current+(goal-current)*clamp(phaseWeight,0,.94);
+};
+sessionSynthPaces=function(athlete,plan,week,totalWeeks){
+  const th=sessionSynthEffectiveThreshold(athlete,plan,week,totalWeeks),goal=trainingPlanTargetPace(plan),rec=athlete?.performance?.records||{},five=Number(rec?.fiveK?.paceSecKm),ten=Number(rec?.tenK?.paceSecKm),raceKm=Number(plan?.distanceM||0)/1000;
+  let vo2Ref=Number.isFinite(five)?five:Number.isFinite(ten)?ten*.965:Number.isFinite(th)?th*.94:null;
+  if(Number.isFinite(goal)&&raceKm<=6&&Number.isFinite(vo2Ref)){const progress=clamp(((Number(week?.index)||1)-1)/Math.max(1,(Number(totalWeeks)||1)-1),0,1);vo2Ref=vo2Ref+(goal*.985-vo2Ref)*(.18+.70*progress);}
+  return{threshold:th,tempo:Number.isFinite(th)?th*1.025:null,vo2:vo2Ref,easy:Number.isFinite(th)?th*1.31:null,recovery:Number.isFinite(th)?th*1.42:null,long:Number.isFinite(th)?th*1.25:null,race:Number.isFinite(goal)?goal:null};
+};
+
+/* Evita que un mínimo excesivo de km por salida destruya la frecuencia objetivo. */
+weeklyAllocatorMinRunKm=function(profile,plan){const km=Number(plan?.distanceM||0)/1000,tier=profile?.tier||'novice';if(tier==='starter')return km<=5?2:3;if(tier==='novice')return km<=10?3:4;if(tier==='intermediate')return km<=12?4:5;if(km<=2)return 3;if(km<=10)return 4;if(km<=25)return 5;if(km<=45)return 6;return 6;};
+
+function atlasRaceWeekActivationV117(athlete,plan,week,totalWeeks,date,totalKm){
+  const paces=sessionSynthPaces(athlete,plan,week,totalWeeks),raceKm=Number(plan?.distanceM||0)/1000,racePace=sessionSynthPace(paces.race,4),easy=sessionSynthPace(paces.easy,14);
+  if(!racePace||raceKm>45)return sessionSynthEasy(`atlas:${plan.id}:${week.weekKey}:race-activation`,date,totalKm,paces,{...week,phaseName:'Puesta a punto'},true);
+  const spec=raceKm<=2?{reps:4,m:200,warm:1.2,cool:1.2}:raceKm<=6?{reps:4,m:400,warm:1.5,cool:1.0}:raceKm<=12?{reps:3,m:600,warm:1.5,cool:1.2}:raceKm<=25?{reps:3,m:400,warm:1.5,cool:1.0}:{reps:3,m:500,warm:2,cool:1.5};
+  const steps=[sessionSynthStep('Calentamiento',{km:spec.warm,pace:easy}),{reps:spec.reps,steps:[sessionSynthStep('Ritmo objetivo',{m:spec.m,pace:racePace}),sessionSynthStep('Recuperación caminando',{sec:60})]},sessionSynthStep('Vuelta a la calma',{km:spec.cool,pace:easy})];
+  return sessionSynthRunningSession({id:`atlas:${plan.id}:${week.weekKey}:race-activation`,date,name:'Activación',kind:'race-pace',distanceKm:totalKm,pace:racePace,steps,purpose:'Recordar el ritmo objetivo con una dosis breve de calidad y sin acumular fatiga.',phaseName:'Puesta a punto',weekKey:week.weekKey,extraSec:spec.reps*60});
+}
+
+/* Semana de carrera: días alternos, reducción real y ninguna sesión exigente en las últimas 48 h. */
+sessionSynthRaceWeek=function(athlete,plan,week,totalWeeks,primary){
+  const paces=sessionSynthPaces(athlete,plan,week,totalWeeks),profile=weeklyAllocatorAthleteProfile(athlete),raceKm=Number(plan?.distanceM||0)/1000,before=(week.availableDates||[]).filter(d=>d<primary.date).sort(),used=[],sessions=[];
+  const addEasy=(offset,km,strides=false)=>{const d=atlasRaceWeekPick(before,offset,primary.date,used);if(!d)return;used.push(d);sessions.push(sessionSynthEasy(`atlas:${plan.id}:${week.weekKey}:race-easy-${offset}`,d,km,paces,{...week,phaseName:'Puesta a punto'},strides));};
+  const tier=profile?.tier||'novice';
+  if(tier==='starter'){addEasy(3,raceKm<=6?3:4,false);}else if(tier==='novice'){addEasy(5,raceKm<=12?4:5,false);addEasy(2,3,true);}else{
+    const d5Km=raceKm<=2?4:raceKm<=12?5:raceKm<=25?5:6,activationKm=raceKm<=12?5:raceKm<=25?4:5,shakeKm=raceKm<=2?2:3;
+    addEasy(5,d5Km,false);
+    const d3=atlasRaceWeekPick(before,3,primary.date,used);if(d3){used.push(d3);sessions.push(atlasRaceWeekActivationV117(athlete,plan,week,totalWeeks,d3,activationKm));}
+    addEasy(1,shakeKm,true);
+  }
+  sessions.push(sessionSynthRace(`atlas:${plan.id}:${primary.date}:race-primary`,primary,{...week,phaseName:'Puesta a punto'},plan,true));
+  return sessions.sort((a,b)=>a.date.localeCompare(b.date));
+};
+
+/* La barra y el texto usan el mismo estimador para pasos sin ritmo explícito (cuestas/progresivos/recuperaciones). */
+planWorkoutVisualSegments=function(session){const out=[],steps=session?.workout_doc?.steps||[];const push=(step,label)=>{const est=atlasEstimateStep(step,currentAthleteModel),pace=Number(est.center)||Number(session?.overallPaceRange?.slow)||Number(currentAthleteModel?.performance?.thresholdPaceSecKm)||300,distance=Number(step?.distance),duration=Number(step?.duration),weight=Number.isFinite(distance)&&distance>0?distance:(Number.isFinite(duration)&&duration>0?Math.max(1,Number(est.distance)||duration*1000/pace):500);out.push({label,pace,weight});};let idx=0;for(const step of steps){if(Array.isArray(step?.steps)){const reps=Math.max(1,Number(step.reps)||1);for(let r=0;r<reps;r++)for(const child of step.steps){idx++;push(child,String(idx));}}else{idx++;push(step,String(idx));}}return out;};
+
+function atlasPlanRealityV117(plan){
+  const model=currentSessionSynthesizerModel?.activePlanId===plan?.id?currentSessionSynthesizerModel:null;if(!model?.sessions?.length)return{peakKm:null,longKm:null};
+  let peak=0,long=0;for(const w of model.weeks||[]){const ss=(w.sessions||[]).map(id=>model.sessions.find(s=>s.id===id)).filter(Boolean),hasPrimary=ss.some(s=>s.kind==='race-primary');if(!hasPrimary){const km=ss.filter(s=>s.type==='Run').reduce((n,s)=>n+Math.max(0,Number(s.distanceM)||0)/1000,0);peak=Math.max(peak,km);}for(const x of ss.filter(s=>s.kind==='long'))long=Math.max(long,Math.max(0,Number(x.distanceM)||0)/1000);}return{peakKm:peak||null,longKm:long||null};
+}
+
+const atlasRenderWorkspaceV117=renderTrainingPlanWorkspace;
+renderTrainingPlanWorkspace=function(){
+  atlasRenderWorkspaceV117();const plan=activeTrainingPlan();if(!plan||!ui.trainingPlanInfo)return;const weeks=trainingPlanWeeks(plan),pace=trainingPlanTargetPace(plan),reality=atlasPlanRealityV117(plan),rows=[
+    ['🚀','Inicio',atlasDateLabel(plan.startDate)],['🏁','Fecha',atlasDateLabel(plan.raceDate)],['🗓️','Duración',weeks?`${weeks} semanas`:'—'],['📏','Distancia',`${formatNatural(Number(plan.distanceM||0)/1000,1)} km`],['🎯','Objetivo',trainingPlanGoalLabel(plan)],['⏱️','Ritmo objetivo',Number.isFinite(pace)?`${formatPaceValue(pace)} min/km`:'—'],['📈','Pico previsto',Number.isFinite(reality.peakKm)?`${Math.round(reality.peakKm)} km/sem`:'—'],['🛣️','Tirada larga máxima',Number.isFinite(reality.longKm)?`${formatNatural(reality.longKm,1)} km`:'—'],['🏃🏻','Carreras secundarias',String((plan.intermediateRaces||[]).length)]
+  ];ui.trainingPlanInfo.innerHTML=rows.map(([e,l,v])=>`<div class="training-plan-info-row"><span class="training-plan-info-emoji">${e}</span><span class="training-plan-info-label">${esc(l)}</span><strong>${esc(v)}</strong></div>`).join('');
+};
+
+/* Ritmos visibles: referencia actual robusta + destino de carrera; se recalculan al sincronizar datos. */
+renderTrainingPlanPaces=function(){const box=$('trainingPlanPaces'),plan=activeTrainingPlan(),athlete=currentAthleteModel;if(!box||!plan)return;const th=atlasRaceThresholdEvidenceV117(athlete),goal=trainingPlanTargetPace(plan),rec=athlete?.performance?.records||{},five=Number(rec?.fiveK?.paceSecKm),ten=Number(rec?.tenK?.paceSecKm),vo2=Number.isFinite(five)?{fast:Math.max(150,Math.round(five-5)),slow:Math.round((Number.isFinite(ten)?ten:five+12)+4)}:atlasPlanPaceBand(th,.88,.96),rows=[['🫧','Recuperación','Muy suave; permite conversar con facilidad.',atlasPlanPaceBand(th,1.32,1.42),'Dinámico'],['🌿','Rodaje fácil','Base aeróbica y acumulación de volumen.',atlasPlanPaceBand(th,1.18,1.30),'Dinámico'],['🛣️','Tirada larga','Aeróbico prolongado; puede incluir bloques específicos.',atlasPlanPaceBand(th,1.12,1.24),'Dinámico'],['🎯','Ritmo objetivo',trainingPlanGoalLabel(plan),Number.isFinite(goal)?{fast:Math.round(goal-4),slow:Math.round(goal+4)}:null,'Objetivo'],['🟠','Tempo','Sostenido, por debajo del umbral.',atlasPlanPaceBand(th,1.02,1.08),'Dinámico'],['🔥','Umbral','Estimación actual basada en rendimiento y datos configurados.',atlasPlanPaceBand(th,.98,1.02),'Dinámico'],['⚡','VO₂ máx.','Intervalos cortos y medios de alta intensidad.',vo2,'Rendimiento']];box.innerHTML=rows.filter(x=>x[3]).map(([emoji,name,note,r,source])=>`<div class="training-plan-pace-row"><div class="training-plan-pace-main"><span class="training-plan-pace-emoji">${emoji}</span><div class="training-plan-pace-copy"><strong>${esc(name)}</strong><span>${esc(note)}</span></div></div><div class="training-plan-pace-value">${formatPaceValue(r.fast)}–${formatPaceValue(r.slow)}<small>min/km · ${esc(source)}</small></div></div>`).join('');};
+
+
+/* Especificidad por distancia: la carga a ritmo de carrera no comparte una plantilla única de 1 km a ultrafondo. */
+sessionSynthRacePace=function(id,date,km,paces,week,plan){
+  const raceKm=Math.max(.1,Number(plan?.distanceM||0)/1000),racePace=sessionSynthPace(paces.race,4);if(!racePace)return sessionSynthTempo(id,date,km,paces,week);
+  let patterns,minEach=2,minTotal=8,recBase=90;
+  if(raceKm<=1.5){patterns=[{reps:8,m:200,work:1.6},{reps:6,m:300,work:1.8},{reps:5,m:400,work:2.0}];minEach=1.2;minTotal=5;recBase=90;}
+  else if(raceKm<=3){patterns=[{reps:6,m:400,work:2.4},{reps:4,m:600,work:2.4},{reps:3,m:800,work:2.4},{reps:4,m:800,work:3.2}];minEach=1.5;minTotal=6;recBase=100;}
+  else if(raceKm<=6){patterns=[{reps:8,m:400,work:3.2},{reps:6,m:600,work:3.6},{reps:5,m:800,work:4.0},{reps:4,m:1000,work:4.0},{reps:3,m:1200,work:3.6}];minEach=1.5;minTotal=7;recBase=90;}
+  else if(raceKm<=12){patterns=[{reps:6,m:1000,work:6},{reps:4,m:1500,work:6},{reps:3,m:2000,work:6},{reps:2,m:3000,work:6}];minEach=2;minTotal=9;recBase=120;}
+  else if(raceKm<=17){patterns=[{reps:4,m:2000,work:8},{reps:3,m:3000,work:9},{reps:2,m:4000,work:8}];minEach=2;minTotal=12;recBase=150;}
+  else if(raceKm<=25){patterns=[{reps:3,m:2000,work:6},{reps:2,m:4000,work:8},{reps:3,m:3000,work:9},{reps:2,m:5000,work:10}];minEach=2;minTotal=10;recBase=150;}
+  else if(raceKm<=45){patterns=[{reps:2,m:4000,work:8},{reps:3,m:3000,work:9},{reps:2,m:5000,work:10},{reps:3,m:4000,work:12},{reps:2,m:6000,work:12}];minEach=2;minTotal=12;recBase=180;}
+  else {patterns=[{reps:3,m:3000,work:9},{reps:2,m:5000,work:10},{reps:3,m:4000,work:12}];minEach=2;minTotal=12;recBase=180;}
+  const requested=Math.max(minTotal,Number(km)||minTotal),maxWork=Math.max(patterns[0].work,requested-minEach*2),pat=atlasPatternPick(patterns,week,maxWork),total=Math.max(minTotal,Math.ceil((pat.work+minEach*2)*2)/2),rem=total-pat.work,warm=Math.ceil((rem/2)*2)/2,cool=Math.max(minEach,Math.round((total-pat.work-warm)*2)/2),rec=pat.m<=300?90:pat.m<=400?recBase:pat.m<=600?Math.max(recBase,105):pat.m<=800?Math.max(recBase,120):pat.m<=1200?Math.max(recBase,150):pat.m<=2000?Math.max(recBase,150):recBase;
+  const steps=[sessionSynthStep('Calentamiento',{km:warm,pace:sessionSynthPace(paces.easy,14)}),{reps:pat.reps,steps:[sessionSynthStep('Ritmo objetivo',pat.m>=1000?{km:pat.m/1000,pace:racePace}:{m:pat.m,pace:racePace}),sessionSynthStep('Recuperación al trote',{sec:rec})]},sessionSynthStep('Vuelta a la calma',{km:cool,pace:sessionSynthPace(paces.easy,15)})];
+  return sessionSynthRunningSession({id,date,name:'Ritmo de carrera',kind:'race-pace',distanceKm:warm+pat.work+cool,pace:racePace,steps,purpose:`Desarrollar la capacidad específica necesaria para sostener ${trainingPlanGoalLabel(plan)} sin trasladar una plantilla de otra distancia.`,phaseName:week.phaseName,weekKey:week.weekKey,extraSec:pat.reps*rec});
+};
+
+
+/* ===== ɅTLɅS v1.18.0 · motor específico por distancia ===== */
+/* Los tipos oficiales de la interfaz siguen siendo 5K, 10K, media, maratón y Otros.
+   La fisiología interna es continua y puede modelar cualquier distancia introducida en Otros. */
+
+const atlasRaceDemandReferenceV119=raceDemandReference;
+raceDemandReference=function(m,key,overrideDef=null){
+  const def=overrideDef||RACE_DEMAND_DEFS[key];
+  if(key==="other"&&Number(def?.distanceM)>0){
+    const d=Number(def.distanceM),row=(currentRunningRecords||[]).filter(r=>Number(r?.secs)>0&&Number(r?.meters)>0).sort((a,b)=>Math.abs(Number(a.meters)-d)-Math.abs(Number(b.meters)-d))[0],tol=Math.max(15,d*.005);
+    if(row&&Math.abs(Number(row.meters)-d)<=tol)return{timeSec:Number(row.secs),source:"Mejor marca actual",date:row.date||null,direct:true};
+  }
+  return atlasRaceDemandReferenceV119(m,key,overrideDef);
+};
+
+const atlasMacroRecommendedWeeksV118=macroRecommendedWeeks;
+macroRecommendedWeeks=function(adaptation,key,coverage,distanceM=null){
+  const km=Number(distanceM)>0?Number(distanceM)/1000:RACE_DEMAND_DEFS[key]?.distanceM/1000;
+  if(!Number.isFinite(km))return atlasMacroRecommendedWeeksV118(adaptation,key,coverage,distanceM);
+  let base=km<=1.5?8:km<=3?9:km<=6?9:km<=12?11:km<=17?12:km<=25?13:km<=45?18:km<=70?20:22;
+  const deficit=Math.max(0,100-(Number(coverage)||0));base+=Math.ceil(Math.max(0,deficit-18)/16);
+  if(adaptation?.progression==='Conservadora'||adaptation?.progression==='Prudente')base+=2;
+  if(adaptation?.loadState?.key==='consolidate')base+=1;
+  const cap=km<=3?14:km<=12?16:km<=25?20:km<=45?24:30;
+  return clamp(Math.round(base),6,cap);
+};
+
+macroPhaseFocus=function(key,phase,profile){
+  const km=Number(profile?.distanceM)>0?Number(profile.distanceM)/1000:(RACE_DEMAND_DEFS[key]?.distanceM||21097.5)/1000;
+  if(phase==='consolidate')return'Asimilar la carga reciente, recuperar y estabilizar la frecuencia.';
+  if(phase==='base')return km<=3?'Base aeróbica, técnica, fuerza y velocidad neuromuscular sin fatiga excesiva.':'Continuidad, volumen aeróbico fácil y fuerza estructural.';
+  if(phase==='develop'){
+    if(km<=1.5)return'Desarrollar velocidad, potencia aeróbica y tolerancia a esfuerzos intensos.';
+    if(km<=3)return'Desarrollar potencia aeróbica, velocidad específica y umbral de apoyo.';
+    if(km<=6)return'Desarrollar VO₂ máx., economía y umbral sin perder velocidad.';
+    if(km<=12)return'Desarrollar umbral y potencia aeróbica con velocidad de apoyo.';
+    if(km<=17)return'Desarrollar umbral, economía y durabilidad específica.';
+    if(km<=25)return'Desarrollar umbral y durabilidad con bloques progresivamente largos.';
+    if(km<=45)return'Desarrollar durabilidad, economía y tolerancia al volumen.';
+    return'Desarrollar durabilidad prolongada, fuerza resistente, desnivel y estrategia energética.';
+  }
+  if(phase==='specific'){
+    if(km<=1.5)return'Ritmo de 1K, velocidad específica y tolerancia a la intensidad de competición.';
+    if(km<=3)return'Ritmo de 2K, potencia aeróbica y capacidad de sostener alta intensidad.';
+    if(km<=6)return'Ritmo de 5K, VO₂ máx. y economía a velocidades de competición.';
+    if(km<=12)return'Ritmo de 10K, umbral y potencia aeróbica.';
+    if(km<=17)return'Ritmo de 15K, umbral sostenido y durabilidad.';
+    if(km<=25)return'Ritmo de media maratón, umbral y durabilidad específica.';
+    if(km<=45)return'Ritmo de maratón, durabilidad, economía y estrategia de combustible.';
+    return'Tiempo de esfuerzo, desnivel, fuerza resistente, bajadas y nutrición específica.';
+  }
+  return'Reducir fatiga manteniendo pequeñas dosis de intensidad y ritmo de carrera.';
+};
+
+function atlasRaceClassV118(plan){
+  const km=Math.max(.1,Number(plan?.distanceM||0)/1000),gain=Number(plan?.routeProfile?.elevationGainM),routeKm=Number(plan?.routeProfile?.distanceKm)||km,density=Number.isFinite(gain)&&gain>0?gain/Math.max(1,routeKm):0;
+  if(km>42.195||density>=25)return'trail-ultra';
+  if(km<=1.5)return'1k';if(km<=3)return'2k';if(km<=6)return'5k';if(km<=12)return'10k';if(km<=17)return'15k';if(km<=25)return'half';if(km<=45)return'marathon';return'ultra';
+}
+
+weeklyAllocatorGoalFrequency=function(plan,ambitionPct,profile=null){
+  const cls=atlasRaceClassV118(plan),tier=profile?.tier||'novice';
+  let target=tier==='starter'?3:tier==='novice'?4:tier==='intermediate'?5:6;
+  if(tier==='novice'&&['1k','2k','5k'].includes(cls))target=4;
+  if(tier==='intermediate'&&['1k','2k'].includes(cls))target=4;
+  if(tier==='experienced'&&plan?.goalMode==='finish'&&['trail-ultra','ultra'].includes(cls))target=5;
+  if(tier==='starter'&&['marathon','trail-ultra','ultra'].includes(cls))target=4;
+  return Math.round(clamp(target,3,6));
+};
+
+weeklyAllocatorQualityCount=function(plan,phase,sessions,adaptation,ambitionPct,hasSecondaryRace,hasPrimaryRace,profile=null){
+  if(hasPrimaryRace)return 0;
+  const tier=profile?.tier||'novice',phaseKey=phase?.key||'',capacity=Number(adaptation?.scores?.quality)||55,cls=atlasRaceClassV118(plan);
+  if(tier==='starter')return ['develop','specific'].includes(phaseKey)&&sessions>=3?1:0;
+  if(phaseKey==='consolidate')return 0;
+  if(phaseKey==='base')return sessions>=4?1:0;
+  if(phaseKey==='taper')return sessions>=3?1:0;
+  let n=sessions>=5&&['intermediate','experienced'].includes(tier)?2:1;
+  if(['marathon','trail-ultra','ultra'].includes(cls)&&phaseKey==='develop')n=Math.min(n,1);
+  if(capacity<55)n=Math.min(n,1);
+  if(hasSecondaryRace)n=Math.min(n,1);
+  return Math.max(0,Math.min(n,2));
+};
+
+/* Cada rango fisiológico recibe estímulos distintos; el usuario puede introducir cualquier distancia mediante Otros. Cuestas son apoyo, no sustituto sistemático de la calidad. */
+sessionSynthQualityKinds=function(plan,week,count){
+  const cls=atlasRaceClassV118(plan),phase=week?.phaseKey||'base',goal=plan?.goalMode==='time'&&Number(plan?.targetTimeSec)>0,trail=['trail-ultra','ultra'].includes(cls),out=[];
+  for(let i=0;i<count;i++){
+    let kind='threshold';
+    if(trail){kind=phase==='base'?(Number(week.index)%2?'hills':'threshold'):phase==='develop'?(i===0?'hills':'tempo'):phase==='specific'?(i===0?'race-pace':'hills'):phase==='taper'?(goal?'race-pace':'threshold'):'threshold';}
+    else if(cls==='1k'){kind=phase==='base'?(Number(week.index)%3===0?'hills':'vo2'):phase==='develop'?(i===0?'vo2':'threshold'):phase==='specific'?(i===0&&goal?'race-pace':'vo2'):phase==='taper'?(goal?'race-pace':'vo2'):'vo2';}
+    else if(cls==='2k'){kind=phase==='base'?(Number(week.index)%4===0?'hills':'threshold'):phase==='develop'?(i===0?'vo2':'threshold'):phase==='specific'?(i===0&&goal?'race-pace':'vo2'):phase==='taper'?(goal?'race-pace':'vo2'):'threshold';}
+    else if(cls==='5k'){kind=phase==='base'?(Number(week.index)%4===0?'hills':'threshold'):phase==='develop'?(i===0?'vo2':'threshold'):phase==='specific'?(i===0&&goal?'race-pace':'vo2'):phase==='taper'?(goal?'race-pace':'vo2'):'threshold';}
+    else if(cls==='10k'){kind=phase==='base'?'threshold':phase==='develop'?(i===0?'threshold':'vo2'):phase==='specific'?(i===0&&goal?'race-pace':'threshold'):phase==='taper'?(goal?'race-pace':'threshold'):'threshold';}
+    else if(cls==='15k'){kind=phase==='base'?'threshold':phase==='develop'?(i===0?'threshold':'tempo'):phase==='specific'?(i===0&&goal?'race-pace':'threshold'):phase==='taper'?(goal?'race-pace':'threshold'):'threshold';}
+    else if(cls==='half'){kind=phase==='base'?'threshold':phase==='develop'?(i===0?'threshold':'tempo'):phase==='specific'?(i===0&&goal?'race-pace':'threshold'):phase==='taper'?(goal?'race-pace':'threshold'):'threshold';}
+    else {kind=phase==='base'?(Number(week.index)%4===0?'hills':'tempo'):phase==='develop'?(i===0?'tempo':'threshold'):phase==='specific'?(i===0&&goal?'race-pace':'tempo'):phase==='taper'?(goal?'race-pace':'tempo'):'tempo';}
+    out.push(kind);
+  }
+  return out;
+};
+
+/* VO₂ máx. deja de usar el mismo menú de repeticiones para 1K y media maratón. */
+sessionSynthVo2=function(id,date,km,paces,week){
+  const plan=activeTrainingPlan(),cls=atlasRaceClassV118(plan),requested=Math.max(cls==='1k'?5:cls==='2k'?6:7,Number(km)||7),easy=sessionSynthPace(paces.easy,14),pace=sessionSynthPace(paces.vo2,5);
+  const sets={
+    '1k':[{reps:8,m:200,work:1.6,rec:75},{reps:6,m:300,work:1.8,rec:90},{reps:5,m:400,work:2,rec:105},{reps:4,m:500,work:2,rec:120}],
+    '2k':[{reps:6,m:400,work:2.4,rec:90},{reps:5,m:500,work:2.5,rec:105},{reps:4,m:600,work:2.4,rec:120},{reps:4,m:800,work:3.2,rec:135}],
+    '5k':[{reps:8,m:400,work:3.2,rec:75},{reps:6,m:600,work:3.6,rec:90},{reps:5,m:800,work:4,rec:120},{reps:4,m:1000,work:4,rec:150}],
+    '10k':[{reps:6,m:800,work:4.8,rec:120},{reps:5,m:1000,work:5,rec:150},{reps:4,m:1200,work:4.8,rec:150}],
+    '15k':[{reps:5,m:1000,work:5,rec:150},{reps:4,m:1200,work:4.8,rec:150},{reps:4,m:1500,work:6,rec:180}],
+    'half':[{reps:5,m:1000,work:5,rec:150},{reps:4,m:1200,work:4.8,rec:150},{reps:3,m:1600,work:4.8,rec:180}],
+    'marathon':[{reps:5,m:1000,work:5,rec:150},{reps:4,m:1200,work:4.8,rec:150}]
+  };
+  const patterns=sets[cls]||sets.marathon,maxWork=Math.max(patterns[0].work,requested-(cls==='1k'?2.4:3)),pat=atlasPatternPick(patterns,week,maxWork),minWarm=cls==='1k'?1.2:1.5,total=Math.max(requested,pat.work+minWarm*2),warm=Math.max(minWarm,Math.ceil(((total-pat.work)/2)*2)/2),cool=Math.max(minWarm,Math.round((total-pat.work-warm)*2)/2),steps=[sessionSynthStep('Calentamiento',{km:warm,pace:easy}),{reps:pat.reps,steps:[sessionSynthStep('Intervalo',pat.m>=1000?{km:pat.m/1000,pace}:{m:pat.m,pace}),sessionSynthStep('Recuperación al trote',{sec:pat.rec})]},sessionSynthStep('Vuelta a la calma',{km:cool,pace:sessionSynthPace(paces.easy,15)})];
+  return sessionSynthRunningSession({id,date,name:'Intervalos VO₂ máx.',kind:'vo2',distanceKm:warm+pat.work+cool,pace,steps,purpose:'Desarrollar potencia aeróbica con una dosis adaptada a la distancia objetivo.',phaseName:week.phaseName,weekKey:week.weekKey,extraSec:pat.reps*pat.rec});
+};
+
+/* Ritmo específico: límite de trabajo proporcional a la prueba y a la fase; evita volúmenes absurdos de repeticiones. */
+sessionSynthRacePace=function(id,date,km,paces,week,plan){
+  const cls=atlasRaceClassV118(plan),raceKm=Math.max(.1,Number(plan?.distanceM||0)/1000),racePace=sessionSynthPace(paces.race,4);if(!racePace)return sessionSynthTempo(id,date,km,paces,week);
+  const libraries={
+    '1k':[{reps:6,m:150,work:.9,rec:90},{reps:5,m:200,work:1,rec:105},{reps:4,m:300,work:1.2,rec:120},{reps:3,m:400,work:1.2,rec:150}],
+    '2k':[{reps:5,m:300,work:1.5,rec:105},{reps:4,m:400,work:1.6,rec:120},{reps:3,m:600,work:1.8,rec:150},{reps:3,m:800,work:2.4,rec:180}],
+    '5k':[{reps:6,m:600,work:3.6,rec:90},{reps:5,m:800,work:4,rec:120},{reps:4,m:1000,work:4,rec:150},{reps:3,m:1200,work:3.6,rec:150}],
+    '10k':[{reps:5,m:1000,work:5,rec:120},{reps:4,m:1500,work:6,rec:150},{reps:3,m:2000,work:6,rec:150}],
+    '15k':[{reps:4,m:2000,work:8,rec:150},{reps:3,m:3000,work:9,rec:180},{reps:2,m:4000,work:8,rec:180}],
+    'half':[{reps:4,m:2000,work:8,rec:150},{reps:3,m:3000,work:9,rec:180},{reps:2,m:4000,work:8,rec:180},{reps:2,m:5000,work:10,rec:210}],
+    'marathon':[{reps:3,m:3000,work:9,rec:180},{reps:2,m:5000,work:10,rec:210},{reps:3,m:4000,work:12,rec:210},{reps:2,m:6000,work:12,rec:240}],
+    'trail-ultra':[{reps:3,m:3000,work:9,rec:180},{reps:2,m:5000,work:10,rec:210}],
+    'ultra':[{reps:3,m:3000,work:9,rec:180},{reps:2,m:5000,work:10,rec:210}]
+  };
+  const patterns=libraries[cls]||libraries.half,phaseFactor=week?.phaseKey==='develop'?.78:week?.phaseKey==='specific'?1:week?.phaseKey==='taper'?.48:.72,workCap=Math.max(patterns[0].work,Math.min(raceKm*(cls==='1k'?.9:cls==='2k'?1:cls==='5k'?.9:cls==='10k'?.7:cls==='15k'?.62:cls==='half'?.5:cls==='marathon'?.30:.22),Number(km||8)*.68)*phaseFactor),pat=atlasPatternPick(patterns,week,workCap),minWarm=cls==='1k'?1.2:cls==='2k'?1.5:2,total=Math.max(pat.work+minWarm*2,Math.min(Number(km)||pat.work+minWarm*2,pat.work+minWarm*2+3)),warm=Math.max(minWarm,Math.ceil(((total-pat.work)/2)*2)/2),cool=Math.max(minWarm,Math.round((total-pat.work-warm)*2)/2),steps=[sessionSynthStep('Calentamiento',{km:warm,pace:sessionSynthPace(paces.easy,14)}),{reps:pat.reps,steps:[sessionSynthStep('Ritmo objetivo',pat.m>=1000?{km:pat.m/1000,pace:racePace}:{m:pat.m,pace:racePace}),sessionSynthStep('Recuperación al trote',{sec:pat.rec})]},sessionSynthStep('Vuelta a la calma',{km:cool,pace:sessionSynthPace(paces.easy,15)})];
+  return sessionSynthRunningSession({id,date,name:'Ritmo de carrera',kind:'race-pace',distanceKm:warm+pat.work+cool,pace:racePace,steps,purpose:`Desarrollar de forma específica el ritmo de ${trainingPlanDistanceLabel(plan)} con una dosis proporcionada a la competición.`,phaseName:week.phaseName,weekKey:week.weekKey,extraSec:pat.reps*pat.rec});
+};
+
+/* Taper final: el volumen previo a la carrera se limita al presupuesto real de la semana y se protege la ventana de 48 h. */
+function atlasRaceWeekBudgetV118(week,primary,profile){
+  const raceKm=Math.max(.1,Number(primary?.distanceM||0)/1000),planned=Math.max(raceKm,Number(week?.targetKm)||raceKm),extra=Math.max(0,planned-raceKm),tier=profile?.tier||'novice';
+  const maxExtra=raceKm<=3?(tier==='experienced'?10:7):raceKm<=12?(tier==='experienced'?14:10):raceKm<=25?(tier==='experienced'?16:12):raceKm<=45?(tier==='experienced'?20:14):18;
+  return Math.max(tier==='starter'?3:5,Math.min(extra,maxExtra));
+}
+
+sessionSynthRaceWeek=function(athlete,plan,week,totalWeeks,primary){
+  const paces=sessionSynthPaces(athlete,plan,week,totalWeeks),profile=weeklyAllocatorAthleteProfile(athlete),raceKm=Number(plan?.distanceM||0)/1000,before=(week.availableDates||[]).filter(d=>d<primary.date).sort(),used=[],sessions=[],budget=atlasRaceWeekBudgetV118(week,primary,profile),tier=profile?.tier||'novice';
+  const addEasy=(offset,km,strides=false)=>{const d=atlasRaceWeekPick(before,offset,primary.date,used);if(!d||km<1)return;used.push(d);sessions.push(sessionSynthEasy(`atlas:${plan.id}:${week.weekKey}:race-easy-${offset}`,d,km,paces,{...week,phaseName:'Puesta a punto'},strides));};
+  if(tier==='starter'){addEasy(3,Math.min(budget,Math.max(3,budget)),false);}
+  else if(tier==='novice'){
+    const a=Math.max(3,Math.round(budget*.58)),b=Math.max(2,budget-a);addEasy(5,a,false);addEasy(2,b,true);
+  }else{
+    let a=Math.max(3,Math.round(budget*.40)),b=Math.max(3,Math.round(budget*.34)),c=Math.max(2,Math.round((budget-a-b)*10)/10);if(a+b+c>budget){const over=a+b+c-budget;a=Math.max(3,a-over);}
+    addEasy(5,a,false);
+    const d3=atlasRaceWeekPick(before,3,primary.date,used);if(d3&&b>=3){used.push(d3);sessions.push(atlasRaceWeekActivationV117(athlete,plan,week,totalWeeks,d3,b));}
+    addEasy(1,c,true);
+  }
+  sessions.push(sessionSynthRace(`atlas:${plan.id}:${primary.date}:race-primary`,primary,{...week,phaseName:'Puesta a punto'},plan,true));
+  return sessions.sort((a,b)=>a.date.localeCompare(b.date));
+};
+
+/* Auditoría dura posterior: nunca calidad en las últimas 48 h, ni dos sesiones duras consecutivas. */
+function atlasEnforcePlanSafetyV118(model,plan){
+  if(!model?.sessions?.length||!plan)return model;const raceDate=plan.raceDate,hardKinds=new Set(['threshold','tempo','vo2','race-pace','race-pace-secondary','hills']);
+  for(const s of model.sessions){
+    if(!hardKinds.has(s.kind)||String(s.kind).startsWith('race-'))continue;
+    const toRace=dateDiff(s.date,raceDate);if(toRace>=0&&toRace<=2){
+      s.kind='easy';s.name='Activación suave';s.targetPace=null;s.workout_doc={steps:[sessionSynthStep('Rodaje muy suave',{km:Math.max(2,Math.min(4,Math.round(Number(s.distanceM||3000)/1000))),pace:sessionSynthPace(sessionSynthPaces(currentAthleteModel,plan,{phaseKey:'taper',index:1},1).easy,16)})]};s.purpose='Mantener movilidad y sensaciones sin acumular fatiga en las últimas 48 horas.';
+    }
+  }
+  const ordered=model.sessions.filter(s=>hardKinds.has(s.kind)).sort((a,b)=>a.date.localeCompare(b.date));
+  for(let i=1;i<ordered.length;i++)if(dateDiff(ordered[i-1].date,ordered[i].date)===1){const s=ordered[i];s.kind='easy';s.name='Rodaje fácil';s.targetPace=null;s.purpose='Separación automática de estímulos exigentes para proteger la recuperación.';}
+  model.version='ATLAS_SESSION_SYNTHESIZER_V9';model.policy={...(model.policy||{}),distanceSpecificArchitecture:true,targetDemandDefinesSessionType:true,currentStateControlsProgressionNotCeiling:true,noHardWorkFinal48h:true,noBackToBackHardDays:true,raceWeekBudgetProtected:true};
+  return atlasNormalizeModelMetrics(model,currentAthleteModel);
+}
+const atlasBuildSessionSynthV118=buildSessionSynthesizerModel;
+buildSessionSynthesizerModel=function(athlete,demand,adaptation,macro,weekly,plan){
+  const model=atlasBuildSessionSynthV118(athlete,demand,adaptation,macro,weekly,plan);return atlasEnforcePlanSafetyV118(model,plan);
+};
+
 
 })();
 </script></body>
