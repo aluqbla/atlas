@@ -308,6 +308,24 @@ html[data-theme="light"] .training-plan-info-row strong{color:#0f1419!important}
 #trainingPlanWorkouts .activity-row-main{white-space:normal;line-height:1.4}#runnerReferencePicker{z-index:1300!important}
 html[data-theme="light"] .new-plan-detail,html[data-theme="light"] .new-plan-detail-inner{background:#fff!important}
 </style>
+<style>
+/* v1.24: proposed workouts reuse the activity lap chart and established typography. */
+#planDetail{z-index:1300!important}
+.training-plan-workout-day button.activity-row{appearance:none;border:0;background:transparent;color:inherit;width:100%;text-align:left;font:inherit;cursor:pointer}
+.proposal-step{appearance:none;border:0;background:transparent;color:inherit;text-align:left;display:flex;flex-direction:column;width:100%;padding:14px 2px;cursor:pointer}
+.proposal-step-heading{font-size:17px;font-weight:760;line-height:1.3}
+.proposal-step .atlas-supporting{margin:5px 0 0}
+.proposal-step.selected .proposal-step-heading{color:var(--blue)}
+.proposal-bar{appearance:none;border:0;background:transparent;cursor:pointer;min-width:28px;color:inherit}
+#planWorkoutBars{height:220px;min-width:100%}
+.proposal-bar .activity-lap-bar{display:block}
+.proposal-bar:focus-visible,.proposal-step:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+.proposal-effort-chart .activity-lap-bars-card{padding-left:7px}
+.proposal-effort-chart .activity-lap-bar{opacity:.5}
+.training-plan-basis{margin:16px 2px;font-size:14px;color:var(--muted2)}
+.training-plan-basis summary{min-height:44px;align-content:center;color:var(--blue);font-size:16px;font-weight:700;cursor:pointer}
+.training-plan-basis a{color:var(--blue)}
+</style>
 </head>
 <body>
 <main class="app">
@@ -683,12 +701,14 @@ html[data-theme="light"] .new-plan-detail,html[data-theme="light"] .new-plan-det
 <div class="plan-detail-card">
 <div class="plan-detail-section-title" id="planDetailStructureTitle">Estructura</div>
 <div class="plan-detail-steps" id="planDetailSteps"></div>
-<div aria-label="Resumen visual del entrenamiento" class="plan-workout-bars hidden" id="planWorkoutBarsCard">
-<div class="plan-workout-bars-shell">
+<div aria-label="Ritmos de los bloques propuestos" class="plan-workout-bars hidden" id="planWorkoutBarsCard">
+<p class="atlas-supporting" id="planWorkoutReadout" aria-live="polite"></p>
+<div class="activity-lap-bars-card">
 <div class="activity-lap-pace-axis" id="planWorkoutPaceAxis"></div>
 <div class="activity-lap-pace-grid" id="planWorkoutPaceGrid"></div>
-<div class="plan-workout-bars-plot" id="planWorkoutBars"></div>
+<div class="activity-lap-bars-scroll"><div class="activity-lap-bars" id="planWorkoutBars"></div></div>
 </div>
+<p class="atlas-supporting" id="planWorkoutChartNote"></p>
 </div>
 </div>
 <div class="plan-detail-card">
@@ -981,7 +1001,41 @@ const AtlasInitialWeek=(()=>{
   return Object.freeze({POLICY,build});
 })();
 
-const APP_VERSION="1.23.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+/* Numeric targets use the runner's imported configuration, never the desired race time.
+ * Physiological rationale: Joe Friel, Setting Pace Zones (Running):
+ * https://www.trainingpeaks.com/learn/articles/joe-friel-s-quick-guide-to-setting-zones/
+ * This is not a validated prescription model or an implementation of a B.A.A. plan.
+ */
+const AtlasWorkoutTargets=(()=>{
+  const A=AtlasRunnerAssessment;
+  const SOURCE="https://www.trainingpeaks.com/learn/articles/joe-friel-s-quick-guide-to-setting-zones/";
+  function calibrate(sports=[],asOf){
+    const fallback=reason=>({source:"talk_test",reason,easy:null,recovery:null});
+    const sport=sports.filter(s=>(s?.types||[]).includes("Run")).sort((a,b)=>String(b.updated||"").localeCompare(String(a.updated||"")))[0];
+    if(!sport)return fallback("No hay zonas de carrera importadas.");
+    const speed=A.numeric(sport.threshold_pace),bounds=(sport.pace_zones||[]).map(A.numeric);
+    // Only the recognized seven-zone Friel configuration can be interpreted as easy Z2.
+    // Other zone systems must not silently acquire the same physiological meaning.
+    const expected=[77.5,87.7,94.3,100,103.4,111.5];
+    if(bounds.length!==7||expected.some((v,i)=>bounds[i]===null||Math.abs(bounds[i]-v)>1)||bounds[6]<=bounds[5])return fallback("El sistema de zonas importado todavía no está interpretado para estos rodajes.");
+    if(!(speed>0)||speed<1000/900||speed>1000/120)return fallback("Falta un umbral de carrera utilizable.");
+    const updated=A.date(sport.updated);
+    // Configuration date is not a test date. This freshness gate cannot certify fitness.
+    if(!updated||!A.date(asOf)||updated>asOf||A.daysBetween(updated,asOf)>90)return fallback("Las zonas importadas necesitan actualizarse.");
+    const threshold=1000/speed,fast=Math.ceil(threshold*100/bounds[1]),slow=Math.ceil(threshold*100/bounds[0]);
+    return{source:"intervals_pace_zones",method:"configured_friel_z2",sourceUrl:SOURCE,configuredDate:updated,thresholdSecKm:threshold,speedPercent:{low:bounds[0],high:bounds[1]},easy:{fast,slow},recovery:{fast:slow,slow:null},reason:"Zonas de carrera configuradas en Intervals.icu; el esfuerzo cómodo tiene prioridad."};
+  }
+  function structure(session,calibration){
+    const duration=A.numeric(session?.durationSec);if(!(duration>=1200))return session;
+    // Original introductory session: 5 min very easy + remaining easy time + 5 min very easy.
+    // Splitting does not add time or intensity to the initial-week allocation.
+    const steps=[{type:"warmup",name:"Calentamiento",durationSec:300,pace:calibration.recovery,instruction:"Empieza muy suave, sin forzar el ritmo."},{type:"easy",name:"Rodaje suave",durationSec:duration-600,pace:calibration.easy,instruction:"Mantén una conversación en frases completas. Baja el ritmo si lo necesitas."},{type:"cooldown",name:"Vuelta a la calma",durationSec:300,pace:calibration.recovery,instruction:"Termina muy suave y deja que baje la respiración."}];
+    return{...session,steps,pace:calibration.easy,paceSource:calibration.source,distanceM:null,calibration};
+  }
+  return Object.freeze({calibrate,structure,SOURCE});
+})();
+
+const APP_VERSION="1.24.0",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const ATLAS_RELEASE_STAGE="RUNNER_ASSESSMENT_V1";
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits","chats"];
 const DATA_STORES=["meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits"];
@@ -2635,7 +2689,7 @@ function trainingPlanAssistantSummary(plan=activeTrainingPlan()){if(!plan)return
 async function refreshAll(){
   const snapshot=await loadLocalSnapshot(),{activities,wellness,gear,events,cachedVo2}=snapshot;
   await loadRunnerAnnotations();hrvBaselineCache=new Map();hrvCacheRows=null;
-  currentActivities=activities;currentWellness=wellness;currentGear=gear;currentEvents=events;currentCachedVo2=cachedVo2?.value||null;
+  currentRunnerSports=snapshot.sportSettings||[];currentActivities=activities;currentWellness=wellness;currentGear=gear;currentEvents=events;currentCachedVo2=cachedVo2?.value||null;
   const [runnerSyncRow,runnerSyncRange]=await Promise.all([storeGet("meta","lastSync"),storeGet("meta","lastSyncRange")]);
   currentRunnerSync={lastSync:runnerSyncRow?.value||null,range:runnerSyncRange?.value||null};
   currentRunnerSnapshot=AtlasRunnerAssessment.buildRunnerSnapshot({asOf:fmtDate(new Date()),activities,wellness,sync:currentRunnerSync});
@@ -2674,11 +2728,11 @@ function planWeekSubLabel(start){const current=mondayOf(new Date()),diff=Math.ro
 function planEventId(e,i=0){return String(e?.id??e?.event_id??e?.calendar_id??`${planEventDate(e)}-${i}-${planEventName(e)}`);}
 function planEventPurpose(e){return String(e?.description??e?.notes??e?.workout_doc?.description??"").trim();}
 function flattenWorkoutSteps(steps,out=[],depth=0){for(const step of Array.isArray(steps)?steps:[]){if(Array.isArray(step?.steps)){const reps=Number(step?.reps??step?.repeat??1);out.push({label:reps>1?`${reps} × bloque`:"Bloque",depth});flattenWorkoutSteps(step.steps,out,depth+1);continue;}const distance=Number(step?.distance),duration=Number(step?.duration),pace=workoutPaceSecs(step?.pace),label=String(step?.name||step?.label||step?.type||"Paso");const bits=[label];if(Number.isFinite(distance)&&distance>0)bits.push(distance>=1000?`${formatNatural(distance/1000,2)} km`:`${formatNatural(distance,0)} m`);if(Number.isFinite(duration)&&duration>0)bits.push(formatDuration(duration));if(pace)bits.push(formatTargetPaceRange(pace));out.push({label:bits.join(" · "),depth});}return out;}
-function renderPlanWorkoutBars(){if(ui.planWorkoutBarsCard)ui.planWorkoutBarsCard.classList.add("hidden");}
-async function openPlanDetail(id){const idx=currentEvents.findIndex((e,i)=>planEventId(e,i)===String(id));if(idx<0)return;let e=currentEvents[idx];if(e?.id){try{const detail=await api(`/api/calendar-event?id=${encodeURIComponent(e.id)}`);if(detail?.event){e={...e,...detail.event};currentEvents[idx]=e;await storePut("events",e).catch(()=>{});}}catch(error){console.warn("ɅTLɅS · detalle de sesión",error);}}currentPlanEvent=e;const sport=sportMeta(planEventType(e)),d=planEventDistanceM(e),t=planEventDurationSec(e),pace=planEventPaceLabel(e),steps=flattenWorkoutSteps(planWorkoutDoc(e)?.steps||[]),purpose=planEventPurpose(e);ui.planDetailDate.textContent=atlasDateLabel(planEventDate(e));ui.planDetailIcon.textContent=sport.emoji;ui.planDetailTitle.textContent=planEventName(e);ui.planDetailDistance.textContent=d?`${formatNatural(d/1000,2)} km`:"—";ui.planDetailDuration.textContent=t?formatDuration(t):"—";ui.planDetailTarget.textContent=pace||"—";ui.planDetailSteps.innerHTML=steps.length?steps.map(x=>`<div class="plan-step" style="--step-depth:${x.depth}">${esc(x.label)}</div>`).join(""):"<div class=\"plan-detail-purpose\">Sin estructura detallada.</div>";ui.planDetailPurpose.textContent=purpose||"Sesión sincronizada desde Intervals.icu.";renderPlanWorkoutBars();ui.planDetail.classList.remove("hidden");ui.planDetail.setAttribute("aria-hidden","false");setAtlasSubpageNavHidden(true);ui.planDetail.scrollTop=0;}
-function closePlanDetail(){if(!ui.planDetail)return;ui.planDetail.classList.add("hidden");ui.planDetail.setAttribute("aria-hidden","true");currentPlanEvent=null;refreshAtlasSubpageNav();}
+
+async function openPlanDetail(id){currentProposal=null;const idx=currentEvents.findIndex((e,i)=>planEventId(e,i)===String(id));if(idx<0)return;let e=currentEvents[idx];if(e?.id){try{const detail=await api(`/api/calendar-event?id=${encodeURIComponent(e.id)}`);if(detail?.event){e={...e,...detail.event};currentEvents[idx]=e;await storePut("events",e).catch(()=>{});}}catch(error){console.warn("ɅTLɅS · detalle de sesión",error);}}currentPlanEvent=e;const sport=sportMeta(planEventType(e)),d=planEventDistanceM(e),t=planEventDurationSec(e),pace=planEventPaceLabel(e),steps=flattenWorkoutSteps(planWorkoutDoc(e)?.steps||[]),purpose=planEventPurpose(e);ui.planDetailDate.textContent=atlasDateLabel(planEventDate(e));ui.planDetailIcon.textContent=sport.emoji;ui.planDetailTitle.textContent=planEventName(e);ui.planDetailDistance.textContent=d?`${formatNatural(d/1000,2)} km`:"—";ui.planDetailDuration.textContent=t?formatDuration(t):"—";ui.planDetailTarget.textContent=pace||"—";ui.planDetailSteps.innerHTML=steps.length?steps.map(x=>`<div class="plan-step" style="--step-depth:${x.depth}">${esc(x.label)}</div>`).join(""):"<div class=\"plan-detail-purpose\">Sin estructura detallada.</div>";ui.planDetailPurpose.textContent=purpose||"Sesión sincronizada desde Intervals.icu.";renderPlanWorkoutBars();ui.planDetail.classList.remove("hidden");ui.planDetail.setAttribute("aria-hidden","false");setAtlasSubpageNavHidden(true);ui.planDetail.scrollTop=0;}
+function closePlanDetail(){if(!ui.planDetail)return;ui.planDetail.classList.add("hidden");ui.planDetail.setAttribute("aria-hidden","true");currentPlanEvent=null;if(currentProposal){currentProposal=null;document.body.style.overflow=proposalPreviousOverflow;proposalReturnFocus?.focus?.({preventScroll:true});proposalReturnFocus=null;}refreshAtlasSubpageNav();}
 function planActivityMetaParts(a){const parts=[],d=activityDistanceM(a),t=activityElapsedSec(a),pace=activityPaceSecKm(a);if(d)parts.push(`${formatNatural(d/1000,2)} km`);if(t)parts.push(formatDuration(t));if(Number.isFinite(pace))parts.push(`${formatPaceValue(pace)} min/km`);return parts;}
-function renderPlan(){renderTrainingPlanHome();if(!ui.trainingPlanWorkspace?.classList.contains("hidden"))renderTrainingPlanWorkspace();if(!ui.planDays)return;if(!currentPlanWeekStart)currentPlanWeekStart=mondayOf(new Date());const{start,end,startKey,endKey}=planWeekRange(),today=fmtDate(new Date()),events=currentEvents.filter(e=>{const d=planEventDate(e);return d>=startKey&&d<=endKey;}),activities=currentActivities.filter(a=>{const d=activityDate(a);return d>=startKey&&d<=endKey;});ui.planRange.textContent=planRangeLabel(start,end);ui.planRangeSub.textContent=planWeekSubLabel(start);const plannedKm=events.reduce((s,e)=>s+(planEventDistanceM(e)||0),0)/1000,doneKm=activities.reduce((s,a)=>s+(activityDistanceM(a)||0),0)/1000;ui.planPlannedKm.textContent=formatNatural(plannedKm,1);ui.planDoneKm.textContent=formatNatural(doneKm,1);ui.planSessions.textContent=String(events.length);const markup=[],renderSession=s=>`<button class="plan-session-row ${s.kind}" type="button" ${s.planEventId?`data-plan-event-id="${esc(s.planEventId)}"`:`data-activity-id="${esc(s.activityId)}"`}><div class="activity-row-title"><span class="activity-row-title-emoji">${s.icon}</span><span class="activity-row-title-text">${esc(s.title)}</span></div><div class="activity-row-main">${s.metaParts.length?activityStatsHtml(s.metaParts):'<span class="activity-row-stat">—</span>'}</div></button>`;for(let i=0;i<7;i++){const d=new Date(start);d.setDate(start.getDate()+i);const key=planDateKey(d),dp=compactActivityDate(key),dayEvents=events.filter(e=>planEventDate(e)===key),dayActivities=activities.filter(a=>activityDate(a)===key).sort((a,b)=>activityStamp(a).localeCompare(activityStamp(b))),sessions=[...dayEvents.map(e=>({kind:"plan",icon:sportMeta(planEventType(e)).emoji,title:planEventName(e),metaParts:(planEventMeta(e)||"").split(" · ").filter(Boolean),planEventId:planEventId(e,currentEvents.indexOf(e))})),...dayActivities.map(a=>({kind:"extra",icon:activityIcon(a),title:activityName(a),metaParts:planActivityMetaParts(a),activityId:String(a.id)}))],content=sessions.length?`<div class="plan-session-list">${sessions.map(renderSession).join("")}</div>`:`<div class="plan-rest-copy"></div>`;markup.push(`<section class="plan-day${key===today?" today":""}"><div class="activity-row plan-week-activity-row"><div class="activity-row-date"><span class="activity-row-weekday">${dp.weekday}</span><span class="activity-row-day">${dp.day}</span><span class="activity-row-month">${dp.month}</span></div><span class="activity-row-sep" aria-hidden="true"></span><div class="activity-row-copy">${content}</div></div></section>`);}ui.planDays.innerHTML=markup.join("");requestAnimationFrame(()=>{fitPlanTitles();fitActivityTitles();});}
+function renderPlan(){renderTrainingPlanHome();if(!ui.trainingPlanWorkspace?.classList.contains("hidden"))renderTrainingPlanWorkspace();if(!ui.planDays)return;if(!currentPlanWeekStart)currentPlanWeekStart=mondayOf(new Date());const{start,end,startKey,endKey}=planWeekRange(),today=fmtDate(new Date()),events=currentEvents.filter(e=>{const d=planEventDate(e);return d>=startKey&&d<=endKey;}),activities=currentActivities.filter(a=>{const d=activityDate(a);return d>=startKey&&d<=endKey;});ui.planRange.textContent=planRangeLabel(start,end);ui.planRangeSub.textContent=planWeekSubLabel(start);const plannedKm=events.reduce((s,e)=>s+(planEventDistanceM(e)||0),0)/1000,doneKm=activities.reduce((s,a)=>s+(activityDistanceM(a)||0),0)/1000;ui.planPlannedKm.textContent=formatNatural(plannedKm,1);ui.planDoneKm.textContent=formatNatural(doneKm,1);ui.planSessions.textContent=String(events.length);const markup=[],renderSession=s=>`<button class="plan-session-row ${s.kind}" type="button" ${s.planEventId?`data-plan-event-id="${esc(s.planEventId)}"`:`data-activity-id="${esc(s.activityId)}"`}><div class="activity-row-title"><span class="activity-row-title-emoji">${s.icon}</span><span class="activity-row-title-text">${esc(s.title)}</span></div><div class="activity-row-main">${s.metaParts.length?activityStatsHtml(s.metaParts):'<span class="activity-row-stat">—</span>'}</div></button>`;for(let i=0;i<7;i++){const d=new Date(start);d.setDate(start.getDate()+i);const key=planDateKey(d),dp=compactActivityDate(key),dayEvents=events.filter(e=>planEventDate(e)===key),dayActivities=activities.filter(a=>activityDate(a)===key).sort((a,b)=>activityStamp(a).localeCompare(activityStamp(b))),sessions=[...dayEvents.map(e=>({kind:"plan",icon:sportMeta(planEventType(e)).emoji,title:planEventName(e),metaParts:(planEventMeta(e)||"").split(" · ").filter(Boolean),planEventId:planEventId(e,currentEvents.indexOf(e))})),...dayActivities.map(a=>({kind:"extra",icon:activityIcon(a),title:activityName(a),metaParts:planActivityMetaParts(a),activityId:String(a.id)}))],content=sessions.length?`<div class="plan-session-list">${sessions.map(renderSession).join("")}</div>`:`<div class="activity-row-title"><span class="activity-row-title-emoji">🛏️</span><span class="activity-row-title-text">Descanso</span></div>`;markup.push(`<section class="plan-day${key===today?" today":""}"><div class="activity-row plan-week-activity-row"><div class="activity-row-date"><span class="activity-row-weekday">${dp.weekday}</span><span class="activity-row-day">${dp.day}</span><span class="activity-row-month">${dp.month}</span></div><span class="activity-row-sep" aria-hidden="true"></span><div class="activity-row-copy">${content}</div></div></section>`);}ui.planDays.innerHTML=markup.join("");requestAnimationFrame(()=>{fitPlanTitles();fitActivityTitles();});}
 function activityType(a){const type=String(a?.type||""),sport=String(a?.sport||a?.activity_type||""),name=String(a?.name||a?.title||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();const joined=`${type} ${sport}`.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();if(/soccer|football|futbol/.test(joined)||/\bfutbol\b/.test(name))return"Football";return sport||type||"Actividad";}
 function sportKey(raw){return String(raw||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[\s_\-]/g,"");}
 function sportMeta(raw){const k=sportKey(raw);
@@ -3418,11 +3472,11 @@ function computeAtlasState({activities,wellness,forma,fatiga,fresh,vfc,rhr,sleep
  score=Math.round(clamp(score,0,100));
  const band=atlasBand(score),note=limiter?limiter.reason:recovery.penalty>=3?`Recuperación en curso · −${Math.round(recovery.penalty)}`:band.note;
  const sleepHours=Number.isFinite(r.sleepLatest)?r.sleepLatest/3600:null,sleepQuality=sleepQualityInfo(r.latestSleepRecord);
- return{score,band,note,components:Object.fromEntries(parts.map(p=>[p.key,Math.round(p.score)])),recovery,hrvLatest:r.hrvLatest,hrvDate:r.hrvDate,hrv7:r.hrv7,hrvBaseline:r.hrvBaseline,rhrDelta:r.rhrDelta,rhr7:r.rhr7,rhr28:r.rhr28,baseScore,limiter,sleepScore:rawSleepScore,sleepHours,sleepQuality,fresh:r.freshness,totalWeight,healthDate:r.healthDate};
+ return{score,band,note,modelStatus:"experimental",hrvReferenceSource:r.hrvBaseline?.source||null,components:Object.fromEntries(parts.map(p=>[p.key,Math.round(p.score)])),recovery,hrvLatest:r.hrvLatest,hrvDate:r.hrvDate,hrv7:r.hrv7,hrvBaseline:r.hrvBaseline,rhrDelta:r.rhrDelta,rhr7:r.rhr7,rhr28:r.rhr28,baseScore,limiter,sleepScore:rawSleepScore,sleepHours,sleepQuality,fresh:r.freshness,totalWeight,healthDate:r.healthDate};
 }
 function renderAtlasState(state){currentAtlasState=state;
   if(!state){ui.trainingStateScore.textContent="—";ui.trainingStateBtn.className="training-state";ui.trainingStateCircle.style.setProperty("--score-pct","0%");ui.trainingStateWord.textContent="Sin datos";ui.trainingStateNote.textContent="Necesito más métricas recientes para resumir tu disponibilidad y recuperación actuales.";if(ui.stateDetail?.classList.contains("open"))renderStateDetail();return;}
-  ui.trainingStateScore.textContent=String(state.score);ui.trainingStateBtn.className=`training-state state-${state.band.tone}`;ui.trainingStateCircle.style.setProperty("--score-pct",`${state.score}%`);ui.trainingStateWord.textContent=state.band.label;ui.trainingStateNote.textContent=atlasStateMicroInsight(state);if(ui.stateDetail?.classList.contains("open"))renderStateDetail();
+  ui.trainingStateScore.textContent=String(state.score);ui.trainingStateBtn.className=`training-state state-${state.band.tone}`;ui.trainingStateCircle.style.setProperty("--score-pct",`${state.score}%`);ui.trainingStateWord.textContent=state.band.label;ui.trainingStateBtn.setAttribute("aria-label",`Estado ɅTLɅS estimado: ${state.score}, ${state.band.label}`);ui.trainingStateNote.textContent="Estimación · "+atlasStateMicroInsight(state);if(ui.stateDetail?.classList.contains("open"))renderStateDetail();
 }
 function openStateDetail(){
   ui.stateDetail.classList.add("open");ui.stateDetail.setAttribute("aria-hidden","false");
@@ -3462,10 +3516,10 @@ function atlasStateTrainingInsight(s){
 }
 
 function renderStateDetail(){const s=currentAtlasState;if(!s){ui.stateDetailHero.className="state-detail-card";ui.stateDetailRing.style.setProperty("--score-pct","0%");ui.stateDetailScore.textContent="—";ui.stateDetailWord.textContent="Sin datos";ui.stateDetailNote.textContent="";ui.stateDetailMeta.textContent=fullTodayDate();ui.stateFactors.className="state-factors compact-grid";ui.stateFactors.innerHTML='<div class="state-factor"><div class="state-factor-context">No hay suficientes métricas recientes para calcular el Estado ɅTLɅS.</div></div>';ui.stateBaseScore.textContent="—";ui.stateRecoveryPenalty.textContent="—";ui.stateLimiter.className="state-limiter";ui.stateLimiter.textContent="";return;}
- ui.stateDetailHero.className=`state-detail-card state-${s.band.tone}`;ui.stateDetailRing.style.setProperty("--score-pct",`${s.score}%`);ui.stateDetailScore.textContent=String(s.score);ui.stateDetailWord.textContent=s.band.label;ui.stateDetailNote.textContent=atlasStateTrainingInsight(s);ui.stateDetailMeta.textContent=fullTodayDate();
+ ui.stateDetailHero.className=`state-detail-card state-${s.band.tone}`;ui.stateDetailRing.style.setProperty("--score-pct",`${s.score}%`);ui.stateDetailScore.textContent=String(s.score);ui.stateDetailWord.textContent=s.band.label;ui.stateDetailNote.textContent=atlasStateTrainingInsight(s);ui.stateDetailMeta.textContent=fullTodayDate()+" · Índice experimental";
  const sleepContext=()=>{const parts=[];if(Number.isFinite(s.sleepHours))parts.push(formatSleepHM(s.sleepHours*3600));if(s.sleepQuality?.label)parts.push(s.sleepQuality.label);if(Number.isFinite(s.sleepScore))parts.push(`puntuación ${formatNatural(s.sleepScore,0)}`);return parts.length?parts.join(" · "):"Sin datos recientes";};
  const defs=[
-  {key:"hrv",icon:"🫀",name:"VFC",weight:30,context:()=>Number.isFinite(s.hrvLatest)?`Última noche · ${formatNatural(s.hrvLatest,1)} ms${Number.isFinite(s.hrv7)?` · media 7 d ${formatNatural(s.hrv7,1)}`:""}${s.hrvBaseline?` · estimación ɅTLɅS ${formatNatural(s.hrvBaseline.low,0)}–${formatNatural(s.hrvBaseline.high,0)}`:""}`:"Sin datos recientes"},
+  {key:"hrv",icon:"🫀",name:"VFC",weight:30,context:()=>Number.isFinite(s.hrvLatest)?`Última noche · ${formatNatural(s.hrvLatest,1)} ms${Number.isFinite(s.hrv7)?` · media 7 d ${formatNatural(s.hrv7,1)}`:""}${s.hrvBaseline?` · referencia estimada ${formatNatural(s.hrvBaseline.low,0)}–${formatNatural(s.hrvBaseline.high,0)} (sin equivalencia verificada con Garmin)`:""}`:"Sin datos recientes"},
   {key:"sleep",icon:"💤",name:"Sueño",weight:25,context:sleepContext},
   {key:"rhr",icon:"❤️",name:"Reposo",weight:20,context:()=>Number.isFinite(s.rhrDelta)?`Media 7 d vs 28 d · ${signedNatural(s.rhrDelta,1)} ppm`:"Sin referencia suficiente"},
   {key:"fresh",icon:"⚡",name:"Frescura",weight:25,context:()=>Number.isFinite(s.fresh)?`${signedNatural(s.fresh,2)} · ${freshnessZone(s.fresh)?.label||"—"}`:"Sin datos recientes"}
@@ -3728,7 +3782,8 @@ async function clearRuntimeDiagnostics(){if(!confirm("¿Limpiar el registro inte
 const TRAINING_PLAN_DISTANCES=Object.freeze({"5k":{label:"5 km",distanceM:5000},"10k":{label:"10 km",distanceM:10000},half:{label:"Media maratón",distanceM:21097.5},marathon:{label:"Maratón",distanceM:42195}});
 function trainingPlanDistanceDef(key,source=null){if(TRAINING_PLAN_DISTANCES[key])return TRAINING_PLAN_DISTANCES[key];const d=Number(source?.distanceM);return{label:d>0?`${formatNatural(d/1000,1)} km`:"Otra distancia",distanceM:d>0?d:null};}
 function trainingPlanInfoEmoji(label){return({Inicio:"🚀","Fecha de carrera":"🏁",Duración:"🗓️",Distancia:"📏",Objetivo:"🎯","Ritmo objetivo":"⏱️","Días seleccionados":"📅","Carreras secundarias":"🏃",Recorrido:"🗺️","Distancia del recorrido":"📏","Desnivel positivo":"↗️","Desnivel negativo":"↘️"})[label]||"•";}
-function renderTrainingPlanPaces(){const box=$("trainingPlanPaces");if(box)box.innerHTML='<div class="training-plan-intermediate-empty">Los ritmos de entrenamiento se definirán al construir el plan. La evaluación inicial está en Información del plan. El ritmo objetivo figura en Información del plan.</div>';}
+
+
 
 // Explicit retirement list: never clear historical data or plan configuration.
 const RETIRED_TRAINING_META_KEYS=new Set(["athleteModelV1","raceDemandModelV1","adaptationCapacityV1","macroPlannerV1","weeklyAllocatorV1","sessionSynthesizerV1","engineV2Goal","engineV2SecondaryGoals","engineV2AvailabilityExceptions","engineV2PlanManifest","engineV2PlanRevisionDraft","engineV2PlanRevisionHistory","engineV2PlanCloudMeta"]);
@@ -3803,14 +3858,15 @@ function selectRunnerReference(e){const button=e.target.closest("[data-runner-re
  const meters=activityDistanceM(a),nearest=Object.entries(AtlasRunnerAssessment.DISTANCES).sort(([,x],[,y])=>Math.abs(x-meters)-Math.abs(y-meters))[0];if(meters>0&&Math.abs(nearest[1]-meters)/nearest[1]<=.04)$("runnerReferenceDistance").value=nearest[0];
  const elapsed=AtlasRunnerAssessment.numeric(a.elapsed_time);setNewPlanTimeParts(elapsed>0?Math.round(elapsed):null,$("runnerReferenceHours"),$("runnerReferenceMinutes"),$("runnerReferenceSeconds"));$("runnerReferenceConfirmed").checked=false;markRunnerContextDirty();renderRunnerReferenceSource();closeAtlasEditor("runnerReferencePicker");$("runnerReferenceDistance").focus({preventScroll:true});
 }
-function initialWeekDraft(){const plan=activeTrainingPlan();return plan?AtlasInitialWeek.build({plan,asOf:fmtDate(new Date()),activities:currentActivities,wellness:currentWellness,sync:currentRunnerSync,events:currentEvents}):null;}
+function initialWeekDraft(){const plan=activeTrainingPlan();if(!plan)return null;const draft=AtlasInitialWeek.build({plan,asOf:fmtDate(new Date()),activities:currentActivities,wellness:currentWellness,sync:currentRunnerSync,events:currentEvents}),calibration=currentPaceCalibration();return{...draft,sessions:draft.sessions.map(s=>AtlasWorkoutTargets.structure(s,calibration))};}
+
 function renderTrainingPlanWorkouts(){
  const plan=activeTrainingPlan();if(!plan||!ui.trainingPlanWorkouts)return;const structure=AtlasWeekStructure.build(plan,fmtDate(new Date())),draft=initialWeekDraft(),draftByDate=new Map((draft?.sessions||[]).map(s=>[s.date,s]));
  if(!structure.weeks.length){ui.trainingPlanWorkouts.innerHTML='<p class="atlas-supporting">Revisa las fechas del plan.</p>';return;}
  if(structurePlanId!==plan.id){structurePlanId=plan.id;structureWeekStart=null;}
  const index=Math.max(0,structure.weeks.findIndex(w=>w.start===(structureWeekStart||fmtDate(mondayOf(new Date(Math.max(Date.parse(plan.startDate+"T12:00:00"),Date.now()))))))),week=structure.weeks[index];structureWeekStart=week.start;const draftOnWeek=!!draft&&draft.start<=week.end&&draft.end>=week.start;
- const rows=week.days.filter(d=>d.inside).map(d=>{const c=compactActivityDate(d.date),race=d.races[0],session=draftByDate.get(d.date),title=race?race.name:session?session.name:d.past?"Fecha pasada":d.available?"Día disponible":"No disponible",note=d.conflicts[0]||(race?trainingPlanDistanceDef(race.distanceKey).label:session?`${Math.round(session.durationSec/60)} min · ritmo cómodo`:d.past?"Historial conservado":d.available?runnerBudgetLabel(d.timeLimit):"Sin sesiones");return `<div class="training-plan-workout-day"><div class="activity-row"><div class="activity-row-date"><span class="activity-row-weekday">${c.weekday}</span><span class="activity-row-day">${c.day}</span><span class="activity-row-month">${c.month}</span></div><span class="activity-row-sep" aria-hidden="true"></span><div class="activity-row-copy"><div class="activity-row-title"><span class="activity-row-title-emoji">${race?"🏁":session?"🏃🏻‍♂️":d.available&&!d.past?"📅":"—"}</span><span class="activity-row-title-text">${esc(title)}</span></div><div class="activity-row-main">${esc(note)}</div></div></div></div>`;}).join("");
- ui.trainingPlanWorkouts.innerHTML=`<p class="atlas-supporting">${draftOnWeek&&draft?.hasDraftSessions?`Propuesta inicial · ${draft.sessions.length} rodajes · ${Math.round(draft.totalDurationSec/60)} min`:esc(draftOnWeek?(draft?.issues[0]?.message||"La propuesta inicial necesita más información."):"Semana pendiente de planificar.")}</p>${draftOnWeek&&draft?.hasDraftSessions?'<p class="atlas-supporting">Rodajes a un ritmo que permita hablar en frases completas. Las semanas siguientes se definirán después.</p>':""}<div class="plan-toolbar"><button type="button" class="plan-nav-btn" data-structure-step="-1" aria-label="Semana anterior" ${index===0?"disabled":""}>‹</button><div class="plan-range"><div class="plan-range-main">${esc(planRangeLabel(new Date(week.start+"T12:00:00"),new Date(week.end+"T12:00:00")))}</div><div class="plan-range-sub">${index+1} de ${structure.weeks.length}</div></div><button type="button" class="plan-nav-btn" data-structure-step="1" aria-label="Semana siguiente" ${index===structure.weeks.length-1?"disabled":""}>›</button></div>${structure.issues.length?`<p class="atlas-supporting">${esc(structure.issues[0])}</p>`:""}<div class="training-plan-workout-week-rows">${rows}</div>`;
+ const rows=week.days.filter(d=>d.inside).map(d=>{const c=compactActivityDate(d.date),race=d.races[0],session=draftByDate.get(d.date),existing=currentEvents.find(e=>planEventDate(e)===d.date),done=currentActivities.find(a=>activityDate(a)===d.date),pending=!race&&!session&&!existing&&!done&&!(draftOnWeek&&draft?.hasDraftSessions),title=race?race.name:session?session.name:done?activityName(done):existing?planEventName(existing):pending?"Pendiente de planificar":"Descanso",note=d.conflicts[0]||(race?trainingPlanDistanceDef(race.distanceKey).label:session?`${Math.round(session.durationSec/60)} min · ${proposalPaceText(session.pace)}`:done?planActivityMetaParts(done).join(" · "):existing?planEventMeta(existing):pending?"Semana sin entrenamientos definidos":"Sin entrenamiento");return `<div class="training-plan-workout-day"><${session?`button type="button" data-proposed-session-id="${esc(session.id)}"`:"div"} class="activity-row"><div class="activity-row-date"><span class="activity-row-weekday">${c.weekday}</span><span class="activity-row-day">${c.day}</span><span class="activity-row-month">${c.month}</span></div><span class="activity-row-sep" aria-hidden="true"></span><div class="activity-row-copy"><div class="activity-row-title"><span class="activity-row-title-emoji">${race?"🏁":session?"🏃🏻‍♂️":done?activityIcon(done):existing?sportMeta(planEventType(existing)).emoji:pending?"⏳":"🛏️"}</span><span class="activity-row-title-text">${esc(title)}</span></div><div class="activity-row-main">${esc(note)}</div></div></${session?"button":"div"}></div>`;}).join("");
+ ui.trainingPlanWorkouts.innerHTML=`<p class="atlas-supporting">${draftOnWeek&&draft?.hasDraftSessions?`Propuesta inicial · ${draft.sessions.length} rodajes · ${Math.round(draft.totalDurationSec/60)} min`:esc(draftOnWeek?(draft?.issues[0]?.message||"La propuesta inicial necesita más información."):"Semana pendiente de planificar.")}</p>${draftOnWeek&&draft?.hasDraftSessions?'<p class="atlas-supporting">Rodajes a un ritmo que permita hablar en frases completas. Las semanas siguientes se definirán después.</p>':""}<div class="plan-toolbar"><button type="button" class="plan-nav-btn" data-structure-step="-1" aria-label="Semana anterior" ${index===0?"disabled":""}>‹</button><div class="plan-range"><div class="plan-range-main">${esc(planRangeLabel(new Date(week.start+"T12:00:00"),new Date(week.end+"T12:00:00")))}</div><div class="plan-range-sub">${index+1} de ${structure.weeks.length}</div></div><button type="button" class="plan-nav-btn" data-structure-step="1" aria-label="Semana siguiente" ${index===structure.weeks.length-1?"disabled":""}>›</button></div>${structure.issues.length?`<p class="atlas-supporting">${esc(structure.issues[0])}</p>`:""}<div class="training-plan-workout-week-rows">${rows}</div><details id="trainingPlanBasis" class="training-plan-basis"></details>`;showPlanTrainingBasis();
 }
 function shiftStructureWeek(e){const b=e.target.closest("[data-structure-step]");if(!b||b.disabled||!structureWeekStart)return;structureWeekStart=AtlasRunnerAssessment.addDays(structureWeekStart,7*Number(b.dataset.structureStep));renderTrainingPlanWorkouts();requestAnimationFrame(fitActivityTitles);}
 let hrvBaselineCache=new Map(),hrvCacheRows=null;
@@ -3824,11 +3880,56 @@ function renderHrvContext(){
 async function loadRunnerAnnotations(){const rows=await storeGetAll("meta");activityPurposes=new Map(rows.filter(r=>r.key.startsWith("activityPurpose:")&&Object.hasOwn(PURPOSE_LABELS,r.value?.purpose)).map(r=>[r.key.slice(16),r.value.purpose]));}
 function runnerAssistantContext(){const snapshot=runnerSnapshot(),assessment=currentRunnerAssessment(),plan=activeTrainingPlan(),draft=initialWeekDraft(),structure=plan?AtlasWeekStructure.build(plan,snapshot.asOf):null;return{status:"initial_week_preview",hasGeneratedPlan:false,hasDraftSessions:!!draft?.hasDraftSessions,canGenerate:false,version:AtlasRunnerAssessment.VERSION,asOf:snapshot.asOf,runner:{history:snapshot.history,recent:snapshot.recent,recovery:snapshot.recovery,limitations:snapshot.limitations},assessment,initialWeek:draft,weeklyStructure:structure?{totalWeeks:structure.weeks.length,issues:structure.issues,weeks:structure.weeks.filter(w=>w.end>=snapshot.asOf).slice(0,2)}:null};}
 
+let currentRunnerSports=[],currentProposal=null,proposalReturnFocus=null,proposalPreviousOverflow="";
+function proposalPaceText(p){return p?.fast>0?(p.slow>0?formatTargetPaceRange(p):`${formatPaceValue(p.fast)} min/km o más lento`):"Por sensaciones";}
+function currentPaceCalibration(){return AtlasWorkoutTargets.calibrate(currentRunnerSports,fmtDate(new Date()));}
+function openProposedSession(id){
+ const session=initialWeekDraft()?.sessions.find(s=>s.id===id);if(!session)return;
+ currentProposal=session;currentPlanEvent=null;proposalReturnFocus=document.activeElement;proposalPreviousOverflow=document.body.style.overflow;
+ ui.planDetailDate.textContent=atlasDateLabel(session.date);ui.planDetailIcon.textContent="🏃🏻‍♂️";ui.planDetailTitle.textContent=session.name;
+ ui.planDetailDistance.textContent="Por tiempo";ui.planDetailDuration.textContent=formatDuration(session.durationSec);ui.planDetailTarget.textContent=proposalPaceText(session.pace);
+ ui.planDetailSteps.innerHTML=session.steps.map((s,i)=>`<button type="button" class="plan-step proposal-step" data-proposal-step="${i}"><span class="proposal-step-heading">${i+1}. ${esc(s.name)} · ${Math.round(s.durationSec/60)} min</span><span class="atlas-supporting">${esc(proposalPaceText(s.pace))}</span><span class="atlas-supporting">${esc(s.instruction)}</span></button>`).join("");
+ const draft=initialWeekDraft(),weekly=draft?.observedWeeklyDurationSec;
+ ui.planDetailPurpose.textContent=`Mantener la continuidad con un rodaje cómodo. La propuesta se ajusta a tu frecuencia reciente, tus huecos y el menor volumen de tiempo semanal observado en las últimas dos y cuatro semanas${weekly?` (${Math.round(weekly/60)} min)`:""}. ${session.paceSource==="intervals_pace_zones"?"Ritmos orientativos desde tus zonas de Intervals.icu. Con calor, cuestas o fatiga, prioriza poder hablar con comodidad.":"Sin una referencia de ritmo utilizable, guía toda la sesión por sensaciones."}`;
+ renderPlanWorkoutBars();ui.planDetail.classList.remove("hidden");ui.planDetail.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";setAtlasSubpageNavHidden(true);ui.planDetail.scrollTop=0;ui.planDetailBack.focus({preventScroll:true});
+}
+function renderPlanWorkoutBars(){
+ const card=ui.planWorkoutBarsCard;if(!card)return;card.classList.toggle("hidden",!currentProposal);if(!currentProposal)return;
+ const steps=currentProposal.steps,total=currentProposal.durationSec,values=steps.flatMap(s=>[s.pace?.fast,s.pace?.slow]).filter(v=>Number.isFinite(v)&&v>0);
+ const increment=values.length&&Math.max(...values)-Math.min(...values)>120?30:10;
+ const top=values.length?Math.max(10,Math.floor(Math.min(...values)/increment)*increment-increment):0;
+ const bottom=values.length?Math.max(top+4*increment,Math.ceil(Math.max(...values)/increment)*increment+increment):1;
+ const pos=v=>(v-top)/(bottom-top)*100,ticks=[];if(values.length)for(let v=top;v<=bottom;v+=increment)ticks.push(v);
+ $("planWorkoutPaceAxis").innerHTML=ticks.map(v=>`<span class="activity-lap-pace-tick" style="top:${pos(v)}%">${formatPaceValue(v)}</span>`).join("")+(values.length?'<span class="activity-lap-pace-unit">/km</span>':"");
+ $("planWorkoutPaceGrid").innerHTML=ticks.map(v=>`<span class="activity-lap-pace-grid-line" style="top:${pos(v)}%"></span>`).join("");
+ card.classList.toggle("proposal-effort-chart",!values.length);
+ $("planWorkoutBars").innerHTML=steps.map((s,i)=>{const p=s.pace,representative=p?.fast>0?(p.slow>0?(p.fast+p.slow)/2:p.fast):null,height=representative?100-pos(representative):45;
+  return `<button type="button" class="activity-lap-bar-wrap proposal-bar" data-proposal-step="${i}" aria-pressed="false" aria-label="${esc(`${s.name}, ${Math.round(s.durationSec/60)} minutos, ${proposalPaceText(p)}`)}" style="flex-basis:${s.durationSec/total*100}%"><span class="activity-lap-bar" style="height:${height}%;background:var(--${s.type==="easy"?"blue":"muted"})"></span><span class="activity-lap-bar-label">${i+1}</span></button>`;
+ }).join("");
+ $("planWorkoutChartNote").textContent=values.length?"Altura: centro del rango o límite de ritmo. Anchura: duración del bloque.":"Bloques por tiempo y sensaciones; sin escala de ritmo.";
+ selectProposalStep(0);
+}
+function selectProposalStep(index){
+ const step=currentProposal?.steps[index];if(!step)return;
+ for(const b of ui.planDetail.querySelectorAll("[data-proposal-step]")){const selected=Number(b.dataset.proposalStep)===index;b.classList.toggle("selected",selected);b.setAttribute("aria-pressed",String(selected));}
+ $("planWorkoutReadout").textContent=`${step.name} · ${Math.round(step.durationSec/60)} min · ${proposalPaceText(step.pace)}`;
+}
+function renderTrainingPlanPaces(){
+ const box=$("trainingPlanPaces");if(!box)return;const c=currentPaceCalibration();
+ box.innerHTML=`<div class="training-plan-info">${runnerInfoRow("🏃🏻‍♂️","Rodaje suave",proposalPaceText(c.easy))}${runnerInfoRow("🌿","Calentamiento y vuelta a la calma",proposalPaceText(c.recovery))}</div><p class="atlas-supporting">${esc(c.easy?"Desde tus zonas de carrera en Intervals.icu. Son orientativas: poder hablar con comodidad tiene prioridad.":c.reason+" Se utilizará un esfuerzo cómodo.")}</p>`;
+}
+function showPlanTrainingBasis(){
+ const box=$("trainingPlanBasis");if(!box)return;const draft=initialWeekDraft();
+ box.innerHTML=`<summary>Cómo se decide esta semana</summary><p class="atlas-supporting">Se toma el menor tiempo semanal y la menor frecuencia de tus últimas dos y cuatro semanas. Cada sesión respeta tu duración habitual y tu tiempo disponible; se dejan días entre rodajes y se evitan entrenamientos ya registrados o previstos.</p><p class="atlas-supporting">${draft?.observedWeeklyDurationSec?`Referencia reciente: ${Math.round(draft.observedWeeklyDurationSec/60)} min por semana. `:""}Los límites de 20–60 min, la separación y la distribución son reglas iniciales propias de ɅTLɅS, pendientes de validación como conjunto.</p><p class="atlas-supporting">Los ritmos utilizan zonas importadas compatibles con <a href="${AtlasWorkoutTargets.SOURCE}" target="_blank" rel="noopener noreferrer">Joe Friel</a>. La propuesta actual es de rodajes iniciales. La periodización para cada carrera, las tiradas largas y la adaptación siguen pendientes. Los <a href="https://www.baa.org/races/boston-marathon/info-for-athletes/boston-marathon-training/" target="_blank" rel="noopener noreferrer">planes de la B.A.A.</a> son una referencia estudiada, todavía no incorporada.</p>`;
+}
+
 window.addEventListener("DOMContentLoaded",()=>{
  on($("runnerContextEdit"),"click",openRunnerContext);on($("runnerContextBack"),"click",()=>closeAtlasEditor("runnerContextDetail"));on($("runnerContextForm"),"submit",saveRunnerContext);on($("runnerContextForm"),"input",markRunnerContextDirty);on($("runnerContextForm"),"change",markRunnerContextDirty);
  for(const k of ["Weekdays","Weekends"])on($("runner"+k+"Mode"),"change",updateRunnerTimeFields);
  on($("runnerReferenceClear"),"click",clearRunnerReference);on($("runnerReferenceChoose"),"click",openRunnerReferencePicker);on($("runnerReferencePickerBack"),"click",()=>closeAtlasEditor("runnerReferencePicker"));on($("runnerReferenceList"),"click",selectRunnerReference);on($("runnerReferenceMore"),"click",()=>{runnerPickerLimit+=40;renderRunnerReferencePicker();});for(const id of ["runnerReferenceSearch","runnerReferenceFilter"])on($(id),id.endsWith("Search")?"input":"change",()=>{runnerPickerLimit=40;renderRunnerReferencePicker();});
- on($("activityPurpose"),"change",saveActivityPurpose);on($("trainingPlanWorkouts"),"click",shiftStructureWeek);
+ on($("activityPurpose"),"change",saveActivityPurpose);on($("trainingPlanWorkouts"),"click",e=>{const session=e.target.closest("[data-proposed-session-id]");if(session)openProposedSession(session.dataset.proposedSessionId);else shiftStructureWeek(e);});
+ on(ui.planDetail,"click",e=>{const b=e.target.closest("[data-proposal-step]");if(b)selectProposalStep(Number(b.dataset.proposalStep));});
+ on(document,"keydown",e=>{if(e.key==="Escape"&&currentProposal){e.preventDefault();closePlanDetail();}});
 });
 })();
 </script></body>
