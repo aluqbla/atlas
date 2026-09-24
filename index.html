@@ -4778,6 +4778,237 @@ renderTrainingPlanWorkouts=function(schedule=null){
   qsa('[data-prescribed-session-id]',box).forEach(btn=>{const id=btn.getAttribute('data-prescribed-session-id'),s=trainingPresentationSessionById(id);if(s?.role==='competition'&&s?.modifier!=='secondary_race'){const t=btn.querySelector('.activity-row-title-text');if(t)t.textContent=plan.name;}});
 };
 
+
+/* ===== ɅTLɅS v0.8.10 · unidades, dinámicas de carrera, perfil y readiness 2.0 ===== */
+const atlasV0810Style=document.createElement("style");atlasV0810Style.textContent=`
+/* Información / Estado / Ritmos: misma tabla, unidades discretas y lecturas compactas. */
+#trainingPlanInfo .atlas-data-panel,#trainingPlanCurrentState .atlas-data-panel,#trainingPlanPaces .atlas-data-panel{
+  width:100%!important;max-width:none!important;margin:0!important;
+  border:2px solid var(--line)!important;border-radius:20px!important;
+}
+.atlas-v0810-reading{display:flex;align-items:baseline;gap:4px;min-width:0;white-space:nowrap}
+.atlas-v0810-reading.dense{gap:3px}
+.atlas-v0810-main{font-size:20.5px;line-height:1.05;font-weight:835;color:#fff;letter-spacing:-.42px;white-space:nowrap}
+.atlas-v0810-reading.dense .atlas-v0810-main{font-size:17.2px}
+.atlas-v0810-unit,.atlas-v0810-aux-unit{font-size:10.4px;line-height:1;color:#939ca6;font-weight:700;letter-spacing:0;white-space:nowrap}
+.atlas-v0810-sep{font-size:13px;color:#727b84;font-weight:600;padding:0 1px}
+.atlas-v0810-aux{font-size:15.5px;line-height:1.05;color:#fff;font-weight:790;white-space:nowrap}
+.atlas-v0810-reading.capacity .atlas-v0810-main{font-size:16.2px}
+.atlas-v0810-reading.capacity .atlas-v0810-aux{font-size:15.2px}
+#trainingPlanInfo .atlas-data-cell,#trainingPlanCurrentState .atlas-data-cell,#trainingPlanPaces .atlas-data-cell{min-width:0}
+#trainingPlanCurrentState .atlas-data-cell:nth-child(5) .atlas-v0810-reading{transform-origin:left center}
+@media(max-width:390px){
+ .atlas-v0810-main{font-size:19px}
+ .atlas-v0810-reading.dense .atlas-v0810-main{font-size:15.2px}
+ .atlas-v0810-reading.capacity .atlas-v0810-main{font-size:14.4px}
+ .atlas-v0810-reading.capacity .atlas-v0810-aux{font-size:13.8px}
+ .atlas-v0810-unit,.atlas-v0810-aux-unit{font-size:9.5px}
+}
+
+/* Intervalos: sólo estructura por bloques, sin duplicar la estructura larga. */
+.plan-detail-structure-line.atlas-hidden-interval-structure{display:none!important}
+
+/* Dinámicas de carrera. */
+.activity-running-dynamics{margin:18px 0 4px}
+.activity-running-dynamics.hidden{display:none!important}
+.activity-running-dynamics-title{display:flex;align-items:center;gap:8px;margin:0 2px 9px;font-size:20px;line-height:1.15;font-weight:825;color:#fff;letter-spacing:-.3px}
+.activity-running-dynamics-grid{display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--line);border-radius:19px;overflow:hidden;background:linear-gradient(180deg,#090c0f,#06080a)}
+.activity-running-dynamic{position:relative;min-width:0;padding:11px 12px 12px}
+.activity-running-dynamic:nth-child(even)::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:2px;background:var(--line)}
+.activity-running-dynamic:nth-child(n+3)::after{content:"";position:absolute;left:10px;right:10px;top:0;height:2px;background:var(--line)}
+.activity-running-dynamic-head{display:flex;align-items:center;gap:6px;min-width:0;color:#aab2bb;font-size:10.8px;line-height:1.14;font-weight:735}
+.activity-running-dynamic-icon{font-size:15px;line-height:1}
+.activity-running-dynamic-value{display:flex;align-items:baseline;gap:3px;margin-top:6px;min-width:0;color:#fff;font-size:20px;line-height:1.05;font-weight:825;letter-spacing:-.35px;white-space:nowrap}
+.activity-running-dynamic-value small{font-size:9.7px;color:#939ca6;font-weight:700;letter-spacing:0}
+.activity-running-dynamics-note{margin:8px 4px 0;color:#777f88;font-size:9.8px;line-height:1.4}
+
+/* Altura/peso visibles en el Perfil principal. */
+.profile-dashboard-body-metrics{display:flex;align-items:center;gap:7px;margin-top:8px;flex-wrap:wrap}
+.profile-dashboard-body-chip{display:inline-flex;align-items:center;gap:5px;min-height:25px;padding:4px 8px;border:1px solid rgba(255,255,255,.10);border-radius:999px;background:rgba(255,255,255,.035);font-size:10.5px;line-height:1;color:#d8dde2;font-weight:720}
+.profile-dashboard-body-chip strong{color:#fff;font-size:11.5px}
+
+/* Readiness 2.0: no cambia la UI, sólo añade contexto de recuperación. */
+.state-detail-meta::after{content:" · recuperación reforzada";color:#6f7881}
+`;document.head.appendChild(atlasV0810Style);
+
+/* ---------- Paneles de Plan ---------- */
+function atlasV0810ReadingHtml(r){
+  const main=String(r.main??r.v??"—");
+  const cls=["atlas-v0810-reading",r.dense?"dense":"",r.kind||""].filter(Boolean).join(" ");
+  return `<div class="${cls}"><span class="atlas-v0810-main">${esc(main)}</span>${r.unit?`<span class="atlas-v0810-unit">${esc(r.unit)}</span>`:""}${r.aux!=null&&String(r.aux)!==""?`<span class="atlas-v0810-sep">|</span><span class="atlas-v0810-aux">${esc(String(r.aux))}</span>${r.auxUnit?`<span class="atlas-v0810-aux-unit">${esc(r.auxUnit)}</span>`:""}`:""}</div>`;
+}
+function atlasV0810PanelRows(rows){
+  return (rows||[]).map(r=>`<div class="atlas-data-cell"><div class="atlas-data-kicker"><span class="atlas-data-emoji">${r.e||"•"}</span><span class="atlas-data-label">${esc(r.l||"")}</span></div>${atlasV0810ReadingHtml(r)}</div>`).join("");
+}
+trainingPlanRenderPremiumCards=function(container,rows,{kind="default"}={}){
+  if(!container)return;
+  container.innerHTML=`<div class="atlas-data-panel ${kind}">${atlasV0810PanelRows(rows)}</div>`;
+};
+trainingPlanPremiumInfoRows=function(plan){
+  const pace=trainingPlanTargetPace(plan),weeks=Number(plan?.engine?.input?.horizon?.calendarWeeks)||trainingPlanWeeks(plan)||0,km=Number(plan?.distanceM)/1000;
+  return[
+    {e:"🚀",l:"Inicio",main:atlasDateLabel(plan.startDate)},
+    {e:"🏁",l:"Fecha de la carrera",main:atlasDateLabel(plan.raceDate)},
+    {e:"🗓️",l:"Duración",main:weeks?formatNatural(weeks,0):"—",unit:weeks?"semanas":""},
+    {e:"📏",l:"Distancia",main:Number.isFinite(km)&&km>0?formatNatural(km,1):"—",unit:Number.isFinite(km)&&km>0?"km":""},
+    {e:"🎯",l:"Objetivo",main:trainingPlanGoalLabel(plan)},
+    {e:"⏱️",l:"Ritmo objetivo",main:Number.isFinite(pace)?formatPaceValue(pace):"—",unit:Number.isFinite(pace)?"min/km":""},
+    {e:"🏃🏻‍♂️",l:"Sesiones",main:String(trainingPlanSessionCount(plan))},
+    {e:"🏁",l:"Carreras secundarias",main:String((plan.intermediateRaces||[]).length)}
+  ];
+};
+trainingPlanPremiumCurrentRows=function(plan,snapshot,currentAbility,goalAssessment){
+  const th=currentAbility?.thresholdAnchor,ability=(currentAbility||plan?.engine?.currentAbility)?.distances?.[plan?.distanceKey],goal=String(goalAssessment?.label||"—").replace(/^\S+\s*/,"");
+  return[
+    {e:"🧱",l:"Base",main:trainingEngineBaseLabel(snapshot?.base?.effective)},
+    {e:"📈",l:"Volumen habitual",main:Number.isFinite(snapshot?.base?.habitualVolumeKm)?formatNatural(snapshot.base.habitualVolumeKm,1):"—",unit:Number.isFinite(snapshot?.base?.habitualVolumeKm)?"km/sem":""},
+    {e:"📅",l:"Frecuencia habitual",main:Number.isFinite(snapshot?.base?.frequencyDays)?formatNatural(snapshot.base.frequencyDays,1):"—",unit:Number.isFinite(snapshot?.base?.frequencyDays)?"días/sem":""},
+    {e:"↗️",l:"Tirada larga reciente",main:Number.isFinite(snapshot?.longRun?.lr0Km)?formatNatural(snapshot.longRun.lr0Km,1):"—",unit:Number.isFinite(snapshot?.longRun?.lr0Km)?"km":""},
+    {e:"🔥",l:"Umbral",main:Number(th?.paceSecKm)>0?formatPaceValue(th.paceSecKm):"—",unit:Number(th?.paceSecKm)>0?"min/km":"",aux:Number(th?.heartRateBpm)>0?Math.round(th.heartRateBpm):"",auxUnit:Number(th?.heartRateBpm)>0?"ppm":"",dense:true},
+    {e:"🧭",l:"Capacidad actual",main:Number(ability?.timeSec)>0?formatDuration(ability.timeSec):"—",aux:Number(ability?.paceSecKm)>0?formatPaceValue(ability.paceSecKm):"",auxUnit:Number(ability?.paceSecKm)>0?"min/km":"",dense:true,kind:"capacity"},
+    {e:"⚡",l:"Calidad establecida",main:snapshot?.quality?.established?"Sí":"No"},
+    {e:goalAssessment?.state==="DEMANDING"?"🟡":goalAssessment?.state==="SUPPORTED"?"🟢":goalAssessment?.state==="UNSUPPORTED"?"🟠":"🎯",l:"Estado del objetivo",main:goal}
+  ];
+};
+renderTrainingPlanPaces=function(){
+  const box=$("trainingPlanPaces"),plan=activeTrainingPlan();if(!box||!plan)return;
+  const anchors=plan.engine?.paceAnchors;if(!anchors){box.innerHTML='<p class="atlas-supporting">Los ritmos aún no están disponibles.</p>';return;}
+  const defs=[["🫧","Recuperación",anchors.recovery],["🌿","Fácil",anchors.easy],["🫁","Aeróbico",anchors.aerobic],["🏁","Maratón",anchors.marathon],["🏃🏻‍♂️","Media maratón",anchors.half],["🔥","Umbral",anchors.threshold],["⚡","10K",anchors.tenK],["🚀","5K",anchors.fiveK]];
+  const rows=defs.map(([e,l,a])=>({e,l,main:String(trainingEnginePaceRangeLabel(a)||"—").replace(/\s*min\/km\s*$/i,""),unit:a?"min/km":""}));
+  box.innerHTML=`<div class="atlas-data-panel paces">${atlasV0810PanelRows(rows)}${plan.engine?.status==="NEEDS_ANCHOR_TEST"?'<div class="atlas-data-note">⚠️ Faltan datos suficientes para calcular algunos ritmos sin inventarlos.</div>':""}</div>`;
+};
+
+/* ---------- Ficha de entrenamiento: intervalos sin línea larga duplicada ---------- */
+const atlasV0810OpenPrescribedPlanDetailBase=openPrescribedPlanDetail;
+openPrescribedPlanDetail=function(id){
+  atlasV0810OpenPrescribedPlanDetailBase(id);
+  const session=trainingPresentationSessionById(id);
+  const isRun=session&&(session.type==="Run"||trainingEngineSessionType(session.family)==="Run");
+  const intervalLike=isRun&&!trainingPresentationIsContinuous(session)&&(session.steps||[]).length>0;
+  if(ui.planDetailStructureLine)ui.planDetailStructureLine.classList.toggle("atlas-hidden-interval-structure",!!intervalLike);
+};
+
+/* ---------- Dinámicas de carrera ---------- */
+function atlasV0810EnsureRunningDynamics(){
+  let section=$("activityRunningDynamics");
+  if(section)return section;
+  section=document.createElement("section");
+  section.id="activityRunningDynamics";
+  section.className="activity-running-dynamics hidden";
+  section.innerHTML='<div class="activity-running-dynamics-title"><span>🧬</span><span>Dinámicas de carrera</span></div><div class="activity-running-dynamics-grid" id="activityRunningDynamicsGrid"></div><div class="activity-running-dynamics-note">Datos presentes en Intervals.icu para esta actividad. Las métricas que Garmin no haya sincronizado no se inventan.</div>';
+  ui.activityAnalysis?.insertAdjacentElement("afterend",section);
+  return section;
+}
+function atlasV0810Metric(icon,label,value,unit=""){
+  return `<div class="activity-running-dynamic"><div class="activity-running-dynamic-head"><span class="activity-running-dynamic-icon">${icon}</span><span>${esc(label)}</span></div><div class="activity-running-dynamic-value"><span>${esc(String(value))}</span>${unit?`<small>${esc(unit)}</small>`:""}</div></div>`;
+}
+function atlasV0810RunningDynamicsRows(a){
+  if(!isRun(a))return[];
+  const rows=[];
+  const cadence=activityCadence(a);
+  const gct=Number(a?.average_stance_time);
+  const balance=Number(a?.average_stance_time_balance);
+  const stancePct=Number(a?.average_stance_time_percent);
+  const stepMm=Number(a?.average_step_length);
+  const strideRaw=Number(a?.average_stride);
+  const vo=Number(a?.average_vertical_oscillation);
+  const vr=Number(a?.average_vertical_ratio);
+  const power=activityPower(a);
+  if(Number.isFinite(gct)&&gct>0)rows.push(["🦶","Contacto con el suelo",formatNatural(gct,0),"ms"]);
+  if(Number.isFinite(balance)&&balance>0&&balance<100)rows.push(["⚖️","Equilibrio de contacto",`${formatNatural(balance,1)} / ${formatNatural(100-balance,1)}`,"%"]);
+  if(Number.isFinite(cadence)&&cadence>0)rows.push(["👣","Cadencia",formatNatural(cadence,0),"spm"]);
+  const strideM=Number.isFinite(stepMm)&&stepMm>100?stepMm/1000:(Number.isFinite(strideRaw)&&strideRaw>.2&&strideRaw<3?strideRaw:null);
+  if(Number.isFinite(strideM))rows.push(["📏","Longitud de zancada",formatNatural(strideM,2),"m"]);
+  if(Number.isFinite(vo)&&vo>0)rows.push(["↕️","Oscilación vertical",formatNatural(vo/10,1),"cm"]);
+  if(Number.isFinite(vr)&&vr>0)rows.push(["📐","Ratio vertical",formatNatural(vr,1),"%"]);
+  if(Number.isFinite(power)&&power>0)rows.push(["⚡","Potencia de carrera",formatNatural(power,0),"W"]);
+  if(Number.isFinite(stancePct)&&stancePct>0)rows.push(["⏳","Tiempo de apoyo",formatNatural(stancePct,1),"%"]);
+  return rows;
+}
+function renderActivityRunningDynamics(a){
+  const section=atlasV0810EnsureRunningDynamics(),grid=$("activityRunningDynamicsGrid"),rows=atlasV0810RunningDynamicsRows(a);
+  section.classList.toggle("hidden",!rows.length);
+  if(grid)grid.innerHTML=rows.map(r=>atlasV0810Metric(...r)).join("");
+}
+const atlasV0810RenderActivityDetailBase=renderActivityDetail;
+renderActivityDetail=function(a){atlasV0810RenderActivityDetailBase(a);renderActivityRunningDynamics(a);};
+
+/* Competición oficial: bandera en lugar del corredor en todas las fichas/listados. */
+const atlasV0810ActivityIconBase=activityIcon;
+activityIcon=function(a){return trainingEngineIsCompetitionRun(a)?"🏁":atlasV0810ActivityIconBase(a);};
+
+/* Fuerza realizada en Plan: misma información compacta que Actividades. */
+planActivityMetaParts=function(a){
+  const parts=[],d=activityDistanceM(a),t=activityElapsedSec(a),pace=activityPaceSecKm(a),hr=activityHr(a),cal=activityCalories(a),gymLike=activityCompactGymLike(a);
+  if(gymLike){if(t)parts.push(formatDuration(t));if(Number.isFinite(cal)&&cal>0)parts.push(`${formatNatural(cal,0)} kcal`);if(Number.isFinite(hr)&&hr>0)parts.push(`${formatNatural(hr,0)} ppm`);}
+  else{if(d)parts.push(`${formatNatural(d/1000,2)} km`);if(t)parts.push(formatDuration(t));if(Number.isFinite(pace))parts.push(`${formatPaceValue(pace)} min/km`);}
+  return parts;
+};
+
+/* Altura y peso visibles también en el Perfil principal. */
+function atlasV0810EnsureProfileBodyMetrics(){
+  let box=$("profileDashboardBodyMetrics");if(box)return box;
+  box=document.createElement("div");box.id="profileDashboardBodyMetrics";box.className="profile-dashboard-body-metrics";
+  box.innerHTML='<span class="profile-dashboard-body-chip">📏 <strong id="profileDashboardHeight">—</strong></span><span class="profile-dashboard-body-chip">⚖️ <strong id="profileDashboardWeight">—</strong></span>';
+  $("profileTileNote")?.insertAdjacentElement("afterend",box);
+  return box;
+}
+const atlasV0810RenderProfilePanelBase=renderProfilePanel;
+renderProfilePanel=function(athlete){
+  atlasV0810RenderProfilePanelBase(athlete);
+  atlasV0810EnsureProfileBodyMetrics();
+  const a=athlete||{},h=Number(a.height),w=Number(a.icu_weight??a.weight),he=$("profileDashboardHeight"),we=$("profileDashboardWeight");
+  if(he)he.textContent=Number.isFinite(h)?`${formatNatural(h,2)} m`:"—";
+  if(we)we.textContent=Number.isFinite(w)?`${formatNatural(w,1)} kg`:"—";
+};
+
+/* ---------- Estado ATLAS: recuperación aguda más persistente ----------
+   Garmin no publica su fórmula. ATLAS no la replica: sólo aproxima el comportamiento
+   público dando mucho más peso temporal a la recuperación tras carga intensa. */
+acuteRecovery=function(activities){
+  const now=Date.now(),active=[];
+  const candidates=(activities||[]).map(activity=>{
+    const load=Number(pick(activity,["icu_training_load","training_load"])),end=activityEndMs(activity),durationSec=Number(pick(activity,["elapsed_time","moving_time","timer_time","duration"]))||0;
+    const text=`${activity?.name||""} ${activity?.sub_type||""}`.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+    const quality=/umbral|threshold|interval|serie|repet|vo2|v02|tempo|fartlek|compet|race|maraton|media maraton|10k|5k|tirada larga/.test(text);
+    return{load,end,durationSec,quality};
+  }).filter(item=>Number.isFinite(item.load)&&item.load>0&&Number.isFinite(item.end)&&item.end<=now).sort((a,b)=>b.end-a.end);
+  for(const item of candidates){
+    const hoursSince=(now-item.end)/36e5;if(hoursSince>120)break;
+    const durationH=Math.max(0,item.durationSec/3600),qualityFactor=item.quality?1.10:1;
+    const recoveryHours=clamp((18+item.load*.45+durationH*8)*qualityFactor,20,120);
+    if(hoursSince>=recoveryHours)continue;
+    const maxPenalty=clamp((8+item.load*.22+durationH*4)*qualityFactor,8,38),remaining=clamp(1-hoursSince/recoveryHours,0,1);
+    const penalty=maxPenalty*(.25*Math.exp(-hoursSince/12)+.75*Math.pow(remaining,1.12));
+    if(penalty>.15)active.push({...item,hoursSince,recoveryHours,maxPenalty,penalty});
+  }
+  if(!active.length)return{penalty:0,hoursSince:null,recoveryHours:0,activeCount:0};
+  const last=active[0],penalty=clamp(active.reduce((sum,item)=>sum+item.penalty,0),0,45);
+  return{penalty,hoursSince:last.hoursSince,recoveryHours:last.recoveryHours,load:last.load,activeCount:active.length,maxPenalty:last.maxPenalty,quality:last.quality};
+};
+const atlasV0810ComputeAtlasStateBase=computeAtlasState;
+computeAtlasState=function(args){
+  const state=atlasV0810ComputeAtlasStateBase(args);if(!state)return state;
+  const p=Number(state?.recovery?.penalty)||0,h=Number(state?.recovery?.hoursSince),load=Number(state?.recovery?.load)||0;
+  const caps=[];
+  if(p>=28)caps.push({cap:44,reason:"Recuperación intensa en curso"});
+  else if(p>=20)caps.push({cap:59,reason:"Recuperación alta en curso"});
+  else if(p>=12)caps.push({cap:74,reason:"Carga reciente aún relevante"});
+  else if(p>=7)caps.push({cap:84,reason:"Recuperación reciente"});
+  if(load>=80&&Number.isFinite(h)){if(h<12)caps.push({cap:59,reason:"Sesión intensa muy reciente"});else if(h<24)caps.push({cap:69,reason:"Sesión intensa en las últimas 24 h"});}
+  if(caps.length){
+    const limit=caps.sort((a,b)=>a.cap-b.cap)[0];
+    if(state.score>limit.cap){state.score=limit.cap;state.limiter=limit;state.note=limit.reason;state.band=atlasBand(state.score);}
+  }
+  state.modelStatus="experimental-readiness-2";
+  return state;
+};
+
+window.addEventListener("DOMContentLoaded",()=>{
+  atlasV0810EnsureRunningDynamics();
+  atlasV0810EnsureProfileBodyMetrics();
+});
+
 window.addEventListener("DOMContentLoaded",()=>{atlasApplyTrainingPlanSectionEmojis();on($("trainingPlanWorkouts"),"click",shiftStructureWeek);});
 })();
 </script></body>
