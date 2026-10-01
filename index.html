@@ -11901,6 +11901,47 @@ showView=function(tab){
   return result;
 };
 
+
+/* ===== ɅTLɅS v1.5.4 · publicación exclusivamente manual ===== */
+const ATLAS_V154_VERSION="1.5.4";
+
+/* Crear o editar un plan sólo modifica el estado ATLAS.
+   Se elimina la publicación automática introducida en v1.5.0. */
+createTrainingPlan=async function(e){
+  return atlasV150CreatePlanBase(e);
+};
+
+/* Un plan ya publicado puede quedar con cambios pendientes, pero esos cambios
+   no se mandan a Intervals/Garmin hasta pulsar explícitamente “Publicar cambios”. */
+trainingPlanMarkPublicationDirty=function(plan){
+  return atlasV150MarkPublicationDirtyBase(plan);
+};
+
+/* Publicación manual: reutiliza la ruta verificada de v1.5.2.
+   Sólo este gesto del usuario crea/actualiza los workouts remotos. */
+atlasV090PublishPlan=async function(){
+  if(atlasV090PublicationBusy||atlasV150RemoteSyncBusy)return;
+  const plan=activeTrainingPlan();if(!plan)return;
+  const diff=atlasV090PublicationDiff(plan);
+  if(!diff.desired.events.length){toast("⚠️ No hay sesiones futuras para publicar.",true);return;}
+
+  const first=plan.publication?.status!=="published";
+  const action=first
+    ?`Publicar ${diff.desired.events.length} sesiones en Intervals.icu`
+    :`Publicar ${diff.upserts.length} cambios${diff.deletes.length?` y retirar ${diff.deletes.length} sesiones`:""}`;
+  if(!confirm(`${action}?\n\nSólo ahora pasarán al calendario semanal de Plan y a Intervals.icu. Garmin se actualizará después mediante la sincronización de Intervals.`))return;
+
+  atlasV090PublicationBusy=true;
+  await renderTrainingPlanPublication();
+  try{
+    const ok=await atlasV150SyncPlanNow(plan,{toastSuccess:true});
+    if(!ok&&!atlasOnline())toast("⚠️ Sin conexión: el plan sigue sin publicarse.",true);
+  }finally{
+    atlasV090PublicationBusy=false;
+    await renderTrainingPlanPublication();
+  }
+};
+
 window.addEventListener("DOMContentLoaded",()=>{atlasApplyTrainingPlanSectionEmojis();on($("trainingPlanWorkouts"),"click",shiftStructureWeek);});
 })();
 </script></body>
