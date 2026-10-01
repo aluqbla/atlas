@@ -11615,6 +11615,292 @@ deleteActiveTrainingPlan=async function(){
   catch(error){recordRuntimeAudit("training-plan-delete-verified-v152",error,{planId:plan.id}).catch(()=>{});toast(`⚠️ El plan NO se ha eliminado: ${error.message}`,true);}
 };
 
+
+/* ===== ɅTLɅS v1.5.3 · planes multidispositivo autoritativos ===== */
+const ATLAS_V153_VERSION="1.5.3";
+let atlasV153InitialRemoteResolved=false,atlasV153InitialRemoteAttempted=false,atlasV153MutationEpoch=0;
+let atlasV153WriteQueue=Promise.resolve();
+
+const atlasV153LoadTrainingPlansLocal=loadTrainingPlans;
+function atlasV153Clone(value){return value==null?value:JSON.parse(JSON.stringify(value));}
+function atlasV153RemoteRevision(remote){const n=Number(remote?.revision);return Number.isFinite(n)&&n>=0?n:0;}
+function atlasV153EmptyManifest(remote=null){return{schema:TRAINING_PLANS_CLOUD_SCHEMA,version:TRAINING_PLANS_VERSION,activeId:null,updatedAt:remote?.updatedAt||new Date().toISOString(),plans:[]};}
+function atlasV153RemoteManifest(remote){return trainingPlansCloudExtract(remote)||atlasV153EmptyManifest(remote);}
+function atlasV153ManifestCore(manifest){return{version:String(manifest?.version||TRAINING_PLANS_VERSION),activeId:manifest?.activeId||null,plans:Array.isArray(manifest?.plans)?manifest.plans:[]};}
+function atlasV153ManifestSignature(manifest){return JSON.stringify(atlasV153ManifestCore(manifest));}
+function atlasV153EnvelopeSignature(value){return atlasV153ManifestSignature(trainingPlansCloudManifestFromEnvelope(value));}
+function atlasV153ConflictError(message="El plan cambió en otro dispositivo. ATLAS ha cargado la revisión más reciente."){const error=new Error(message);error.name="PlanStateConflictError";error.code="ATLAS_PLAN_STATE_CONFLICT";return error;}
+function atlasV153IsConflict(error){return error?.code==="ATLAS_PLAN_STATE_CONFLICT"||error?.status===409||error?.status===412;}
+
+async function atlasV153WriteRemoteToLocal(remote,{invalidatePending=true}={}){
+  if(invalidatePending)atlasV153MutationEpoch++;
+  const manifest=atlasV153RemoteManifest(remote),value={
+    version:TRAINING_PLANS_VERSION,
+    activeId:manifest.activeId||null,
+    updatedAt:manifest.updatedAt||remote?.updatedAt||new Date().toISOString(),
+    plans:Array.isArray(manifest.plans)?atlasV153Clone(manifest.plans):[]
+  };
+  await storePut("meta",{key:TRAINING_PLANS_META_KEY,value});
+  await writeTrainingPlansCloudMeta({
+    schema:TRAINING_PLANS_CLOUD_SCHEMA,
+    revision:atlasV153RemoteRevision(remote),
+    updatedAt:remote?.updatedAt||value.updatedAt,
+    dirty:false,
+    authoritative:true
+  });
+  return value;
+}
+async function atlasV153ApplyRemote(remote,{invalidatePending=true}={}){
+  await atlasV153WriteRemoteToLocal(remote,{invalidatePending});
+  await atlasV153LoadTrainingPlansLocal();
+  return true;
+}
+
+/* Reemplaza la antigua mezcla por timestamps. La revisión remota no se mezcla
+   con planes locales antiguos; los cambios válidos se publican mediante CAS. */
+applyTrainingPlansCloudManifest=async function(manifest,remote={}) {
+  const wrapped={...remote,state:{...(remote?.state||{}),planManifest:manifest||atlasV153EmptyManifest(remote)}};
+  return atlasV153ApplyRemote(wrapped);
+};
+
+async function atlasV153SetDirty(updatedAt){
+  const prev=await readTrainingPlansCloudMeta()||{};
+  return writeTrainingPlansCloudMeta({
+    ...prev,
+    schema:TRAINING_PLANS_CLOUD_SCHEMA,
+    revision:Number(prev.revision)||0,
+    dirty:true,
+    dirtyAt:updatedAt||new Date().toISOString(),
+    authoritative:true
+  });
+}
+markTrainingPlansCloudDirty=atlasV153SetDirty;
+
+async function atlasV153FetchRemote(){return apiRequest("/api/plan-state",{timeoutMs:12000,retries:1});}
+async function atlasV153VerifyCommitted(snapshot,expectedRevision){
+  const expectedSig=atlasV153EnvelopeSignature(snapshot),waits=[0,120,320,700];
+  let latest=null;
+  for(const delay of waits){
+    if(delay)await waitMs(delay);
+    latest=await atlasV153FetchRemote();
+    const revision=atlasV153RemoteRevision(latest),remoteSig=atlasV153ManifestSignature(atlasV153RemoteManifest(latest));
+    if(revision>expectedRevision){
+      await atlasV153ApplyRemote(latest);
+      throw atlasV153ConflictError("Otro dispositivo publicó una revisión posterior. ATLAS conserva la versión del servidor.");
+    }
+    if(revision===expectedRevision&&remoteSig===expectedSig)return latest;
+    if(revision===expectedRevision&&remoteSig!==expectedSig){
+      await atlasV153ApplyRemote(latest);
+      throw atlasV153ConflictError();
+    }
+  }
+  throw new Error("El Worker no ha confirmado todavía la revisión del plan. El cambio queda pendiente de sincronización.");
+}
+async function atlasV153CommitSnapshot(snapshot,{epoch=atlasV153MutationEpoch,remote=null}={}){
+  if(epoch!==atlasV153MutationEpoch)return false;
+  if(!atlasOnline()||!hasAtlasConnectionConfig())return false;
+  const meta=await readTrainingPlansCloudMeta()||{},baseRevision=Number(meta.revision)||0,currentRemote=remote||await atlasV153FetchRemote(),remoteRevision=atlasV153RemoteRevision(currentRemote);
+  if(epoch!==atlasV153MutationEpoch)return false;
+
+  if(remoteRevision!==baseRevision){
+    await atlasV153ApplyRemote(currentRemote);
+    throw atlasV153ConflictError();
+  }
+
+  const desiredManifest=trainingPlansCloudManifestFromEnvelope(snapshot),remoteManifest=atlasV153RemoteManifest(currentRemote);
+  if(atlasV153ManifestSignature(desiredManifest)===atlasV153ManifestSignature(remoteManifest)){
+    await writeTrainingPlansCloudMeta({
+      schema:TRAINING_PLANS_CLOUD_SCHEMA,
+      revision:remoteRevision,
+      updatedAt:currentRemote?.updatedAt||desiredManifest.updatedAt,
+      dirty:false,
+      authoritative:true
+    });
+    return true;
+  }
+
+  let result;
+  try{
+    result=await apiRequest("/api/plan-state",{
+      method:"PUT",
+      body:{baseRevision:remoteRevision,state:trainingPlansCloudState(desiredManifest)},
+      timeoutMs:20000,retries:0
+    });
+  }catch(error){
+    if(atlasV153IsConflict(error)){
+      const latest=await atlasV153FetchRemote().catch(()=>currentRemote);
+      await atlasV153ApplyRemote(latest);
+      throw atlasV153ConflictError();
+    }
+    throw error;
+  }
+
+  const expectedRevision=Number(result?.revision)||remoteRevision+1,verified=await atlasV153VerifyCommitted(snapshot,expectedRevision);
+  if(epoch!==atlasV153MutationEpoch)return false;
+  await writeTrainingPlansCloudMeta({
+    schema:TRAINING_PLANS_CLOUD_SCHEMA,
+    revision:atlasV153RemoteRevision(verified),
+    updatedAt:verified?.updatedAt||result?.updatedAt||desiredManifest.updatedAt,
+    dirty:false,
+    authoritative:true
+  });
+  return true;
+}
+function atlasV153QueueCommit(snapshot,{remote=null}={}){
+  const epoch=atlasV153MutationEpoch,safeSnapshot=atlasV153Clone(snapshot);
+  const run=()=>atlasV153CommitSnapshot(safeSnapshot,{epoch,remote});
+  const task=atlasV153WriteQueue.then(run,run);
+  atlasV153WriteQueue=task.catch(()=>false);
+  return task;
+}
+
+/* Toda mutación se persiste localmente y se intenta confirmar inmediatamente.
+   Sin red queda dirty; al reconectar nunca podrá pisar una revisión más nueva. */
+persistTrainingPlans=async function({fromCloud=false}={}){
+  const value=trainingPlansLocalEnvelope();
+  await storePut("meta",{key:TRAINING_PLANS_META_KEY,value});
+  if(fromCloud)return value;
+  await atlasV153SetDirty(value.updatedAt);
+  if(!atlasOnline()||!hasAtlasConnectionConfig())return value;
+  try{
+    await atlasV153QueueCommit(value);
+  }catch(error){
+    if(atlasV153IsConflict(error))throw error;
+    recordRuntimeAudit("training-plan-cloud-immediate",error).catch(()=>{});
+  }
+  return value;
+};
+
+pushTrainingPlansCloudBestEffort=async function({remote=null}={}){
+  if(!atlasOnline()||!hasAtlasConnectionConfig())return false;
+  const localRow=await storeGet("meta",TRAINING_PLANS_META_KEY).catch(()=>null),value=localRow?.value||trainingPlansLocalEnvelope();
+  await atlasV153SetDirty(value.updatedAt);
+  try{return await atlasV153QueueCommit(value,{remote});}
+  catch(error){if(atlasV153IsConflict(error))return true;throw error;}
+};
+scheduleTrainingPlansCloudPush=function(){
+  if(trainingPlansCloudPushTimer)clearTimeout(trainingPlansCloudPushTimer);
+  trainingPlansCloudPushTimer=setTimeout(()=>{
+    trainingPlansCloudPushTimer=null;
+    pushTrainingPlansCloudBestEffort().catch(error=>recordRuntimeAudit("training-plan-cloud-push-v153",error).catch(()=>{}));
+  },0);
+};
+
+/* Arranque cloud-first. Una revisión remota —también si contiene 0 planes tras
+   un borrado— sustituye el IndexedDB local antes de renderizar Plan. Sólo se
+   migra local→Worker cuando servidor y navegador están realmente en revisión 0. */
+async function atlasV153InitialCloudBootstrap(){
+  if(atlasV153InitialRemoteResolved||!atlasOnline()||!hasAtlasConnectionConfig())return false;
+  const [localRow,meta,remote]=await Promise.all([
+    storeGet("meta",TRAINING_PLANS_META_KEY).catch(()=>null),
+    readTrainingPlansCloudMeta(),
+    atlasV153FetchRemote()
+  ]);
+  const local=localRow?.value||{version:TRAINING_PLANS_VERSION,activeId:null,updatedAt:null,plans:[]},
+    localHas=Array.isArray(local.plans)&&local.plans.length>0,
+    localRevision=Number(meta?.revision)||0,
+    remoteRevision=atlasV153RemoteRevision(remote),
+    explicitRemote=!!trainingPlansCloudExtract(remote);
+
+  if(explicitRemote||remoteRevision>0||localRevision>0){
+    await atlasV153WriteRemoteToLocal(remote,{invalidatePending:true});
+    atlasV153InitialRemoteResolved=true;
+    return true;
+  }
+
+  if(localHas){
+    await atlasV153SetDirty(local.updatedAt);
+    await atlasV153QueueCommit(local,{remote});
+  }else{
+    await writeTrainingPlansCloudMeta({schema:TRAINING_PLANS_CLOUD_SCHEMA,revision:0,updatedAt:remote?.updatedAt||null,dirty:false,authoritative:true});
+  }
+  atlasV153InitialRemoteResolved=true;
+  return false;
+}
+loadTrainingPlans=async function(){
+  if(!atlasV153InitialRemoteResolved&&!atlasV153InitialRemoteAttempted&&atlasOnline()&&hasAtlasConnectionConfig()){
+    atlasV153InitialRemoteAttempted=true;
+    try{await atlasV153InitialCloudBootstrap();}
+    catch(error){recordRuntimeAudit("training-plan-cloud-first-load",error).catch(()=>{});}
+  }
+  return atlasV153LoadTrainingPlansLocal();
+};
+
+/* La revisión monotónica es la única autoridad:
+   remota distinta => servidor gana;
+   misma revisión + dirty => CAS local;
+   misma revisión sin dirty pero contenido distinto => servidor gana. */
+syncTrainingPlansCloud=async function({startup=false}={}){
+  if(trainingPlansCloudSyncPromise)return trainingPlansCloudSyncPromise;
+  if(!atlasOnline()||!hasAtlasConnectionConfig())return false;
+  trainingPlansCloudSyncPromise=(async()=>{
+    await atlasV153WriteQueue.catch(()=>false);
+    const [localRow,meta,remote]=await Promise.all([
+      storeGet("meta",TRAINING_PLANS_META_KEY).catch(()=>null),
+      readTrainingPlansCloudMeta(),
+      atlasV153FetchRemote()
+    ]);
+    const local=localRow?.value||{version:TRAINING_PLANS_VERSION,activeId:null,updatedAt:null,plans:[]},
+      localRevision=Number(meta?.revision)||0,
+      remoteRevision=atlasV153RemoteRevision(remote),
+      localSig=atlasV153EnvelopeSignature(local),
+      remoteSig=atlasV153ManifestSignature(atlasV153RemoteManifest(remote)),
+      localHas=Array.isArray(local.plans)&&local.plans.length>0;
+
+    atlasV153InitialRemoteResolved=true;
+
+    if(remoteRevision!==localRevision){
+      await atlasV153ApplyRemote(remote);
+      return true;
+    }
+
+    if(remoteRevision===0&&!trainingPlansCloudExtract(remote)&&localRevision===0&&localHas){
+      await atlasV153SetDirty(local.updatedAt);
+      await atlasV153QueueCommit(local,{remote});
+      return false;
+    }
+
+    if(meta?.dirty){
+      if(localSig===remoteSig){
+        await writeTrainingPlansCloudMeta({schema:TRAINING_PLANS_CLOUD_SCHEMA,revision:remoteRevision,updatedAt:remote?.updatedAt||local.updatedAt,dirty:false,authoritative:true});
+        return false;
+      }
+      try{await atlasV153QueueCommit(local,{remote});return false;}
+      catch(error){if(atlasV153IsConflict(error))return true;throw error;}
+    }
+
+    if(localSig!==remoteSig){
+      await atlasV153ApplyRemote(remote);
+      return true;
+    }
+
+    if(meta?.authoritative!==true)await writeTrainingPlansCloudMeta({...meta,schema:TRAINING_PLANS_CLOUD_SCHEMA,revision:remoteRevision,updatedAt:remote?.updatedAt||meta?.updatedAt||null,dirty:false,authoritative:true});
+    return false;
+  })();
+  try{return await trainingPlansCloudSyncPromise;}
+  catch(error){if(!startup)throw error;recordRuntimeAudit("startup-training-plan-cloud-v153",error).catch(()=>{});return false;}
+  finally{trainingPlansCloudSyncPromise=null;}
+};
+
+/* El botón global sincroniza también obligatoriamente el estado del plan. */
+const atlasV153SmartSyncBase=smartSync;
+smartSync=async function(){
+  try{const changed=await syncTrainingPlansCloud({startup:false});if(changed)await refreshAll();}
+  catch(error){recordRuntimeAudit("manual-training-plan-cloud-v153",error).catch(()=>{});}
+  return atlasV153SmartSyncBase();
+};
+
+/* Entrar en Plan fuerza otra lectura remota, además de arranque, pageshow,
+   visibilitychange y reconexión ya existentes. */
+const atlasV153ShowViewBase=showView;
+showView=function(tab){
+  const result=atlasV153ShowViewBase.apply(this,arguments);
+  if(tab==="plan"&&initCompleted&&atlasOnline()&&hasAtlasConnectionConfig()){
+    syncTrainingPlansCloud({startup:false}).then(async changed=>{if(changed)await refreshAll();}).catch(error=>recordRuntimeAudit("plan-tab-cloud-v153",error).catch(()=>{}));
+  }
+  return result;
+};
+
 window.addEventListener("DOMContentLoaded",()=>{atlasApplyTrainingPlanSectionEmojis();on($("trainingPlanWorkouts"),"click",shiftStructureWeek);});
 })();
 </script></body>
