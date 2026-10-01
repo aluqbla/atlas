@@ -1568,7 +1568,8 @@ function drawMetricChart(series,key,range){const svg=ui.metricChart,H=236,L=28,R
   for(const d of series){const ref=hrvBaselineForDate(currentWellness,d.date);if(!ref){if(group.length)groups.push(group);group=[];continue;}if(group.length&&dateDiff(group.at(-1).date,d.date)>1){groups.push(group);group=[];}group.push({date:d.date,...ref});}
   if(group.length)groups.push(group);
   for(const refs of groups){if(refs.length===1){const r=refs[0];markup+=`<line class="chart-band-edge" x1="${dateX(r.date)}" y1="${y(r.low)}" x2="${dateX(r.date)}" y2="${y(r.high)}"/>`;continue;}
-   markup+=`<polygon class="chart-band" points="${refs.map(r=>`${dateX(r.date)},${y(r.high)}`).join(" ")} ${refs.slice().reverse().map(r=>`${dateX(r.date)},${y(r.low)}`).join(" ")}"/>`;
+   const highPts=refs.map(r=>`${dateX(r.date)},${y(r.high)}`).join(" "),lowPts=refs.map(r=>`${dateX(r.date)},${y(r.low)}`).join(" ");
+   markup+=`<polygon class="chart-band" points="${highPts} ${refs.slice().reverse().map(r=>`${dateX(r.date)},${y(r.low)}`).join(" ")}"/><polyline class="chart-band-edge" points="${highPts}"/><polyline class="chart-band-edge" points="${lowPts}"/>`;
   }
   ui.chartLegend.classList.add("active");ui.chartLegend.innerHTML='<span class="legend-item"><span class="legend-dot" style="background:#30d158"></span>Rango base</span><span class="legend-item">VFC nocturna</span>';
  }
@@ -11525,6 +11526,94 @@ const atlasV150Style=document.createElement("style");atlasV150Style.textContent=
 #upcomingTrainingList .activity-row-title,#trainingPlanWorkouts .activity-row-title,#planDays .activity-row-title{display:flex!important}
 #upcomingTrainingList .activity-row-main,#trainingPlanWorkouts .activity-row-main,#planDays .activity-row-main{display:flex!important}
 `;document.head.appendChild(atlasV150Style);
+
+
+/* ===== ɅTLɅS v1.5.2 · sincronización remota verificada + VFC más visible ===== */
+const ATLAS_V152_VERSION="1.5.2";
+
+/* Banda VFC: más verde y con límites claramente visibles sobre la curva roja. */
+const atlasV152Style=document.createElement("style");atlasV152Style.textContent=`
+#metricChart .chart-band{fill:rgba(48,209,88,.30)!important}
+#metricChart .chart-band-edge{stroke:#30d158!important;stroke-width:2.15!important;opacity:1!important;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 1.4px rgba(48,209,88,.55))}
+`;document.head.appendChild(atlasV152Style);
+
+/* ---------- Auditoría remota: Intervals.icu es la fuente de verdad ---------- */
+function atlasV152ExternalId(e){return String(e?.external_id||e?.externalId||"");}
+function atlasV152EventDate(e){return String(e?.start_date_local||e?.startDateLocal||e?.date||"").slice(0,10);}
+function atlasV152PlanPrefix(plan){return`atlas-${plan.id}:`;}
+function atlasV152DesiredMap(plan){return new Map((atlasV090DesiredEvents(plan)||[]).map(e=>[String(e.external_id),e]));}
+function atlasV152MaxDate(plan,extra=[]){const dates=[String(plan?.raceDate||""),...(atlasV090DesiredEvents(plan)||[]).map(e=>atlasV152EventDate(e)),...(extra||[]).map(e=>String(e?.date||atlasV152EventDate(e)||""))].filter(Boolean).sort();return dates.at(-1)||addDays(atlasV090Today(),180);}
+async function atlasV152FetchRemotePlanEvents(plan,extra=[]){
+  const oldest=atlasV090Today(),newest=atlasV152MaxDate(plan,extra),cal=await apiRequest(`/api/calendar?oldest=${encodeURIComponent(oldest)}&newest=${encodeURIComponent(newest)}`,{timeoutMs:30000,retries:1}),events=Array.isArray(cal?.events)?cal.events:[],prefix=atlasV152PlanPrefix(plan);
+  return events.filter(e=>atlasV152ExternalId(e).startsWith(prefix));
+}
+function atlasV152AuditPublished(plan,remote){
+  const desired=atlasV152DesiredMap(plan),remoteMap=new Map((remote||[]).map(e=>[atlasV152ExternalId(e),e]).filter(([id])=>id)),missing=[],stale=[],mismatched=[];
+  for(const [id,d] of desired){const r=remoteMap.get(id);if(!r){missing.push(id);continue;}const dd=atlasV152EventDate(d),rd=atlasV152EventDate(r),dn=String(d?.name||""),rn=String(r?.name||"");if(dd!==rd||(dn&&rn&&dn!==rn))mismatched.push({id,desiredDate:dd,remoteDate:rd,desiredName:dn,remoteName:rn});}
+  for(const [id,r] of remoteMap)if(!desired.has(id))stale.push({external_id:id,date:atlasV152EventDate(r)});
+  return{ok:missing.length===0&&stale.length===0&&mismatched.length===0,missing,stale,mismatched,remoteCount:remoteMap.size,desiredCount:desired.size};
+}
+function atlasV152AuditUnpublished(candidates,remote){
+  const target=new Set((candidates||[]).map(e=>String(e?.external_id||e?.externalId||"")).filter(Boolean)),remaining=(remote||[]).map(e=>({external_id:atlasV152ExternalId(e),date:atlasV152EventDate(e)})).filter(e=>target.has(e.external_id));
+  return{ok:remaining.length===0,remaining};
+}
+function atlasV152AggregateResult(base,next){const a=base||{events:[],upserted:0,deleted:0,missing:[],revision:0,garmin:{enabled:false,trainingConnected:false}},b=next||{};return{...a,events:[...(a.events||[]),...(b.events||[])],upserted:Number(a.upserted||0)+Number(b.upserted||0),deleted:Number(a.deleted||0)+Number(b.deleted||0),missing:[...(a.missing||[]),...(b.missing||[])],revision:Math.max(Number(a.revision)||0,Number(b.revision)||0),garmin:{enabled:a.garmin?.enabled===true||b.garmin?.enabled===true,trainingConnected:a.garmin?.trainingConnected===true||b.garmin?.trainingConnected===true}};}
+async function atlasV152VerifyPublish(plan,diff,initialResult){
+  let aggregate=atlasV152AggregateResult(null,initialResult),audit=null;
+  const waits=[250,650,1300];
+  for(let attempt=0;attempt<waits.length;attempt++){
+    if(attempt)await waitMs(waits[attempt]);
+    const remote=await atlasV152FetchRemotePlanEvents(plan,diff.deletes),a=atlasV152AuditPublished(plan,remote);audit=a;if(a.ok)return{result:aggregate,audit:a};
+    if(attempt<waits.length-1){
+      const desired=atlasV152DesiredMap(plan),retryUpserts=[...new Set([...a.missing,...a.mismatched.map(x=>x.id)])].map(id=>desired.get(id)).filter(Boolean),retryDiff={desired:diff.desired,upserts:retryUpserts,deletes:a.stale};
+      if(retryUpserts.length||a.stale.length){const rr=await atlasV094PublishDiffInBatches(plan,retryDiff);aggregate=atlasV152AggregateResult(aggregate,rr);}
+    }
+  }
+  const details=[audit?.missing?.length?`${audit.missing.length} ausentes`:"",audit?.mismatched?.length?`${audit.mismatched.length} desactualizados`:"",audit?.stale?.length?`${audit.stale.length} sobrantes`:""].filter(Boolean).join(" · ");
+  throw new Error(`Intervals.icu no ha confirmado completamente el plan${details?` (${details})`:""}. ATLAS lo mantiene pendiente.`);
+}
+async function atlasV152DeleteChunk(plan,chunk){return apiRequest("/api/workouts/unpublish",{method:"POST",body:{schema:"ATLAS_WORKOUT_PUBLICATION_V1",planId:plan.id,events:chunk},timeoutMs:60000,retries:0});}
+async function atlasV152VerifyUnpublish(plan,candidates,initial={deleted:0,missing:[]}){
+  let deleted=Number(initial.deleted)||0,missing=[...(initial.missing||[])],audit=null,remaining=[...(candidates||[])];
+  const waits=[250,700,1400,2200];
+  for(let attempt=0;attempt<waits.length;attempt++){
+    if(attempt)await waitMs(waits[attempt]);
+    const remote=await atlasV152FetchRemotePlanEvents(plan,candidates),a=atlasV152AuditUnpublished(candidates,remote);audit=a;if(a.ok)return{deleted,missing:missing.length,verified:true,retries:attempt};
+    remaining=a.remaining;
+    if(attempt<waits.length-1&&remaining.length){for(const chunk of atlasV094Chunk(remaining)){const r=await atlasV152DeleteChunk(plan,chunk);deleted+=Number(r?.deleted)||0;if(Array.isArray(r?.missing))missing.push(...r.missing);}}
+  }
+  throw new Error(`Quedan ${remaining.length} entrenamiento${remaining.length===1?"":"s"} de ɅTLɅS en Intervals.icu. El plan local se conserva para evitar inconsistencias.`);
+}
+
+/* Publicar/actualizar: no queda limpio hasta verificar el calendario remoto. */
+atlasV150SyncPlanNow=async function(plan,{toastSuccess=false}={}){
+  if(!plan||atlasV150RemoteSyncBusy||!atlasOnline())return false;
+  const diff=atlasV090PublicationDiff(plan);if(!diff.desired.events.length)return false;
+  atlasV150RemoteSyncBusy=true;
+  try{
+    const caps=await atlasV090WorkerCapabilities();if(caps?.publication!==true)throw new Error("El Worker no tiene habilitada la publicación.");
+    const first=await atlasV094PublishDiffInBatches(plan,diff),verified=await atlasV152VerifyPublish(plan,diff,first),result=verified.result,ledger=atlasV090RemoteLedger(diff.desired.events,result.events||[],plan.publication?.remoteEvents||[]),now=new Date().toISOString();
+    plan.publication={...(plan.publication||{}),status:"published",dirty:false,schema:ATLAS_PUBLICATION_SCHEMA,version:ATLAS_PUBLICATION_VERSION,publishedAt:plan.publication?.publishedAt||now,updatedAt:now,lastPublishAt:now,manifestDigest:diff.desired.digest,remoteRevision:Number(result?.revision)||Number(plan.publication?.remoteRevision||0)+1,remoteEvents:ledger,lastError:null,lastErrorAt:null,lastResult:{upserted:Number(result?.upserted)||0,deleted:Number(result?.deleted)||0,missing:Array.isArray(result?.missing)?result.missing.length:0,garminEnabled:result?.garmin?.enabled===true,verified:true,remoteCount:verified.audit.remoteCount}};
+    plan.updatedAt=now;await persistTrainingPlans();await syncCalendar(false);renderPlan();await renderTrainingPlanPublication();if(toastSuccess)toast(`✅ Intervals.icu verificado · ${ledger.length} sesiones.`);return true;
+  }catch(error){recordRuntimeAudit("training-plan-sync-verified-v152",error,{planId:plan.id}).catch(()=>{});plan.publication={...(plan.publication||{}),lastError:String(error?.message||error),lastErrorAt:new Date().toISOString(),dirty:true};await persistTrainingPlans().catch(()=>{});toast(`⚠️ Sincronización pendiente: ${error.message}`,true);return false;}
+  finally{atlasV150RemoteSyncBusy=false;atlasV094PublicationProgress=null;}
+};
+
+/* Retirada completa: reconsulta Intervals y reintenta cualquier residual. */
+atlasV150UnpublishAll=async function(plan){
+  const all=atlasV150RemoteCandidates(plan);if(!all.length)return{deleted:0,missing:0,verified:true,retries:0};
+  let deleted=0,missing=[];
+  for(const chunk of atlasV094Chunk(all)){const result=await atlasV152DeleteChunk(plan,chunk);deleted+=Number(result?.deleted)||0;if(Array.isArray(result?.missing))missing.push(...result.missing);}
+  const verified=await atlasV152VerifyUnpublish(plan,all,{deleted,missing});await syncCalendar(false);return verified;
+};
+
+/* Eliminación local sólo después de confirmación remota. */
+deleteActiveTrainingPlan=async function(){
+  const plan=activeTrainingPlan();if(!plan)return;const remote=atlasV150RemoteCandidates(plan);
+  if(!confirm(`¿Eliminar “${plan.name}”?${remote.length?`\n\nATLAS verificará primero la retirada de ${remote.length} entrenamientos futuros de Intervals.icu.`:""}\n\nLas actividades realizadas no se borrarán.`))return;
+  try{if(remote.length){toast("Retirando y verificando Intervals.icu…");await atlasV150UnpublishAll(plan);}currentTrainingPlans=currentTrainingPlans.filter(p=>p.id!==plan.id);currentTrainingPlanId=currentTrainingPlans[0]?.id||null;await persistTrainingPlans();closeTrainingPlanWorkspace();renderPlan();toast("✅ Plan eliminado · Intervals.icu verificado.");}
+  catch(error){recordRuntimeAudit("training-plan-delete-verified-v152",error,{planId:plan.id}).catch(()=>{});toast(`⚠️ El plan NO se ha eliminado: ${error.message}`,true);}
+};
 
 window.addEventListener("DOMContentLoaded",()=>{atlasApplyTrainingPlanSectionEmojis();on($("trainingPlanWorkouts"),"click",shiftStructureWeek);});
 })();
