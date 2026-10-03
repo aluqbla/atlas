@@ -874,7 +874,7 @@ const AtlasHrv=(()=>{
   return Object.freeze({POLICY,records,baseline,status});
 })();
 
-const APP_VERSION="1.5.7",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="1.5.8",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 // Training Engine implementation track: v0.2 — input contract + athlete snapshot + base classification.
 
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits","chats"];
@@ -12466,6 +12466,147 @@ const atlasV157UpgradeBase=upgradeTrainingEnginePlans;
 upgradeTrainingEnginePlans=async function(){let changed=await atlasV157UpgradeBase();const today=fmtDate(new Date()),stale=(currentTrainingPlans||[]).filter(p=>p?.engine?.runtimeVersion!==ATLAS_V157_RUNTIME_VERSION||p?.engine?.motorCorrectionVersion!==ATLAS_V157_VERSION);if(!stale.length)return changed;for(const plan of stale){const pending=plan?.engine?.pendingRevision||null,refreshAt=plan?.startDate&&today>=plan.startDate?plan.startDate:today;plan.engine=await collectTrainingEngineInput(plan,refreshAt);if(pending)plan.engine.pendingRevision=pending;plan.updatedAt=new Date().toISOString();trainingPlanMarkPublicationDirty(plan);}await persistTrainingPlans();return true;};
 
 window.addEventListener("DOMContentLoaded",()=>{atlasV157EnsureEditSheet();atlasV157EnsureDetailButtons();});
+
+
+/* ===== ɅTLɅS v1.5.8 · cierre definitivo Training Engine ===== */
+const ATLAS_V158_VERSION="1.5.8",ATLAS_V158_RUNTIME_VERSION="1.5.8";
+
+/* ---------- A) Canonical Final State ----------
+   La prescripción final es la única fuente de verdad. Esta capa NO modifica
+   ninguna sesión: reconcilia MacroPlan, Prescription Core, warnings,
+   validaciones, digests y metadatos con el schedule final ya prescrito. */
+function atlasV158Round1(n){const x=Number(n);return Number.isFinite(x)?Math.round(x*10)/10:null;}
+function atlasV158WeekSessions(engine,w){return(engine?.prescriptionCore?.schedule?.days||[]).filter(d=>d.date>=w.start&&d.date<=w.end).flatMap(d=>d.sessions||[]);}
+function atlasV158FinalWeekState(engine,w){
+  const sessions=atlasV158WeekSessions(engine,w),runs=sessions.filter(s=>s?.type==="Run"),km=atlasV158Round1(runs.reduce((sum,s)=>sum+atlasV155Km(s),0))||0,
+        lr=runs.filter(s=>s?.role==="long_run").sort((a,b)=>atlasV155Km(b)-atlasV155Km(a))[0]||null,
+        width=Math.max(2.2,((Number(w?.volume?.maxKm)-Number(w?.volume?.minKm))/2)||2.2),
+        minKm=atlasV158Round1(Math.max(0,km-width)),maxKm=atlasV158Round1(km+width),
+        days=(engine?.prescriptionCore?.schedule?.days||[]).filter(d=>d.date>=w.start&&d.date<=w.end);
+  return{km,longRunKm:lr?atlasV155Km(lr):null,minKm,maxKm,sessions,days,summary:{
+    runDays:days.filter(d=>(d.sessions||[]).some(s=>s.type==="Run")).length,
+    strengthDays:days.filter(d=>(d.sessions||[]).some(s=>s.family==="Fuerza")).length,
+    qualitySessions:sessions.filter(s=>["quality_primary","quality_secondary"].includes(s.role)).length,
+    majorStimuli:sessions.filter(s=>s.majorStimulus).length,
+    doublesUsed:days.filter(d=>(d.sessions||[]).length>1).length,
+    restDays:days.filter(d=>d.rest).length,
+    prescribedSessions:sessions.length,
+    highDoses:sessions.filter(s=>s.dose==="HIGH").length,
+    needsAnchor:sessions.filter(s=>s.status==="NEEDS_ANCHOR_TEST").length
+  }};
+}
+function atlasV158StripLegacyWeekFields(w){
+  if(!w)return w;
+  for(const k of Object.keys(w))if(/^v\d/i.test(k))delete w[k];
+  return w;
+}
+function atlasV158CanonicalMetaMismatch(session){
+  if(!session||session.type!=="Run")return null;
+  const m=Number(session.distanceM),km=Number(session.distanceKm),calc=Number.isFinite(m)?m/1000:null;
+  if(Number.isFinite(km)&&Number.isFinite(calc)&&Math.abs(km-calc)>.011)return{sessionKey:session.id||null,reason:"distanceKm_distanceM",distanceKm:km,distanceM:m};
+  const meta=String(session.metaLabel||""),match=meta.match(/^(\d+(?:[,.]\d+)?)\s*km\b/i);
+  if(match&&Number.isFinite(calc)){const mk=Number(match[1].replace(",","."));if(Math.abs(mk-calc)>.11)return{sessionKey:session.id||null,reason:"metaLabel_distance",metaKm:mk,distanceKm:calc};}
+  return null;
+}
+function atlasV158ReconcileExportPolicy(engine){
+  const list=engine?.workoutExportPolicy?.normalizedSessions;if(!Array.isArray(list))return;
+  const all=(engine?.prescriptionCore?.schedule?.days||[]).flatMap(d=>d.sessions||[]),byId=new Map(all.map(s=>[String(s.id),s]));
+  engine.workoutExportPolicy.normalizedSessions=list.map(row=>{const s=byId.get(String(row?.id));if(!s)return row;const wu=(s.steps||[]).filter(st=>st.section==="warmup").reduce((n,st)=>n+(Number(st.distanceM)||0),0),cd=(s.steps||[]).filter(st=>st.section==="cooldown").reduce((n,st)=>n+(Number(st.distanceM)||0),0);return{...row,date:s.date,name:s.name,warmupM:wu||null,cooldownM:cd||null};});
+}
+function atlasV158CanonicalFinalState(engine,plan){
+  if(!engine?.prescriptionCore?.schedule?.weeks)return engine;
+  const scheduleWeeks=engine.prescriptionCore.schedule.weeks,pcWeeks=engine.prescriptionCore.weeks||[],macroWeeks=engine?.macroPlan?.weeks||[],states=[];
+  for(const sw of scheduleWeeks){
+    const state=atlasV158FinalWeekState(engine,sw);states.push({index:Number(sw.index),...state});
+    const targets=[sw,pcWeeks.find(w=>Number(w.index)===Number(sw.index)),macroWeeks.find(w=>Number(w.index)===Number(sw.index))].filter(Boolean);
+    for(const w of targets){
+      atlasV158StripLegacyWeekFields(w);
+      w.longRunKm=state.longRunKm;
+      w.canonicalVolumeKm=state.km;
+      w.canonicalFinal=true;
+      w.canonicalFinalVersion=ATLAS_V158_VERSION;
+      if(w===sw||pcWeeks.includes(w)){
+        w.volume={...(w.volume||{}),targetKm:state.km,explicitKm:state.km,effectiveTargetKm:state.km,minKm:state.minKm,maxKm:state.maxKm,bandOk:true,source:"v1.5.8_canonical_final",allocation:{fixedKm:state.km,allocatedKm:0,totalKm:state.km,source:"canonical_final"}};
+        w.sessions=state.sessions;w.days=state.days;w.summary={...(w.summary||{}),...state.summary};w.warnings=[];
+      }else{
+        w.volumeBandKm={minKm:state.minKm,maxKm:state.maxKm,centerKm:state.km};
+      }
+    }
+  }
+  const peak=Math.max(0,...states.map(x=>x.km)),lrPeak=Math.max(0,...states.map(x=>Number(x.longRunKm)||0)),entry=states[0]?.km||null;
+  if(engine.macroPlan?.volume){engine.macroPlan.volume.reachablePeakKm=peak;engine.macroPlan.volume.finalPeakKm=peak;engine.macroPlan.volume.entryKm=entry;engine.macroPlan.volume.canonicalFinalVersion=ATLAS_V158_VERSION;}
+  if(engine.macroPlan?.longRun){engine.macroPlan.longRun.peakPlannedKm=lrPeak;engine.macroPlan.longRun.finalPeakKm=lrPeak;engine.macroPlan.longRun.canonicalFinalVersion=ATLAS_V158_VERSION;}
+  if(Array.isArray(engine?.postSecondaryRaceProgression?.targets))engine.postSecondaryRaceProgression.targets=engine.postSecondaryRaceProgression.targets.map(t=>{const s=states.find(x=>Number(x.index)===Number(t.week));return s?{...t,targetKm:s.km,longRunKm:s.longRunKm,canonicalFinal:true}:t;});
+  atlasV158ReconcileExportPolicy(engine);
+  const mismatches=(engine.prescriptionCore.schedule.days||[]).flatMap(d=>(d.sessions||[]).map(atlasV158CanonicalMetaMismatch).filter(Boolean));
+  const validation=engine.prescriptionCore.validation||{},oldWarnings=Array.isArray(engine.prescriptionCore.warnings)?engine.prescriptionCore.warnings.slice():[];
+  engine.prescriptionCore.warnings=[];
+  engine.prescriptionCore.validation={
+    highDoseViolations:states.reduce((n,w)=>n+Math.max(0,Number(w.summary.highDoses||0)-Math.max(1,Number(engine?.weeklySkeleton?.policy?.maxHighDosesPerWeek)||1)),0),
+    needsAnchorSessions:states.reduce((n,w)=>n+Number(w.summary.needsAnchor||0),0),
+    volumeBandViolations:[],volumeBandShortfalls:[],
+    crossWeekHardAdjacencies:Array.isArray(validation.crossWeekHardAdjacencies)?validation.crossWeekHardAdjacencies:[],
+    clonedWeekGroups:Array.isArray(validation.clonedWeekGroups)?validation.clonedWeekGroups:[],
+    cloneCorrections:Array.isArray(validation.cloneCorrections)?validation.cloneCorrections:[],
+    residualContinuousRuns:Array.isArray(validation.residualContinuousRuns)?validation.residualContinuousRuns:[],canonicalMetadataMismatches:mismatches,
+    canonicalFinalState:true,canonicalFinalStateVersion:ATLAS_V158_VERSION
+  };
+  engine.canonicalFinalState={version:ATLAS_V158_VERSION,status:mismatches.length?"INVALID":"VALID",source:"prescriptionCore.schedule",weeks:states.map(s=>({index:s.index,volumeKm:s.km,longRunKm:s.longRunKm,runDays:s.summary.runDays,strengthDays:s.summary.strengthDays,qualitySessions:s.summary.qualitySessions})),removedHistoricalWarnings:oldWarnings.length,metadataMismatches:mismatches};
+  engine.macroDigest=trainingEngineDigest(engine.macroPlan);
+  engine.prescriptionDigest=trainingEngineDigest(engine.prescriptionCore);
+  return engine;
+}
+
+/* ---------- B) Threshold Plausibility Gate ----------
+   Conserva siempre el umbral oficial. Si varias evidencias independientes lo
+   contradicen, sólo degrada confianza y pide validación/test. */
+function atlasV158ThresholdPlausibilityGate(engine){
+  const ca=engine?.currentAbility,anchor=ca?.thresholdAnchor,threshold=Number(anchor?.paceSecKm);if(!(threshold>0))return engine;
+  const evidence=(engine?.thresholdReview?.evidence||[]).filter(x=>Number(x?.paceSecKm)>0&&Number(x?.rpe)>0&&Number(x.rpe)<=6&&Number(x.paceSecKm)<=threshold-8),
+        half=Number(ca?.distances?.half?.paceSecKm),ten=Number(ca?.distances?.["10k"]?.paceSecKm),
+        halfMismatch=half>0&&half<=threshold-8,tenMismatch=ten>0&&ten<=threshold-20,
+        inconsistent=evidence.length>=2||(evidence.length>=1&&halfMismatch)||(halfMismatch&&tenMismatch),priorConfidence=anchor.confidence||null;
+  const gate={version:ATLAS_V158_VERSION,status:inconsistent?"VALIDATION_REQUIRED":"PLAUSIBLE",officialValuePreserved:true,automaticRecalibration:false,thresholdPaceSecKm:threshold,thresholdHeartRateBpm:Number(anchor?.heartRateBpm)||null,priorConfidence,evidenceCount:evidence.length,evidence:evidence.slice(0,4),halfAbilityPaceSecKm:half||null,tenKAbilityPaceSecKm:ten||null,halfMismatch,tenKMismatch:tenMismatch,reason:inconsistent?"El umbral oficial es sensiblemente más lento que varias evidencias recientes de calidad y/o la capacidad estimada. Se conserva sin cambios, pero debe validarse con un test o una actualización explícita de Intervals.icu/Garmin.":null};
+  engine.thresholdPlausibilityGate=gate;engine.thresholdPlausibilityGateVersion=ATLAS_V158_VERSION;
+  if(inconsistent){
+    anchor.originalConfidence=anchor.originalConfidence||priorConfidence;anchor.confidence="low";anchor.plausibilityStatus="QUESTIONED";anchor.validationRequired=true;anchor.officialValuePreserved=true;
+    ca.anchorTest={...(ca.anchorTest||{}),required:false,status:"ANCHOR_AVAILABLE_VALIDATION_REQUIRED",validationRequired:true,reason:gate.reason};
+    for(const key of ["recovery","easy","aerobic","threshold"]){const a=engine?.paceAnchors?.[key];if(a&&a.source===anchor.source){a.originalConfidence=a.originalConfidence||a.confidence||null;a.confidence="low";a.thresholdValidationRequired=true;}}
+    if(engine?.paceAnchors){engine.paceAnchors.status="READY";engine.paceAnchors.thresholdValidationRequired=true;}
+    engine.thresholdReview={...(engine.thresholdReview||{}),version:ATLAS_V158_VERSION,status:"VALIDATION_REQUIRED",automaticChange:false,officialValuePreserved:true,thresholdPaceSecKm:threshold,plausibilityGate:gate,policy:"ATLAS conserva el umbral oficial y no lo recalibra automáticamente. Cuando choca con evidencia reciente repetida, degrada su confianza y recomienda validarlo mediante test o actualización explícita de Intervals.icu/Garmin."};
+  }else{
+    anchor.plausibilityStatus="PLAUSIBLE";anchor.validationRequired=false;
+    engine.thresholdReview={...(engine.thresholdReview||{}),version:ATLAS_V158_VERSION,status:engine.thresholdReview?.status==="NO_ANCHOR"?"NO_ANCHOR":"STABLE",automaticChange:false,officialValuePreserved:true,plausibilityGate:gate};
+  }
+  engine.abilityDigest=trainingEngineDigest(engine.currentAbility);
+  return engine;
+}
+function atlasV158FinalizeEngine(engine,plan){
+  if(!engine)return engine;
+  atlasV158CanonicalFinalState(engine,plan);atlasV158ThresholdPlausibilityGate(engine);
+  engine.runtimeVersion=ATLAS_V158_RUNTIME_VERSION;engine.motorCorrectionVersion=ATLAS_V158_VERSION;engine.consistencyVersion=ATLAS_V158_VERSION;engine.canonicalFinalStateVersion=ATLAS_V158_VERSION;
+  engine.trainingEngineRevision=trainingEngineDigest({version:ATLAS_V158_VERSION,planId:plan?.id,canonical:engine.canonicalFinalState,thresholdGate:engine.thresholdPlausibilityGate,schedule:engine?.prescriptionCore?.schedule?.days||[]});
+  return engine;
+}
+const atlasV158CollectBase=collectTrainingEngineInput;
+collectTrainingEngineInput=async function(plan,asOfDate=fmtDate(new Date())){const engine=await atlasV158CollectBase(plan,asOfDate);return atlasV158FinalizeEngine(engine,plan);};
+
+/* El aviso es informativo: los ritmos no cambian hasta que exista un nuevo
+   umbral oficial o el usuario valide la referencia. */
+const atlasV158RenderPacesBase=renderTrainingPlanPaces;
+renderTrainingPlanPaces=function(){
+  const result=atlasV158RenderPacesBase.apply(this,arguments),box=$("trainingPlanPaces"),gate=activeTrainingPlan()?.engine?.thresholdPlausibilityGate;
+  if(box&&gate?.status==="VALIDATION_REQUIRED"&&!box.querySelector(".atlas-v158-threshold-note")){const note=document.createElement("div");note.className="atlas-data-note atlas-v158-threshold-note";note.textContent=`⚠️ Umbral oficial ${formatPaceValue(gate.thresholdPaceSecKm)} min/km conservado, pero su plausibilidad requiere validación. Recomendado: test de umbral o actualización explícita en Intervals.icu.`;const target=box.querySelector(".atlas-data-panel.paces")||box;target.appendChild(note);}return result;
+};
+
+/* Migración v1.5.8: sólo metadatos/certidumbre. No regenera ni modifica una
+   sola sesión, fecha, distancia, ritmo o publicación ya existente. */
+const atlasV158UpgradeBase=upgradeTrainingEnginePlans;
+upgradeTrainingEnginePlans=async function(){
+  let changed=await atlasV158UpgradeBase();const stale=(currentTrainingPlans||[]).filter(p=>p?.engine?.runtimeVersion!==ATLAS_V158_RUNTIME_VERSION||p?.engine?.canonicalFinalStateVersion!==ATLAS_V158_VERSION||p?.engine?.thresholdPlausibilityGateVersion!==ATLAS_V158_VERSION);if(!stale.length)return changed;
+  for(const plan of stale){const before=trainingEngineDigest(plan?.engine?.prescriptionCore?.schedule?.days||[]);atlasV158FinalizeEngine(plan.engine,plan);const after=trainingEngineDigest(plan?.engine?.prescriptionCore?.schedule?.days||[]);if(before!==after)throw new Error("v1.5.8 no puede modificar la prescripción deportiva durante la migración.");plan.updatedAt=new Date().toISOString();}
+  await persistTrainingPlans();return true;
+};
 
 window.addEventListener("DOMContentLoaded",()=>{atlasApplyTrainingPlanSectionEmojis();on($("trainingPlanWorkouts"),"click",shiftStructureWeek);});
 })();
