@@ -874,7 +874,7 @@ const AtlasHrv=(()=>{
   return Object.freeze({POLICY,records,baseline,status});
 })();
 
-const APP_VERSION="1.6.3",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="1.6.6",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 // Training Engine implementation track: v0.2 — input contract + athlete snapshot + base classification.
 
 const STORES=["settings","meta","profile","athlete","activities","wellness","gear","sportSettings","events","audits","chats"];
@@ -13441,6 +13441,199 @@ renderTrainingPlanPaces=function(){const plan=activeTrainingPlan(),structural=pl
 
 const atlasV163UpgradeBase=upgradeTrainingEnginePlans;
 upgradeTrainingEnginePlans=async function(){const changed=await atlasV163UpgradeBase();let localChanged=false;for(const plan of currentTrainingPlans||[]){const before=atlasV159Digest({canonical:atlasV0814RawSchedule(plan)?.days||[],publication:plan.publication||null,moves:plan.manualSessionOverrides||[],edits:plan.manualSessionEdits||[]}),state=atlasV159EnsureAdaptiveState(plan).state;if(state.structural?.structuralVersion!==ATLAS_V163_STRUCTURAL_VERSION||state.structural?.mode!=="ACTIVE"){state.structural={...atlasV159EmptyLayer(atlasV159CorePlanStarted(plan)?"READY":"PAUSED_UNTIL_PLAN_START"),schema:ATLAS_V163_STRUCTURAL_SCHEMA,mode:"ACTIVE",structuralVersion:ATLAS_V163_STRUCTURAL_VERSION,decision:null,evidenceBundle:null,currentAbility:null,paceAnchors:null,lastThresholdObservedAt:null,lastRaceEvidenceId:null};localChanged=true;}const after=atlasV159Digest({canonical:atlasV0814RawSchedule(plan)?.days||[],publication:plan.publication||null,moves:plan.manualSessionOverrides||[],edits:plan.manualSessionEdits||[]});if(before!==after)throw new Error("v1.6.3 migration no puede modificar Training Engine, publicación ni overrides.");}if(localChanged)await persistTrainingPlans();return changed||localChanged;};
+
+
+/* ===== ɅTLɅS v1.6.4 · Explainability + Publication State =====
+   Presentación únicamente: no introduce reglas deportivas nuevas ni altera A/B/C/D.
+   Explica before → after → motivo → evidencia, hace visibles conflictos manuales y
+   decisiones VALIDATION_REQUIRED / GOAL_REVIEW_REQUIRED, y señala publicación dirty. */
+const ATLAS_V164_VERSION="1.6.4";
+
+const atlasV164Style=document.createElement("style");atlasV164Style.textContent=`
+/* Explainability: misma gramática visual ATLAS, sin nueva pantalla. */
+.atlas-v164-explain{margin:12px 0 2px;padding:13px 12px;border:1px solid rgba(255,255,255,.07);border-radius:17px;background:rgba(255,255,255,.025)}
+.atlas-v164-explain-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.atlas-v164-explain-title{font-size:13px;line-height:1.15;font-weight:820;color:#f4f7f9}
+.atlas-v164-explain-badge{flex:0 0 auto;min-height:22px;display:inline-flex;align-items:center;padding:0 8px;border-radius:999px;background:rgba(10,132,255,.12);color:#5eb2ff;font-size:9.5px;font-weight:820;letter-spacing:.01em}
+.atlas-v164-explain-badge.warn{background:rgba(255,159,10,.13);color:#ffb340}
+.atlas-v164-explain-badge.stop{background:rgba(255,69,58,.12);color:#ff7066}
+.atlas-v164-compare{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+.atlas-v164-compare-cell{min-width:0;padding:9px 10px;border-radius:13px;background:rgba(255,255,255,.032)}
+.atlas-v164-compare-label{font-size:9.5px;line-height:1.1;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.035em}
+.atlas-v164-compare-value{margin-top:5px;font-size:11.5px;line-height:1.35;font-weight:700;color:#e7ebef;overflow-wrap:anywhere}
+.atlas-v164-explain-row{margin-top:10px;padding-top:9px;border-top:1px solid var(--line)}
+.atlas-v164-explain-row strong{display:block;margin-bottom:3px;font-size:10px;line-height:1.1;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.035em}
+.atlas-v164-explain-row span{display:block;font-size:11.5px;line-height:1.45;color:#cdd4da;font-weight:620}
+.atlas-v164-op-list{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.atlas-v164-op{display:flex;align-items:flex-start;gap:7px;font-size:11px;line-height:1.4;color:#cbd2d9}
+.atlas-v164-op-dot{width:6px;height:6px;border-radius:50%;background:#5eb2ff;flex:0 0 6px;margin-top:5px}
+.atlas-v164-manual{margin-top:9px;padding:8px 9px;border-radius:12px;background:rgba(255,159,10,.075);color:#ffc168;font-size:11px;line-height:1.42;font-weight:650}
+#atlasAdaptiveDetail.atlas-v164-detail{margin-top:10px;padding:0;border-top:0;color:inherit;font-size:inherit;line-height:inherit}
+#atlasAdaptiveDetail.atlas-v164-detail .atlas-adaptive-restore{display:none!important}
+.atlas-force-v120-shell .atlas-v164-explain{margin:14px 0 0}
+/* Aviso global sólo cuando existe una decisión estructural material. */
+.atlas-v164-plan-notice{margin:10px 0 2px;padding:11px 12px;border-radius:15px;background:rgba(10,132,255,.07);border:1px solid rgba(10,132,255,.16)}
+.atlas-v164-plan-notice.warn{background:rgba(255,159,10,.07);border-color:rgba(255,159,10,.18)}
+.atlas-v164-plan-notice.stop{background:rgba(255,69,58,.065);border-color:rgba(255,69,58,.17)}
+.atlas-v164-plan-notice-title{display:flex;align-items:center;gap:7px;font-size:12px;line-height:1.2;font-weight:820;color:#f0f4f7}
+.atlas-v164-plan-notice-copy{margin-top:5px;font-size:11px;line-height:1.45;color:#aeb7bf;font-weight:620}
+/* Punto ámbar en el propio título Publicación: visible aun con la sección cerrada. */
+[data-training-plan-section="publication"] .training-plan-section-title{display:inline-flex;align-items:center;gap:7px}
+.atlas-v164-publication-dot{display:none;width:7px;height:7px;border-radius:50%;background:#ff9f0a;box-shadow:0 0 0 3px rgba(255,159,10,.11);flex:0 0 7px}
+.atlas-v164-publication-dot.active{display:inline-block}
+`;
+document.head.appendChild(atlasV164Style);
+
+function atlasV164ActionLabel(action){return({KEEP:"Mantener",SOFTEN:"Suavizar",MOVE:"Mover",SUBSTITUTE:"Sustituir",CANCEL:"Cancelar",ANCHOR_REFRESH:"Ritmos actualizados",AVAILABILITY_REMAP:"Disponibilidad",CURRENT_ABILITY_REFRESH:"Capacidad actual",PROGRESSION_HOLD:"Consolidación",CONSOLIDATE:"Consolidación",REENTRY_BLOCK:"Reentrada",VALIDATION_REQUIRED:"Validación requerida",GOAL_REVIEW_REQUIRED:"Revisar objetivo",STRUCTURAL_WATCH:"En observación",NO_CHANGE:"Sin cambio"})[String(action||"").toUpperCase()]||String(action||"Ajuste").replaceAll("_"," ");}
+function atlasV164LayerLabel(layer){return({READINESS:"Hoy",WEEKLY:"Semana",STRUCTURAL:"Estructural"})[String(layer||"").toUpperCase()]||String(layer||"ATLAS");}
+function atlasV164ReasonLabel(code){return({
+  C0_NORMAL:"Disponibilidad normal",C1_EXPECTED_POST_LOAD:"Fatiga esperable tras carga reciente",C2_ISOLATED_SLEEP_DISRUPTION:"Mala noche aislada",C3_AUTONOMIC_RECOVERY_SIGNAL:"Señal autonómica de recuperación",C4_LOAD_RECOVERY_MISMATCH:"Carga y recuperación desalineadas",C5_MULTI_SYSTEM_ACUTE:"Varias señales agudas",C6_PERSISTENT_RECOVERY_DEFICIT:"Recuperación insuficiente persistente",C7_EXPLICIT_HEALTH_CONCERN:"Señal explícita de salud",C8_DATA_INSUFFICIENT:"Datos insuficientes",
+  READINESS_MOVE:"La sesión exigente necesita un día con mejor disponibilidad",READINESS_MOVE_NO_SLOT:"No existe un hueco seguro para mover la sesión",MISSED_QUALITY:"Calidad no realizada",MISSED_LONG_RUN:"Tirada larga no realizada",MISSED_STRENGTH:"Fuerza no realizada",LOWER_PRIORITY_DISPLACED:"Se libera el hueco para una sesión prioritaria",EXTRA_HARD_CONFLICT:"Carga extra exigente próxima a una sesión clave",EXTRA_LOAD_ABSORBED:"Carga extra absorbida desde volumen secundario",EXTRA_STRENGTH_ABSORBED:"Carga extra de fuerza absorbida",STRUCTURAL_CONSOLIDATE:"Progresión detenida para consolidar carga",REENTRY_BLOCK:"Reentrada tras una interrupción material",ANCHOR_REFRESH:"Anchors actualizados con evidencia válida",PERMANENT_AVAILABILITY_CHANGE:"Cambio permanente de disponibilidad"
+})[String(code||"").toUpperCase()]||String(code||"Adaptación ɅTLɅS").replaceAll("_"," ").toLowerCase();}
+function atlasV164Km(session){const m=Number(session?.distanceM),k=Number(session?.distanceKm);return Number.isFinite(k)&&k>0?k:Number.isFinite(m)&&m>0?m/1000:null;}
+function atlasV164SessionSummary(session){
+  if(!session)return"—";const parts=[],name=typeof trainingPresentationDisplayName==="function"?trainingPresentationDisplayName(session):String(session.name||session.family||"Entrenamiento"),date=String(session.date||"");
+  if(date)parts.push(atlasDateLabel(date));parts.push(name);
+  const meta=typeof trainingPresentationMetaParts==="function"?trainingPresentationMetaParts(session):[];for(const x of meta||[])if(x&&!parts.includes(String(x)))parts.push(String(x));
+  const structure=String(session.structure||"").trim();if(structure&&structure!==name&&!parts.includes(structure))parts.push(structure);
+  return parts.join(" · ");
+}
+function atlasV164SessionKey(session){return String(session?._atlasSourceSessionKey||session?.id||atlasV0814SessionKey(session));}
+function atlasV164CanonicalSession(plan,key){if(typeof atlasV160CanonicalSession==="function")return atlasV160CanonicalSession(plan,key);return atlasV159FindSession(atlasV0814RawSchedule(plan),key)?.session||null;}
+function atlasV164EffectiveSession(plan,key){return atlasV159FindSession(atlasV0814EffectiveSchedule(plan),key)?.session||null;}
+function atlasV164OpsForSession(plan,key){const state=atlasV159EnsureAdaptiveState(plan).state;return(state?.operations||[]).filter(o=>String(o?.sessionKey||"")===String(key)&&["ACTIVE","SUPERSEDED_BY_MANUAL"].includes(o?.status)).sort((a,b)=>{const rank={STRUCTURAL:0,WEEKLY:1,READINESS:2};return(rank[atlasV159OperationLayer(a)]??9)-(rank[atlasV159OperationLayer(b)]??9)||String(a.operationId).localeCompare(String(b.operationId));});}
+function atlasV164ExecutionEvidence(state,triggerId){const records=state?.execution?.records||[];return records.find(r=>String(r.executionRecordId||"")===String(triggerId||""))||null;}
+function atlasV164Evidence(plan,op){
+  const state=atlasV159EnsureAdaptiveState(plan).state,layer=atlasV159OperationLayer(op),out=[];
+  if(layer==="READINESS"||String(op.reasonCode||"").startsWith("READINESS_")){
+    const d=state?.readiness?.decision;if(d?.reasonText)out.push(d.reasonText);for(const x of d?.evidence||[])if(x)out.push(String(x));for(const x of d?.protectiveEvidence||[])if(x)out.push(String(x));
+  }
+  const record=atlasV164ExecutionEvidence(state,op?.triggerId);if(record){if(record.executionStatus)out.push(`Ejecución: ${String(record.executionStatus).toLowerCase()}.`);for(const x of record.evidence||[])if(x)out.push(String(x));if(Number.isFinite(Number(record.rpe)))out.push(`RPE ${Number(record.rpe)}/10.`);}
+  if(layer==="STRUCTURAL"){
+    const d=state?.structural?.decision;if(d?.reason)out.push(String(d.reason));const b=state?.structural?.evidenceBundle;if(b?.positiveRecords?.length)out.push(`${b.positiveRecords.length} evidencias positivas recientes.`);if(b?.negativeRecords?.length)out.push(`${b.negativeRecords.length} evidencias negativas recientes.`);if(b?.readinessPersistence&&b.readinessPersistence!=="NONE")out.push(`Readiness: ${String(b.readinessPersistence).toLowerCase()}.`);if(Number(b?.daysWithoutTraining)>=7)out.push(`${Number(b.daysWithoutTraining)} días sin estímulo normal.`);
+  }
+  if(!out.length)out.push(atlasV164ReasonLabel(op?.reasonCode));return[...new Set(out.map(x=>String(x).trim()).filter(Boolean))].slice(0,4);
+}
+function atlasV164OpTone(op){const a=String(op?.action||"").toUpperCase(),r=String(op?.reasonCode||"");if(a==="CANCEL"||/HEALTH|GOAL_REVIEW/.test(r))return"stop";if(["SOFTEN","SUBSTITUTE","MOVE"].includes(a)||/RECOVERY|REENTRY|CONSOLIDATE|EXTRA|MISSED/.test(r))return"warn";return"";}
+function atlasV164SessionExplanation(plan,session){
+  if(!plan||!session)return null;const key=atlasV164SessionKey(session),ops=atlasV164OpsForSession(plan,key),state=atlasV159EnsureAdaptiveState(plan).state,decision=state?.readiness?.decision,manual=atlasV159HasManualAuthority(plan,key),manualConflict=!!(manual&&(decision?.sessionKey===key&&decision?.manualConflict||ops.some(o=>o.status==="SUPERSEDED_BY_MANUAL")));
+  if(!ops.length&&!manualConflict)return null;const canonical=atlasV164CanonicalSession(plan,key),effective=atlasV164EffectiveSession(plan,key)||session,active=ops.filter(o=>o.status==="ACTIVE"),primary=active.at(-1)||ops.at(-1),evidence=[];for(const op of active)for(const x of atlasV164Evidence(plan,op))evidence.push(x);
+  const reasons=active.length?active.map(op=>`${atlasV164LayerLabel(atlasV159OperationLayer(op))}: ${atlasV164ReasonLabel(op.reasonCode)}`):["El cambio manual tiene prioridad sobre la propuesta automática."];
+  return{key,canonical,effective,ops,active,primary,manualConflict,reasons:[...new Set(reasons)],evidence:[...new Set(evidence)].slice(0,4)};
+}
+function atlasV164ExplanationHtml(info){
+  if(!info)return"";const p=info.primary||{},tone=atlasV164OpTone(p),label=info.active.length===1?`${atlasV164LayerLabel(atlasV159OperationLayer(p))} · ${atlasV164ActionLabel(p.action)}`:info.active.length?`${info.active.length} ajustes activos`:"Cambio manual";
+  const opRows=info.reasons.map(x=>`<div class="atlas-v164-op"><span class="atlas-v164-op-dot"></span><span>${esc(x)}</span></div>`).join("");
+  const evidence=info.evidence.length?info.evidence.map(x=>esc(x)).join(" · "):"La decisión queda registrada en el historial de Adaptive Engine.";
+  return`<div class="atlas-v164-explain"><div class="atlas-v164-explain-head"><div class="atlas-v164-explain-title">Adaptación ɅTLɅS</div><span class="atlas-v164-explain-badge ${tone}">${esc(label)}</span></div><div class="atlas-v164-compare"><div class="atlas-v164-compare-cell"><div class="atlas-v164-compare-label">Antes</div><div class="atlas-v164-compare-value">${esc(atlasV164SessionSummary(info.canonical))}</div></div><div class="atlas-v164-compare-cell"><div class="atlas-v164-compare-label">Ahora</div><div class="atlas-v164-compare-value">${esc(atlasV164SessionSummary(info.effective))}</div></div></div><div class="atlas-v164-explain-row"><strong>Motivo</strong><div class="atlas-v164-op-list">${opRows}</div></div><div class="atlas-v164-explain-row"><strong>Evidencia</strong><span>${evidence}</span></div>${info.manualConflict?'<div class="atlas-v164-manual">Cambio manual respetado. ɅTLɅS detecta un conflicto, pero no sobrescribe tu decisión.</div>':""}</div>`;
+}
+function atlasV164RenderNormalExplanation(plan,session){
+  const box=atlasV096EnsureAdaptiveDetail();if(!box)return;const info=atlasV164SessionExplanation(plan,session);box.className=`atlas-adaptive-detail atlas-v164-detail${info?"":" hidden"}`;box.innerHTML=info?atlasV164ExplanationHtml(info):"";
+}
+function atlasV164RenderStrengthExplanation(plan,session){
+  const shell=$("atlasForceV120Shell");if(!shell)return;let box=shell.querySelector(".atlas-v164-force-explain");if(!box){box=document.createElement("div");box.className="atlas-v164-force-explain";const bottom=shell.querySelector(".atlas-force-v120-bottom");bottom?.insertAdjacentElement("beforebegin",box);}const info=atlasV164SessionExplanation(plan,session);box.innerHTML=info?atlasV164ExplanationHtml(info):"";box.classList.toggle("hidden",!info);
+}
+
+const atlasV164OpenPrescribedBase=openPrescribedPlanDetail;
+openPrescribedPlanDetail=function(id){const result=atlasV164OpenPrescribedBase(id),plan=activeTrainingPlan(),session=trainingPresentationSessionById(id);if(session&&!atlasV115IsStrengthSession(session))atlasV164RenderNormalExplanation(plan,session);return result;};
+const atlasV164StrengthBase=atlasV120RenderStrengthDetail;
+atlasV120RenderStrengthDetail=function(session){const result=atlasV164StrengthBase(session);atlasV164RenderStrengthExplanation(activeTrainingPlan(),session);return result;};
+
+function atlasV164StructuralNotice(plan){const d=plan?.adaptiveEngine?.structural?.decision;if(!d)return null;const action=String(d.action||"");if(!["VALIDATION_REQUIRED","GOAL_REVIEW_REQUIRED","PROGRESSION_HOLD","CONSOLIDATE","REENTRY_BLOCK","CURRENT_ABILITY_REFRESH","STRUCTURAL_WATCH"].includes(action))return null;let tone="",title=atlasV164ActionLabel(action),copy=String(d.reason||"");if(action==="VALIDATION_REQUIRED"){tone="warn";title="Validación requerida";}else if(action==="GOAL_REVIEW_REQUIRED"){tone="stop";title="Revisar objetivo";}else if(["PROGRESSION_HOLD","CONSOLIDATE","REENTRY_BLOCK"].includes(action)){tone="warn";}return{tone,title,copy};}
+function atlasV164RenderPlanNotice(){const plan=activeTrainingPlan(),overview=ui.trainingPlanOverview;if(!overview)return;let box=$("atlasV164PlanNotice");if(!box){box=document.createElement("div");box.id="atlasV164PlanNotice";overview.insertAdjacentElement("afterend",box);}const notice=atlasV164StructuralNotice(plan);if(!notice){box.className="atlas-v164-plan-notice hidden";box.innerHTML="";return;}box.className=`atlas-v164-plan-notice ${notice.tone}`;box.innerHTML=`<div class="atlas-v164-plan-notice-title"><span>🧭</span><span>${esc(notice.title)}</span></div><div class="atlas-v164-plan-notice-copy">${esc(notice.copy)}</div>`;}
+function atlasV164EnsurePublicationDot(){const title=document.querySelector('[data-training-plan-section="publication"] .training-plan-section-title');if(!title)return null;let dot=title.querySelector(".atlas-v164-publication-dot");if(!dot){dot=document.createElement("span");dot.className="atlas-v164-publication-dot";dot.setAttribute("aria-hidden","true");title.appendChild(dot);}return dot;}
+function atlasV164UpdatePublicationIndicator(){const plan=activeTrainingPlan(),dot=atlasV164EnsurePublicationDot();if(!dot)return;const state=plan&&typeof atlasV090PublicationState==="function"?atlasV090PublicationState(plan):null,pending=!!plan&&(plan.publication?.dirty===true||state?.kind==="dirty");dot.classList.toggle("active",pending);dot.title=pending?"Cambios pendientes de publicar":"";const head=document.querySelector('[data-training-plan-section="publication"] .training-plan-section-head');if(head)head.setAttribute("aria-label",pending?"Publicación · cambios pendientes":"Publicación");}
+
+const atlasV164RenderWorkspaceBase=renderTrainingPlanWorkspace;
+renderTrainingPlanWorkspace=function(){const result=atlasV164RenderWorkspaceBase.apply(this,arguments);atlasV164RenderPlanNotice();atlasV164UpdatePublicationIndicator();return result;};
+const atlasV164RenderPublicationBase=renderTrainingPlanPublication;
+renderTrainingPlanPublication=async function(){const result=await atlasV164RenderPublicationBase.apply(this,arguments);atlasV164UpdatePublicationIndicator();return result;};
+
+/* Si una evaluación Adaptive cambia estado mientras el workspace está abierto,
+   refresca sólo las superficies explicativas; no altera la lógica deportiva. */
+const atlasV164EvaluateAdaptiveBase=atlasV096EvaluateAdaptivePlan;
+atlasV096EvaluateAdaptivePlan=async function(plan,options={}){const changed=await atlasV164EvaluateAdaptiveBase(plan,options);if(plan===activeTrainingPlan()){atlasV164RenderPlanNotice();atlasV164UpdatePublicationIndicator();}return changed;};
+
+window.addEventListener("DOMContentLoaded",()=>{atlasV164EnsurePublicationDot();atlasV164UpdatePublicationIndicator();atlasV164RenderPlanNotice();});
+
+
+
+
+/* ===== ɅTLɅS v1.6.5 · Integración y determinismo Adaptive Engine 2.0 =====
+   No añade nuevas reglas deportivas. Consolida invariantes A→B→C→D, corrige
+   estados publication.dirty residuales cuando el manifiesto efectivo no contiene
+   ningún cambio publicable y alinea Execution Matcher/UI con el diff real. */
+const ATLAS_V165_VERSION="1.6.5";
+
+function atlasV165PublicationPending(plan){
+  if(!plan||plan.publication?.status!=="published")return{pending:false,count:0,diff:null};
+  const diff=typeof atlasV090PublicationDiff==="function"?atlasV090PublicationDiff(plan):null;
+  const upserts=Array.isArray(diff?.upserts)?diff.upserts.length:0,deletes=Array.isArray(diff?.deletes)?diff.deletes.length:0,count=upserts+deletes;
+  return{pending:count>0,count,upserts,deletes,diff};
+}
+function atlasV165ReconcilePublicationDirty(plan){
+  if(!plan||plan.publication?.status!=="published"||plan.publication?.dirty!==true)return false;
+  const pending=atlasV165PublicationPending(plan);if(pending.pending)return false;
+  /* `dirty` expresa divergencia local respecto del último ledger publicado. Si el
+     diff efectivo es 0, el flag era residual (p. ej. una evaluación sin cambio
+     deportivo) y no representa ningún cambio remoto pendiente. */
+  plan.publication={...(plan.publication||{}),dirty:false,manifestDigest:pending.diff?.desired?.digest||plan.publication?.manifestDigest||null};
+  return true;
+}
+
+/* Dirty sólo se conserva cuando existe al menos un upsert/delete real. */
+const atlasV165MarkPublicationDirtyBase=trainingPlanMarkPublicationDirty;
+trainingPlanMarkPublicationDirty=function(plan){
+  const result=atlasV165MarkPublicationDirtyBase(plan);
+  atlasV165ReconcilePublicationDirty(plan);
+  return result;
+};
+
+/* El estado visible de publicación se deriva del diff real. Esto corrige el caso
+   dirty=true con 0 cambios, que en v1.6.4 mostraba un falso "Cambios pendientes". */
+const atlasV165PublicationStateBase=atlasV090PublicationState;
+atlasV090PublicationState=function(plan){
+  const state=atlasV165PublicationStateBase(plan);if(!plan||state?.kind==="error"||plan.publication?.status!=="published")return state;
+  const pending=atlasV165PublicationPending(plan);if(pending.pending)return state;
+  const count=Array.isArray(plan.publication?.remoteEvents)?plan.publication.remoteEvents.length:(pending.diff?.desired?.events?.length||0);
+  return{kind:"published",label:"Publicado",copy:`${count} sesiones controladas por ɅTLɅS en Intervals.icu.`,diff:pending.diff||state?.diff};
+};
+
+/* El punto ámbar responde exclusivamente a cambios publicables reales. */
+atlasV164UpdatePublicationIndicator=function(){
+  const plan=activeTrainingPlan(),dot=atlasV164EnsurePublicationDot();if(!dot)return;
+  const pending=!!plan&&atlasV165PublicationPending(plan).pending;
+  dot.classList.toggle("active",pending);dot.title=pending?"Cambios pendientes de publicar":"";
+  const head=document.querySelector('[data-training-plan-section="publication"] .training-plan-section-head');
+  if(head)head.setAttribute("aria-label",pending?"Publicación · cambios pendientes":"Publicación");
+};
+
+/* Execution Matcher tampoco debe etiquetar PUBLICATION_STALE por un dirty residual. */
+const atlasV165SessionDescriptorBase=atlasV160SessionDescriptor;
+atlasV160SessionDescriptor=function(plan,session,effectiveDate){
+  const desc=atlasV165SessionDescriptorBase(plan,session,effectiveDate),pending=atlasV165PublicationPending(plan).pending;
+  if(!pending&&Array.isArray(desc?.baseFlags)&&desc.baseFlags.includes("PUBLICATION_STALE"))desc.baseFlags=desc.baseFlags.filter(x=>x!=="PUBLICATION_STALE");
+  return desc;
+};
+/* Reconciliación alrededor de cada evaluación: el dirty residual se limpia ANTES
+   para que Execution Matcher/B/C/D reciban el mismo estado de publicación que la UI. */
+const atlasV165EvaluateAdaptiveBase=atlasV096EvaluateAdaptivePlan;
+atlasV096EvaluateAdaptivePlan=async function(plan,options={}){
+  const prePubChanged=atlasV165ReconcilePublicationDirty(plan),changed=await atlasV165EvaluateAdaptiveBase(plan,options),postPubChanged=atlasV165ReconcilePublicationDirty(plan),pubChanged=prePubChanged||postPubChanged;
+  if(pubChanged){const now=new Date().toISOString();plan.updatedAt=now;await persistTrainingPlans();}
+  if(plan===activeTrainingPlan())atlasV164UpdatePublicationIndicator();
+  return changed||pubChanged;
+};
+
+/* Migración correctiva: limpia únicamente dirty residuales; los ExecutionRecords
+   se reconstruyen por A con su inputDigest normal, sin mutaciones parciales. */
+const atlasV165UpgradeBase=upgradeTrainingEnginePlans;
+upgradeTrainingEnginePlans=async function(){
+  const changed=await atlasV165UpgradeBase();let localChanged=false;
+  for(const plan of currentTrainingPlans||[]){const before=atlasV159Digest({canonical:atlasV0814RawSchedule(plan)?.days||[],engine:plan.engine||null,moves:plan.manualSessionOverrides||[],edits:plan.manualSessionEdits||[],operations:plan.adaptiveEngine?.operations||[]});const c1=atlasV165ReconcilePublicationDirty(plan);localChanged=localChanged||c1;const after=atlasV159Digest({canonical:atlasV0814RawSchedule(plan)?.days||[],engine:plan.engine||null,moves:plan.manualSessionOverrides||[],edits:plan.manualSessionEdits||[],operations:plan.adaptiveEngine?.operations||[]});if(before!==after)throw new Error("v1.6.5 integración no puede modificar Training Engine, Canonical, overrides ni AdaptiveOperations.");}
+  if(localChanged)await persistTrainingPlans();return changed||localChanged;
+};
+
 
 window.addEventListener("DOMContentLoaded",()=>{atlasApplyTrainingPlanSectionEmojis();on($("trainingPlanWorkouts"),"click",shiftStructureWeek);});
 })();
