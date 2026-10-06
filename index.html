@@ -1734,14 +1734,14 @@
 
 
 
-/* ===== ɅTLɅS v1.6.21 · I3.2 Coach Review visual ===== */
+/* ===== ɅTLɅS v1.6.22 · I3.3 Coach Review visual ===== */
 .activity-local-analysis{
   margin:12px 2px 14px!important;padding:0!important;color:var(--muted2)!important;
   text-align:left!important;background:transparent!important;border:0!important;box-shadow:none!important
 }
 .activity-local-analysis p{margin:0!important}
-.activity-local-analysis .atlas-i32-review{display:flex!important;flex-direction:column!important;gap:11px!important}
-.activity-local-analysis .atlas-i32-thought{
+.activity-local-analysis .atlas-i33-review{display:flex!important;flex-direction:column!important;gap:11px!important}
+.activity-local-analysis .atlas-i33-thought{
   display:block!important;margin:0!important;color:var(--muted2)!important;
   font-size:14px!important;line-height:1.54!important;font-weight:500!important
 }
@@ -1750,7 +1750,7 @@
   line-height:1.54!important;font-weight:500!important;text-align:left!important
 }
 @media(min-width:600px){
-  .activity-local-analysis .atlas-i32-thought,.activity-running-dynamics-comment{font-size:14.5px!important;line-height:1.56!important}
+  .activity-local-analysis .atlas-i33-thought,.activity-running-dynamics-comment{font-size:14.5px!important;line-height:1.56!important}
 }
 </style>
 
@@ -2198,7 +2198,7 @@ const AtlasHrv=(()=>{
   return Object.freeze({POLICY,records,baseline,status});
 })();
 
-const APP_VERSION="1.6.21",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="1.6.22",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 /* G5: wrapper/residual consolidation. No sport, Adaptive, CAS or publication contract changes. */
 // Training Engine implementation track: v0.2 — input contract + athlete snapshot + base classification.
 
@@ -14054,237 +14054,241 @@ renderAtlasState=function(state){const result=atlasI2RenderAtlasStateBase.apply(
 atlasDomReadyInitializers.push(()=>{requestAnimationFrame(atlasI2FitStateTypography);window.addEventListener("resize",()=>requestAnimationFrame(atlasI2FitStateTypography),{passive:true});});
 
 
-/* ===== ɅTLɅS v1.6.21 · I3.2 Coach Review Engine =====
-   Motor nuevo: evidencia -> historia dominante -> valoración de entrenador.
-   Los datos numéricos nunca se narran; sólo se usan como evidencia interna. */
-const ATLAS_I32_COACH_REVIEW=Object.freeze({
-  version:"2.0",maxParagraphs:2,numericOutput:false,
-  philosophy:"evidence-to-story-to-coaching",
+/* ===== ɅTLɅS v1.6.22 · I3.3 Coach Review Engine =====
+   Pulido narrativo final: evidencia -> historia -> contexto del plan -> valoración.
+   Sin primera persona. Los números sólo aparecen cuando aportan una relación derivada
+   que no está expuesta de forma directa en la ficha. */
+const ATLAS_I33_COACH_REVIEW=Object.freeze({
+  version:"3.0",maxParagraphs:2,firstPerson:false,planAware:true,
+  numericPolicy:"derived-high-signal-only",repetitionPolicy:"chronological-rotation",
   sessionModels:["recovery","easy","steady","long","threshold","interval","test","race"]
 });
 
-function atlasI32Laps(a){
+function atlasI33Laps(a){
   if(!a||String(currentActivityDetail?.id||"")!==String(a?.id||""))return[];
   try{return activityLapRows().rows.filter(r=>Number(r?.d)>30&&Number(r?.p)>0);}catch{return[];}
 }
-function atlasI32Weighted(rows,key,weightKey="d"){
+function atlasI33Weighted(rows,key,weightKey="d"){
   let sum=0,w=0;for(const r of rows||[]){const value=Number(r?.[key]),weight=Math.max(0,Number(r?.[weightKey])||1);if(Number.isFinite(value)&&weight>0){sum+=value*weight;w+=weight;}}return w?sum/w:null;
 }
-function atlasI32Slice(rows,from,to){
+function atlasI33Median(values){const a=(values||[]).map(Number).filter(Number.isFinite).sort((x,y)=>x-y);if(!a.length)return null;const n=a.length;return n%2?a[(n-1)/2]:(a[n/2-1]+a[n/2])/2;}
+function atlasI33Slice(rows,from,to){
   const clean=(rows||[]).filter(r=>Number(r?.d)>0),total=clean.reduce((s,r)=>s+Number(r.d),0);if(!(total>0))return null;
   const lo=total*from,hi=total*to;let cursor=0,distance=0,time=0,hrN=0,hrD=0;
   for(const r of clean){const d=Number(r.d),a=cursor,b=cursor+d,over=Math.max(0,Math.min(b,hi)-Math.max(a,lo));cursor=b;if(!(over>0))continue;const p=Number(r.p),hr=Number(r.hr);distance+=over;if(p>0)time+=p*(over/1000);if(hr>0){hrN+=hr*over;hrD+=over;}}
   return distance?{pace:time>0?time/(distance/1000):null,hr:hrD?hrN/hrD:null}:null;
 }
-function atlasI32Pacing(a,rows){
+function atlasI33Pacing(a,rows){
   if(!isRun(a)||!rows?.length)return null;const total=rows.reduce((s,r)=>s+(Number(r.d)||0),0);if(!(total>1000))return null;
-  const mean=atlasI32Weighted(rows,"p"),variance=mean?rows.reduce((s,r)=>{const p=Number(r.p),d=Number(r.d)||0;return Number.isFinite(p)?s+Math.pow(p-mean,2)*d:s;},0)/total:null,
-        cv=variance!=null?Math.sqrt(variance)/mean*100:null,first=atlasI32Slice(rows,0,.5),last=atlasI32Slice(rows,.5,1),paceShift=first?.pace&&last?.pace?last.pace-first.pace:null,hrShift=Number.isFinite(first?.hr)&&Number.isFinite(last?.hr)?last.hr-first.hr:null;
-  return{
-    stability:cv==null?"unknown":cv<2?"high":cv<4?"good":cv<6?"mixed":"low",
-    finish:paceShift==null?"unknown":paceShift<-7?"stronger":paceShift>10?"fading":Math.abs(paceShift)<=5?"held":paceShift<0?"slightly_stronger":"slightly_fading",
-    cardiac:hrShift==null?"unknown":hrShift<=3?"stable":hrShift<=7?"rising":"drifting",
-    paceShift,hrShift,mean
-  };
+  const mean=atlasI33Weighted(rows,"p"),variance=mean?rows.reduce((s,r)=>{const p=Number(r.p),d=Number(r.d)||0;return Number.isFinite(p)?s+Math.pow(p-mean,2)*d:s;},0)/total:null,
+        cv=variance!=null?Math.sqrt(variance)/mean*100:null,first=atlasI33Slice(rows,0,.5),last=atlasI33Slice(rows,.5,1),paceShift=first?.pace&&last?.pace?last.pace-first.pace:null,hrShift=Number.isFinite(first?.hr)&&Number.isFinite(last?.hr)?last.hr-first.hr:null;
+  return{stability:cv==null?"unknown":cv<2?"high":cv<4?"good":cv<6?"mixed":"low",finish:paceShift==null?"unknown":paceShift<-7?"stronger":paceShift>10?"fading":Math.abs(paceShift)<=5?"held":paceShift<0?"slightly_stronger":"slightly_fading",cardiac:hrShift==null?"unknown":hrShift<=3?"stable":hrShift<=7?"rising":"drifting",paceShift,hrShift,mean};
 }
-function atlasI32Intervals(a,rows){
+function atlasI33Intervals(a,rows){
   if(!isRun(a)||!rows?.length)return null;const phase=inferIntervalPhases(rows),main=phase?.quality?rows.filter((_,i)=>phase.phases[i]==="Bloque principal"):rows,roles=classifyMainLaps(main),work=main.filter(r=>roles.get(r.index)==="run"&&Number(r.p)>0),recovery=main.filter(r=>roles.get(r.index)==="recovery");if(work.length<2)return null;
-  const mean=atlasI32Weighted(work,"p"),paces=work.map(r=>Number(r.p)).filter(Number.isFinite),cv=mean&&paces.length?Math.sqrt(paces.reduce((s,p)=>s+Math.pow(p-mean,2),0)/paces.length)/mean*100:null,
-        first=work[0],last=work.at(-1),paceShift=Number(last?.p)-Number(first?.p),hrShift=Number(last?.hr)-Number(first?.hr),workHr=atlasI32Weighted(work,"hr"),recHr=atlasI32Weighted(recovery,"hr"),recoveryDrop=Number.isFinite(workHr)&&Number.isFinite(recHr)?workHr-recHr:null;
-  return{
-    work,recovery,meanPace:mean,
+  const mean=atlasI33Weighted(work,"p"),paces=work.map(r=>Number(r.p)).filter(Number.isFinite),cv=mean&&paces.length?Math.sqrt(paces.reduce((s,p)=>s+Math.pow(p-mean,2),0)/paces.length)/mean*100:null,
+        first=work[0],last=work.at(-1),paceShift=Number(last?.p)-Number(first?.p),hrShift=Number(last?.hr)-Number(first?.hr),workHr=atlasI33Weighted(work,"hr"),recHr=atlasI33Weighted(recovery,"hr"),recoveryDrop=Number.isFinite(workHr)&&Number.isFinite(recHr)?workHr-recHr:null,
+        workSec=atlasI33Median(work.map(r=>r.t)),recoverySec=atlasI33Median(recovery.map(r=>r.t)),recoveryRatio=Number.isFinite(workSec)&&workSec>0&&Number.isFinite(recoverySec)?recoverySec/workSec:null;
+  return{work,recovery,meanPace:mean,paceShift,hrShift,recoveryDrop,recoveryRatio,
     consistency:cv==null?"unknown":cv<1.6?"excellent":cv<3.2?"good":"uneven",
     finish:!Number.isFinite(paceShift)?"unknown":paceShift<-3?"stronger":paceShift>5?"fading":"held",
     effort:!Number.isFinite(hrShift)?"unknown":hrShift<=4?"controlled":hrShift<=10?"building":"costly",
-    recoveryQuality:!recovery.length||!Number.isFinite(recoveryDrop)?"unknown":recoveryDrop>=10?"good":recoveryDrop>=5?"adequate":"limited"
-  };
+    recoveryQuality:!recovery.length||!Number.isFinite(recoveryDrop)?"unknown":recoveryDrop>=10?"good":recoveryDrop>=5?"adequate":"limited",
+    recoveryDemand:recoveryRatio==null?"unknown":recoveryRatio>=.72?"generous":recoveryRatio<=.48?"tight":"balanced"};
 }
-function atlasI32History(a){
+function atlasI33History(a){
   if(!isRun(a))return null;const comps=atlasV097ComparableRuns(a,{sameKind:true,days:180,paceTolerance:.20}).slice(0,8);if(comps.length<3)return null;
   const pace=Number(activityPaceSecKm(a)),hr=Number(activityHr(a)),paceMed=atlasV097MedianMetric(comps,activityPaceSecKm),hrMed=atlasV097MedianMetric(comps,activityHr);if(!(pace>0&&hr>0&&paceMed>0&&hrMed>0))return null;
   const pd=pace-paceMed,hd=hr-hrMed;if((pd<=-5&&hd<=2)||(Math.abs(pd)<=8&&hd<=-4))return{status:"better"};if(pd>=8&&hd>=4)return{status:"costlier"};return{status:"usual"};
 }
-function atlasI32PlanFit(a,interval){
+function atlasI33PlanFit(a,interval){
   const match=atlasV140PlanSessionMatch(a);if(!match?.session)return{match:null,intensity:"unknown",dose:"unknown"};const range=atlasV140PaceRange(match.session),actual=interval?.meanPace||Number(activityPaceSecKm(a)),actualD=Number(activityDistanceM(a)),plannedD=Number(match.session.distanceM);let intensity="unknown",dose="unknown";
   if(range&&actual>0){if(actual<range.fast-5)intensity="harder";else if(actual>range.slow+7)intensity="easier";else intensity="aligned";}
   if(actualD>0&&plannedD>0){const ratio=actualD/plannedD;if(ratio<.85)dose="short";else if(ratio>1.15)dose="long";else dose="aligned";}
   return{match,intensity,dose};
 }
-function atlasI32Type(a){
-  if(trainingEngineIsCompetitionRun(a))return"race";if(trainingEngineIsRaceOrTestRun(a))return"test";
-  const name=atlasV093NormText(activityName(a));if(/recuperacion|recovery/.test(name))return"recovery";const kind=atlasV097RunKind(a);return kind==="race"?"test":kind;
+function atlasI33Type(a){
+  if(trainingEngineIsCompetitionRun(a))return"race";if(trainingEngineIsRaceOrTestRun(a))return"test";const name=atlasV093NormText(activityName(a));if(/recuperacion|recovery/.test(name))return"recovery";const kind=atlasV097RunKind(a);return kind==="race"?"test":kind;
 }
-function atlasI32Evidence(a){
-  const type=atlasI32Type(a),laps=atlasI32Laps(a),pacing=atlasI32Pacing(a,laps),interval=atlasI32Intervals(a,laps),plan=atlasI32PlanFit(a,interval),history=atlasI32History(a),rpe=Number(activityRpe(a));
-  return{a,type,laps,pacing,interval,plan,history,rpe:Number.isFinite(rpe)?rpe:null};
+function atlasI33Terrain(a){const km=(Number(activityDistanceM(a))||0)/1000,gain=Number(activityElevation(a));if(!(km>0&&Number.isFinite(gain)&&gain>0))return"unknown";const density=gain/km;return density>=20?"hilly":density>=10?"rolling":"flat";}
+function atlasI33PlanWeek(plan,date){
+  const groups=[plan?.engine?.prescriptionCore?.schedule?.weeks,plan?.engine?.macroPlan?.weeks,plan?.engine?.weeklySkeleton?.weeks].filter(Array.isArray);for(const weeks of groups){const hit=weeks.find(w=>String(w?.start||"")<=date&&String(w?.end||"")>=date);if(hit)return hit;}return null;
 }
-function atlasI32Variant(a,salt,items){return atlasV097PickVariant(a,items,salt);}
-function atlasI32Story(id,confidence="high",secondary=null){return{id,confidence,secondary};}
-function atlasI32SelectStory(e){
+function atlasI33PlanContext(a,fit){
+  const plan=typeof activeTrainingPlan==="function"?activeTrainingPlan():null,today=fmtDate(new Date()),date=activityDate(a);if(!plan||!date||!plan.startDate||!plan.raceDate)return null;
+  if(today<plan.startDate||today>plan.raceDate||date<plan.startDate||date>plan.raceDate)return null;
+  const week=atlasI33PlanWeek(plan,date),phase=String(week?.phase||"").toLowerCase(),phaseLabel=({preparation:"preparación",development:"desarrollo",specific:"fase específica",taper:"taper"})[phase]||"fase actual";
+  return{plan,week,phase,phaseLabel,match:fit?.match||null};
+}
+function atlasI33Evidence(a){
+  const type=atlasI33Type(a),laps=atlasI33Laps(a),pacing=atlasI33Pacing(a,laps),interval=atlasI33Intervals(a,laps),plan=atlasI33PlanFit(a,interval),history=atlasI33History(a),rpe=Number(activityRpe(a));
+  return{a,type,laps,pacing,interval,plan,planContext:atlasI33PlanContext(a,plan),history,terrain:atlasI33Terrain(a),rpe:Number.isFinite(rpe)?rpe:null};
+}
+function atlasI33Hash(text){let h=2166136261;for(const c of String(text||"")){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;}
+function atlasI33Ordinal(a,scope="run"){
+  const target=String(a?.id||""),rows=(currentActivities||[]).filter(x=>isRun(x)).slice().sort((x,y)=>activityStamp(x).localeCompare(activityStamp(y))||String(x.id).localeCompare(String(y.id)));let filtered=rows;
+  if(scope.startsWith("type:")){const t=scope.slice(5);filtered=rows.filter(x=>atlasI33Type(x)===t);}const idx=filtered.findIndex(x=>String(x?.id||"")===target);return idx>=0?idx:0;
+}
+function atlasI33Variant(a,salt,items,scope="run"){
+  const list=(items||[]).filter(Boolean);if(!list.length)return"";const index=(atlasI33Ordinal(a,scope)+atlasI33Hash(salt))%list.length;return list[index];
+}
+function atlasI33Story(id,confidence="high"){return{id,confidence};}
+function atlasI33SelectStory(e){
   const p=e.pacing,i=e.interval,fit=e.plan,h=e.history,r=e.rpe;
-  if(e.type==="recovery"){
-    if(p?.cardiac==="drifting"||p?.finish==="fading"||(r!=null&&r>=6))return atlasI32Story("recovery_costly");
-    if(h?.status==="costlier")return atlasI32Story("recovery_not_absorbed");
-    return atlasI32Story("recovery_clean");
-  }
-  if(e.type==="easy"){
-    if(fit.intensity==="harder"||(r!=null&&r>=7))return atlasI32Story("easy_too_hard");
-    if(p?.cardiac==="drifting"&&["held","slightly_fading","fading"].includes(p.finish))return atlasI32Story("easy_drift");
-    if(p?.finish==="fading")return atlasI32Story("easy_fade");
-    if(p&&["high","good"].includes(p.stability)&&p.cardiac==="stable")return atlasI32Story(h?.status==="better"?"easy_economy":"easy_clean");
-    if(h?.status==="costlier")return atlasI32Story("easy_costlier");
-    return atlasI32Story("easy_neutral","medium");
-  }
-  if(e.type==="long"){
-    if(p?.finish==="fading"&&p.cardiac==="drifting")return atlasI32Story("long_durability_limit");
-    if(p?.cardiac==="drifting"&&["held","slightly_fading"].includes(p.finish))return atlasI32Story("long_cardiac_drift");
-    if(p?.finish==="stronger"&&p.cardiac!=="drifting")return atlasI32Story("long_strong_finish");
-    if(p&&["high","good"].includes(p.stability)&&p.cardiac==="stable")return atlasI32Story(h?.status==="better"?"long_economy":"long_durable");
-    if(r!=null&&r>=8)return atlasI32Story("long_expensive");
-    return atlasI32Story("long_mixed","medium");
-  }
+  if(e.type==="recovery"){if(p?.cardiac==="drifting"||p?.finish==="fading"||(r!=null&&r>=6))return atlasI33Story("recovery_costly");if(h?.status==="costlier")return atlasI33Story("recovery_not_absorbed");return atlasI33Story("recovery_clean");}
+  if(e.type==="easy"){if(fit.intensity==="harder"||(r!=null&&r>=7))return atlasI33Story("easy_too_hard");if(p?.cardiac==="drifting"&&["held","slightly_fading","fading"].includes(p.finish))return atlasI33Story("easy_drift");if(p?.finish==="fading")return atlasI33Story("easy_fade");if(p&&["high","good"].includes(p.stability)&&p.cardiac==="stable")return atlasI33Story(h?.status==="better"?"easy_economy":"easy_clean");if(h?.status==="costlier")return atlasI33Story("easy_costlier");return atlasI33Story("easy_neutral","medium");}
+  if(e.type==="long"){if(p?.finish==="fading"&&p.cardiac==="drifting")return atlasI33Story("long_durability_limit");if(p?.cardiac==="drifting"&&["held","slightly_fading"].includes(p.finish))return atlasI33Story("long_cardiac_drift");if(p?.finish==="stronger"&&p.cardiac!=="drifting")return atlasI33Story("long_strong_finish");if(p&&["high","good"].includes(p.stability)&&p.cardiac==="stable")return atlasI33Story(h?.status==="better"?"long_economy":"long_durable");if(r!=null&&r>=8)return atlasI33Story("long_expensive");return atlasI33Story("long_mixed","medium");}
   if(e.type==="interval"||e.type==="threshold"){
-    if(!i)return atlasI32Story(e.type==="threshold"?"threshold_no_detail":"interval_no_detail","medium");
-    if(fit.intensity==="harder"&&i.effort==="costly")return atlasI32Story(e.type==="threshold"?"threshold_overcooked":"interval_overcooked");
-    if(i.finish==="fading")return atlasI32Story(e.type==="threshold"?"threshold_fade":"interval_fade");
-    if(i.consistency==="excellent"&&i.finish==="stronger")return atlasI32Story(e.type==="threshold"?"threshold_progressive_control":"interval_strong_finish");
-    if(["excellent","good"].includes(i.consistency)&&["held","stronger"].includes(i.finish)&&i.effort!=="costly")return atlasI32Story(e.type==="threshold"?"threshold_sustainable":"interval_repeatable");
-    if(i.recoveryQuality==="limited")return atlasI32Story("interval_recovery_limited");
-    if(h?.status==="better")return atlasI32Story(e.type==="threshold"?"threshold_form":"interval_form");
-    return atlasI32Story(e.type==="threshold"?"threshold_mixed":"interval_mixed","medium");
+    if(!i)return atlasI33Story(e.type==="threshold"?"threshold_no_detail":"interval_no_detail","medium");if(fit.intensity==="harder"&&i.effort==="costly")return atlasI33Story(e.type==="threshold"?"threshold_overcooked":"interval_overcooked");if(i.finish==="fading")return atlasI33Story(e.type==="threshold"?"threshold_fade":"interval_fade");
+    if(e.type==="interval"&&["excellent","good"].includes(i.consistency)&&["held","stronger"].includes(i.finish)&&i.effort!=="costly"){if(i.recoveryDemand==="generous")return atlasI33Story("interval_repeatable_generous");if(i.recoveryDemand==="tight")return atlasI33Story("interval_repeatable_tight");return atlasI33Story(i.finish==="stronger"?"interval_strong_finish":"interval_repeatable");}
+    if(e.type==="threshold"&&["excellent","good"].includes(i.consistency)&&["held","stronger"].includes(i.finish)&&i.effort!=="costly")return atlasI33Story(i.finish==="stronger"?"threshold_progressive_control":"threshold_sustainable");if(i.recoveryQuality==="limited")return atlasI33Story("interval_recovery_limited");if(h?.status==="better")return atlasI33Story(e.type==="threshold"?"threshold_form":"interval_form");return atlasI33Story(e.type==="threshold"?"threshold_mixed":"interval_mixed","medium");
   }
-  if(e.type==="race"||e.type==="test"){
-    const prefix=e.type==="race"?"race":"test";
-    if(p?.finish==="fading"&&p.cardiac==="drifting")return atlasI32Story(`${prefix}_durability`);
-    if(p?.finish==="stronger")return atlasI32Story(`${prefix}_negative_split`);
-    if(p&&["high","good"].includes(p.stability))return atlasI32Story(h?.status==="better"?`${prefix}_form`:`${prefix}_well_managed`);
-    if(h?.status==="costlier")return atlasI32Story(`${prefix}_costly`);
-    return atlasI32Story(`${prefix}_irregular`,"medium");
-  }
-  if(p?.finish==="stronger"&&p.cardiac!=="drifting")return atlasI32Story("steady_progressive");
-  if(p?.finish==="fading"&&p.cardiac==="drifting")return atlasI32Story("steady_durability");
-  if(p&&["high","good"].includes(p.stability)&&p.cardiac!=="drifting")return atlasI32Story(h?.status==="better"?"steady_economy":"steady_control");
-  if(h?.status==="costlier")return atlasI32Story("steady_costly");
-  return atlasI32Story("steady_mixed","medium");
+  if(e.type==="race"||e.type==="test"){const prefix=e.type==="race"?"race":"test";if(p?.finish==="fading"&&p.cardiac==="drifting")return atlasI33Story(`${prefix}_durability`);if(p?.finish==="stronger")return atlasI33Story(`${prefix}_negative_split`);if(p&&["high","good"].includes(p.stability))return atlasI33Story(h?.status==="better"?`${prefix}_form`:`${prefix}_well_managed`);if(h?.status==="costlier")return atlasI33Story(`${prefix}_costly`);return atlasI33Story(`${prefix}_irregular`,"medium");}
+  if(p?.finish==="stronger"&&p.cardiac!=="drifting")return atlasI33Story("steady_progressive");if(p?.finish==="fading"&&p.cardiac==="drifting")return atlasI33Story("steady_durability");if(p&&["high","good"].includes(p.stability)&&p.cardiac!=="drifting")return atlasI33Story(h?.status==="better"?"steady_economy":"steady_control");if(h?.status==="costlier")return atlasI33Story("steady_costly");return atlasI33Story("steady_mixed","medium");
 }
 
-function atlasI32PrimaryText(e,story){
-  const a=e.a,v=(salt,arr)=>atlasI32Variant(a,`${story.id}-${salt}`,arr);
-  const texts={
-    recovery_clean:()=>v("a",["Recuperación bien ejecutada: has mantenido la sesión lo bastante ligera como para favorecer la asimilación, sin convertirla en otro estímulo. Ese autocontrol es justo lo que protege los días importantes.","Hoy has usado el rodaje para recuperar, no para entrenar de nuevo. Es una sesión discreta, pero muy útil porque deja espacio para que la carga anterior se convierta en adaptación."]),
-    recovery_costly:()=>v("a",["La sesión de recuperación ha terminado pidiendo más de lo que debería. Lo interpretaría como fatiga todavía presente: hoy habría sido mejor reducir aún más la exigencia que intentar salvar el ritmo.","El cuerpo no ha tratado este rodaje como recuperación. Cuando un día suave empieza a costar, la información importante no es el ritmo sino que todavía queda carga por absorber."]),
-    recovery_not_absorbed:()=>"La sesión ha resultado más costosa de lo habitual para un día de recuperación. No lo tomaría como pérdida de forma; lo leería como una señal de que todavía no estabas completamente fresco.",
-    easy_clean:()=>v("a",["Rodaje fácil muy bien resuelto. El esfuerzo se mantiene contenido y no aparece una factura creciente al final, así que la sesión suma base aeróbica sin gastar energía que pertenece a otros entrenamientos.","Has hecho lo que toca en un día fácil: correr con margen y terminar sin necesidad de defender el ritmo. Este tipo de sesión construye consistencia precisamente porque no intenta demostrar nada."]),
-    easy_economy:()=>v("a",["El rodaje sale fácil de verdad y, además, con una sensación de eficiencia mejor que la habitual. Es una señal interesante de forma porque estás obteniendo el mismo tipo de estímulo con menos coste interno.","La mejor noticia de este rodaje es la economía. No has necesitado convertirlo en un día rápido para mostrar progreso; el cuerpo está resolviendo mejor un esfuerzo que ya conoces."]),
-    easy_drift:()=>v("a",["El rodaje empieza con el perfil correcto, pero va perdiendo comodidad aunque por fuera parezca estable. En un día fácil esa deriva importa más que el ritmo: buscaría terminar con más margen antes de pensar en correr más.","La ejecución es ordenada, pero el coste va creciendo demasiado para un rodaje fácil. Lo tomaría como una señal de recuperación o resistencia aeróbica del día, no como una invitación a apretar."]),
-    easy_fade:()=>"La sesión pierde soltura según avanza. Para un rodaje fácil no intentaría rescatar el ritmo: preferiría aceptar la fatiga del día y conservar el objetivo de bajo coste.",
-    easy_too_hard:()=>v("a",["Has convertido un día fácil en un estímulo más exigente de lo que interesaba. Aunque hayas podido sostenerlo, aquí el éxito es guardar recursos para la calidad; la próxima vez protegería mejor la sensación de comodidad.","El rodaje se ha ido por encima de su función. No me preocupa que puedas correr así, sino que ese esfuerzo roba margen a los entrenamientos que sí deben exigir de verdad."]),
-    easy_costlier:()=>"Hoy un esfuerzo normalmente sencillo te ha pedido más de lo habitual. Lo trataría como información sobre el contexto y la recuperación, no como una razón para forzar ni como una conclusión sobre tu forma.",
-    easy_neutral:()=>"El rodaje cumple su función sin dejar una señal especialmente fuerte, y eso está bien. En los días fáciles prefiero una sesión correcta y repetible a buscar conclusiones donde no las hay.",
-    long_durability_limit:()=>v("a",["La limitación aparece cuando la tirada ya pesa: el cuerpo necesita cada vez más y la ejecución empieza a ceder. La prioridad no es hacerla más dura, sino conseguir que la parte final conserve el control de la primera.","La tirada señala con bastante claridad dónde está el trabajo pendiente: sostener la economía cuando aparece fatiga acumulada. Hay resistencia para llegar, pero todavía falta margen para llegar igual de bien."]),
-    long_cardiac_drift:()=>v("a",["La tirada mantiene bien la producción, pero el coste interno va creciendo. Eso habla de una durabilidad todavía mejorable: antes de añadir más carga, buscaría sostener este tipo de esfuerzo con mayor reserva al final.","Por fuera la tirada aguanta; por dentro se va encareciendo. Es una buena sesión para construir resistencia, pero también una pista de que la siguiente mejora debe venir de la economía tardía, no de correr más rápido."]),
-    long_strong_finish:()=>v("a",["Tirada muy bien gestionada. Llegas al final con capacidad de producir más en lugar de limitarte a sobrevivir, señal de que has dosificado bien y conservas reserva cuando el entrenamiento empieza a contar de verdad.","La parte final es la mejor señal de la sesión: sigues teniendo respuesta después de acumular fatiga. Eso habla de buena gestión y de una durabilidad que está creciendo."]),
-    long_durable:()=>v("a",["Tirada sólida y estable. No aparecen señales claras de deterioro cuando aumenta el tiempo de carrera, así que el estímulo de resistencia se acumula sin convertirse en una lucha por terminar.","Has sostenido la tirada con una estabilidad que me gusta: el esfuerzo no se desordena y la parte final sigue pareciendo entrenamiento. Esa es la base sobre la que después se puede añadir especificidad."]),
-    long_economy:()=>"La tirada no sólo se sostiene bien, sino que parece más económica que tus referencias habituales. Es una señal especialmente valiosa porque la mejora aparece cuando el tiempo de carrera ya debería empezar a pesar.",
-    long_expensive:()=>"La tirada ha dejado demasiado coste para el objetivo que perseguía. No aumentaría todavía la exigencia: primero buscaría que este mismo estímulo termine con más control y menos sensación de supervivencia.",
-    long_mixed:()=>"La tirada suma resistencia, pero no deja una señal suficientemente limpia como para hablar de un salto de forma o de una limitación concreta. Me quedaría con cómo respondes en la parte final de las próximas para ver la tendencia.",
-    interval_repeatable:()=>v("a",["La calidad está bien asimilada: puedes repetir el esfuerzo sin que las últimas repeticiones pierdan identidad respecto a las primeras. Eso me dice que la sesión ha estimulado velocidad útil, no sólo tolerancia al sufrimiento.","Lo más positivo es la repetibilidad. Corres rápido sin que la sesión se vaya deshaciendo, señal de que controlas el estímulo y todavía conservas técnica y decisión cuando aparece fatiga."]),
-    interval_strong_finish:()=>v("a",["La sesión crece en lugar de deteriorarse. Llegas a las últimas repeticiones con capacidad para correr mejor, lo que sugiere que has dosificado bien y que el trabajo rápido está dejando margen en vez de vaciarte demasiado pronto.","Has guardado la mejor respuesta para cuando ya había fatiga. Eso es más interesante que una primera repetición brillante: habla de control, confianza y capacidad para sostener calidad."]),
-    interval_fade:()=>v("a",["La calidad se va perdiendo cuando avanza el bloque. No intentaría corregirlo saliendo todavía más fuerte; el siguiente objetivo sería encontrar una intensidad que permita que las últimas repeticiones se parezcan a las primeras.","El estímulo empieza bien, pero deja de ser igual de reproducible al final. Aquí trabajaría la gestión del esfuerzo: menos ambición al principio y más calidad disponible cuando la sesión ya pesa."]),
-    interval_overcooked:()=>"La sesión se ha acercado demasiado a un test. Has sacado trabajo de calidad, pero a costa de reducir la repetibilidad; preferiría un punto menos de agresividad para que el estímulo sea entrenable y no excepcional.",
-    interval_recovery_limited:()=>"La recuperación entre esfuerzos no termina de devolverte suficiente margen y el bloque se vuelve cada vez más continuo. Si no era intencionado, protegería un poco más la recuperación para que cada repetición conserve su calidad específica.",
-    interval_form:()=>"La sesión rápida sale con más soltura que tus referencias habituales. Es una buena señal porque la mejora aparece justo donde suele ser más difícil esconder la fatiga: cuando toca repetir calidad.",
-    interval_mixed:()=>"La sesión aporta calidad, pero no deja una lectura única suficientemente fuerte. Hay trabajo útil; antes de extraer una conclusión sobre tu forma, me interesa ver si la misma respuesta se repite en la próxima sesión comparable.",
-    interval_no_detail:()=>"Sé que ha sido una sesión de calidad, pero no tengo suficiente detalle interno para juzgar cómo se repartió el esfuerzo. Prefiero no convertir un promedio en una valoración que no estaría respaldada.",
-    threshold_sustainable:()=>v("a",["Trabajo de umbral muy bien gobernado. Mantienes la calidad sin convertir el final en supervivencia, que es justo lo que busco cuando queremos acumular tiempo cerca del límite sin cruzarlo innecesariamente.","La sesión tiene un perfil muy útil de umbral: exigente, pero todavía controlable y repetible. Esa frontera bien gestionada es más valiosa que intentar demostrar velocidad."]),
-    threshold_progressive_control:()=>"El trabajo de umbral termina con más solvencia de la que empieza. Has encontrado margen dentro de un esfuerzo sostenido, una señal de que esa intensidad está cada vez mejor asimilada.",
-    threshold_fade:()=>"El esfuerzo deja de ser sostenible al final y empieza a parecer más una lucha que un trabajo de umbral. Ajustaría el inicio para conservar continuidad y evitar que el estímulo derive hacia algo más agresivo.",
-    threshold_overcooked:()=>"Has llevado el umbral más lejos de lo que interesa. El entrenamiento sigue teniendo valor, pero la próxima vez buscaría una ejecución más contenida: cerca del límite, no por encima de él.",
-    threshold_form:()=>"El esfuerzo sostenido parece más económico que en tus referencias recientes. Es una señal útil de mejora porque indica que puedes habitar esa intensidad con más control, no sólo alcanzarla.",
-    threshold_mixed:()=>"El trabajo cumple una función de umbral, aunque la ejecución no deja una señal suficientemente limpia para hablar de progreso o retroceso. Me interesa más la tendencia de varias sesiones que una lectura forzada de ésta.",
-    threshold_no_detail:()=>"La actividad encaja con un trabajo de umbral, pero falta detalle interno para valorar de verdad la sostenibilidad. Prefiero no inventar cómo se comportó el bloque a partir de un promedio general.",
-    steady_progressive:()=>v("a",["Progresivo bien construido: el esfuerzo crece porque tú lo decides, no porque el cuerpo se vaya desordenando. Terminar con capacidad de acelerar habla de reserva y de buen control aeróbico.","La sesión va de menos a más sin perder gobierno. Ese final con respuesta es una buena señal de reserva: has utilizado la intensidad, no has sido arrastrado por ella."]),
-    steady_durability:()=>"La segunda parte cuesta cada vez más y la ejecución empieza a perder calidad. La limitación parece estar en sostener el esfuerzo, no en alcanzarlo; trabajaría continuidad antes que más intensidad.",
-    steady_control:()=>"Rodaje sostenido bien asentado. Encuentras una intensidad que puedes gobernar y mantener sin grandes correcciones, señal de un buen control aeróbico.",
-    steady_economy:()=>"El esfuerzo sostenido sale con más economía que en tus referencias recientes. Es una mejora silenciosa pero importante: estás produciendo mejor sin necesitar convertir la sesión en algo más duro.",
-    steady_costly:()=>"El mismo tipo de esfuerzo te ha costado más de lo habitual. Antes de interpretarlo como un cambio de forma, revisaría el contexto de recuperación y carga; hoy la sesión parece haber llegado con menos margen.",
-    steady_mixed:()=>"La sesión suma trabajo sostenido, pero no ofrece una señal dominante suficientemente clara. Me quedaría con la tendencia de las próximas antes que forzar una conclusión a partir de un día aislado.",
-    race_durability:()=>"La carrera se decide en la parte final, donde el coste sigue creciendo mientras la ejecución empieza a ceder. La principal oportunidad parece ser llegar a ese tramo con más durabilidad y mejor gestión, no buscar más velocidad al principio.",
-    race_negative_split:()=>"Muy buena gestión competitiva. Has conservado recursos para el tramo donde la carrera realmente exige y terminas mostrando capacidad de respuesta; eso habla de paciencia y de reserva bien utilizada.",
-    race_well_managed:()=>"El reparto del esfuerzo está bien resuelto y no parece que la estrategia haya sido el principal limitante. Si quieres avanzar desde aquí, el margen está más en aumentar capacidad que en cambiar la forma de distribuirla.",
-    race_form:()=>"La carrera está bien gestionada y, además, la relación entre rendimiento y coste apunta en mejor dirección que en tus referencias. Es una señal de forma útil porque aparece en un esfuerzo competitivo completo.",
-    race_costly:()=>"El resultado ha exigido más de lo habitual para un esfuerzo comparable. No sacaría una conclusión inmediata sobre la forma; primero separaría cuánto viene de condiciones, recuperación o carga previa.",
-    race_irregular:()=>"La carrera ha sido demasiado irregular para separar con claridad capacidad física y decisiones de ritmo. Antes de buscar un techo más alto, me interesa una ejecución más ordenada que permita saber dónde está realmente el límite.",
-    test_durability:()=>"El test pierde fiabilidad en la parte final porque el esfuerzo sigue creciendo mientras la ejecución cede. Me sirve como referencia, pero apunta más a una limitación de durabilidad que de velocidad pura.",
-    test_negative_split:()=>"Test muy bien gestionado. Llegas al final con capacidad de mejorar la ejecución, así que la referencia refleja bien tu nivel sin estar distorsionada por una salida demasiado agresiva.",
-    test_well_managed:()=>"El test está bien controlado y ofrece una referencia limpia de tu capacidad actual. La ejecución no parece haber condicionado el resultado, por lo que el dato que deja es bastante fiable para orientar el entrenamiento.",
-    test_form:()=>"El test combina buena gestión con una respuesta más eficiente que en tus referencias recientes. Es una señal sólida de progreso porque no depende sólo de haber salido más fuerte.",
-    test_costly:()=>"El test ha salido caro para lo que normalmente te exige un esfuerzo comparable. Lo conservaría como referencia, pero con cautela hasta comprobar si el contexto de recuperación estaba condicionando el resultado.",
-    test_irregular:()=>"El test aporta información, aunque la ejecución irregular hace difícil saber cuánto refleja capacidad y cuánto decisiones de ritmo. Preferiría una referencia más estable antes de ajustar conclusiones importantes.",
-  };
-  const fn=texts[story.id]||(()=>"");return fn();
-}
-function atlasI32SecondaryText(e,story){
-  const h=e.history,fit=e.plan,i=e.interval,r=e.rpe,id=story.id;
-  if(fit?.intensity==="harder"&&!/too_hard|overcooked/.test(id))return atlasI32Variant(e.a,"secondary-hard",["Respecto a la intención del día, has añadido más exigencia de la necesaria. No pasa nada de forma aislada, pero no querría que se convierta en la manera habitual de ejecutar esta sesión.","La sesión ha ido un poco más allá de su propósito. La capacidad está ahí; ahora interesa decidir cuándo merece la pena usarla y cuándo conviene guardar margen."]);
-  if(fit?.intensity==="easier"&&["interval","threshold","steady"].includes(e.type))return"El estímulo ha quedado algo por debajo de la intención prevista. Si fue una adaptación consciente por sensaciones, me parece válida; si se repite estando fresco, entonces sí revisaría la prescripción.";
-  if(h?.status==="better"&&!/economy|form/.test(id))return atlasI32Variant(e.a,"secondary-better",["Además, la relación entre lo que produces y lo que te cuesta mejora frente a tus referencias. No cambia el propósito de la sesión, pero sí refuerza la idea de que estás asimilando bien el trabajo.","Hay otra señal positiva: este tipo de esfuerzo te está saliendo con más soltura que antes. Me interesa especialmente porque el progreso aparece sin necesidad de forzar la sesión."]);
-  if(h?.status==="costlier"&&!/costly|expensive|drift|durability/.test(id))return"El coste ha sido mayor de lo habitual para una sesión comparable. Lo vigilaría como contexto de recuperación antes de interpretarlo como una tendencia de rendimiento.";
-  if(i?.recoveryQuality==="good"&&e.type==="interval"&&["interval_repeatable","interval_strong_finish"].includes(id))return atlasI32Variant(e.a,"secondary-recovery",["Las recuperaciones están bien calibradas: devuelven suficiente margen para que el siguiente esfuerzo siga siendo de calidad, sin cortar por completo la continuidad del estímulo.","Entre esfuerzos recuperas lo necesario para volver a producir bien. Eso ayuda a que la sesión entrene repetibilidad en lugar de convertirse en una acumulación desordenada de fatiga."]);
-  if(r!=null&&r>=9&&!/overcooked|expensive/.test(id))return"Las sensaciones indican que terminaste muy cerca del límite. En entrenamiento prefiero dejar algo de reserva para que el estímulo pueda repetirse y asimilarse con más facilidad.";
+const atlasI33PrimaryBank=Object.freeze({
+ recovery_clean:["Recuperación bien ejecutada. La sesión se mantiene lo bastante ligera como para facilitar la asimilación de la carga anterior y llegar con más margen al siguiente estímulo importante.","El rodaje cumple su función de descargar: deja movimiento y continuidad sin convertirse en otro entrenamiento que haya que recuperar después.","Día suave bien resuelto. La sensación global es de control y de poco desgaste, exactamente lo que interesa cuando la prioridad es absorber trabajo previo."],
+ recovery_costly:["La recuperación no ha salido realmente suave. El esfuerzo va creciendo y el cuerpo parece seguir arrastrando carga; en un día así conviene reducir más antes que defender el ritmo.","El organismo todavía no estaba preparado para tratar este rodaje como recuperación. La señal útil es la falta de margen, no el ritmo conseguido.","La sesión termina costando más de lo que corresponde a un día de descarga. Conviene interpretarlo como fatiga pendiente y proteger la siguiente sesión importante."],
+ recovery_not_absorbed:["Un esfuerzo que normalmente debería resultar sencillo está pidiendo más de lo habitual. La lectura encaja mejor con recuperación incompleta que con una pérdida de forma.","La sesión sale más pesada que otras recuperaciones comparables. Antes de extraer conclusiones sobre rendimiento, conviene dejar que la carga acumulada termine de asentarse."],
+ easy_clean:["Rodaje fácil bien ejecutado: cómodo, estable y sin una factura creciente al final. Suma base aeróbica sin gastar recursos que pertenecen a los días de calidad.","La sesión mantiene el carácter fácil de principio a fin. Ese control permite acumular volumen útil sin convertir cada salida en un estímulo exigente.","Buen rodaje de base. El esfuerzo queda contenido y termina con margen, que es precisamente lo que hace repetible este tipo de trabajo."],
+ easy_economy:["El rodaje sale fácil y además aparece una economía mejor que la habitual. La mejora es relevante porque llega sin necesidad de convertir el día en un entrenamiento rápido.","La señal positiva está en la soltura: un esfuerzo conocido se resuelve con menos exigencia que en referencias comparables. Es progreso aeróbico útil y sostenible.","Hay una mejora de eficiencia sin aumentar la exigencia de la sesión. Esa combinación tiene más valor para la base que cualquier pico puntual de velocidad."],
+ easy_drift:["El rodaje empieza cómodo, pero la segunda mitad exige cada vez más para sostener algo que debería seguir siendo fácil. La prioridad es recuperar margen al final, no correr más deprisa.","Por fuera la sesión parece estable; por dentro se va encareciendo. En un día fácil esa deriva pesa más que el ritmo y señala que faltó algo de frescura o de resistencia aeróbica ese día.","El carácter fácil se va perdiendo con el paso de los kilómetros. Conviene proteger mejor la comodidad final para que el rodaje cumpla su función sin dejar fatiga innecesaria."],
+ easy_fade:["La sesión pierde soltura según avanza. En un rodaje fácil no hace falta rescatar el ritmo: resulta más útil aceptar la fatiga del día y conservar el bajo coste del entrenamiento.","La parte final ya no tiene la misma facilidad que el inicio. La corrección no pasa por apretar, sino por terminar estos días con más reserva."],
+ easy_too_hard:["El rodaje se ha ido por encima de su función. La capacidad para correr más fuerte está ahí, pero usarla en un día fácil resta margen a las sesiones que sí deben exigir.","Un día pensado para sumar sin desgaste termina convirtiéndose en otro estímulo. Conviene separar mejor los objetivos: fácil debe seguir siendo fácil para que la calidad pueda ser realmente buena.","La sesión añade más exigencia de la necesaria. El problema no es poder sostenerla, sino el coste que deja para lo que viene después."],
+ easy_costlier:["Hoy un esfuerzo normalmente sencillo ha pedido más de lo habitual. La lectura apunta al contexto de recuperación del día más que a un cambio real de capacidad.","El rodaje sale algo más caro que tus referencias. Conviene vigilar la recuperación y la carga reciente antes de interpretar esta sesión como una señal de forma."],
+ easy_neutral:["El rodaje cumple su función sin dejar una señal especialmente fuerte, y eso es suficiente. Los días fáciles no necesitan demostrar nada para ser útiles.","Sesión correcta y repetible. No aparece una conclusión importante que justifique cargarla de significado; simplemente suma continuidad con poco desgaste."],
+ long_durability_limit:["La limitación aparece cuando la tirada ya pesa: aumenta el esfuerzo y la ejecución empieza a ceder. El siguiente avance está en conservar al final el mismo control que existe al principio.","Hay resistencia para completar la tirada, pero todavía falta margen para que la parte final siga teniendo la misma calidad. Antes de añadir más carga, conviene consolidar esa durabilidad.","La tirada expone un punto claro de mejora: cuando se acumula fatiga, cuesta sostener la misma respuesta. La prioridad es llegar al último tramo con más reserva, no endurecerlo todavía más."],
+ long_cardiac_drift:["La tirada se sostiene, pero el cuerpo necesita cada vez más esfuerzo para mantenerla. Es una señal de durabilidad todavía mejorable: primero conviene reducir esa deriva y después aumentar la exigencia.","La ejecución aguanta por fuera, aunque fisiológicamente va costando más. El objetivo siguiente es que el tramo final se parezca más al inicial en control y economía.","La resistencia permite mantener el trabajo, pero no todavía con el mismo margen de principio a fin. Esa diferencia es ahora más importante que añadir kilómetros o ritmo."],
+ long_strong_finish:["Muy buena gestión de la tirada. El final todavía tiene respuesta, señal de que la dosificación ha sido correcta y de que la fatiga acumulada no termina dominando la sesión.","La parte final confirma una buena durabilidad: después de acumular tiempo de carrera aún queda capacidad para responder sin desordenar la sesión.","La tirada termina mejor de lo que empieza a pesar. Esa reserva final habla bien tanto de la gestión como de la capacidad para sostener trabajo prolongado."],
+ long_durable:["Tirada sólida y estable. La fatiga no cambia de forma relevante la ejecución y el tramo final sigue pareciendo entrenamiento, no supervivencia.","La sesión mantiene el control cuando el tiempo de carrera empieza a contar. Esa estabilidad es una buena base para introducir trabajo más específico más adelante.","La durabilidad responde bien: el esfuerzo no se desordena y la parte final conserva el carácter previsto de la tirada."],
+ long_economy:["La tirada se sostiene con una eficiencia mejor que en referencias habituales. Es especialmente valioso porque la mejora aparece cuando la duración debería empezar a penalizar.","Hay una señal de progreso importante en la economía de la tirada: se mantiene el trabajo prolongado con menos exigencia relativa que antes."],
+ long_expensive:["La tirada deja más fatiga de la necesaria para el estímulo buscado. Conviene repetir una carga similar con más margen antes de aumentar duración o intensidad.","El entrenamiento cumple volumen, pero termina demasiado cerca del límite. La siguiente progresión debería venir de una mejor tolerancia a esta misma carga, no de añadir más."],
+ long_mixed:["La tirada suma resistencia, aunque no deja una señal dominante suficientemente clara. Conviene valorar la tendencia de varias semanas antes de cambiar la progresión por una sola sesión.","Sesión útil pero poco concluyente: hay trabajo acumulado sin un patrón claro de mejora o deterioro. La evolución de las próximas tiradas dará una lectura más fiable."],
+ threshold_no_detail:["El trabajo sostenido aporta estímulo, pero faltan vueltas suficientemente claras para juzgar bien cómo se comporta el bloque principal. Conviene evitar conclusiones finas con datos incompletos.","La sesión puede valorarse en conjunto, pero no hay suficiente detalle del bloque para separar control, deriva y respuesta final con fiabilidad."],
+ threshold_overcooked:["El trabajo de umbral se ha ido por encima de la intención. Cuando el esfuerzo deja de ser sostenible, el estímulo se acerca más a tolerar fatiga que a mejorar la capacidad de sostener intensidad.","La sesión cruza la frontera entre trabajo controlado y esfuerzo demasiado agresivo. Para que el umbral sea productivo, conviene terminar con sensación de control, no de haber vaciado el depósito."],
+ threshold_fade:["El bloque empieza bien, pero pierde calidad al final. Eso indica que la intensidad o la dosis estaban ligeramente por encima de lo sostenible hoy.","La parte final del umbral deja de parecerse a la inicial. El objetivo es sostener el mismo nivel con control; cuando eso se rompe, conviene ajustar antes el estímulo que forzar el cierre."],
+ threshold_progressive_control:["Muy buen trabajo de umbral: el bloque gana solidez según avanza sin convertirse en un esfuerzo descontrolado. Hay margen y capacidad para sostener intensidad con criterio.","La sesión progresa sin romper el carácter sostenible del trabajo. Esa combinación de control y capacidad final es una señal positiva para esfuerzos largos."],
+ threshold_sustainable:["El umbral está bien calibrado: el esfuerzo se mantiene estable y las últimas repeticiones conservan la misma calidad. El estímulo trabaja sostenibilidad, no supervivencia.","Sesión de umbral bien resuelta. La intensidad parece exigente pero repetible, que es justo la zona donde este tipo de trabajo aporta más.","La calidad se mantiene de principio a fin sin una caída clara. Eso indica que la dosis está bien ajustada para desarrollar resistencia a ritmos altos."],
+ threshold_form:["El trabajo sostenido sale con más soltura que en referencias comparables. Es una señal útil de forma porque aparece en una intensidad exigente y mantenida.","Hay una mejora de eficiencia en un esfuerzo sostenido que normalmente deja poco margen. Esa respuesta respalda una evolución positiva de la capacidad aeróbica alta."],
+ threshold_mixed:["El trabajo aporta estímulo, aunque la respuesta no es lo bastante limpia como para concluir si la limitación está en intensidad, recuperación o acumulación de fatiga.","Sesión exigente con señales mezcladas. Conviene observar el siguiente trabajo similar antes de modificar ritmos o dosis por esta única referencia."],
+ interval_no_detail:["La sesión de calidad está completada, pero el detalle disponible no permite separar con fiabilidad repeticiones y recuperaciones. Conviene no inventar una lectura fina donde faltan datos.","Hay estímulo de calidad, aunque no suficiente información estructurada para juzgar repetibilidad, recuperación y respuesta final con precisión."],
+ interval_overcooked:["Las series han terminado demasiado cerca del límite. La velocidad está disponible, pero el estímulo pierde calidad cuando cada repetición exige defenderse de la anterior.","El trabajo rápido se ha endurecido más de lo necesario. La prioridad es conservar calidad repetible, no demostrar el máximo nivel posible en cada sesión."],
+ interval_fade:["Las primeras repeticiones están por encima de lo que después puede sostenerse. La sesión habría sido más útil con una salida ligeramente más contenida y un bloque final de mayor calidad.","La calidad se deteriora en las últimas repeticiones. Eso apunta a una combinación de intensidad inicial y recuperación que hoy no permitía repetir el esfuerzo con suficiente control.","La sesión empieza con más ambición de la que puede mantener al final. El ajuste más útil sería proteger la regularidad antes que buscar una primera repetición más rápida."],
+ interval_strong_finish:["Muy buena sesión de calidad: las últimas repeticiones mantienen o mejoran el nivel cuando ya hay fatiga. Eso habla de control y de una intensidad bien elegida.","El bloque termina con respuesta, no con supervivencia. La velocidad se sostiene cuando el trabajo ya pesa, una señal clara de buena asimilación.","Las repeticiones finales conservan calidad y todavía permiten progresar. Esa reserva es más valiosa que una salida especialmente rápida."],
+ interval_repeatable:["Las series están bien resueltas: las últimas conservan la misma calidad que las primeras. El ritmo parece bien elegido y el estímulo trabaja repetibilidad, no sólo tolerancia al esfuerzo.","La sesión mantiene un nivel homogéneo de principio a fin. Esa regularidad indica que la intensidad permite acumular trabajo rápido con calidad.","Buen bloque de series. No hay una caída apreciable cuando aparece fatiga, señal de que el entrenamiento está bien dimensionado."],
+ interval_repeatable_generous:["Las series mantienen muy buena calidad, aunque las recuperaciones dejan bastante margen entre esfuerzos. La lectura positiva es el control; todavía no conviene atribuir toda la regularidad a una mejora de resistencia específica.","El bloque sale limpio y estable, pero con recuperaciones suficientemente amplias como para facilitar mucho cada repetición. Es una buena sesión de velocidad; la repetibilidad debe confirmarse cuando la recuperación sea más exigente.","La calidad se mantiene de principio a fin, con una ayuda importante de las recuperaciones. El estímulo está bien ejecutado, aunque no mide todavía toda la capacidad para encadenar esfuerzos con poco margen."],
+ interval_repeatable_tight:["La regularidad tiene especial valor porque las recuperaciones son exigentes. Mantener la calidad con poco margen entre esfuerzos habla de una buena capacidad para repetir intensidad.","Las series se sostienen sin caída pese a una recuperación ajustada. Esa combinación señala que el trabajo rápido se está asimilando bien y que la fatiga entre repeticiones no domina la sesión.","Muy buena repetibilidad: la calidad no se rompe aun cuando el descanso obliga a volver a trabajar pronto. Es una señal más sólida que simplemente correr rápido con recuperaciones amplias."],
+ interval_recovery_limited:["El principal límite de la sesión aparece entre repeticiones: la recuperación no devuelve suficiente margen y cada nuevo esfuerzo empieza algo más comprometido.","La calidad del trabajo está condicionada por una recuperación incompleta entre esfuerzos. Antes de subir la velocidad, conviene conseguir que cada repetición empiece en mejores condiciones."],
+ interval_form:["La calidad sale con más soltura que en sesiones comparables. Es una señal de forma útil porque aparece justo cuando toca producir intensidad y repetirla.","El trabajo rápido se resuelve con mejor relación entre rendimiento y esfuerzo que en referencias recientes. Eso respalda una adaptación positiva al estímulo de calidad."],
+ interval_mixed:["La sesión suma calidad, aunque no deja una señal dominante clara sobre control, recuperación o fatiga. Conviene usarla como una pieza más de la tendencia, no como una conclusión aislada.","Hay buen trabajo realizado, pero la respuesta es demasiado mixta para señalar una única fortaleza o limitación. La siguiente sesión comparable será más informativa."],
+ steady_progressive:["El rodaje sostenido está bien gestionado y termina con capacidad de progresar sin perder control. La intensidad parece bien dosificada y queda reserva para cerrar con calidad.","La sesión construye intensidad de forma ordenada y termina con respuesta. Es un buen ejemplo de esfuerzo sostenido sin convertir el final en una lucha."],
+ steady_durability:["La sesión sostenida pierde control cuando se acumula fatiga. El margen de mejora está en mantener la misma economía durante más tiempo, no en elevar el ritmo inicial.","El esfuerzo empieza estable, pero la parte final ya exige demasiado para sostener la misma calidad. La prioridad es ampliar la duración del control antes que subir la intensidad."],
+ steady_economy:["El esfuerzo sostenido sale con más soltura que en referencias comparables. Esa economía indica que la base está trasladándose a ritmos moderados con menos desgaste.","Hay una mejora útil de eficiencia en un trabajo continuo. El progreso aparece sin necesidad de convertir la sesión en un test."],
+ steady_control:["Rodaje sostenido bien resuelto: el esfuerzo mantiene orden y estabilidad sin una deriva relevante. La intensidad parece adecuada para acumular trabajo de calidad aeróbica.","La sesión mantiene un esfuerzo continuo con buen control. No hace falta endurecerla para que sea productiva; la consistencia ya aporta el estímulo buscado."],
+ steady_costly:["El esfuerzo sostenido pide más de lo habitual para una sesión comparable. Conviene revisar recuperación y carga acumulada antes de interpretarlo como un cambio de capacidad.","La sesión sale algo más pesada que tus referencias a intensidad parecida. La lectura más prudente es contextual hasta comprobar cómo responde el siguiente entrenamiento."],
+ steady_mixed:["La sesión suma trabajo sostenido, pero no ofrece una señal dominante suficientemente clara. La tendencia de las próximas sesiones será más útil que forzar una conclusión hoy.","Trabajo útil pero poco concluyente: no aparece un patrón suficientemente claro de mejora, deterioro o limitación principal."],
+ race_durability:["La carrera se decide en la parte final, donde el esfuerzo sigue creciendo mientras la ejecución empieza a ceder. La oportunidad principal está en llegar a ese tramo con más durabilidad y mejor gestión.","El límite aparece cuando la carrera ya exige sostener rendimiento bajo fatiga. La velocidad inicial no parece ser el problema principal; falta conservarla durante más tiempo.","La parte final revela una pérdida de margen progresiva. El siguiente salto competitivo pasa más por durabilidad que por buscar una salida más rápida."],
+ race_negative_split:["Muy buena gestión competitiva. La segunda mitad conserva o mejora la ejecución, señal de paciencia al inicio y de reserva disponible cuando la carrera empieza a decidirse.","La carrera está bien distribuida y termina con capacidad de respuesta. Esa gestión permite que el rendimiento aparezca en el tramo donde más valor tiene.","El esfuerzo se reparte con criterio: no se gasta todo al principio y el final todavía tiene calidad. Es una señal de buena lectura de carrera."],
+ race_well_managed:["El reparto del esfuerzo está bien resuelto y la estrategia no parece ser el principal limitante. El margen de mejora está más en aumentar capacidad que en cambiar la distribución.","Carrera ordenada y estable. La ejecución permite valorar el estado físico sin que una mala gestión distorsione demasiado el resultado."],
+ race_form:["La carrera combina buena gestión con una respuesta más eficiente que en referencias recientes. Es una señal de forma relevante porque aparece en un esfuerzo competitivo completo.","El rendimiento competitivo se sostiene con mejor economía que en referencias comparables. Esa mejora tiene más valor que una diferencia aislada de ritmo."],
+ race_costly:["El resultado ha exigido más de lo habitual para un esfuerzo comparable. Antes de sacar conclusiones sobre la forma conviene separar cuánto puede venir de condiciones, recuperación o carga previa.","La carrera sale más cara de lo esperable para una referencia similar. La lectura debe quedar condicionada por el contexto hasta comprobar la recuperación y las siguientes sesiones."],
+ race_irregular:["La carrera ha sido demasiado irregular para separar con claridad capacidad física y decisiones de ritmo. Una ejecución más ordenada permitiría identificar mejor dónde está el límite real.","La variabilidad de la carrera hace difícil atribuir el resultado a una sola causa. El aprendizaje principal está en estabilizar la gestión antes de buscar conclusiones fisiológicas más finas."],
+ test_durability:["El test pierde calidad de referencia en la parte final porque el esfuerzo crece mientras la ejecución cede. La señal apunta más a durabilidad que a falta de velocidad pura.","La referencia es útil, pero el tramo final muestra que todavía cuesta sostener el nivel cuando se acumula fatiga. Ese es el aspecto que más condiciona la lectura del test."],
+ test_negative_split:["Test bien gestionado: el final conserva capacidad de mejorar la ejecución, de modo que la referencia no queda distorsionada por una salida demasiado agresiva.","La distribución del esfuerzo permite que el test termine con respuesta. Eso hace que el resultado sea una referencia bastante limpia del nivel actual."],
+ test_well_managed:["El test está controlado y ofrece una referencia fiable de la capacidad actual. La ejecución no parece haber condicionado de forma importante el resultado.","Buena gestión del test. El esfuerzo se reparte con suficiente estabilidad como para que la lectura tenga valor para orientar el entrenamiento."],
+ test_form:["El test combina buena gestión con una respuesta más eficiente que en referencias recientes. Es una señal sólida de progreso porque no depende sólo de haber salido más fuerte.","La referencia mejora y lo hace con una ejecución ordenada. Esa combinación permite interpretar el resultado como progreso con bastante más confianza."],
+ test_costly:["El test ha salido más caro de lo habitual para un esfuerzo comparable. Conviene conservarlo como referencia, pero con cautela hasta saber cuánto influyó el contexto de recuperación.","La respuesta del día parece condicionada por un coste mayor del habitual. No es una buena base para ajustar conclusiones importantes sin otra referencia cercana."],
+ test_irregular:["El test aporta información, aunque la ejecución irregular dificulta saber cuánto refleja capacidad y cuánto decisiones de ritmo. Una referencia más estable tendría más valor para ajustar el entrenamiento.","La sesión sirve como dato, pero no como medida limpia del nivel actual. La variabilidad de la ejecución introduce demasiado ruido para sacar conclusiones finas."]
+});
+function atlasI33PrimaryText(e,story){const list=atlasI33PrimaryBank[story.id]||[];return atlasI33Variant(e.a,`primary:${story.id}`,list,`type:${e.type}`);}
+function atlasI33NumericSupport(e,story){
+  const p=e.pacing,i=e.interval,id=story.id;
+  if(p&&Number.isFinite(p.hrShift)&&p.hrShift>=10&&Number.isFinite(p.paceShift)&&Math.abs(p.paceShift)<=6&&/easy_drift|long_cardiac_drift|long_durability_limit|steady_durability/.test(id))return`La relación entre mitades lo confirma: la FC sube alrededor de ${Math.round(p.hrShift)} ppm sin un cambio equivalente del ritmo.`;
+  if(i&&Number.isFinite(i.recoveryDrop)&&i.recoveryDrop>=10&&["interval_repeatable_tight","interval_strong_finish"].includes(id))return`Entre esfuerzos, la FC cae de media unos ${Math.round(i.recoveryDrop)} ppm antes de volver a trabajar; esa recuperación ayuda a sostener la calidad.`;
+  if(i&&Number.isFinite(i.paceShift)&&i.paceShift>=10&&id==="interval_fade")return`La diferencia entre la primera y la última repetición ronda los ${Math.round(i.paceShift)} s/km, suficiente para considerar la caída relevante y no una simple oscilación.`;
+  if(p&&Number.isFinite(p.paceShift)&&p.paceShift<=-8&&/race_negative_split|test_negative_split/.test(id))return`La segunda mitad resulta aproximadamente ${Math.round(Math.abs(p.paceShift))} s/km más rápida, una diferencia suficientemente clara para hablar de una gestión progresiva.`;
   return"";
 }
-function atlasI32Safe(text){
-  const s=String(text||"").replace(/\s+/g," ").trim();if(!s)return"";
-  /* Una valoración I3.2 que accidentalmente narre cifras se descarta. */
-  if(/[0-9%]/.test(s)||/\b(?:ppm|km|m\/km|min\/km)\b/i.test(s))return"";return s;
+function atlasI33PlanText(e,story){
+  const c=e.planContext;if(!c)return"";const fit=e.plan||{},phase=c.phaseLabel,type=e.type,a=e.a,v=(salt,arr)=>atlasI33Variant(a,`plan:${story.id}:${salt}`,arr,`type:${type}`);
+  if(!c.match){return v("extra",[
+    `Esta actividad no coincide con una sesión prevista del plan y, por tanto, cuenta como carga añadida dentro de la ${phase}. Conviene que no comprometa el siguiente entrenamiento clave.`,
+    `Dentro del plan, esta sesión entra como trabajo extra durante la ${phase}. Su valor depende de que se absorba sin desplazar ni empeorar el estímulo prioritario que viene después.`,
+    `No estaba programada como sesión del plan. En la ${phase} actual conviene tratarla como carga adicional y ajustar expectativas del siguiente día exigente si deja fatiga residual.`
+  ]);}
+  if(fit.intensity==="harder"||fit.dose==="long")return v("hard",[
+    `Dentro del plan, la sesión ha quedado más exigente de lo previsto para esta ${phase}. La carga extra debe considerarse antes de la siguiente sesión clave, aunque el entrenamiento haya salido bien.`,
+    `La ejecución supera la intención prevista por el plan. En esta ${phase}, el punto importante es absorber ese exceso sin convertirlo en una cadena de días más duros de lo programado.`,
+    `Respecto al plan, el estímulo ha crecido por encima de lo previsto. Conviene proteger la recuperación posterior para que una buena sesión no termine alterando la progresión semanal.`
+  ]);
+  if(fit.intensity==="easier"||fit.dose==="short")return v("light",[
+    `Dentro del plan, el estímulo ha quedado algo por debajo de la prescripción. Si respondió a sensaciones o fatiga del día, puede ser una adaptación acertada; si se repite con frescura, habrá que revisar la dosis.`,
+    `La sesión aporta menos carga de la prevista en el plan. En esta ${phase} no supone un problema aislado, pero conviene comprobar que no se convierta en un patrón de trabajo insuficiente.`,
+    `Respecto a la prescripción, hoy se ha quedado algo de estímulo sin completar. Puede ser una buena decisión si protegía la recuperación; la tendencia de las próximas sesiones dirá si hace falta ajustar el plan.`
+  ]);
+  const aligned={
+    recovery:[`Dentro del plan, cumple bien la función de descargar entre estímulos. En esta ${phase}, llegar fresco a la siguiente sesión importante vale más que añadir trabajo hoy.`,`Encaja bien en el plan: aporta continuidad sin robar recuperación a lo que viene después, que es justo la función de este día dentro de la ${phase}.`],
+    easy:[`Dentro del plan, este rodaje hace exactamente el trabajo silencioso que necesita la ${phase}: sumar base sin interferir con la próxima sesión de calidad.`,`Encaja con la intención del plan. La utilidad está en acumular trabajo aeróbico con poco desgaste para llegar con margen al siguiente estímulo prioritario.`],
+    long:[`Dentro del plan, esta tirada es una pieza importante de la ${phase}. La lectura de hoy sirve para decidir si la progresión debe continuar o si antes conviene consolidar la durabilidad actual.`,`La tirada está bien situada dentro del plan: en esta ${phase}, su valor está en construir resistencia utilizable más adelante, no sólo en acumular distancia.`],
+    interval:[`Dentro del plan, esta sesión confirma cómo se está tolerando el trabajo rápido de la ${phase}. La calidad mantenida permite seguir progresando sin necesidad de acelerar la dosis por una sola buena sesión.`,`El entrenamiento encaja bien con la progresión del plan. En esta ${phase}, mantener calidad repetible importa más que buscar una sesión extraordinaria aislada.`],
+    threshold:[`Dentro del plan, este trabajo aporta una referencia directa de cuánto esfuerzo sostenido puede acumularse con control en la ${phase} actual.`,`La sesión cumple una función importante en el plan: acercar la capacidad de sostener intensidad a las demandas de la ${phase} sin convertir cada bloque en un test.`],
+    steady:[`Dentro del plan, este trabajo sostenido suma una carga intermedia útil en la ${phase}: más específica que un rodaje fácil, pero sin el coste de una sesión máxima.`,`Encaja con el plan porque añade tiempo de calidad aeróbica sin invadir el terreno de los estímulos realmente duros de la semana.`],
+    race:[`Dentro del plan, la competición ofrece una referencia especialmente útil sobre cómo se está trasladando el entrenamiento al rendimiento real. La lectura debe pesar más que una sesión ordinaria al valorar la evolución.`,`Esta carrera funciona como control de la preparación: muestra qué capacidades del plan ya están apareciendo bajo exigencia competitiva y cuál sigue siendo el principal margen de mejora.`],
+    test:[`Dentro del plan, el test aporta una referencia para comprobar si la dirección del entrenamiento es correcta sin convertir un único resultado en una orden automática de cambiar ritmos.`,`La sesión tiene valor como punto de control del plan: ayuda a contrastar la capacidad actual con la progresión prevista y a decidir si conviene mantener o ajustar el rumbo.`]
+  }[type]||[];return v("aligned",aligned);
 }
-function atlasI32Review(a){
-  if(!a)return[];
-  if(!isRun(a)){
-    if(trainingEngineIsStrengthActivity(a))return["Sesión de fuerza completada. Aquí ɅTLɅS no dispone todavía de detalle suficiente sobre cargas y repeticiones para juzgar la calidad del trabajo, así que prefiero no inventar una valoración."];
-    return[];
-  }
-  const evidence=atlasI32Evidence(a),story=atlasI32SelectStory(evidence),primary=atlasI32Safe(atlasI32PrimaryText(evidence,story)),secondary=atlasI32Safe(atlasI32SecondaryText(evidence,story)),out=[];
-  if(primary)out.push(primary);if(secondary&&secondary!==primary)out.push(secondary);return out.slice(0,ATLAS_I32_COACH_REVIEW.maxParagraphs);
+function atlasI33SecondaryText(e,story){
+  if(e.planContext)return atlasI33PlanText(e,story);const h=e.history,i=e.interval,id=story.id,a=e.a;
+  if(h?.status==="better"&&!/economy|form/.test(id))return atlasI33Variant(a,"secondary:better",["Además, el esfuerzo sale con más soltura que en referencias comparables. Esa mejora respalda la lectura principal sin necesidad de convertir la sesión en un test.","Frente a sesiones similares, la respuesta es más económica. Es una señal secundaria, pero coherente con una adaptación positiva."],`type:${e.type}`);
+  if(h?.status==="costlier"&&!/costly|expensive|drift|durability/.test(id))return atlasI33Variant(a,"secondary:costlier",["La sesión también resulta algo más costosa que referencias comparables. Conviene interpretarlo como contexto de recuperación antes que como una pérdida de forma.","Hay un coste mayor de lo habitual para un trabajo parecido. La siguiente sesión comparable ayudará a distinguir fatiga puntual de una tendencia real."],`type:${e.type}`);
+  if(i?.recoveryQuality==="good"&&e.type==="interval"&&["interval_repeatable","interval_strong_finish"].includes(id))return atlasI33Variant(a,"secondary:recovery",["Las recuperaciones están bien calibradas: devuelven margen suficiente para mantener la calidad sin romper por completo la continuidad del estímulo.","Entre esfuerzos se recupera lo necesario para volver a correr bien. Eso favorece una sesión de calidad repetible en lugar de una acumulación desordenada de fatiga."],`type:${e.type}`);
+  return"";
 }
-function atlasI32ReviewHtml(a){const parts=atlasI32Review(a);return parts.length?`<span class="atlas-i32-review">${parts.map(x=>`<span class="atlas-i32-thought">${esc(x)}</span>`).join("")}</span>`:"";}
-atlasV096LocalActivityAnalysis=function(a){return atlasI32ReviewHtml(a);};
-atlasV096RenderLocalActivityAnalysis=function(a){const section=atlasV096EnsureLocalAnalysis(),text=$("activityLocalAnalysisText"),analysis=atlasI32ReviewHtml(a);atlasV097PlaceLocalAnalysis();section.classList.toggle("hidden",!analysis);if(text)text.innerHTML=analysis;};
+function atlasI33Safe(text){return String(text||"").replace(/\s+/g," ").trim();}
+function atlasI33Review(a){
+  if(!a)return[];if(!isRun(a)){if(trainingEngineIsStrengthActivity(a))return["Sesión de fuerza completada. ɅTLɅS todavía no dispone de suficiente detalle sobre cargas, series y repeticiones para valorar la calidad del trabajo sin inventar información."];return[];}
+  const e=atlasI33Evidence(a),story=atlasI33SelectStory(e),primary=atlasI33Safe(atlasI33PrimaryText(e,story)),numeric=atlasI33Safe(atlasI33NumericSupport(e,story)),secondary=atlasI33Safe(atlasI33SecondaryText(e,story)),out=[];
+  if(primary)out.push(primary+(numeric?` ${numeric}`:""));if(secondary&&secondary!==primary)out.push(secondary);return out.slice(0,ATLAS_I33_COACH_REVIEW.maxParagraphs);
+}
+function atlasI33ReviewHtml(a){const parts=atlasI33Review(a);return parts.length?`<span class="atlas-i33-review">${parts.map(x=>`<span class="atlas-i33-thought">${esc(x)}</span>`).join("")}</span>`:"";}
+atlasV096LocalActivityAnalysis=function(a){return atlasI33ReviewHtml(a);};
+atlasV096RenderLocalActivityAnalysis=function(a){const section=atlasV096EnsureLocalAnalysis(),text=$("activityLocalAnalysisText"),analysis=atlasI33ReviewHtml(a);atlasV097PlaceLocalAnalysis();section.classList.toggle("hidden",!analysis);if(text)text.innerHTML=analysis;};
 requestActivityAiInsight=async function(){if(currentActivityDetail)atlasV096RenderLocalActivityAnalysis(currentActivityDetail);};
 
-/* Dinámicas I3.2: sólo se muestra una interpretación si hay una señal mecánica
-   suficientemente clara y se interpreta dentro del propósito de la sesión. */
-function atlasI32LapDynamics(raw){
+/* Dinámicas I3.3: lectura contextual por tipo de sesión y rotación cronológica
+   para impedir que actividades próximas reciban exactamente la misma valoración. */
+function atlasI33LapDynamics(raw){
   const cadRaw=Number(pick(raw||{},["average_cadence","avg_cadence","cadence"])),cad=cadRaw>0?(cadRaw<120?cadRaw*2:cadRaw):null,step=Number(pick(raw||{},["average_step_length","avg_step_length","step_length"])),stride=step>100?step/1000:(Number(pick(raw||{},["average_stride","avg_stride","stride_length"]))||null);
   return{cadence:cad,gct:Number(pick(raw||{},["average_stance_time","avg_stance_time","ground_contact_time"]))||null,stride:Number(stride)>0?Number(stride):null,vr:Number(pick(raw||{},["average_vertical_ratio","avg_vertical_ratio"]))||null};
 }
-function atlasI32MechanicsSignal(a,e){
-  if(e.interval){const values=e.interval.work.map(r=>atlasI32LapDynamics(r.raw)).filter(d=>Object.values(d).some(v=>Number(v)>0));if(values.length>=2){const first=values[0],last=values.at(-1),cad=first.cadence&&last.cadence?last.cadence/first.cadence:null,stride=first.stride&&last.stride?last.stride/first.stride:null,gct=first.gct&&last.gct?last.gct/first.gct:null,vr=first.vr&&last.vr?last.vr-first.vr:null,stable=(cad==null||cad>=.985)&&(stride==null||stride>=.975)&&(gct==null||gct<=1.035)&&(vr==null||vr<=.25),improves=(gct!=null&&gct<.98)||(vr!=null&&vr<-.2)||(stride!=null&&stride>1.025),fatigues=(cad!=null&&cad<.97&&stride!=null&&stride<.95)||(gct!=null&&gct>1.05)||(vr!=null&&vr>.4),compensates=cad!=null&&stride!=null&&cad>1.01&&stride<.96;if(stable&&improves)return"speed_economy";if(fatigues)return"late_breakdown";if(compensates)return"cadence_compensation";if(stable)return"quality_stable";}}
+function atlasI33MechanicsSignal(a,e){
+  if(e.interval){const values=e.interval.work.map(r=>atlasI33LapDynamics(r.raw)).filter(d=>Object.values(d).some(v=>Number(v)>0));if(values.length>=2){const first=values[0],last=values.at(-1),cad=first.cadence&&last.cadence?last.cadence/first.cadence:null,stride=first.stride&&last.stride?last.stride/first.stride:null,gct=first.gct&&last.gct?last.gct/first.gct:null,vr=first.vr&&last.vr?last.vr-first.vr:null,stable=(cad==null||cad>=.985)&&(stride==null||stride>=.975)&&(gct==null||gct<=1.035)&&(vr==null||vr<=.25),improves=(gct!=null&&gct<.98)||(vr!=null&&vr<-.2)||(stride!=null&&stride>1.025),fatigues=(cad!=null&&cad<.97&&stride!=null&&stride<.95)||(gct!=null&&gct>1.05)||(vr!=null&&vr>.4),compensates=cad!=null&&stride!=null&&cad>1.01&&stride<.96;if(stable&&improves)return"speed_economy";if(fatigues)return"late_breakdown";if(compensates)return"cadence_compensation";if(stable)return"quality_stable";}}
   const cadRaw=streamValues(currentActivityStreams,"cadence"),vel=streamValues(currentActivityStreams,"velocity_smooth");if(cadRaw.length&&vel.length){const n=Math.min(cadRaw.length,vel.length),dist=normalizedDistanceStream(streamValues(currentActivityStreams,"distance"),n),total=dist.reduce((m,v)=>Number.isFinite(Number(v))?Math.max(m,Number(v)):m,0);if(total>1000){const bucket=(lo,hi)=>{let cN=0,cD=0,sN=0,sD=0;for(let j=0;j<n;j++){const d=Number(dist[j]);if(!(d>=total*lo&&d<=total*hi))continue;let c=Number(cadRaw[j]),v=Number(vel[j]);if(!(c>0&&v>0))continue;if(c<120)c*=2;cN+=c;cD++;const stride=v*60/c;if(stride>.3&&stride<3){sN+=stride;sD++;}}return{cadence:cD?cN/cD:null,stride:sD?sN/sD:null};},first=bucket(0,.33),last=bucket(.67,1),c=first.cadence&&last.cadence?last.cadence/first.cadence:null,s=first.stride&&last.stride?last.stride/first.stride:null;if(c!=null&&s!=null&&Math.abs(c-1)<=.022&&Math.abs(s-1)<=.035)return"endurance_stable";if(c!=null&&s!=null&&c<.97&&s<.95)return"late_breakdown";if(c!=null&&s!=null&&c>1.01&&s<.96)return"cadence_compensation";}}
   return null;
 }
-function atlasI32DynamicsHistory(a){
+function atlasI33DynamicsHistory(a){
   const comps=atlasV097DynamicsComparables(a);if(comps.length<3)return null;const cur=atlasV0811Dyn(a),ds=comps.map(atlasV0811Dyn),med=k=>atlasV0811Median(ds.map(x=>x[k])),g=Number(cur.gct),vr=Number(cur.vr),cad=Number(cur.cadence),stride=Number(cur.stride),gm=med("gct"),vm=med("vr"),cm=med("cadence"),sm=med("stride");
   if(g>0&&gm>0&&vr>0&&vm>0&&g<=gm*.97&&vr<=vm*1.01)return"reactive";if(vr>0&&vm>0&&vr<=vm*.96)return"forward";if(cad>0&&cm>0&&stride>0&&sm>0&&cad>=cm*.99&&stride>=sm*1.04)return"productive";if(g>0&&gm>0&&vr>0&&vm>0&&g>=gm*1.04&&vr>=vm*1.04)return"heavy";return null;
 }
-function atlasI32DynamicsReview(a){
-  if(!isRun(a))return"";const e=atlasI32Evidence(a),signal=atlasI32MechanicsSignal(a,e),history=atlasI32DynamicsHistory(a),v=(salt,arr)=>atlasI32Variant(a,`dyn-${signal||history}-${salt}`,arr);let text="";
-  if(signal==="speed_economy")text=e.type==="threshold"?v("a",["Cuando entras en el trabajo exigente, la técnica se organiza mejor en lugar de descomponerse. Eso sugiere que estás encontrando economía en una intensidad alta, una señal muy útil para sostener esfuerzos largos.","La mecánica responde bien al aumento de intensidad: el gesto se vuelve más productivo sin perder control. Me gusta porque la velocidad parece salir de eficiencia, no de tensión extra."]):v("a",["La velocidad hace que tu técnica se vuelva más eficiente, no más forzada. En las repeticiones aparece un gesto reactivo y productivo, señal de que el trabajo rápido está reforzando una mecánica útil.","Al correr rápido no te desordenas; al contrario, el gesto se vuelve más limpio y resolutivo. Es una buena señal de economía específica para este tipo de trabajo."]);
-  else if(signal==="quality_stable")text=v("a",["La mecánica aguanta durante todo el bloque y no se deteriora cuando aparece fatiga. Eso permite que las últimas repeticiones sigan teniendo valor técnico, no sólo fisiológico.","La técnica se mantiene reconocible de principio a fin del trabajo rápido. No veo una compensación clara por fatiga, lo que habla bien de tu capacidad para sostener calidad bajo esfuerzo."]);
-  else if(signal==="late_breakdown")text=e.type==="long"?v("a",["La técnica empieza a apagarse cuando la tirada ya pesa. Lo interpretaría como fatiga de durabilidad, no como un defecto técnico aislado: el objetivo es conservar el mismo gesto durante más tiempo.","En la parte final aparece deterioro mecánico junto a la fatiga. No tocaría la técnica de forma consciente; trabajaría para que el cuerpo llegue a ese tramo con más reserva."]):v("a",["La fatiga termina entrando también en la técnica. El gesto pierde calidad al final, así que la prioridad no es forzar una corrección consciente, sino llegar a esa parte de la sesión con más capacidad de sostener el patrón.","Cuando el esfuerzo se acumula, la mecánica deja de ser tan eficiente. Lo tomaría como una señal de fatiga global antes que como un problema técnico que haya que corregir por separado."]);
-  else if(signal==="cadence_compensation")text=v("a",["Al final compensas la fatiga haciendo el paso más corto y rápido. Es una solución funcional para seguir avanzando, pero también indica que ya cuesta mantener la misma producción con soltura.","La fatiga cambia la manera de sostener el ritmo: recurres a más frecuencia y menos amplitud. No es necesariamente malo, pero señala el punto donde la economía empieza a deteriorarse."]);
-  else if(signal==="endurance_stable")text=e.pacing?.cardiac==="drifting"?v("a",["Aunque el esfuerzo interno vaya creciendo, la técnica se mantiene estable. Es una señal muy positiva de durabilidad mecánica: aparece fatiga fisiológica, pero tu forma de correr todavía no se descompone.","El pulso puede estar acusando el paso del tiempo, pero la mecánica no entra en crisis. Esa separación es buena noticia: la limitación parece más fisiológica que técnica."]):v("a",["La mecánica se mantiene estable a medida que avanza la sesión. No veo una palanca técnica clara que merezca intervenir; aquí la mejor decisión es conservar un patrón que ya soporta bien la fatiga.","Tu forma de correr cambia muy poco con el paso de la sesión. Esa estabilidad es valiosa y no intentaría modificarla por perseguir métricas aisladas."]);
-  else if(history==="reactive")text="Respecto a tu patrón habitual, el gesto aparece más reactivo sin señales de rebote extra. Lo interpretaría como una mejora de economía, no como un número que debas perseguir de forma consciente.";
-  else if(history==="forward")text="La fuerza parece orientarse mejor hacia el avance que en tus referencias habituales. Es una señal interesante de economía, pero quiero verla repetirse antes de tratarla como un cambio consolidado.";
-  else if(history==="productive")text="La zancada resulta más productiva sin que la técnica se vuelva pesada. Es una combinación positiva porque sugiere más avance útil, no simplemente más movimiento.";
-  else if(history==="heavy")text="La mecánica se ve algo más pesada de lo habitual. Antes de pensar en técnica, lo relacionaría con fatiga, terreno y carga acumulada; si desaparece al recuperar, no hay nada que corregir.";
-  return atlasI32Safe(text);
+function atlasI33DynamicsReview(a){
+  if(!isRun(a))return"";const e=atlasI33Evidence(a),signal=atlasI33MechanicsSignal(a,e),history=atlasI33DynamicsHistory(a),type=e.type,scope=`dyn:${signal||history||type}`,pick=(salt,arr)=>atlasI33Variant(a,`dyn:${salt}`,arr,"run"),bank={
+    speed_economy:{interval:["Al subir la velocidad, la técnica se organiza mejor en lugar de ponerse rígida. El gesto gana reactividad y sigue siendo eficiente, una señal positiva para el trabajo rápido.","Las repeticiones rápidas no obligan a compensar; la mecánica responde con más eficacia. La velocidad parece venir de un gesto mejor coordinado, no de forzar más.","La técnica acompaña bien al cambio de ritmo: aparece más respuesta sin perder orden. Eso da valor mecánico a la sesión, además del estímulo fisiológico."],threshold:["La mecánica se vuelve más productiva dentro del trabajo exigente sin perder control. Es una buena señal de economía a una intensidad que debe poder sostenerse.","El aumento de intensidad mejora la respuesta técnica en lugar de degradarla. Para trabajo de umbral, esa eficiencia ayuda a sostener el esfuerzo con menos tensión innecesaria."],default:["La velocidad mejora la respuesta mecánica sin introducir señales claras de desorden. El gesto rápido está saliendo de eficiencia, no de tensión extra.","Cuando aumenta el ritmo, la técnica responde de forma más limpia y reactiva. Esa adaptación es positiva siempre que siga apareciendo sin forzar conscientemente el gesto."]},
+    quality_stable:{default:["La técnica se mantiene estable durante todo el trabajo rápido. La fatiga fisiológica no termina trasladándose al gesto, así que las últimas repeticiones conservan calidad también desde el punto de vista mecánico.","La mecánica aguanta de principio a fin del bloque. No aparecen compensaciones claras cuando se acumula fatiga, una buena señal para repetir intensidad con eficiencia.","El patrón de carrera cambia muy poco entre las primeras y las últimas repeticiones. Esa estabilidad indica que la técnica tolera bien la carga de calidad." ]},
+    late_breakdown:{long:["La fatiga de la tirada termina entrando también en la técnica. No parece un defecto aislado, sino el punto en el que falta durabilidad para conservar el mismo gesto hasta el final.","En el tramo final la mecánica pierde parte de la estabilidad inicial. La prioridad no es corregir conscientemente la técnica, sino llegar a ese momento con más reserva."],default:["Cuando se acumula esfuerzo, la técnica empieza a deteriorarse. La lectura principal es de fatiga global; antes de tocar el gesto conviene mejorar la capacidad para sostenerlo bajo carga.","La parte final muestra compensaciones que no estaban al inicio. Eso señala el momento en que la fatiga empieza a condicionar la forma de correr." ]},
+    cadence_compensation:{default:["Al final aparece una compensación clara: aumenta la frecuencia mientras se acorta el paso. Es una solución funcional para seguir avanzando, pero marca el punto donde la economía empieza a caer.","La fatiga cambia la estrategia mecánica: se recurre a pasos más cortos y rápidos para sostener el ritmo. No es necesariamente malo, aunque sí indica menor margen técnico al final." ]},
+    endurance_stable:{long:["La mecánica resiste bien el paso del tiempo. Incluso cuando aumenta el esfuerzo, la forma de correr cambia muy poco; para una tirada larga, esa durabilidad técnica es una señal especialmente positiva.","La fatiga fisiológica no termina rompiendo la técnica. Mantener un gesto estable durante una tirada larga indica una buena resistencia mecánica, aunque todavía pueda quedar margen cardiovascular.","El patrón de carrera se conserva durante la tirada. Esa estabilidad permite centrar la mejora en la durabilidad fisiológica sin necesidad de introducir correcciones técnicas."],easy:["La técnica se mantiene relajada y estable durante el rodaje. No aparecen compensaciones que sugieran que un día fácil esté costando mecánicamente más de la cuenta.","El gesto permanece estable en un contexto suave, que es exactamente lo deseable: economía sin necesidad de controlar conscientemente la técnica."],default:["La mecánica se mantiene estable a medida que avanza la sesión. No aparece una palanca técnica clara que justifique intervenir; conviene conservar un patrón que ya tolera bien la fatiga.","La forma de correr cambia muy poco con el paso de la sesión. Esa estabilidad es una fortaleza y no necesita correcciones por perseguir métricas aisladas." ]},
+    reactive:{default:["Respecto al patrón habitual, el gesto aparece más reactivo sin señales de rebote extra. La lectura es de mejor economía, no de una métrica concreta que haya que perseguir.","La mecánica responde con más rapidez que en referencias comparables y sin aumentar movimientos poco útiles. Es una señal interesante de eficiencia." ]},
+    forward:{default:["La fuerza parece orientarse mejor hacia el avance que en referencias habituales. Es una mejora interesante de economía, siempre que se repita en sesiones comparables.","El gesto dedica menos movimiento a componentes que no impulsan hacia delante. Esa dirección más eficiente merece seguimiento, no una corrección consciente." ]},
+    productive:{default:["La zancada resulta más productiva sin que la técnica se vuelva pesada. El aumento de avance útil aparece sin una compensación evidente.","La mecánica obtiene más avance por ciclo sin desordenarse. Esa combinación es una señal positiva de economía personal." ]},
+    heavy:{default:["La mecánica aparece algo más pesada de lo habitual. Antes de interpretarlo como un problema técnico, conviene relacionarlo con fatiga, terreno y carga acumulada.","El gesto pierde algo de ligereza frente a referencias comparables. Si desaparece tras recuperar, la explicación más probable está en la fatiga y no en una alteración técnica estable." ]}
+  };
+  const key=signal||history;if(!key||!bank[key])return"";const group=bank[key][type]||bank[key].default||[];return atlasI33Safe(pick(scope,group));
 }
-atlasV140DynamicsInsight=function(a){return atlasI32DynamicsReview(a);};
-atlasV097DynamicsCoachHtml=function(a){return atlasI32DynamicsReview(a);};
-atlasV0811DynamicsComment=function(a){return atlasI32DynamicsReview(a);};
-renderActivityRunningDynamics=function(a){const section=atlasV0810EnsureRunningDynamics(),grid=$("activityRunningDynamicsGrid"),rows=atlasV0810RunningDynamicsRows(a);section.querySelector(".activity-running-dynamics-title")?.remove();section.querySelector(".activity-running-dynamics-note")?.remove();section.classList.toggle("hidden",!rows.length);if(grid)grid.innerHTML=rows.map(r=>atlasV0810Metric(...r)).join("");const comment=atlasV0811EnsureDynamicsComment(section),analysis=atlasI32DynamicsReview(a);comment.textContent=analysis;comment.style.display=analysis?"block":"none";};
+atlasV140DynamicsInsight=function(a){return atlasI33DynamicsReview(a);};
+atlasV097DynamicsCoachHtml=function(a){return atlasI33DynamicsReview(a);};
+atlasV0811DynamicsComment=function(a){return atlasI33DynamicsReview(a);};
+renderActivityRunningDynamics=function(a){const section=atlasV0810EnsureRunningDynamics(),grid=$("activityRunningDynamicsGrid"),rows=atlasV0810RunningDynamicsRows(a);section.querySelector(".activity-running-dynamics-title")?.remove();section.querySelector(".activity-running-dynamics-note")?.remove();section.classList.toggle("hidden",!rows.length);if(grid)grid.innerHTML=rows.map(r=>atlasV0810Metric(...r)).join("");const comment=atlasV0811EnsureDynamicsComment(section),analysis=atlasI33DynamicsReview(a);comment.textContent=analysis;comment.style.display=analysis?"block":"none";};
 
 
 const ATLAS_H5_ACCESSIBILITY=Object.freeze({version:"1.6.15",planAccordions:7,profileAccordions:true,semanticStates:true,keyboardFocus:true,reducedMotion:true});
