@@ -2361,7 +2361,7 @@ const AtlasHrv=(()=>{
   return Object.freeze({POLICY,records,baseline,status});
 })();
 
-const APP_VERSION="1.6.30",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="1.6.32",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 /* G5: wrapper/residual consolidation. No sport, Adaptive, CAS or publication contract changes. */
 // Training Engine implementation track: v0.2 — input contract + athlete snapshot + base classification.
 
@@ -4553,7 +4553,7 @@ function trainingPlanHaversine(a,b){const R=6371000,rad=Math.PI/180,dLat=(b.lat-
 function trainingPlanRoutePointsFromGeoJSON(obj){const out=[];const visit=c=>{if(!Array.isArray(c))return;if(c.length>=2&&Number.isFinite(Number(c[0]))&&Number.isFinite(Number(c[1]))){out.push({lon:Number(c[0]),lat:Number(c[1]),ele:Number.isFinite(Number(c[2]))?Number(c[2]):null});return;}for(const x of c)visit(x);};const geo=obj?.type==="Feature"?obj.geometry:obj?.type==="FeatureCollection"?null:obj;if(obj?.type==="FeatureCollection")for(const f of obj.features||[])visit(f?.geometry?.coordinates);else visit(geo?.coordinates);return out;}
 async function trainingPlanParseRouteFile(file){const name=String(file?.name||"recorrido"),ext=(name.split(".").pop()||"").toLowerCase(),text=await file.text(),points=[];if(ext==="geojson"||ext==="json"){points.push(...trainingPlanRoutePointsFromGeoJSON(JSON.parse(text)));}else{const doc=new DOMParser().parseFromString(text,"application/xml");if(doc.querySelector("parsererror"))throw new Error("Archivo no reconocido");if(ext==="kml"||doc.querySelector("kml")){for(const node of doc.querySelectorAll("coordinates")){for(const token of String(node.textContent||"").trim().split(/\s+/)){const [lon,lat,ele]=token.split(",").map(Number);if(Number.isFinite(lat)&&Number.isFinite(lon))points.push({lat,lon,ele:Number.isFinite(ele)?ele:null});}}}else if(ext==="tcx"||doc.querySelector("TrainingCenterDatabase")){for(const tp of doc.querySelectorAll("Trackpoint")){const lat=Number(tp.querySelector("LatitudeDegrees")?.textContent),lon=Number(tp.querySelector("LongitudeDegrees")?.textContent),ele=Number(tp.querySelector("AltitudeMeters")?.textContent);if(Number.isFinite(lat)&&Number.isFinite(lon))points.push({lat,lon,ele:Number.isFinite(ele)?ele:null});}}else{for(const tp of doc.querySelectorAll("trkpt,rtept")){const lat=Number(tp.getAttribute("lat")),lon=Number(tp.getAttribute("lon")),ele=Number(tp.querySelector("ele")?.textContent);if(Number.isFinite(lat)&&Number.isFinite(lon))points.push({lat,lon,ele:Number.isFinite(ele)?ele:null});}}}if(points.length<2)throw new Error("El archivo no contiene un recorrido válido");let distanceM=0;const cumulative=[0];for(let i=1;i<points.length;i++){distanceM+=trainingPlanHaversine(points[i-1],points[i]);cumulative.push(distanceM);}const elevations=points.map(p=>p.ele),hasElevation=elevations.filter(Number.isFinite).length>=Math.max(2,Math.floor(points.length*.5));let gain=null,loss=null,minEle=null,maxEle=null;if(hasElevation){const smooth=elevations.map((v,i)=>{const vals=[];for(let j=Math.max(0,i-2);j<=Math.min(elevations.length-1,i+2);j++)if(Number.isFinite(elevations[j]))vals.push(elevations[j]);return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;});gain=0;loss=0;for(let i=1;i<smooth.length;i++)if(Number.isFinite(smooth[i])&&Number.isFinite(smooth[i-1])){const d=smooth[i]-smooth[i-1];if(d>.5)gain+=d;else if(d<-.5)loss+=-d;}const valid=smooth.filter(Number.isFinite);minEle=Math.min(...valid);maxEle=Math.max(...valid);}const maxSamples=240,step=Math.max(1,Math.ceil(points.length/maxSamples)),profile=[];for(let i=0;i<points.length;i+=step)profile.push({distanceKm:Math.round(cumulative[i]/100)/10,elevationM:Number.isFinite(points[i].ele)?Math.round(points[i].ele):null});const last=points.length-1;if(profile.at(-1)?.distanceKm!==Math.round(cumulative[last]/100)/10)profile.push({distanceKm:Math.round(cumulative[last]/100)/10,elevationM:Number.isFinite(points[last].ele)?Math.round(points[last].ele):null});return{fileName:name,format:ext.toUpperCase()||"ROUTE",pointCount:points.length,distanceKm:Math.round(distanceM/100)/10,elevationGainM:Number.isFinite(gain)?Math.round(gain):null,elevationLossM:Number.isFinite(loss)?Math.round(loss):null,minElevationM:Number.isFinite(minEle)?Math.round(minEle):null,maxElevationM:Number.isFinite(maxEle)?Math.round(maxEle):null,profile};}
 async function handleNewPlanRouteFile(){const file=ui.newPlanRouteFile?.files?.[0];newPlanRouteDraft=null;if(!file){if(ui.newPlanRouteNote){ui.newPlanRouteNote.textContent="Opcional · GPX, TCX, KML o GeoJSON";ui.newPlanRouteNote.classList.remove("ready");}return;}try{ui.newPlanRouteNote.textContent="Analizando recorrido…";const route=await trainingPlanParseRouteFile(file);newPlanRouteDraft=route;const bits=[`${formatNatural(route.distanceKm,1)} km`];if(Number.isFinite(route.elevationGainM))bits.push(`+${route.elevationGainM} m`);ui.newPlanRouteNote.textContent=`${route.fileName} · ${bits.join(" · ")}`;ui.newPlanRouteNote.classList.add("ready");}catch(error){newPlanRouteDraft=null;ui.newPlanRouteFile.value="";ui.newPlanRouteNote.textContent="No se ha podido leer el recorrido.";ui.newPlanRouteNote.classList.remove("ready");toast("⚠️ No se ha podido analizar ese archivo.",true);}}
-async function createTrainingPlan(e){e.preventDefault();try{const name=String(ui.newPlanName?.value||"").trim(),distanceKey=String(ui.newPlanDistance?.value||""),distanceM=TRAINING_PLAN_SUPPORTED_DISTANCE_KEYS.has(distanceKey)?TRAINING_PLAN_DISTANCES[distanceKey]?.distanceM:null,startDate=String(ui.newPlanStartDate?.value||""),raceDate=String(ui.newPlanRaceDate?.value||""),availableDays=qsa("[data-weekday].active",ui.newPlanWeekdays).map(b=>Number(b.dataset.weekday)).filter(Number.isFinite),targetTimeSec=trainingPlanTimePartsToSec(ui.newPlanTargetHours?.value,ui.newPlanTargetMinutes?.value,ui.newPlanTargetSeconds?.value),doubleSessionsPreference=String(ui.newPlanDoubleSessions?.value||""),asOfDate=fmtDate(new Date()),existing=currentTrainingPlanEditId?currentTrainingPlans.find(p=>p.id===currentTrainingPlanEditId):null;if(!name||!distanceKey||!distanceM||!startDate||!raceDate){toast("⚠️ Completa los datos de la carrera.",true);return;}if(!existing&&startDate<asOfDate){toast("⚠️ El inicio del plan no puede ser anterior a hoy.",true);return;}if(existing&&startDate!==existing.startDate&&startDate<asOfDate){toast("⚠️ No puedes mover el inicio del plan a una fecha pasada.",true);return;}if(raceDate<=startDate){toast("⚠️ La carrera debe ser posterior al inicio del plan.",true);return;}if(raceDate<=asOfDate){toast("⚠️ La carrera debe ser posterior a hoy.",true);return;}if(!targetTimeSec){toast("⚠️ Introduce un tiempo objetivo válido.",true);return;}if(!availableDays.length){toast("⚠️ Selecciona al menos un día disponible.",true);return;}if(!TRAINING_ENGINE_DOUBLE_SESSION_VALUES.has(doubleSessionsPreference)){toast("⚠️ Selecciona tu preferencia sobre dobles sesiones.",true);return;}const intermediateRaces=existing?.intermediateRaces||[],invalidRace=intermediateRaces.find(r=>r.date>=raceDate||r.date<=startDate);if(invalidRace){toast("⚠️ Las carreras secundarias deben quedar entre el inicio y la carrera principal.",true);return;}const targetRevision=trainingEngineTargetRevision(existing,targetTimeSec,startDate,asOfDate),now=new Date().toISOString(),routeProfile=newPlanRouteDraft?{...newPlanRouteDraft}:(existing?.routeProfile?{...existing.routeProfile}:null),plan={...existing,id:existing?.id||trainingPlanId(),name,distanceKey,distanceM,startDate,raceDate,goalMode:"time",targetTimeSec,availableDays:availableDays.sort((a,b)=>a-b),doubleSessionsPreference,availabilityByWeek:existing?.availabilityByWeek?{...existing.availabilityByWeek}:{},routeProfile,intermediateRaces:intermediateRaces.map(r=>({...r})),createdAt:existing?.createdAt||now,updatedAt:now,publication:existing?.publication?{...existing.publication}:({status:"draft",dirty:false})};plan.engine=await collectTrainingEngineInput(plan,asOfDate);if(targetRevision)plan.engine.pendingRevision=targetRevision;if(existing)trainingPlanMarkPublicationDirty(plan);if(existing){const idx=currentTrainingPlans.findIndex(p=>p.id===existing.id);currentTrainingPlans[idx]=plan;}else currentTrainingPlans.unshift(plan);currentTrainingPlanId=plan.id;await persistTrainingPlans();closeNewPlanDetail();renderTrainingPlanHome();openTrainingPlanWorkspace(plan.id);toast(existing?(targetRevision?"Objetivo actualizado · el cambio queda limitado al futuro del plan.":"Plan actualizado · Motor Mínimo v0.8.4 recalculado."):"Plan creado · Motor Mínimo v0.8.4 preparado y validado.");}catch(error){console.error("ɅTLɅS · crear plan",error);recordRuntimeAudit("training-plan-create",error).catch(()=>{});toast(`⚠️ No se ha podido crear el plan: ${error?.message||"error interno"}`,true);}}
+async function createTrainingPlan(e){e.preventDefault();try{const name=String(ui.newPlanName?.value||"").trim(),distanceKey=String(ui.newPlanDistance?.value||""),distanceM=TRAINING_PLAN_SUPPORTED_DISTANCE_KEYS.has(distanceKey)?TRAINING_PLAN_DISTANCES[distanceKey]?.distanceM:null,startDate=String(ui.newPlanStartDate?.value||""),raceDate=String(ui.newPlanRaceDate?.value||""),availableDays=qsa("[data-weekday].active",ui.newPlanWeekdays).map(b=>Number(b.dataset.weekday)).filter(Number.isFinite),targetTimeSec=trainingPlanTimePartsToSec(ui.newPlanTargetHours?.value,ui.newPlanTargetMinutes?.value,ui.newPlanTargetSeconds?.value),doubleSessionsPreference=String(ui.newPlanDoubleSessions?.value||""),asOfDate=fmtDate(new Date()),existing=currentTrainingPlanEditId?currentTrainingPlans.find(p=>p.id===currentTrainingPlanEditId):null;if(!name||!distanceKey||!distanceM||!startDate||!raceDate){toast("⚠️ Completa los datos de la carrera.",true);return;}if(!existing&&startDate<asOfDate){toast("⚠️ El inicio del plan no puede ser anterior a hoy.",true);return;}/* v1.6.32 · al editar un plan se permite corregir retrospectivamente la fecha de inicio; las actividades realizadas se conservan. */if(raceDate<=startDate){toast("⚠️ La carrera debe ser posterior al inicio del plan.",true);return;}if(raceDate<=asOfDate){toast("⚠️ La carrera debe ser posterior a hoy.",true);return;}if(!targetTimeSec){toast("⚠️ Introduce un tiempo objetivo válido.",true);return;}if(!availableDays.length){toast("⚠️ Selecciona al menos un día disponible.",true);return;}if(!TRAINING_ENGINE_DOUBLE_SESSION_VALUES.has(doubleSessionsPreference)){toast("⚠️ Selecciona tu preferencia sobre dobles sesiones.",true);return;}const intermediateRaces=existing?.intermediateRaces||[],invalidRace=intermediateRaces.find(r=>r.date>=raceDate||r.date<=startDate);if(invalidRace){toast("⚠️ Las carreras secundarias deben quedar entre el inicio y la carrera principal.",true);return;}const targetRevision=trainingEngineTargetRevision(existing,targetTimeSec,startDate,asOfDate),now=new Date().toISOString(),routeProfile=newPlanRouteDraft?{...newPlanRouteDraft}:(existing?.routeProfile?{...existing.routeProfile}:null),plan={...existing,id:existing?.id||trainingPlanId(),name,distanceKey,distanceM,startDate,raceDate,goalMode:"time",targetTimeSec,availableDays:availableDays.sort((a,b)=>a-b),doubleSessionsPreference,availabilityByWeek:existing?.availabilityByWeek?{...existing.availabilityByWeek}:{},routeProfile,intermediateRaces:intermediateRaces.map(r=>({...r})),createdAt:existing?.createdAt||now,updatedAt:now,publication:existing?.publication?{...existing.publication}:({status:"draft",dirty:false})};plan.engine=await collectTrainingEngineInput(plan,asOfDate);if(targetRevision)plan.engine.pendingRevision=targetRevision;if(existing)trainingPlanMarkPublicationDirty(plan);if(existing){const idx=currentTrainingPlans.findIndex(p=>p.id===existing.id);currentTrainingPlans[idx]=plan;}else currentTrainingPlans.unshift(plan);currentTrainingPlanId=plan.id;await persistTrainingPlans();closeNewPlanDetail();renderTrainingPlanHome();openTrainingPlanWorkspace(plan.id);toast(existing?(targetRevision?"Objetivo actualizado · el cambio queda limitado al futuro del plan.":"Plan actualizado · Motor Mínimo v0.8.4 recalculado."):"Plan creado · Motor Mínimo v0.8.4 preparado y validado.");}catch(error){console.error("ɅTLɅS · crear plan",error);recordRuntimeAudit("training-plan-create",error).catch(()=>{});toast(`⚠️ No se ha podido crear el plan: ${error?.message||"error interno"}`,true);}}
 function trainingPlanAssistantSummary(plan=activeTrainingPlan()){if(!plan)return null;return{id:plan.id,name:plan.name,distance:trainingPlanDistanceLabel(plan),distanceKey:plan.distanceKey,distanceM:plan.distanceM,startDate:plan.startDate,raceDate:plan.raceDate,goalMode:plan.goalMode,targetTimeSec:plan.targetTimeSec||null,availableDays:plan.availableDays||[],doubleSessionsPreference:plan.doubleSessionsPreference||"no_preference",engine:plan.engine?{version:plan.engine.version,status:plan.engine.status,asOfDate:plan.engine.asOfDate,inputDigest:plan.engine.inputDigest,abilityDigest:plan.engine.abilityDigest||null,macroDigest:plan.engine.macroDigest||null,skeletonDigest:plan.engine.skeletonDigest||null,prescriptionDigest:plan.engine.prescriptionDigest||null,presentationVersion:TRAINING_PRESENTATION_VERSION,contract:plan.engine.contract||null,pendingRevision:plan.engine.pendingRevision||null,base:plan.engine.athleteSnapshot?.base||null,anchorTest:plan.engine.currentAbility?.anchorTest||null,thresholdAnchor:plan.engine.currentAbility?.thresholdAnchor||null,currentAbility:plan.engine.currentAbility?.distances||null,paceAnchors:plan.engine.paceAnchors||null,goalAssessment:plan.engine.goalAssessment||null,macroPlan:plan.engine.macroPlan||null,weeklySkeleton:plan.engine.weeklySkeleton?{status:plan.engine.weeklySkeleton.status,policy:plan.engine.weeklySkeleton.policy,weeks:plan.engine.weeklySkeleton.weeks.map(w=>({index:w.index,start:w.start,end:w.end,phase:w.phase,weekType:w.weekType,summary:w.summary,warnings:w.warnings}))}:null,prescriptionCore:plan.engine.prescriptionCore?{status:plan.engine.prescriptionCore.status,policy:plan.engine.prescriptionCore.policy,validation:plan.engine.prescriptionCore.validation,weeks:plan.engine.prescriptionCore.weeks.map(w=>({index:w.index,start:w.start,end:w.end,phase:w.phase,weekType:w.weekType,volume:w.volume,summary:w.summary,warnings:w.warnings}))}:null}:null,availabilityByWeek:plan.availabilityByWeek||{},routeProfile:plan.routeProfile?{fileName:plan.routeProfile.fileName,distanceKm:plan.routeProfile.distanceKm,elevationGainM:plan.routeProfile.elevationGainM,elevationLossM:plan.routeProfile.elevationLossM,minElevationM:plan.routeProfile.minElevationM,maxElevationM:plan.routeProfile.maxElevationM}:null,intermediateRaces:plan.intermediateRaces||[]};}
 
 /* ===== ɅTLɅS v1.6.8 · G3 Data/Render Refresh Coordinator =====
@@ -15080,6 +15080,527 @@ collectRuntimeDiagnostics=async function(){
   const out=await atlasJ3CollectRuntimeDiagnosticsBase.apply(this,arguments);
   out.fastSync={version:ATLAS_J3_VERSION,...ATLAS_J3_PERF,averageCriticalMs:ATLAS_J3_PERF.success?Math.round(ATLAS_J3_PERF.criticalTotalMs/ATLAS_J3_PERF.success):null,averageBackgroundMs:ATLAS_J3_PERF.backgroundRuns?Math.round(ATLAS_J3_PERF.backgroundTotalMs/ATLAS_J3_PERF.backgroundRuns):null};return out;
 };
+
+
+/* ===== ɅTLɅS v1.6.31 · J4 Performance + Plan Consistency Hotfix =====
+   Cambio estrictamente correctivo:
+   - primer render de Hoy desde IndexedDB mínimo y resto del bootstrap diferido;
+   - apertura de Plan inmediata, hidratación pesada tras el primer frame;
+   - ↻ libera la UI al terminar /api/sync; plan/cloud y mantenimiento continúan fuera del gesto;
+   - distancias fraccionarias >= 1 km se publican en metros para evitar ambigüedad del parser;
+   - normalización final de intervalos y reparación idempotente de duplicados del plan. */
+const ATLAS_J4_VERSION="1.6.31";
+const ATLAS_J4_REPAIR_VERSION=1;
+
+/* ---------- J4.1 · Publicación segura de distancias fraccionarias ---------- */
+const atlasJ4DistanceSyntaxBase=atlasV090DistanceSyntax;
+atlasV090DistanceSyntax=function(meters){
+  const m=Math.round(Number(meters)||0);if(!(m>0))return"";
+  if(m<1000)return`${m}mtr`;
+  if(m%1000===0)return`${m/1000}km`;
+  /* Intervals.icu admite metros y así 1,8 km nunca puede reinterpretarse como 11,8 km. */
+  return`${m}mtr`;
+};
+
+function atlasJ4DedupeArray(list,keyFn){
+  if(!Array.isArray(list)||list.length<2)return{list:Array.isArray(list)?list:[],changed:false};
+  const seen=new Set(),out=[];let changed=false;
+  for(const item of list){const key=keyFn(item);if(key&&seen.has(key)){changed=true;continue;}if(key)seen.add(key);out.push(item);}
+  return{list:out,changed};
+}
+function atlasJ4StrengthExerciseKey(ex){
+  if(!ex||typeof ex!=="object")return"";
+  return JSON.stringify([String(ex.asset||""),String(ex.name||""),String(ex.sets||""),String(ex.reps||""),String(ex.rest||""),String(ex.cue||"")]);
+}
+function atlasJ4RepairStrengthExercises(session){
+  const blocks=session?.strengthPlan?.blocks;if(!Array.isArray(blocks))return false;let changed=false;
+  for(const block of blocks){const d=atlasJ4DedupeArray(block?.exercises||[],atlasJ4StrengthExerciseKey);if(d.changed){block.exercises=d.list;changed=true;}}
+  return changed;
+}
+function atlasJ4SessionKey(session){
+  if(!session||typeof session!=="object")return"";
+  const id=String(session.id||session.sessionId||session._atlasSourceSessionKey||"").trim();
+  if(id)return`id:${id}`;
+  const main=(session.steps||[]).find(st=>Number(st?.reps)>=2)||null;
+  return`semantic:${trainingEngineDigest({date:session.date||"",type:session.type||"",role:session.role||"",family:session.family||"",name:session.name||"",distanceM:Math.round(Number(session.distanceM)||0),durationSec:Math.round(Number(session.durationSec)||0),structure:session.structure||"",reps:Number(main?.reps)||0,repDistanceM:Number(main?.repDistanceM)||0,workDistanceM:Number(main?.workDistanceM)||0,strength:session?.strengthPlan?.title||""})}`;
+}
+function atlasJ4SessionSemanticKey(session){
+  if(!session||typeof session!=="object")return"";
+  const main=(session.steps||[]).find(st=>Number(st?.reps)>=2)||null;
+  return trainingEngineDigest({date:session.date||"",type:session.type||"",role:session.role||"",family:session.family||"",name:session.name||"",distanceM:Math.round(Number(session.distanceM)||0),durationSec:Math.round(Number(session.durationSec)||0),structure:session.structure||"",reps:Number(main?.reps)||0,repDistanceM:Number(main?.repDistanceM)||0,workDistanceM:Number(main?.workDistanceM)||0});
+}
+function atlasJ4NormalizeEngineQuality(engine,plan){
+  const days=engine?.prescriptionCore?.schedule?.days;if(!Array.isArray(days))return false;let changed=false;
+  const anchors=engine?.paceAnchors||plan?.engine?.paceAnchors||{};
+  for(const day of days){
+    if(!Array.isArray(day?.sessions))continue;
+    const next=[];const seenId=new Set(),seenSemantic=new Set();
+    for(const original of day.sessions){
+      let session=original;
+      if(atlasI4QualityMain(session)){
+        const before=trainingEngineDigest({distanceM:session.distanceM,distanceKm:session.distanceKm,structure:session.structure,steps:session.steps,recovery:session.recovery,i4:session.i4RecoveryDistance});
+        session=atlasI4NormalizeQualitySession(session,anchors,{force:true});
+        const after=trainingEngineDigest({distanceM:session.distanceM,distanceKm:session.distanceKm,structure:session.structure,steps:session.steps,recovery:session.recovery,i4:session.i4RecoveryDistance});
+        if(before!==after)changed=true;
+      }
+      if(atlasJ4RepairStrengthExercises(session))changed=true;
+      const idKey=atlasJ4SessionKey(session),semantic=atlasJ4SessionSemanticKey(session);
+      if((idKey&&seenId.has(idKey))||(semantic&&seenSemantic.has(semantic))){changed=true;continue;}
+      if(idKey)seenId.add(idKey);if(semantic)seenSemantic.add(semantic);next.push(session);
+    }
+    if(next.length!==day.sessions.length||next.some((x,i)=>x!==day.sessions[i])){day.sessions=next;day.rest=!next.length;changed=true;}
+  }
+  if(changed){atlasV157SyncEngineWeeks(engine,plan);engine.trainingEngineRevision=trainingEngineDigest({version:ATLAS_J4_VERSION,planId:plan?.id,schedule:engine?.prescriptionCore?.schedule?.days||[]});}
+  engine.j4ConsistencyVersion=ATLAS_J4_REPAIR_VERSION;
+  return changed;
+}
+function atlasJ4RepairPublicationLedger(plan){
+  const ledger=plan?.publication?.remoteEvents;if(!Array.isArray(ledger)||ledger.length<2)return false;
+  const d=atlasJ4DedupeArray(ledger,e=>String(e?.externalId||e?.external_id||"").trim()||JSON.stringify([e?.date||"",e?.hash||""]));
+  if(!d.changed)return false;plan.publication.remoteEvents=d.list;return true;
+}
+function atlasJ4RepairPlan(plan){
+  if(!plan||typeof plan!=="object")return false;let changed=false;
+  if(plan.engine&&atlasJ4NormalizeEngineQuality(plan.engine,plan))changed=true;
+  if(atlasJ4RepairPublicationLedger(plan))changed=true;
+  if(Number(plan?.engine?.j4ConsistencyVersion)!==ATLAS_J4_REPAIR_VERSION){if(plan.engine)plan.engine.j4ConsistencyVersion=ATLAS_J4_REPAIR_VERSION;changed=true;}
+  if(changed){plan.updatedAt=new Date().toISOString();trainingPlanMarkPublicationDirty(plan);}
+  return changed;
+}
+async function atlasJ4RepairCurrentPlans({persist=true}={}){
+  let changed=false;for(const plan of currentTrainingPlans||[])if(atlasJ4RepairPlan(plan))changed=true;
+  if(changed){renderTrainingPlanHome();if(persist)await persistTrainingPlans().catch(error=>recordRuntimeAudit("j4-plan-repair-persist",error).catch(()=>{}));}
+  return changed;
+}
+
+/* La reparación también se aplica a motores recién generados, después de Race Demand. */
+const atlasJ4CollectTrainingEngineInputBase=collectTrainingEngineInput;
+collectTrainingEngineInput=async function(plan,asOfDate=fmtDate(new Date())){
+  const engine=await atlasJ4CollectTrainingEngineInputBase(plan,asOfDate);atlasJ4NormalizeEngineQuality(engine,plan);return engine;
+};
+
+/* Los planes ya existentes se reparan una sola vez al mantenimiento diferido. */
+const atlasJ4UpgradeTrainingEnginePlansBase=upgradeTrainingEnginePlans;
+upgradeTrainingEnginePlans=async function(){
+  const upgraded=await atlasJ4UpgradeTrainingEnginePlansBase();
+  const repaired=await atlasJ4RepairCurrentPlans({persist:true});
+  return !!(upgraded||repaired);
+};
+
+/* Si otro dispositivo era la autoridad, sanea el manifiesto recibido antes de volver a usarlo. */
+const atlasJ4ApplyRemoteBase=atlasV153ApplyRemote;
+atlasV153ApplyRemote=async function(remote,options={}){
+  const result=await atlasJ4ApplyRemoteBase(remote,options);await atlasJ4RepairCurrentPlans({persist:true});return result;
+};
+
+/* El calendario puede contener IDs ɅTLɅS antiguos que no estén ya en el ledger local.
+   Se incorporan como deletes cuando no pertenecen al manifiesto deseado. */
+const atlasJ4PublicationDiffBase=atlasV090PublicationDiff;
+atlasV090PublicationDiff=function(plan){
+  const diff=atlasJ4PublicationDiffBase(plan);if(!plan||!Array.isArray(currentEvents)||!diff?.desired?.events)return diff;
+  const wanted=new Set(diff.desired.events.map(e=>String(e.external_id||""))),deletes=new Map((diff.deletes||[]).map(e=>[String(e.external_id||""),e])),prefix=`atlas-${plan.id}:`,today=atlasV090Today();
+  for(const event of currentEvents){
+    const ext=String(pick(event||{},["external_id","externalId","external_id_str"])||"");if(!ext.startsWith(prefix)||wanted.has(ext))continue;
+    const date=planEventDate(event);if(date&&date>=today)deletes.set(ext,{external_id:ext,date});
+  }
+  return{...diff,deletes:[...deletes.values()]};
+};
+
+/* ---------- J4.2 · Render de Entrenamientos sin doble canonización ---------- */
+renderTrainingPlanWorkouts=function(){
+  const plan=activeTrainingPlan(),canonical=plan?atlasV155CanonicalSchedule(plan):null;
+  const result=atlasG5RenderUiCore.workouts.call(this,canonical);
+  atlasV136ClearUnapprovedCardClasses();atlasV150UnifyCards(ui.trainingPlanWorkouts);currentTrainingSchedule=canonical;
+  atlasV155RenderedSummary(canonical);return result;
+};
+
+/* ---------- J4.3 · Apertura del Plan: pintar primero, calcular después ---------- */
+let atlasJ4WorkspaceHydrationToken=0,atlasJ4WorkspacePendingPlanId=null;
+function atlasJ4HydrateWorkspaceNow(){
+  const id=atlasJ4WorkspacePendingPlanId;if(!id||String(activeTrainingPlan()?.id||"")!==String(id))return false;
+  atlasJ4WorkspacePendingPlanId=null;renderTrainingPlanWorkspace();return true;
+}
+openTrainingPlanWorkspace=function(id){
+  const started=performance.now(),plan=currentTrainingPlans.find(p=>p.id===String(id));if(!plan)return;
+  const previousPlanId=currentTrainingPlanId;currentTrainingPlanId=plan.id;const today=fmtDate(new Date()),weekAnchor=today<plan.startDate?plan.startDate:today>plan.raceDate?plan.raceDate:today;
+  currentTrainingPlanAvailabilityWeekStart=mondayOf(new Date(`${weekAnchor}T12:00:00`));
+  ui.trainingPlanWorkspaceTitle.textContent=plan.name;ui.trainingPlanWorkspaceSubtitle.textContent=trainingPlanStatus(plan);atlasI8WorkspaceStatusPolish();collapseTrainingPlanSections();
+  ui.trainingPlanWorkspace.classList.remove("hidden");ui.trainingPlanWorkspace.setAttribute("aria-hidden","false");setAtlasSubpageNavHidden(true);document.body.style.overflow="hidden";ui.trainingPlanWorkspace.scrollTop=0;
+  if(atlasJ1StructuralAction(plan)==="STRUCTURAL_WATCH")atlasJ1HidePassiveStructuralNotice();if(String(previousPlanId||"")!==String(plan.id||""))atlasJ2PersistActiveSelectionDeferred();
+  const token=++atlasJ4WorkspaceHydrationToken;atlasJ4WorkspacePendingPlanId=plan.id;
+  requestAnimationFrame(()=>setTimeout(()=>{if(token===atlasJ4WorkspaceHydrationToken&&!ui.trainingPlanWorkspace.classList.contains("hidden"))atlasJ4HydrateWorkspaceNow();},0));
+  ATLAS_J12_PERF.workspaceOpens++;ATLAS_J12_PERF.lastWorkspaceOpenMs=Math.round((performance.now()-started)*10)/10;ATLAS_J12_PERF.lastPlanId=String(plan.id||"");ATLAS_J12_PERF.lastMeasuredAt=new Date().toISOString();
+};
+atlasDomReadyInitializers.push(()=>{
+  ui.trainingPlanWorkspace?.addEventListener("click",e=>{if(e.target.closest("[data-training-plan-section-toggle]"))atlasJ4HydrateWorkspaceNow();},{capture:true});
+});
+
+/* ---------- J4.4 · Arranque local-first todavía más corto ---------- */
+init=async function(){
+  const startupStarted=performance.now();assertCoreUi();ensureMainTabHeaders();bindEvents();initializeStaticUi();syncActivityAiMarkWithNav();
+  db=await openDb();const dbReadyMs=Math.round(performance.now()-startupStarted);setDefaultDates();
+  await Promise.all([loadSettingsIntoForm().catch(error=>recordRuntimeAudit("settings-load",error).catch(()=>{})),loadTrainingPlans().catch(error=>recordRuntimeAudit("training-plans-load",error).catch(()=>{}) )]);
+  atlasG4SyncStateCache=null;
+  atlasG3ApplyData(await atlasG3ReadData(["activities","wellness","cachedVo2"]));atlasG3Render(["today"]);scheduleLayoutRefresh();
+  const firstRenderMs=Math.round(performance.now()-startupStarted);
+  await initializeAssistantChat();startRuntimeRefresh();const readyMs=Math.round(performance.now()-startupStarted);
+  recordOpsEvent("startup-ready","ATLAS iniciado correctamente",{online:atlasOnline(),activities:currentActivities.length,wellness:currentWellness.length,version:APP_VERSION,dbReadyMs,firstRenderMs,readyMs,localFirst:true,mapsDeferred:true,minimalTodayFirst:true}).catch(()=>{});
+  requestAnimationFrame(()=>setTimeout(()=>refreshDataRender({data:["gear","sportSettings","events","profile","athlete","worker"],render:["activities","plan","profile"],upgradePlans:true,profilePrefs:false,adaptive:true,vo2:true,layout:true,reason:"j4-startup-deferred"}).catch(error=>recordRuntimeAudit("j4-startup-deferred",error).catch(()=>{})),0));
+  queueMicrotask(()=>startupIntervalsSync().catch(error=>recordRuntimeAudit("startup-sync",error).catch(()=>{})).finally(()=>atlasG2ScheduleIdle(atlasG2DeferredStartupMaintenance)));
+};
+
+/* ---------- J4.5 · Fast Sync: sólo los datos bloquean el gesto ↻ ---------- */
+let atlasJ4PlanBackgroundPromise=null;
+function atlasJ4SyncPlanInBackground(){
+  if(atlasJ4PlanBackgroundPromise)return atlasJ4PlanBackgroundPromise;
+  atlasJ4PlanBackgroundPromise=(async()=>{
+    const started=performance.now();let result={changed:false,needsCompaction:false};
+    try{
+      atlasG4SyncDiagnostics.endpointCalls.plan++;result=await atlasJ3SyncPlanFast();
+      await atlasJ4RepairCurrentPlans({persist:false});
+      if(result.changed){await refreshDataRender({render:["plan","today"],upgradePlans:false,profilePrefs:false,adaptive:false,vo2:false,layout:true,reason:"j4-plan-background"});}
+      if(result.needsCompaction&&result.local&&result.remote)atlasG6RewriteRemoteCompact(result.local,result.remote).catch(error=>recordRuntimeAudit("j4-plan-compaction",error).catch(()=>{}));
+      return result;
+    }catch(error){recordRuntimeAudit("j4-plan-cloud",error).catch(()=>{});return{changed:false,error};}
+    finally{ATLAS_J3_PERF.lastBackgroundPlanMs=Math.round(performance.now()-started);atlasJ4PlanBackgroundPromise=null;}
+  })();
+  return atlasJ4PlanBackgroundPromise;
+}
+atlasJ3FastSync=async function(showToast=true){
+  if(dataSyncPromise){if(showToast)toast("↻ Sincronización en curso.");return dataSyncPromise;}
+  dataSyncPromise=busy(async()=>{
+    setGlobalSyncing(true);const started=performance.now();ATLAS_J3_PERF.runs++;
+    try{
+      const r=await smartRange();validateRange(r.oldest,r.newest);recordOpsEvent("sync-start","Sincronización incremental rápida",{oldest:r.oldest,newest:r.newest,mode:"incremental",trigger:"user",fast:true}).catch(()=>{});
+      atlasG4SyncDiagnostics.endpointCalls.sync++;const dataStarted=performance.now();
+      const payload=validateSyncPayload(await api(`/api/sync?oldest=${encodeURIComponent(r.oldest)}&newest=${encodeURIComponent(r.newest)}`)),dataMs=Math.round(performance.now()-dataStarted);
+      const commit=await commitSyncPayload(payload,null,{oldest:r.oldest,newest:r.newest,mode:"incremental"});
+      const renderKeys=atlasJ3ActiveRenderKeys(),refresh=await refreshDataRender({render:[...new Set(renderKeys)],upgradePlans:false,profilePrefs:false,adaptive:false,vo2:false,layout:true,reason:"j4-fast-sync"});
+      const criticalMs=Math.round(performance.now()-started),result={oldest:r.oldest,newest:r.newest,criticalMs,dataMs,planMs:null,planChanged:false,planDeferred:true,activities:payload.activities.length,wellness:payload.wellness.length,render:renderKeys.slice(),refreshMs:refresh.durationMs,metadataFallbackReads:commit.metadataFallbackReads,fast:true};
+      ATLAS_J3_PERF.success++;ATLAS_J3_PERF.criticalTotalMs+=criticalMs;ATLAS_J3_PERF.last={...result,at:new Date().toISOString()};
+      atlasG4SyncDiagnostics.runs++;atlasG4SyncDiagnostics.dataRuns++;atlasG4SyncDiagnostics.totalMs+=criticalMs;atlasG4SyncDiagnostics.last={trigger:"user",data:true,plan:false,planDeferred:true,calendar:false,planChanged:false,calendarChanged:false,durationMs:criticalMs,at:new Date().toISOString(),dataResult:result,fast:true};
+      recordOpsEvent("sync-success","Sincronización incremental rápida completada",result).catch(()=>{});if(showToast)toast("✅ Datos actualizados.");
+      setTimeout(()=>atlasJ4SyncPlanInBackground(),0);atlasJ3ScheduleBackgroundMaintenance({forceBootstrap:true,forceCalendar:true,planChanged:false});
+      return true;
+    }catch(error){ATLAS_J3_PERF.errors++;ATLAS_J3_PERF.last={error:String(error?.message||error),at:new Date().toISOString()};recordRuntimeAudit("j4-fast-sync",error).catch(()=>{});if(showToast)toast(`⚠️ ${error.message}`,true);return false;}
+    finally{setGlobalSyncing(false);}
+  });
+  try{return await dataSyncPromise;}finally{dataSyncPromise=null;}
+};
+smartSync=async function(){return atlasJ3FastSync(true);};
+
+
+/* ===== ɅTLɅS v1.6.32 · J5 Fast Path + coherencia multidispositivo =====
+   Cambio correctivo y acotado:
+   - arranque local-first con ventana reciente para Hoy;
+   - Plan realmente lazy (sin red ni hidratación completa al entrar);
+   - persistencia local inmediata y cloud diferido;
+   - saneamiento pasivo sin alterar updatedAt/autoridad cloud;
+   - intervalos canónicos y total par;
+   - threshold oficial autoritativo para el futuro;
+   - publicación/retirada sin verificaciones remotas bloqueantes.
+*/
+const ATLAS_J5_VERSION="1.6.32";
+const ATLAS_J5_QUALITY_VERSION="J5-even-v1";
+let atlasJ5FullLocalLoaded=false,atlasJ5FullLocalPromise=null,atlasJ5PassiveTimer=null,atlasJ5CalendarTimer=null;
+const atlasJ5PlanRecalcPromises=new Map();
+
+/* ---------- J5.1 · Utilidades de scheduling ---------- */
+function atlasJ5Idle(fn,timeout=1800){
+  if(typeof requestIdleCallback==="function")return requestIdleCallback(()=>fn(),{timeout});
+  return setTimeout(fn,Math.min(timeout,450));
+}
+function atlasJ5Delay(fn,ms=900){return setTimeout(()=>{try{const r=fn();if(r&&typeof r.catch==="function")r.catch(()=>{});}catch{}},ms);}
+function atlasJ5ActiveView(){return document.querySelector(".view.active")?.id||"view-today";}
+
+/* ---------- J5.2 · Primer render: sólo datos recientes, no todo el histórico ---------- */
+async function atlasJ5StoreTail(storeName,limit){
+  try{
+    return await withDbRetry(async d=>{
+      const tx=d.transaction(storeName,"readonly"),st=tx.objectStore(storeName),rows=[];
+      await new Promise((resolve,reject)=>{
+        const req=st.openCursor(null,"prev");
+        req.onerror=()=>reject(req.error||new Error(`No se pudo leer ${storeName}.`));
+        req.onsuccess=()=>{const cur=req.result;if(!cur||rows.length>=limit){resolve();return;}rows.push(cur.value);cur.continue();};
+      });
+      await txDone(tx).catch(()=>{});return rows;
+    });
+  }catch{return(storeGetAll(storeName).then(rows=>rows.slice(-limit)).catch(()=>[]));}
+}
+async function atlasJ5ReadTodayWindow(){
+  const [activities,wellness,cachedVo2]=await Promise.all([
+    atlasJ5StoreTail("activities",260),atlasJ5StoreTail("wellness",90),storeGet("meta","latestRunVo2").catch(()=>null)
+  ]);
+  activities.sort((a,b)=>activityStamp(a).localeCompare(activityStamp(b)));
+  wellness.sort((a,b)=>String(a?.id||a?.date||"").localeCompare(String(b?.id||b?.date||"")));
+  return{activities,wellness,cachedVo2};
+}
+async function atlasJ5HydrateFullLocal(renderKeys=[]){
+  if(atlasJ5FullLocalLoaded){if(renderKeys.length)atlasG3Render(renderKeys);return true;}
+  if(atlasJ5FullLocalPromise)return atlasJ5FullLocalPromise.then(()=>{if(renderKeys.length)atlasG3Render(renderKeys);return true;});
+  atlasJ5FullLocalPromise=(async()=>{
+    const data=await atlasG3ReadData(["activities","wellness","gear","sportSettings","events","profile","athlete","worker","cachedVo2"]);
+    atlasG3ApplyData(data);atlasJ5FullLocalLoaded=true;return true;
+  })().finally(()=>{atlasJ5FullLocalPromise=null;});
+  await atlasJ5FullLocalPromise;if(renderKeys.length)atlasG3Render(renderKeys);return true;
+}
+async function atlasJ5HydrateEventsOnly(){
+  if(Array.isArray(currentEvents)&&currentEvents.length)return true;
+  const events=await storeGetAll("events").catch(()=>[]);atlasG3ApplyData({events});return true;
+}
+
+/* ---------- J5.3 · Persistencia: local inmediata, cloud fuera del gesto ---------- */
+let atlasJ5CloudPushTimer=null;
+function atlasJ5ScheduleCloudPush(delay=1200){
+  if(atlasJ5CloudPushTimer)clearTimeout(atlasJ5CloudPushTimer);
+  atlasJ5CloudPushTimer=setTimeout(()=>{
+    atlasJ5CloudPushTimer=null;
+    atlasJ5Idle(()=>pushTrainingPlansCloudBestEffort().catch(error=>recordRuntimeAudit("j5-plan-cloud-push",error).catch(()=>{})),2200);
+  },delay);
+}
+persistTrainingPlans=async function({fromCloud=false}={}){
+  const value=trainingPlansLocalEnvelope();
+  await storePut("meta",{key:TRAINING_PLANS_META_KEY,value});
+  if(fromCloud)return value;
+  await atlasV153SetDirty(value.updatedAt).catch(()=>{});
+  if(atlasOnline()&&hasAtlasConnectionConfig())atlasJ5ScheduleCloudPush();
+  return value;
+};
+scheduleTrainingPlansCloudPush=function(delay=1200){atlasJ5ScheduleCloudPush(delay);};
+
+/* ---------- J5.4 · Reparación pasiva NO convierte un estado viejo en autoridad ---------- */
+atlasJ4RepairPlan=function(plan){
+  if(!plan||typeof plan!=="object")return false;let changed=false;
+  if(plan.engine&&atlasJ4NormalizeEngineQuality(plan.engine,plan))changed=true;
+  if(atlasJ4RepairPublicationLedger(plan))changed=true;
+  if(plan.engine&&Number(plan.engine.j5ConsistencyVersion)!==2){plan.engine.j5ConsistencyVersion=2;changed=true;}
+  /* Deliberadamente NO toca plan.updatedAt, publication.dirty ni cloud meta. */
+  return changed;
+};
+atlasJ4RepairCurrentPlans=async function({persist=false}={}){
+  let changed=false;for(const plan of currentTrainingPlans||[])if(atlasJ4RepairPlan(plan))changed=true;
+  if(changed)renderTrainingPlanHome();return changed;
+};
+atlasV153ApplyRemote=async function(remote,options={}){
+  const result=await atlasJ4ApplyRemoteBase(remote,options);await atlasJ4RepairCurrentPlans({persist:false});return result;
+};
+
+/* ---------- J5.5 · Intervalos canónicos: repeticiones legales + WU/CD enteros + total par ---------- */
+function atlasJ5QualityMain(session){return(session?.steps||[]).find(st=>Number(st?.reps)>=2&&Number(st?.repDistanceM)>0)||null;}
+function atlasJ5LegalRepDistanceM(value){
+  const m=Math.max(1,Math.round(Number(value)||0));
+  if(m<1000)return m;
+  if(m===1500)return 1500;
+  const km=m/1000,low=Math.max(1,Math.floor(km)),high=Math.max(1,Math.ceil(km)),chosen=(km-low)<= (high-km)?low:high;
+  return chosen*1000;
+}
+function atlasJ5IntegerWorkReps(repM,reps){
+  let n=Math.max(2,Math.round(Number(reps)||2));
+  if(repM===1500){if(n%2)n=Math.max(2,n-1);return n;}
+  if(repM>=1000)return n;
+  let best=null;
+  for(let k=2;k<=20;k++)if((k*repM)%1000===0){const score=Math.abs(k-n);if(!best||score<best.score||(score===best.score&&k<best.k))best={k,score};}
+  return best?.k||n;
+}
+function atlasJ5StepKm(step,fallback=2){const km=(Number(step?.distanceM)||0)/1000;return Math.max(1,Math.round(km>0?km:fallback));}
+function atlasJ5QualityMainText(m,session){
+  const pace=m?.pace||session?.targetPace||null,paceLabel=session?.targetLabel||trainingEnginePaceRangeLabel(pace)||"intensidad prescrita",dist=trainingEngineFormatDistanceM(Number(m?.repDistanceM)||0),rec=Number(m?.recoverySec)>0?` R${trainingEngineFormatRecovery(Number(m.recoverySec)).replace(/^R/,"")}`:"";
+  return`${Math.max(2,Math.round(Number(m?.reps)||2))} x (${dist} @ ${paceLabel}${rec})`;
+}
+atlasI4QualityMain=atlasJ5QualityMain;
+atlasI4NormalizeQualitySession=function(session,anchors,{force=false}={}){
+  if(!session||session.type!=="Run")return session;
+  const source=atlasJ5QualityMain(session);if(!source)return session;
+  if(session.j5QualityVersion===ATLAS_J5_QUALITY_VERSION&&!force)return session;
+  const rx=atlasV0814Clone(session),m=atlasJ5QualityMain(rx),steps=rx.steps||[],warm=steps.find(st=>st.section==="warmup"),cool=steps.find(st=>st.section==="cooldown");
+  const oldRepM=Math.round(Number(m.repDistanceM)||0),repM=atlasJ5LegalRepDistanceM(oldRepM),reps=atlasJ5IntegerWorkReps(repM,m.reps),workM=repM*reps,workKm=workM/1000;
+  const warmKm=atlasJ5StepKm(warm,2),minimumCoolKm=atlasJ5StepKm(cool,2),baseKm=workKm+warmKm+minimumCoolKm,totalKm=Math.max(2,Math.ceil(baseKm/2)*2),coolKm=totalKm-workKm-warmKm;
+  const pace=m.pace||rx.targetPace||null,easy=trainingEnginePaceCopy(anchors?.easy)||warm?.pace||cool?.pace||null,paceMid=trainingEnginePaceMid(pace),easyMid=trainingEnginePaceMid(easy),recoverySec=Math.max(0,Math.round(Number(m.recoverySec)||0)),recoveryCount=recoverySec>0?Math.max(0,reps-1):0;
+  m.reps=reps;m.repDistanceM=repM;m.workDistanceM=workM;if(paceMid>0)m.workSec=Math.round(workKm*paceMid);m.pace=pace;
+  const mainText=atlasJ5QualityMainText(m,rx);m.label=`⚡ ${mainText}`;
+  if(warm){warm.distanceM=warmKm*1000;warm.pace=warm.pace||easy;warm.label=`🔥 WU · ${warmKm} km Fácil`;}
+  else steps.unshift(trainingEngineStep("warmup",`🔥 WU · ${warmKm} km Fácil`,{distanceM:warmKm*1000,pace:easy}));
+  const actualCool=steps.find(st=>st.section==="cooldown");
+  if(actualCool){actualCool.distanceM=coolKm*1000;actualCool.pace=actualCool.pace||easy;actualCool.label=`❄️ CD · ${coolKm} km Fácil`;}
+  else steps.push(trainingEngineStep("cooldown",`❄️ CD · ${coolKm} km Fácil`,{distanceM:coolKm*1000,pace:easy}));
+  rx.steps=steps;rx.distanceKm=totalKm;rx.distanceM=totalKm*1000;rx.structure=`WU + ${mainText} + CD`;
+  rx.work={...(rx.work||{}),workKm,workSec:paceMid>0?Math.round(workKm*paceMid):rx.work?.workSec||null,reps,repDistanceM:repM};
+  rx.warmCool={...(rx.warmCool||{}),plannedKm:warmKm+coolKm,explicit:true,cooldownToKm:null};
+  let recoveryEachM=0;if(recoverySec>0&&typeof atlasI4RecoveryDistanceM==="function")recoveryEachM=Math.max(0,Math.round(atlasI4RecoveryDistanceM(m,anchors)||0));
+  rx.recovery={...(rx.recovery||{}),seconds:recoverySec||null,mode:m.recoveryMode||rx.recovery?.mode||null,count:recoveryCount,estimatedDistanceMEach:recoveryEachM,estimatedTotalM:recoveryEachM*recoveryCount,estimateAnchor:"recovery"};
+  if(paceMid>0||easyMid>0){const sec=(paceMid>0?workKm*paceMid:0)+(easyMid>0?(warmKm+coolKm)*easyMid:0)+recoverySec*recoveryCount;if(sec>0)rx.durationSec=Math.round(sec);}
+  rx.i4RecoveryDistanceVersion=ATLAS_J5_QUALITY_VERSION;rx.i4RecoveryDistance={count:recoveryCount,eachM:recoveryEachM,totalM:recoveryEachM*recoveryCount,totalKm,totalDistancePolicy:"EXPLICIT_EVEN_KM_RECOVERY_TIME_EXCLUDED"};
+  rx.evenDistancePolicy={...(rx.evenDistancePolicy||{}),finalKm:totalKm,version:ATLAS_J5_QUALITY_VERSION};rx.j5QualityVersion=ATLAS_J5_QUALITY_VERSION;
+  return rx;
+};
+
+/* Finaliza también sesiones específicas que capas anteriores hayan redimensionado a 6,5 km, etc. */
+const atlasJ5CollectEngineBase=collectTrainingEngineInput;
+collectTrainingEngineInput=async function(plan,asOfDate=fmtDate(new Date())){
+  const engine=await atlasJ5CollectEngineBase(plan,asOfDate);atlasJ4NormalizeEngineQuality(engine,plan);return engine;
+};
+
+/* ---------- J5.6 · Deduplicación efectiva antes de UI y publicación ---------- */
+const atlasJ5EffectiveCache=new WeakMap();
+function atlasJ5SanitizeEffectiveSchedule(plan,schedule){
+  if(!schedule||!Array.isArray(schedule.days))return schedule;
+  const anchors=plan?.adaptiveEngine?.structural?.paceAnchors||plan?.engine?.paceAnchors||{},days=schedule.days.map(day=>{
+    const seenId=new Set(),seenSemantic=new Set(),sessions=[];
+    for(const original of day?.sessions||[]){
+      let session=original;if(atlasJ5QualityMain(session))session=atlasI4NormalizeQualitySession(session,anchors,{force:true});
+      const id=String(session?.id||session?.sessionId||session?._atlasSourceSessionKey||"").trim(),semantic=atlasJ4SessionSemanticKey(session);
+      if((id&&seenId.has(id))||(semantic&&seenSemantic.has(semantic)))continue;
+      if(id)seenId.add(id);if(semantic)seenSemantic.add(semantic);sessions.push(session);
+    }
+    return{...day,sessions,rest:sessions.length===0};
+  });
+  return{...schedule,days};
+}
+atlasJ2BuildContext=function(plan){
+  const key=`${atlasJ2CacheKey(plan)}|${ATLAS_J5_VERSION}`,cached=atlasJ5EffectiveCache.get(plan);if(cached?.key===key){ATLAS_J12_PERF.effectiveHits++;return cached;}
+  const started=performance.now(),raw=atlasJ2EffectiveScheduleBase(plan),schedule=atlasJ5SanitizeEffectiveSchedule(plan,raw),byId=new Map(),byKey=new Map();
+  for(const day of schedule?.days||[])for(const session of day.sessions||[]){if(session?.id!=null)byId.set(String(session.id),session);const sk=atlasV0814SessionKey(session);if(sk)byKey.set(String(sk),session);}
+  const context={key,schedule,byId,byKey,builtMs:performance.now()-started};atlasJ5EffectiveCache.set(plan,context);ATLAS_J12_PERF.effectiveBuilds++;return context;
+};
+atlasV090EffectiveSchedule=function(plan){return plan?atlasJ2BuildContext(plan).schedule:null;};
+atlasV155CanonicalSchedule=function(plan){return plan?atlasJ2BuildContext(plan).schedule:null;};
+
+/* ---------- J5.7 · El título publicado es exactamente el título mostrado por ATLAS ---------- */
+const atlasJ5RemoteEventBase=atlasV090RemoteEvent;
+atlasV090RemoteEvent=function(plan,session){const event=atlasJ5RemoteEventBase(plan,session),title=String(trainingPresentationDisplayName(session)||session?.name||session?.family||"Entrenamiento ɅTLɅS").trim();event.name=title.slice(0,100);return event;};
+
+/* ---------- J5.8 · Threshold oficial: autoritativo; la discrepancia deja de bloquear ---------- */
+const atlasJ5ThresholdGateBase=atlasV158ThresholdPlausibilityGate;
+atlasV158ThresholdPlausibilityGate=function(engine){
+  if(!engine)return engine;const ca=atlasV159Clone(engine.currentAbility),anchors=atlasV159Clone(engine.paceAnchors),review=atlasV159Clone(engine.thresholdReview||{});atlasJ5ThresholdGateBase(engine);
+  if(engine?.thresholdPlausibilityGate?.status==="VALIDATION_REQUIRED"){
+    const prior=engine.thresholdPlausibilityGate;engine.currentAbility=ca;engine.paceAnchors=anchors;
+    engine.thresholdPlausibilityGate={...prior,status:"PLAUSIBLE",advisoryStatus:"EVIDENCE_CONFLICT",blocking:false,automaticRecalibration:false,reason:"El threshold oficial se aplica al futuro; la discrepancia con evidencia reciente queda sólo como observación."};
+    engine.thresholdPlausibilityGateVersion=ATLAS_J5_VERSION;engine.thresholdReview={...review,version:ATLAS_J5_VERSION,status:"ADVISORY",automaticChange:false,officialValuePreserved:true,plausibilityGate:engine.thresholdPlausibilityGate,policy:"El threshold oficial de Garmin/Intervals es autoritativo para los ritmos futuros. La evidencia discordante no bloquea su aplicación."};engine.abilityDigest=trainingEngineDigest(engine.currentAbility);
+  }
+  return engine;
+};
+atlasV163Plausibility=function(plan,currentAbility,anchors){return{gate:{status:"PLAUSIBLE",blocking:false,policy:"AUTHORITATIVE_OFFICIAL_THRESHOLD"},currentAbility:atlasV159Clone(currentAbility),paceAnchors:atlasV159Clone(anchors)};};
+const atlasJ5StructuralNoticeBase=atlasV164StructuralNotice;
+atlasV164StructuralNotice=function(plan){const d=plan?.adaptiveEngine?.structural?.decision;if(d?.action==="VALIDATION_REQUIRED"&&d?.trigger==="AUTHORITATIVE_THRESHOLD_UPDATE")return null;return atlasJ5StructuralNoticeBase(plan);};
+const atlasJ5RenderPacesBase=renderTrainingPlanPaces;
+renderTrainingPlanPaces=function(){const result=atlasJ5RenderPacesBase.apply(this,arguments);$("trainingPlanPaces")?.querySelectorAll(".atlas-v158-threshold-note").forEach(n=>n.remove());return result;};
+async function atlasJ5RepairThresholdDecision(plan){
+  const d=plan?.adaptiveEngine?.structural?.decision;if(d?.action!=="VALIDATION_REQUIRED"||d?.trigger!=="AUTHORITATIVE_THRESHOLD_UPDATE")return false;
+  try{return await atlasV096EvaluateAdaptivePlan(plan,{force:true});}catch(error){recordRuntimeAudit("j5-threshold-refresh",error,{planId:plan.id}).catch(()=>{});return false;}
+}
+
+/* ---------- J5.9 · Workspace del Plan: nada pesado hasta abrir una sección ---------- */
+function atlasJ5RenderSecondary(plan){const races=Array.isArray(plan?.intermediateRaces)?plan.intermediateRaces:[];if(!ui.trainingPlanIntermediate)return;ui.trainingPlanIntermediate.innerHTML=races.length?races.map(r=>`<div class="training-plan-intermediate-row"><div><strong>${esc(String(r.name||"").startsWith("🏁")?r.name:`🏁 ${r.name}`)}</strong><span>${esc(trainingPlanDistanceDef(r.distanceKey,r).label)} · ${esc(atlasDateLabel(r.date))}</span></div><span class="training-plan-intermediate-side">${esc(trainingPlanGoalLabel(r))}</span></div>`).join(""):'<div class="training-plan-intermediate-empty">Sin carreras secundarias.</div>';}
+function atlasJ5HydratePlanSection(key){
+  const plan=activeTrainingPlan();if(!plan)return false;const engine=plan.engine||{},snapshot=engine.athleteSnapshot;
+  if(key==="info")trainingPlanRenderPremiumCards(ui.trainingPlanInfo,trainingPlanPremiumInfoRows(plan));
+  else if(key==="current")trainingPlanRenderCurrentRows(trainingPlanPremiumCurrentRows(plan,snapshot,engine.currentAbility,engine.goalAssessment));
+  else if(key==="availability")renderTrainingPlanAvailability();
+  else if(key==="secondary")atlasJ5RenderSecondary(plan);
+  else if(key==="paces")renderTrainingPlanPaces();
+  else if(key==="workouts")renderTrainingPlanWorkouts();
+  else if(key==="publication")renderTrainingPlanPublication().catch(()=>{});
+  requestAnimationFrame(()=>{fitTrainingPlanTypography();if(key==="workouts")fitActivityTitles();});return true;
+}
+atlasJ4HydrateWorkspaceNow=function(){return false;};
+renderTrainingPlanWorkspace=function(){
+  const plan=activeTrainingPlan();if(!plan||!ui.trainingPlanWorkspace)return;atlasApplyTrainingPlanSectionEmojis();ui.trainingPlanWorkspaceTitle.textContent=plan.name;ui.trainingPlanWorkspaceSubtitle.textContent=trainingPlanStatus(plan);atlasI8WorkspaceStatusPolish();atlasV164RenderPlanNotice();atlasV164UpdatePublicationIndicator();
+  qsa('[data-training-plan-section].open',ui.trainingPlanWorkspace).forEach(section=>atlasJ5HydratePlanSection(section.dataset.trainingPlanSection));
+};
+openTrainingPlanWorkspace=function(id){
+  const started=performance.now(),plan=currentTrainingPlans.find(p=>p.id===String(id));if(!plan)return;const previousPlanId=currentTrainingPlanId;currentTrainingPlanId=plan.id,today=fmtDate(new Date()),weekAnchor=today<plan.startDate?plan.startDate:today>plan.raceDate?plan.raceDate:today;currentTrainingPlanAvailabilityWeekStart=mondayOf(new Date(`${weekAnchor}T12:00:00`));
+  atlasJ4RepairPlan(plan);ui.trainingPlanWorkspaceTitle.textContent=plan.name;ui.trainingPlanWorkspaceSubtitle.textContent=trainingPlanStatus(plan);atlasI8WorkspaceStatusPolish();collapseTrainingPlanSections();atlasV164RenderPlanNotice();atlasV164UpdatePublicationIndicator();ui.trainingPlanWorkspace.classList.remove("hidden");ui.trainingPlanWorkspace.setAttribute("aria-hidden","false");setAtlasSubpageNavHidden(true);document.body.style.overflow="hidden";ui.trainingPlanWorkspace.scrollTop=0;if(atlasJ1StructuralAction(plan)==="STRUCTURAL_WATCH")atlasJ1HidePassiveStructuralNotice();if(String(previousPlanId||"")!==String(plan.id||""))atlasJ2PersistActiveSelectionDeferred();
+  if(plan?.adaptiveEngine?.structural?.decision?.action==="VALIDATION_REQUIRED")atlasJ5Idle(()=>atlasJ5RepairThresholdDecision(plan),1800);
+  ATLAS_J12_PERF.workspaceOpens++;ATLAS_J12_PERF.lastWorkspaceOpenMs=Math.round((performance.now()-started)*10)/10;ATLAS_J12_PERF.lastPlanId=String(plan.id||"");ATLAS_J12_PERF.lastMeasuredAt=new Date().toISOString();
+};
+handleTrainingPlanSectionToggle=function(e){
+  const b=e.target.closest("[data-training-plan-section-toggle]");if(!b)return;const section=b.closest("[data-training-plan-section]"),body=section?.querySelector("[data-training-plan-section-body]");if(!section||!body)return;const open=!section.classList.contains("open"),key=b.dataset.trainingPlanSectionToggle;section.classList.toggle("open",open);body.classList.toggle("hidden",!open);b.setAttribute("aria-expanded",open?"true":"false");if(open)atlasJ5HydratePlanSection(key);
+};
+
+/* Entrar en Plan ya no fuerza una segunda lectura remota. Carga sólo eventos locales si hacen falta. */
+showView=function(tab){
+  const result=atlasV153ShowViewBase.apply(this,arguments);
+  if(tab==="activities"&&!atlasJ5FullLocalLoaded)atlasJ5Idle(()=>atlasJ5HydrateFullLocal(["activities"]),600);
+  else if(tab==="data"&&!atlasJ5FullLocalLoaded)atlasJ5Idle(()=>atlasJ5HydrateFullLocal(["profile"]),600);
+  else if(tab==="plan")atlasJ5Idle(()=>atlasJ5HydrateEventsOnly().then(()=>atlasG3Render(["plan"])),800);
+  return result;
+};
+
+/* ---------- J5.10 · Carreras secundarias: guardar ya, recalcular después ---------- */
+async function atlasJ5RecalculateSecondary(plan,stamp){
+  try{
+    const engine=await collectTrainingEngineInput(plan,fmtDate(new Date()));if(String(plan._j5SecondaryStamp||"")!==String(stamp))return false;plan.engine=engine;delete plan._j5SecondaryStamp;plan.updatedAt=new Date().toISOString();trainingPlanMarkPublicationDirty(plan);await persistTrainingPlans();if(activeTrainingPlan()?.id===plan.id){renderTrainingPlanWorkspace();renderPlan();}return true;
+  }catch(error){recordRuntimeAudit("j5-secondary-recalc",error,{planId:plan.id}).catch(()=>{});return false;}
+}
+atlasSecondaryEditorSave=async function(){
+  const plan=activeTrainingPlan();if(!plan)return;plan.intermediateRaces=atlasSecondaryEditorDraft.map(x=>({...x,importance:atlasSecondaryImportanceValue(x)}));const stamp=new Date().toISOString();plan._j5SecondaryStamp=stamp;plan.updatedAt=stamp;await persistTrainingPlans();closeTrainingPlanSecondaryEditor();atlasJ5RenderSecondary(plan);renderPlan();toast("✅ Carreras secundarias guardadas.");
+  const promise=new Promise(resolve=>atlasJ5Idle(()=>atlasJ5RecalculateSecondary(plan,stamp).then(resolve),700));atlasJ5PlanRecalcPromises.set(plan.id,promise);promise.finally(()=>{if(atlasJ5PlanRecalcPromises.get(plan.id)===promise)atlasJ5PlanRecalcPromises.delete(plan.id);});
+};
+async function atlasJ5AwaitPlanRecalc(plan){const p=plan&&atlasJ5PlanRecalcPromises.get(plan.id);if(p)await p;return true;}
+
+/* ---------- J5.11 · Publicación/retirada rápida: el POST bloquea; verificación/calendario no ---------- */
+let atlasJ5CapabilitiesCache=null,atlasJ5CapabilitiesAt=0;
+atlasV090WorkerCapabilities=async function(){const now=Date.now();if(atlasJ5CapabilitiesCache&&now-atlasJ5CapabilitiesAt<10*60*1000)return atlasJ5CapabilitiesCache;const value=await apiRequest("/api/workouts/capabilities",{timeoutMs:8000,retries:0});atlasJ5CapabilitiesCache=value;atlasJ5CapabilitiesAt=now;return value;};
+async function atlasJ5MapLimit(items,limit,worker){
+  const list=[...(items||[])],out=new Array(list.length);let next=0;async function run(){while(true){const i=next++;if(i>=list.length)return;out[i]=await worker(list[i],i);}}await Promise.all(Array.from({length:Math.min(limit,list.length)},run));return out;
+}
+function atlasJ5AggregatePublication(agg,result){if(Array.isArray(result?.events))agg.events.push(...result.events);agg.upserted+=Number(result?.upserted)||0;agg.deleted+=Number(result?.deleted)||0;if(Array.isArray(result?.missing))agg.missing.push(...result.missing);agg.revision=Math.max(agg.revision,Number(result?.revision)||0);agg.garmin.enabled=agg.garmin.enabled||result?.garmin?.enabled===true;agg.garmin.trainingConnected=agg.garmin.trainingConnected||result?.garmin?.trainingConnected===true;}
+atlasV094PublishDiffInBatches=async function(plan,diff){
+  const chunks=atlasV094Chunk(diff.deletes),firstDeletes=chunks.shift()||[],agg={ok:true,version:ATLAS_PUBLICATION_VERSION,revision:0,events:[],upserted:0,deleted:0,missing:[],garmin:{enabled:false,trainingConnected:false}};
+  atlasV094PublicationProgress={current:1,total:Math.max(1,1+chunks.length)};atlasV094ApplyProgress();
+  const first=await apiRequest("/api/workouts/publish",{method:"POST",body:{schema:"ATLAS_WORKOUT_PUBLICATION_V1",publicationVersion:ATLAS_PUBLICATION_VERSION,planId:plan.id,planName:plan.name,manifestDigest:diff.desired.digest,upserts:diff.upserts.map(({_atlas,...event})=>event),deletes:firstDeletes},timeoutMs:45000,retries:0});atlasJ5AggregatePublication(agg,first);
+  let done=1;await atlasJ5MapLimit(chunks,3,async chunk=>{const r=await apiRequest("/api/workouts/publish",{method:"POST",body:{schema:"ATLAS_WORKOUT_PUBLICATION_V1",publicationVersion:ATLAS_PUBLICATION_VERSION,planId:plan.id,planName:plan.name,manifestDigest:diff.desired.digest,upserts:[],deletes:chunk},timeoutMs:45000,retries:0});atlasJ5AggregatePublication(agg,r);atlasV094PublicationProgress={current:++done,total:Math.max(1,1+chunks.length)};atlasV094ApplyProgress();return r;});return agg;
+};
+function atlasJ5ScheduleCalendarReconcile(delay=1200){if(atlasJ5CalendarTimer)clearTimeout(atlasJ5CalendarTimer);atlasJ5CalendarTimer=setTimeout(()=>{atlasJ5CalendarTimer=null;syncCalendar(false).then(()=>{renderPlan();renderUpcomingTrainings();}).catch(error=>recordRuntimeAudit("j5-calendar-reconcile",error).catch(()=>{}));},delay);}
+atlasV150SyncPlanNow=async function(plan,{toastSuccess=false}={}){
+  if(!plan||atlasV150RemoteSyncBusy||!atlasOnline())return false;await atlasJ5AwaitPlanRecalc(plan);const diff=atlasV090PublicationDiff(plan);if(!diff.desired.events.length)return false;atlasV150RemoteSyncBusy=true;if(!atlasI5PublicationProgress.active)atlasI5SetProgress("publish","Preparando publicación…",8);
+  try{const caps=await atlasV090WorkerCapabilities();if(caps?.publication!==true)throw new Error("El Worker no tiene habilitada la publicación.");atlasI5SetProgress("publish","Enviando entrenamientos…",28);const result=await atlasV094PublishDiffInBatches(plan,diff),ledger=atlasV090RemoteLedger(diff.desired.events,result.events||[],plan.publication?.remoteEvents||[]),now=new Date().toISOString(),snapshot=atlasI5PublishedSnapshot(plan,diff);plan.publication={...(plan.publication||{}),status:"published",dirty:false,schema:ATLAS_PUBLICATION_SCHEMA,version:ATLAS_PUBLICATION_VERSION,publishedAt:plan.publication?.publishedAt||now,updatedAt:now,lastPublishAt:now,manifestDigest:diff.desired.digest,remoteRevision:Number(result?.revision)||Number(plan.publication?.remoteRevision||0)+1,remoteEvents:ledger,lastError:null,lastErrorAt:null,lastResult:{upserted:Number(result?.upserted)||0,deleted:Number(result?.deleted)||0,missing:Array.isArray(result?.missing)?result.missing.length:0,garminEnabled:result?.garmin?.enabled===true,verified:false,verificationDeferred:true},publishedRestDates:atlasI1ComputePublishedRestDates(plan),publishedViewVersion:"I1",i5PublishedSnapshot:snapshot,i5PublishedSnapshotVersion:ATLAS_I5_VERSION};plan.updatedAt=now;await persistTrainingPlans();renderPlan();renderUpcomingTrainings();atlasI5SetProgress("publish","Publicado",100);renderTrainingPlanPublication().catch(()=>{});atlasJ5ScheduleCalendarReconcile();if(toastSuccess)toast(`✅ Intervals.icu actualizado · ${ledger.length} entrenamientos.`);return true;}
+  catch(error){recordRuntimeAudit("training-plan-sync-j5",error,{planId:plan.id}).catch(()=>{});plan.publication={...(plan.publication||{}),lastError:String(error?.message||error),lastErrorAt:new Date().toISOString(),dirty:true};await persistTrainingPlans().catch(()=>{});toast(`⚠️ Publicación pendiente: ${error.message}`,true);return false;}
+  finally{atlasV150RemoteSyncBusy=false;atlasV094PublicationProgress=null;}
+};
+atlasV150UnpublishAll=async function(plan){
+  const all=atlasV150RemoteCandidates(plan);if(!all.length)return{deleted:0,missing:0,verified:false,verificationDeferred:true};const chunks=atlasV094Chunk(all);let deleted=0,missing=[];let done=0;await atlasJ5MapLimit(chunks,3,async chunk=>{const r=await atlasV152DeleteChunk(plan,chunk);deleted+=Number(r?.deleted)||0;if(Array.isArray(r?.missing))missing.push(...r.missing);atlasV094PublicationProgress={current:++done,total:chunks.length};atlasV094ApplyProgress();return r;});atlasJ5ScheduleCalendarReconcile();return{deleted,missing:missing.length,verified:false,verificationDeferred:true};
+};
+
+/* ---------- J5.12 · Sincronización visible corta; mantenimiento y plan en background ---------- */
+async function atlasJ5FastRange(){
+  const base=await smartRange(),today=fmtDate(new Date()),last=await storeGet("meta","lastSyncRange").catch(()=>null);if(!last?.value?.newest)return base;const configured=Math.max(3,Math.min(90,Number(ui.overlapDays?.value||21))),days=Math.min(7,configured);return{oldest:maxDate(base.oldest,addDays(today,-(days-1))),newest:today};
+}
+atlasJ3FastSync=async function(showToast=true){
+  if(dataSyncPromise){if(showToast)toast("↻ Sincronización en curso.");return dataSyncPromise;}
+  dataSyncPromise=busy(async()=>{setGlobalSyncing(true);const started=performance.now();ATLAS_J3_PERF.runs++;try{const r=await atlasJ5FastRange();validateRange(r.oldest,r.newest);atlasG4SyncDiagnostics.endpointCalls.sync++;const payload=validateSyncPayload(await api(`/api/sync?oldest=${encodeURIComponent(r.oldest)}&newest=${encodeURIComponent(r.newest)}`));await commitSyncPayload(payload,null,{oldest:r.oldest,newest:r.newest,mode:"incremental"});const keys=atlasJ3ActiveRenderKeys();atlasG3Render(keys);scheduleLayoutRefresh();const ms=Math.round(performance.now()-started);ATLAS_J3_PERF.success++;ATLAS_J3_PERF.criticalTotalMs+=ms;ATLAS_J3_PERF.last={oldest:r.oldest,newest:r.newest,criticalMs:ms,activities:payload.activities.length,wellness:payload.wellness.length,fast:true,at:new Date().toISOString()};if(showToast)toast("✅ Datos actualizados.");atlasJ5Idle(()=>atlasJ4SyncPlanInBackground(),1700);atlasJ5Idle(()=>atlasJ3ScheduleBackgroundMaintenance({forceBootstrap:false,forceCalendar:false,planChanged:false}),2600);return true;}catch(error){ATLAS_J3_PERF.errors++;recordRuntimeAudit("j5-fast-sync",error).catch(()=>{});if(showToast)toast(`⚠️ ${error.message}`,true);return false;}finally{setGlobalSyncing(false);}});try{return await dataSyncPromise;}finally{dataSyncPromise=null;}
+};
+smartSync=async function(){return atlasJ3FastSync(true);};
+startupIntervalsSync=async function(){if(!hasAtlasConnectionConfig()||!atlasOnline())return false;return atlasJ3FastSync(false);};
+
+/* ---------- J5.13 · Primer plano: no refreshAll ni red múltiple al volver a la app ---------- */
+installRuntimeGuards=function(){
+  if(runtimeGuardsInstalled)return;runtimeGuardsInstalled=true;
+  window.addEventListener("error",event=>{const error=event.error||new Error(event.message||"Error de ejecución");recordRuntimeAudit("runtime-error",error,{source:event.filename||"",line:event.lineno||0,column:event.colno||0}).catch(()=>{});});
+  window.addEventListener("unhandledrejection",event=>{const error=event.reason instanceof Error?event.reason:new Error(String(event.reason||"Promesa rechazada"));recordRuntimeAudit("unhandled-rejection",error).catch(()=>{});});
+  window.addEventListener("offline",()=>{if(ui.connectionState)ui.connectionState.textContent="Sin conexión";setGlobalSyncing(false);});
+  window.addEventListener("online",()=>{if(ui.connectionState)ui.connectionState.textContent="Conectando…";atlasJ5Delay(()=>atlasJ4SyncPlanInBackground(),1000);});
+  window.addEventListener("pageshow",()=>{if(!initCompleted)return;refreshTodayIfLoaded();if(Date.now()-(ATLAS_J3_PERF.last?.at?Date.parse(ATLAS_J3_PERF.last.at):0)>10*60*1000)atlasJ5Delay(()=>startupIntervalsSync(),1400);});
+  window.addEventListener("pagehide",()=>{setGlobalSyncing(false);dataSyncPromise=null;calendarSyncPromise=null;foregroundRefreshPromise=null;});
+};
+startRuntimeRefresh=function(){
+  if(runtimeRefreshStarted)return;runtimeRefreshStarted=true;if(navigator.storage?.persist)navigator.storage.persist().catch(()=>{});setInterval(refreshTodayIfLoaded,15*60*1000);
+  on(document,"visibilitychange",()=>{if(!document.hidden){refreshTodayIfLoaded();const last=ATLAS_J3_PERF.last?.at?Date.parse(ATLAS_J3_PERF.last.at):0;if(Date.now()-last>10*60*1000)atlasJ5Delay(()=>startupIntervalsSync(),1300);}});
+};
+
+/* ---------- J5.14 · Arranque mínimo ---------- */
+init=async function(){
+  const startupStarted=performance.now();assertCoreUi();ensureMainTabHeaders();bindEvents();initializeStaticUi();syncActivityAiMarkWithNav();db=await openDb();const dbReadyMs=Math.round(performance.now()-startupStarted);setDefaultDates();
+  await Promise.all([loadSettingsIntoForm().catch(error=>recordRuntimeAudit("settings-load",error).catch(()=>{})),loadTrainingPlans().catch(error=>recordRuntimeAudit("training-plans-load",error).catch(()=>{}))]);await atlasJ4RepairCurrentPlans({persist:false});atlasG4SyncStateCache=null;
+  atlasG3ApplyData(await atlasJ5ReadTodayWindow());atlasG3Render(["today"]);scheduleLayoutRefresh();const firstRenderMs=Math.round(performance.now()-startupStarted);
+  startRuntimeRefresh();requestAnimationFrame(()=>{initializeAssistantChat().catch(error=>recordRuntimeAudit("assistant-startup",error).catch(()=>{}));});
+  recordOpsEvent("startup-ready","ATLAS iniciado correctamente",{online:atlasOnline(),activities:currentActivities.length,wellness:currentWellness.length,version:APP_VERSION,dbReadyMs,firstRenderMs,readyMs:firstRenderMs,localFirst:true,recentWindow:true,lazyPlan:true}).catch(()=>{});
+  atlasJ5Delay(async()=>{try{const aux=await atlasG3ReadData(["gear","sportSettings","events","profile","athlete","worker"]);atlasG3ApplyData(aux);if(atlasJ5ActiveView()==="view-plan")atlasG3Render(["plan"]);else if(atlasJ5ActiveView()==="view-data")atlasG3Render(["profile"]);for(const plan of currentTrainingPlans||[])if(plan?.adaptiveEngine?.structural?.decision?.action==="VALIDATION_REQUIRED")atlasJ5Idle(()=>atlasJ5RepairThresholdDecision(plan),2200);}catch(error){recordRuntimeAudit("j5-startup-aux",error).catch(()=>{});}},650);
+  atlasJ5Delay(()=>startupIntervalsSync().catch(error=>recordRuntimeAudit("startup-sync",error).catch(()=>{})),2200);
+  atlasJ5Delay(()=>atlasJ5Idle(atlasG2DeferredStartupMaintenance,5000),12000);
+};
+
 
 </script></body>
 </html>
