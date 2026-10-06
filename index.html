@@ -2328,7 +2328,7 @@ const AtlasHrv=(()=>{
 /* ===== ɅTLɅS v1.6.33 · K2.3 canonical Plan / Publication / Sync bindings =====
    Historical public overrides removed where the final implementation was self-contained.
    Golden K2.1 contracts remain the behavioral authority. */
-const APP_VERSION="1.6.34",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="1.6.35",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 /* G5: wrapper/residual consolidation. No sport, Adaptive, CAS or publication contract changes. */
 // Training Engine implementation track: v0.2 — input contract + athlete snapshot + base classification.
 
@@ -9318,12 +9318,6 @@ atlasV096EvaluateAdaptivePlan=async function(plan,{force=false}={}){
     plan.updatedAt=new Date().toISOString();trainingPlanMarkPublicationDirty(plan);await persistTrainingPlans();return true;
   }
   return changed;
-};
-
-/* La ficha muestra la operación efectiva: Readiness prevalece sobre estructura. */
-atlasV096AdaptiveOpForSession=function(plan,session){
-  const key=atlasV0814SessionKey(session),ops=(plan?.adaptiveEngine?.operations||[]).filter(o=>String(o.sessionKey)===String(key));
-  return ops.find(o=>o.scope==="readiness")||ops[0]||null;
 };
 
 /* Render final: análisis local en posición correcta + una única recalibración meta. */
