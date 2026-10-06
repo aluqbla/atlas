@@ -2361,7 +2361,7 @@ const AtlasHrv=(()=>{
   return Object.freeze({POLICY,records,baseline,status});
 })();
 
-const APP_VERSION="1.6.27",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="1.6.30",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 /* G5: wrapper/residual consolidation. No sport, Adaptive, CAS or publication contract changes. */
 // Training Engine implementation track: v0.2 — input contract + athlete snapshot + base classification.
 
@@ -14828,5 +14828,258 @@ atlasV164StructuralNotice=function(plan){
 };
 
 atlasDomReadyInitializers.push(()=>{atlasI8PlanWeekPolish();atlasI8WorkspaceStatusPolish();});
+
+
+/* ===== ɅTLɅS v1.6.28 · J1–J2 Structural notice gate + Plan Fast Path =====
+   J1: STRUCTURAL_WATCH permanece como estado interno del Adaptive Engine, pero nunca
+   es presentable al usuario porque no exige ninguna acción.
+   J2: una apertura del Plan construye como máximo una vez el Effective Plan por
+   revisión y reutiliza un índice de sesiones + el diff de publicación. */
+const ATLAS_J12_VERSION="1.6.28";
+const ATLAS_J12_PERF={
+  effectiveBuilds:0,effectiveHits:0,sessionIndexHits:0,
+  publicationDiffBuilds:0,publicationDiffHits:0,
+  workspaceOpens:0,lastWorkspaceOpenMs:null,lastPlanId:null,lastMeasuredAt:null
+};
+
+/* ---------- J1 · sólo avisos accionables ---------- */
+function atlasJ1StructuralAction(plan){return String(plan?.adaptiveEngine?.structural?.decision?.action||"").trim().toUpperCase();}
+function atlasJ1HidePassiveStructuralNotice(){
+  const box=$("atlasV164PlanNotice");if(!box)return;
+  box.className="atlas-v164-plan-notice hidden";box.innerHTML="";
+}
+const atlasJ1StructuralNoticeBase=atlasV164StructuralNotice;
+atlasV164StructuralNotice=function(plan){
+  if(atlasJ1StructuralAction(plan)==="STRUCTURAL_WATCH")return null;
+  return atlasJ1StructuralNoticeBase(plan);
+};
+const atlasJ1RenderPlanNoticeBase=atlasV164RenderPlanNotice;
+atlasV164RenderPlanNotice=function(){
+  const plan=activeTrainingPlan();
+  if(atlasJ1StructuralAction(plan)==="STRUCTURAL_WATCH"){atlasJ1HidePassiveStructuralNotice();return;}
+  return atlasJ1RenderPlanNoticeBase.apply(this,arguments);
+};
+
+/* ---------- J2 · Effective Plan memoizado por revisión ---------- */
+const atlasJ2EffectiveScheduleBase=atlasV0814EffectiveSchedule;
+const atlasJ2EffectiveCache=new WeakMap();
+const atlasJ2PublicationDiffCache=new WeakMap();
+function atlasJ2CacheKey(plan){
+  if(!plan)return"";
+  const a=plan.adaptiveEngine||{},ops=Array.isArray(a.operations)?a.operations:[],moves=Array.isArray(plan.manualSessionOverrides)?plan.manualSessionOverrides:[],edits=Array.isArray(plan.manualSessionEdits)?plan.manualSessionEdits:[];
+  return [
+    ATLAS_J12_VERSION,atlasV090Today(),String(plan.updatedAt||""),
+    String(plan.engine?.trainingEngineRevision||plan.engine?.prescriptionDigest||""),
+    String(a.updatedAt||""),String(a.readiness?.updatedAt||""),String(a.weekly?.updatedAt||""),String(a.structural?.updatedAt||""),
+    moves.length,edits.length,ops.length
+  ].join("|");
+}
+function atlasJ2BuildContext(plan){
+  const key=atlasJ2CacheKey(plan),cached=atlasJ2EffectiveCache.get(plan);
+  if(cached?.key===key){ATLAS_J12_PERF.effectiveHits++;return cached;}
+  const started=performance.now(),schedule=atlasJ2EffectiveScheduleBase(plan),byId=new Map(),byKey=new Map();
+  for(const day of schedule?.days||[])for(const session of day.sessions||[]){
+    if(session?.id!=null)byId.set(String(session.id),session);
+    const sk=atlasV0814SessionKey(session);if(sk)byKey.set(String(sk),session);
+  }
+  const context={key,schedule,byId,byKey,builtMs:performance.now()-started};
+  atlasJ2EffectiveCache.set(plan,context);ATLAS_J12_PERF.effectiveBuilds++;return context;
+}
+/* No se memoiza atlasV0814EffectiveSchedule globalmente: Adaptive Engine debe poder
+   reconstruir dentro de una misma evaluación aunque todavía no haya actualizado plan.updatedAt.
+   El fast path se limita a consumidores de sólo lectura (Publicación/UI). */
+atlasV090EffectiveSchedule=function(plan){return plan?atlasJ2BuildContext(plan).schedule:null;};
+const atlasJ2EffectiveSessionByIdBase=atlasV0814EffectiveSessionById;
+atlasV0814EffectiveSessionById=function(id){
+  const plan=activeTrainingPlan();if(!plan||id==null)return null;
+  if(typeof atlasV162ScheduleOverride!=="undefined"&&atlasV162ScheduleOverride&&String(atlasV162ScheduleOverride.planId)===String(plan.id))return atlasJ2EffectiveSessionByIdBase(id);
+  const ctx=atlasJ2BuildContext(plan),key=String(id),hit=ctx.byId.get(key)||ctx.byKey.get(key)||null;
+  if(hit)ATLAS_J12_PERF.sessionIndexHits++;
+  return hit;
+};
+
+/* ---------- J2 · Publication diff memoizado ---------- */
+const atlasJ2PublicationDiffBase=atlasV090PublicationDiff;
+function atlasJ2PublicationKey(plan){
+  const pub=plan?.publication||{},remote=Array.isArray(pub.remoteEvents)?pub.remoteEvents:[];
+  return [atlasJ2CacheKey(plan),String(pub.status||""),String(pub.updatedAt||""),String(pub.manifestDigest||""),remote.length,String(remote.at(-1)?.hash||""),String(remote.at(-1)?.date||"")].join("|");
+}
+atlasV090PublicationDiff=function(plan){
+  if(!plan)return atlasJ2PublicationDiffBase(plan);
+  const key=atlasJ2PublicationKey(plan),cached=atlasJ2PublicationDiffCache.get(plan);
+  if(cached?.key===key){ATLAS_J12_PERF.publicationDiffHits++;return cached.diff;}
+  const diff=atlasJ2PublicationDiffBase(plan);atlasJ2PublicationDiffCache.set(plan,{key,diff});ATLAS_J12_PERF.publicationDiffBuilds++;return diff;
+};
+
+/* Abrir el plan ya activo no vuelve a persistir nada. Si cambia el plan activo,
+   se conserva la semántica previa pero la persistencia se difiere fuera del camino de apertura. */
+let atlasJ2ActiveSelectionTimer=null;
+function atlasJ2PersistActiveSelectionDeferred(){
+  if(atlasJ2ActiveSelectionTimer){if(typeof cancelIdleCallback==="function")cancelIdleCallback(atlasJ2ActiveSelectionTimer);else clearTimeout(atlasJ2ActiveSelectionTimer);}
+  const task=()=>{atlasJ2ActiveSelectionTimer=null;persistTrainingPlans().catch(()=>{});};
+  atlasJ2ActiveSelectionTimer=typeof requestIdleCallback==="function"?requestIdleCallback(task,{timeout:900}):setTimeout(task,120);
+}
+openTrainingPlanWorkspace=function(id){
+  const started=performance.now(),plan=currentTrainingPlans.find(p=>p.id===String(id));if(!plan)return;
+  const previousPlanId=currentTrainingPlanId;currentTrainingPlanId=plan.id;const today=fmtDate(new Date()),weekAnchor=today<plan.startDate?plan.startDate:today>plan.raceDate?plan.raceDate:today;
+  currentTrainingPlanAvailabilityWeekStart=mondayOf(new Date(`${weekAnchor}T12:00:00`));
+  /* Precalienta una sola vez el Effective Plan que compartirán Publicación y lookups. */
+  atlasJ2BuildContext(plan);
+  renderTrainingPlanWorkspace();collapseTrainingPlanSections();
+  ui.trainingPlanWorkspace.classList.remove("hidden");ui.trainingPlanWorkspace.setAttribute("aria-hidden","false");setAtlasSubpageNavHidden(true);document.body.style.overflow="hidden";ui.trainingPlanWorkspace.scrollTop=0;
+  if(atlasJ1StructuralAction(plan)==="STRUCTURAL_WATCH")atlasJ1HidePassiveStructuralNotice();if(String(previousPlanId||"")!==String(plan.id||""))atlasJ2PersistActiveSelectionDeferred();
+  ATLAS_J12_PERF.workspaceOpens++;ATLAS_J12_PERF.lastWorkspaceOpenMs=Math.round((performance.now()-started)*10)/10;ATLAS_J12_PERF.lastPlanId=String(plan.id||"");ATLAS_J12_PERF.lastMeasuredAt=new Date().toISOString();
+};
+
+/* Métricas sólo internas: permiten detectar futuras regresiones sin ensuciar UI. */
+const atlasJ2CollectRuntimeDiagnosticsBase=collectRuntimeDiagnostics;
+collectRuntimeDiagnostics=async function(){
+  const out=await atlasJ2CollectRuntimeDiagnosticsBase.apply(this,arguments);
+  out.planPerformance={version:ATLAS_J12_VERSION,...ATLAS_J12_PERF};return out;
+};
+
+atlasDomReadyInitializers.push(()=>{if(atlasJ1StructuralAction(activeTrainingPlan())==="STRUCTURAL_WATCH")atlasJ1HidePassiveStructuralNotice();});
+
+
+/* ===== ɅTLɅS v1.6.29 · J3 Fast Sync =====
+   El gesto manual se divide en dos carriles:
+   1) CRÍTICO: /api/sync + estado cloud del plan en paralelo, commit local y render
+      sólo de Hoy + la superficie visible. Es lo único que mantiene activo ↻.
+   2) DIFERIDO: bootstrap/calendario/perfil/preferencias, upgrades, Adaptive y VO₂.
+      Conserva frescura y mantenimiento sin convertir ↻ en un mini-arranque. */
+const ATLAS_J3_VERSION="1.6.29";
+const ATLAS_J3_PERF={
+  runs:0,success:0,errors:0,criticalTotalMs:0,backgroundRuns:0,backgroundTotalMs:0,
+  last:null,lastBackground:null
+};
+try{Object.defineProperty(window,"__atlasFastSyncDiagnostics",{value:ATLAS_J3_PERF,configurable:true});}catch{}
+let atlasJ3BackgroundTimer=null,atlasJ3BackgroundPromise=null;
+
+function atlasJ3ActiveRenderKeys(){
+  const active=document.querySelector(".view.active")?.id||"view-today",keys=new Set(["today"]);
+  if(active==="view-activities")keys.add("activities");
+  else if(active==="view-plan")keys.add("plan");
+  else if(active==="view-data")keys.add("profile");
+  return[...keys];
+}
+async function atlasJ3ApplyBootstrap(payload){
+  if(!validBootstrapPayload(payload))return false;
+  const row={key:"me",data:payload.athlete,updatedAt:payload.syncedAt||new Date().toISOString()},d=await ensureDb(),tx=d.transaction(["athlete","gear","sportSettings"],"readwrite");
+  tx.objectStore("athlete").put(row);
+  const gear=tx.objectStore("gear"),sports=tx.objectStore("sportSettings");gear.clear();sports.clear();
+  for(const x of payload.gear||[])if(x&&x.id!=null)gear.put(x);
+  for(const x of payload.sportSettings||[])if(x&&x.id!=null)sports.put(x);
+  await txDone(tx);atlasG3Remember("athlete",row);atlasG3Remember("gear",payload.gear||[]);atlasG3Remember("sportSettings",payload.sportSettings||[]);
+  await atlasG4MarkAuxSync("bootstrap").catch(()=>{});return true;
+}
+async function atlasJ3ApplyProfile(payload){
+  if(!payload?.profile)return false;
+  const row={key:"me",data:payload.profile,updatedAt:new Date().toISOString()};await storePut("profile",row);atlasG3Remember("profile",row);await atlasG4MarkAuxSync("profile").catch(()=>{});return true;
+}
+async function atlasJ3BackgroundMaintenance({forceBootstrap=false,forceCalendar=false,planChanged=false,planMaintenance=null}={}){
+  if(atlasJ3BackgroundPromise||!atlasOnline()||!hasAtlasConnectionConfig())return atlasJ3BackgroundPromise||false;
+  atlasJ3BackgroundPromise=(async()=>{
+    const started=performance.now();let bootstrapUpdated=false,profileUpdated=false,calendarUpdated=false,prefsUpdated=false;
+    try{
+      const [bootstrapDue,profileDue,calendarDue,prefsDue]=await Promise.all([
+        atlasG4ShouldFetchAux("bootstrap",{force:forceBootstrap}),atlasG4ShouldFetchAux("profile"),
+        atlasG4ShouldFetchAux("calendar",{force:forceCalendar}),atlasG4ShouldFetchAux("profilePrefs")
+      ]);
+      for(const [kind,due] of [["bootstrap",bootstrapDue],["profile",profileDue],["calendar",calendarDue],["profilePrefs",prefsDue]])if(!due)atlasG4SyncDiagnostics.skipped[kind]++;
+      const bootstrapTask=bootstrapDue?atlasG4Optional("bootstrap",()=>api("/api/bootstrap")):Promise.resolve({ok:true,skipped:true,value:null});
+      const profileTask=profileDue?atlasG4Optional("profile",()=>api("/api/profile")):Promise.resolve({ok:true,skipped:true,value:null});
+      const calendarTask=calendarDue?(atlasG4SyncDiagnostics.endpointCalls.calendar++,syncCalendar(false,{render:false})):Promise.resolve({ok:true,skipped:true,events:null});
+      const prefsTask=prefsDue?(async()=>{atlasG4SyncDiagnostics.endpointCalls.profilePrefs++;try{const ok=await atlasV095SyncProfilePrefsCloud();if(ok)await atlasG4MarkAuxSync("profilePrefs").catch(()=>{});return!!ok;}catch(error){recordRuntimeAudit("j3-profile-prefs",error).catch(()=>{});return false;}})():Promise.resolve(false);
+      const [bootstrapResult,profileResult,calendarResult,prefResult]=await Promise.all([bootstrapTask,profileTask,calendarTask,prefsTask]);
+      if(bootstrapResult.ok&&!bootstrapResult.skipped)bootstrapUpdated=await atlasJ3ApplyBootstrap(bootstrapResult.value);
+      if(profileResult.ok&&!profileResult.skipped)profileUpdated=await atlasJ3ApplyProfile(profileResult.value);
+      calendarUpdated=calendarResult?.ok===true&&!calendarResult?.skipped;prefsUpdated=!!prefResult;
+      if(planMaintenance?.local&&planMaintenance?.remote)await atlasG6RewriteRemoteCompact(planMaintenance.local,planMaintenance.remote).catch(error=>recordRuntimeAudit("j3-plan-compaction",error).catch(()=>{}));
+
+      /* La parte costosa se ejecuta ya fuera del gesto ↻. Mantiene los contratos
+         históricos de matching/adaptación/VO₂, pero nunca prolonga el spinner. */
+      const render=[];
+      if(bootstrapUpdated||profileUpdated)render.push("profile");
+      if(calendarUpdated||planChanged)render.push("plan","today");
+      await refreshDataRender({render:[...new Set(render)],upgradePlans:true,profilePrefs:false,adaptive:true,vo2:true,layout:render.length>0,reason:"j3-background-maintenance"});
+      const durationMs=Math.round(performance.now()-started);ATLAS_J3_PERF.backgroundRuns++;ATLAS_J3_PERF.backgroundTotalMs+=durationMs;
+      ATLAS_J3_PERF.lastBackground={durationMs,bootstrap:bootstrapUpdated,profile:profileUpdated,calendar:calendarUpdated,profilePrefs:prefsUpdated,planChanged,at:new Date().toISOString()};
+      recordOpsEvent("j3-background","Mantenimiento diferido completado",ATLAS_J3_PERF.lastBackground).catch(()=>{});return true;
+    }catch(error){recordRuntimeAudit("j3-background-maintenance",error).catch(()=>{});ATLAS_J3_PERF.lastBackground={error:String(error?.message||error),at:new Date().toISOString()};return false;}
+    finally{atlasJ3BackgroundPromise=null;}
+  })();
+  return atlasJ3BackgroundPromise;
+}
+function atlasJ3ScheduleBackgroundMaintenance(options={}){
+  if(atlasJ3BackgroundTimer)clearTimeout(atlasJ3BackgroundTimer);
+  atlasJ3BackgroundTimer=setTimeout(()=>{atlasJ3BackgroundTimer=null;atlasJ3BackgroundMaintenance(options);},80);
+}
+
+async function atlasJ3SyncPlanFast(){
+  if(trainingPlansCloudSyncPromise){const changed=await trainingPlansCloudSyncPromise;return{changed:!!changed,shared:true,needsCompaction:false};}
+  if(!atlasOnline()||!hasAtlasConnectionConfig())return{changed:false,offline:true,needsCompaction:false};
+  trainingPlansCloudSyncPromise=(async()=>{
+    await atlasV153WriteQueue.catch(()=>false);
+    const [localRow,meta,remote]=await Promise.all([
+      storeGet("meta",TRAINING_PLANS_META_KEY).catch(()=>null),readTrainingPlansCloudMeta(),atlasV153FetchRemote()
+    ]);
+    const local=localRow?.value||{version:TRAINING_PLANS_VERSION,activeId:null,updatedAt:null,plans:[]},localRevision=Number(meta?.revision)||0,remoteRevision=atlasV153RemoteRevision(remote),localSig=atlasV153EnvelopeSignature(local),remoteManifest=atlasV153RemoteManifest(remote),remoteSig=atlasV153ManifestSignature(remoteManifest),localHas=Array.isArray(local.plans)&&local.plans.length>0;
+    atlasV153InitialRemoteResolved=true;
+    if(remoteRevision!==localRevision){await atlasV153ApplyRemote(remote);return{changed:true,remote,local:null,needsCompaction:false};}
+    if(remoteRevision===0&&!trainingPlansCloudExtract(remote)&&localRevision===0&&localHas){await atlasV153SetDirty(local.updatedAt);await atlasV153QueueCommit(local,{remote});return{changed:false,remote:null,local:null,needsCompaction:false};}
+    if(meta?.dirty){
+      if(localSig===remoteSig){await writeTrainingPlansCloudMeta({schema:TRAINING_PLANS_CLOUD_SCHEMA,revision:remoteRevision,updatedAt:remote?.updatedAt||local.updatedAt,dirty:false,authoritative:true});return{changed:false,remote,local,needsCompaction:atlasG6ManifestNeedsCompaction(trainingPlansCloudExtract(remote))};}
+      try{await atlasV153QueueCommit(local,{remote});return{changed:false,remote:null,local:null,needsCompaction:false};}
+      catch(error){if(atlasV153IsConflict(error))return{changed:true,remote:null,local:null,needsCompaction:false};throw error;}
+    }
+    if(localSig!==remoteSig){await atlasV153ApplyRemote(remote);return{changed:true,remote,local:null,needsCompaction:false};}
+    if(meta?.authoritative!==true)await writeTrainingPlansCloudMeta({...meta,schema:TRAINING_PLANS_CLOUD_SCHEMA,revision:remoteRevision,updatedAt:remote?.updatedAt||meta?.updatedAt||null,dirty:false,authoritative:true});
+    return{changed:false,remote,local,needsCompaction:atlasG6ManifestNeedsCompaction(trainingPlansCloudExtract(remote))};
+  })();
+  try{return await trainingPlansCloudSyncPromise;}
+  finally{trainingPlansCloudSyncPromise=null;}
+}
+
+async function atlasJ3FastSync(showToast=true){
+  if(dataSyncPromise){if(showToast)toast("↻ Sincronización en curso.");return dataSyncPromise;}
+  dataSyncPromise=busy(async()=>{
+    setGlobalSyncing(true);const started=performance.now();ATLAS_J3_PERF.runs++;
+    let planChanged=false,planError=null;
+    try{
+      const r=await smartRange();validateRange(r.oldest,r.newest);recordOpsEvent("sync-start","Sincronización incremental rápida",{oldest:r.oldest,newest:r.newest,mode:"incremental",trigger:"user",fast:true}).catch(()=>{});
+      atlasG4SyncDiagnostics.endpointCalls.sync++;atlasG4SyncDiagnostics.endpointCalls.plan++;
+      const dataStarted=performance.now(),planStarted=performance.now();
+      const syncTask=(async()=>{try{return{ok:true,value:validateSyncPayload(await api(`/api/sync?oldest=${encodeURIComponent(r.oldest)}&newest=${encodeURIComponent(r.newest)}`)),ms:Math.round(performance.now()-dataStarted)};}catch(error){return{ok:false,error,ms:Math.round(performance.now()-dataStarted)};}})();
+      const planTask=(async()=>{try{const value=await atlasJ3SyncPlanFast();return{ok:true,...value,ms:Math.round(performance.now()-planStarted)};}catch(error){return{ok:false,error,changed:false,needsCompaction:false,ms:Math.round(performance.now()-planStarted)};}})();
+      const [syncResult,planResult]=await Promise.all([syncTask,planTask]);planChanged=!!planResult.changed;planError=planResult.ok?null:planResult.error;
+      if(planError)recordRuntimeAudit("j3-plan-cloud",planError).catch(()=>{});if(!syncResult.ok)throw syncResult.error;
+      const commit=await commitSyncPayload(syncResult.value,null,{oldest:r.oldest,newest:r.newest,mode:"incremental"});
+      const renderKeys=atlasJ3ActiveRenderKeys();if(planChanged&&!renderKeys.includes("plan")&&document.querySelector("#trainingPlanWorkspace:not(.hidden)"))renderKeys.push("plan");
+      const refresh=await refreshDataRender({render:[...new Set(renderKeys)],upgradePlans:false,profilePrefs:false,adaptive:false,vo2:false,layout:true,reason:"j3-fast-sync"});
+      const criticalMs=Math.round(performance.now()-started),result={oldest:r.oldest,newest:r.newest,criticalMs,dataMs:syncResult.ms,planMs:planResult.ms,planChanged,planError:!!planError,activities:syncResult.value.activities.length,wellness:syncResult.value.wellness.length,render:renderKeys.slice(),refreshMs:refresh.durationMs,metadataFallbackReads:commit.metadataFallbackReads,fast:true};
+      ATLAS_J3_PERF.success++;ATLAS_J3_PERF.criticalTotalMs+=criticalMs;ATLAS_J3_PERF.last={...result,at:new Date().toISOString()};
+      atlasG4SyncDiagnostics.runs++;atlasG4SyncDiagnostics.dataRuns++;atlasG4SyncDiagnostics.totalMs+=criticalMs;atlasG4SyncDiagnostics.last={trigger:"user",data:true,plan:true,calendar:false,planChanged,calendarChanged:false,durationMs:criticalMs,at:new Date().toISOString(),dataResult:result,fast:true};
+      recordOpsEvent("sync-success","Sincronización incremental rápida completada",result).catch(()=>{});
+      if(showToast)toast(planError?"✅ Datos actualizados · plan pendiente de comprobar.":"✅ Datos actualizados.");
+      /* En una sincronización explícita se comprueban bootstrap y calendario igualmente,
+         pero después de liberar la interacción; perfil/preferencias respetan su TTL. */
+      atlasJ3ScheduleBackgroundMaintenance({forceBootstrap:true,forceCalendar:true,planChanged,planMaintenance:planResult.needsCompaction?{local:planResult.local,remote:planResult.remote}:null});
+      return true;
+    }catch(error){ATLAS_J3_PERF.errors++;ATLAS_J3_PERF.last={error:String(error?.message||error),planChanged,at:new Date().toISOString()};recordRuntimeAudit("j3-fast-sync",error).catch(()=>{});if(showToast)toast(`⚠️ ${error.message}`,true);return false;}
+    finally{setGlobalSyncing(false);}
+  });
+  try{return await dataSyncPromise;}finally{dataSyncPromise=null;}
+}
+
+/* Sustituye tanto el botón global como Sincronizar de Configuración. Startup y
+   Rango manual conservan sus rutas profundas, porque ahí sí procede mantenimiento completo. */
+smartSync=async function(){return atlasJ3FastSync(true);};
+
+const atlasJ3CollectRuntimeDiagnosticsBase=collectRuntimeDiagnostics;
+collectRuntimeDiagnostics=async function(){
+  const out=await atlasJ3CollectRuntimeDiagnosticsBase.apply(this,arguments);
+  out.fastSync={version:ATLAS_J3_VERSION,...ATLAS_J3_PERF,averageCriticalMs:ATLAS_J3_PERF.success?Math.round(ATLAS_J3_PERF.criticalTotalMs/ATLAS_J3_PERF.success):null,averageBackgroundMs:ATLAS_J3_PERF.backgroundRuns?Math.round(ATLAS_J3_PERF.backgroundTotalMs/ATLAS_J3_PERF.backgroundRuns):null};return out;
+};
+
 </script></body>
 </html>
