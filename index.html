@@ -124,7 +124,7 @@
 .sync-quick{width:46px!important;height:46px!important;flex:0 0 46px!important;border:0!important;border-radius:0!important;background:transparent!important;color:var(--blue)!important;box-shadow:none!important;font-size:35px!important;line-height:1!important;padding:0!important}.sync-quick.syncing{animation:spin .85s linear infinite!important}.sync-quick:active{transform:scale(.94)}
 .nav{background:rgba(22,24,28,.58)!important;box-shadow:0 18px 42px rgba(0,0,0,.40),inset 0 1px 0 rgba(255,255,255,.18)!important;-webkit-backdrop-filter:blur(30px) saturate(195%)!important;backdrop-filter:blur(30px) saturate(195%)!important;border:1px solid rgba(255,255,255,.13)!important}.nav::before{inset:0!important;border-radius:22px!important;background:linear-gradient(180deg,rgba(255,255,255,.24),rgba(255,255,255,.075) 42%,rgba(255,255,255,.025) 68%,rgba(0,0,0,.05))!important}.nav-btn.active{background:rgba(255,255,255,.12)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 6px 16px rgba(0,0,0,.18)!important}
 
-/* ===== ɅTLɅS v1.1.5 · premium charts, native glass, light/dark ===== */
+/* ===== ɅTLɅS v1.1.5 · premium charts, native glass, dark ===== */
 .metric-chart,.activity-chart,.activity-lap-bars{will-change:width;transform:translateZ(0)}
 .chart-line,.chart-line-forma,.chart-line-fatiga,.chart-line-frescura,.activity-chart-line{vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 4px rgba(29,155,240,.10))}
 .chart-line-forma{stroke:#1d9bf0!important;stroke-width:1.9!important;opacity:1!important}.chart-line-fatiga{stroke:#ff9f0a!important;stroke-width:1.8!important}.chart-line-frescura{stroke:#30d158!important;stroke-width:1.9!important}
@@ -1752,6 +1752,171 @@
 @media(min-width:600px){
   .activity-local-analysis .atlas-i33-thought,.activity-running-dynamics-comment{font-size:14.5px!important;line-height:1.56!important}
 }
+
+
+/* ===== ɅTLɅS v1.6.23 · I4 intervalos reales + fuerza canónica ===== */
+#atlasForceV120Shell{display:none!important}
+.plan-detail.atlas-i4-strength-detail #planDetailNotesCard:not(.hidden){display:block!important}
+.plan-detail.atlas-i4-strength-detail #planDetailNotesCard.hidden{display:none!important}
+.plan-detail.atlas-i4-strength-detail #planDetailIntervalsCard,
+.plan-detail.atlas-i4-strength-detail #planDetailStrengthCard{display:none!important}
+.atlas-i4-strength-focus{margin:1px 2px 4px;color:var(--muted2);font-size:13.5px;line-height:1.45;font-weight:520}
+.atlas-i4-strength-block{margin:13px 0 0}
+.atlas-i4-strength-block:first-child{margin-top:5px}
+.atlas-i4-strength-block-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:0 2px 7px}
+.atlas-i4-strength-block-title{font-size:17px;line-height:1.18;font-weight:820;color:#fff}
+.atlas-i4-strength-block-sub{font-size:10.5px;line-height:1.25;color:var(--muted);font-weight:690;text-align:right}
+.atlas-i4-strength-list{display:flex;flex-direction:column}
+.atlas-i4-strength-ex{position:relative;display:grid;grid-template-columns:70px minmax(0,1fr);gap:11px;align-items:center;padding:11px 3px}
+.atlas-i4-strength-ex+.atlas-i4-strength-ex::before{content:"";position:absolute;left:7px;right:7px;top:0;height:2px;background:var(--line)}
+.atlas-i4-strength-visual{appearance:none;width:70px;height:70px;padding:3px;border:0;border-radius:12px;background:rgba(255,255,255,.035);display:grid;place-items:center;overflow:hidden}
+.atlas-i4-strength-visual img{display:block;width:100%;height:100%;object-fit:contain}
+.atlas-i4-strength-copy{min-width:0}
+.atlas-i4-strength-name{font-size:15.8px;line-height:1.22;font-weight:820;color:#fff}
+.atlas-i4-strength-dose{margin-top:4px;font-size:12.8px;line-height:1.35;font-weight:710;color:#d7dce0}
+.atlas-i4-strength-cue{margin-top:5px;font-size:12px;line-height:1.42;color:var(--muted2)}
+.atlas-i4-strength-muscles{margin-top:5px;font-size:10.5px;line-height:1.35;color:var(--muted)}
+.atlas-i4-strength-edit-group{position:relative;padding:12px 0 4px}
+.atlas-i4-strength-edit-group+.atlas-i4-strength-edit-group::before{content:"";position:absolute;left:2px;right:2px;top:0;height:2px;background:var(--line)}
+.atlas-i4-strength-edit-name{font-size:14px;line-height:1.3;font-weight:800;color:#fff;margin:0 2px 7px}
+.atlas-i4-strength-edit-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.atlas-i4-strength-edit-grid label{margin:0;text-transform:none;letter-spacing:0}
+.atlas-i4-strength-edit-grid label>span{display:block;margin:0 2px 5px;color:var(--muted);font-size:9.5px;font-weight:700}
+.atlas-i4-strength-edit-grid input{width:100%;height:42px!important;min-height:42px!important;border:0!important;border-radius:11px!important;background:var(--atlas-field-bg)!important;color:#fff!important;padding:0 8px!important;font-size:12px!important;line-height:42px!important;text-align:center!important}
+.atlas-i4-recovery-note{color:var(--muted);font-size:10.5px;line-height:1.35;margin:6px 2px 0;text-align:center}
+@media(max-width:390px){.atlas-i4-strength-ex{grid-template-columns:62px minmax(0,1fr);gap:9px}.atlas-i4-strength-visual{width:62px;height:62px}.atlas-i4-strength-edit-grid{grid-template-columns:1fr}.atlas-i4-strength-edit-grid input{text-align:left!important}}
+
+
+/* ===== ɅTLɅS v1.6.24 · I5 Publicación canónica + progreso ===== */
+#trainingPlanPublication{gap:0!important;padding:1px 2px 4px!important}
+.atlas-i5-publication{display:flex;flex-direction:column;gap:0;width:100%}
+.atlas-i5-publication-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:3px 2px 10px}
+.atlas-i5-publication-destination{font-size:16.5px;line-height:1.15;font-weight:820;letter-spacing:-.24px;color:var(--text)}
+.atlas-i5-publication-badge{display:inline-flex;align-items:center;min-height:24px;padding:0 9px;border-radius:999px;font-size:9.8px;line-height:1;font-weight:820;white-space:nowrap}
+.atlas-i5-publication-badge.published{background:rgba(48,209,88,.13);color:#52d273}
+.atlas-i5-publication-badge.dirty{background:rgba(255,159,10,.14);color:#ffb340}
+.atlas-i5-publication-badge.ready{background:rgba(29,155,240,.14);color:#63b7f5}
+.atlas-i5-publication-badge.error{background:rgba(244,33,46,.13);color:#ff747d}
+.atlas-i5-publication-badge.busy{background:rgba(29,155,240,.14);color:#7ac6fb}
+.atlas-i5-publication-summary{padding:0 2px 11px;font-size:13.5px;line-height:1.48;color:var(--muted2)}
+.atlas-i5-publication-summary strong{color:var(--text);font-weight:770}
+.atlas-i5-progress{margin:2px 0 13px;padding:10px 11px 11px;border-radius:15px;background:rgba(29,155,240,.075)}
+.atlas-i5-progress.hidden{display:none!important}
+.atlas-i5-progress-top{display:grid;grid-template-columns:18px minmax(0,1fr) auto;align-items:center;gap:8px}
+.atlas-i5-progress-spinner{width:15px;height:15px;border:2px solid rgba(255,255,255,.18);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
+.atlas-i5-progress-label{min-width:0;font-size:12.5px;line-height:1.25;font-weight:760;color:#eef6fc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.atlas-i5-progress-pct{font-size:10.5px;line-height:1;color:#8dcdf7;font-weight:800;font-variant-numeric:tabular-nums}
+.atlas-i5-progress-track{height:5px;margin-top:9px;border-radius:999px;background:rgba(255,255,255,.09);overflow:hidden}
+.atlas-i5-progress-fill{height:100%;width:0;border-radius:inherit;background:var(--blue);transition:width .2s ease}
+.atlas-i5-changes{position:relative;padding:12px 0 5px;border-top:2px solid var(--line)}
+.atlas-i5-changes.hidden{display:none!important}
+.atlas-i5-changes-title{margin:0 2px 7px;font-size:13px;line-height:1.25;color:#fff;font-weight:790}
+.atlas-i5-change-list{display:flex;flex-direction:column}
+.atlas-i5-change{display:grid;grid-template-columns:22px minmax(0,1fr);gap:7px;align-items:start;padding:8px 2px}
+.atlas-i5-change+.atlas-i5-change{border-top:1px solid rgba(255,255,255,.08)}
+.atlas-i5-change-icon{font-size:13px;line-height:1.35;text-align:center}
+.atlas-i5-change-copy{min-width:0;font-size:12.5px;line-height:1.38;color:#dce1e5}
+.atlas-i5-change-copy strong{font-weight:770;color:#fff}
+.atlas-i5-change-more{padding:6px 2px 2px;font-size:10.8px;line-height:1.35;color:var(--muted)}
+.atlas-i5-no-changes{display:flex;align-items:center;gap:7px;padding:10px 2px 4px;border-top:2px solid var(--line);font-size:12.5px;line-height:1.35;color:var(--muted2)}
+.atlas-i5-no-changes-icon{color:var(--green);font-size:14px;font-weight:850}
+.atlas-i5-publication-actions{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+#trainingPlanPublication .atlas-i5-primary{appearance:none;width:100%;min-height:49px;border:0;border-radius:14px;background:var(--blue)!important;color:#fff!important;font-size:14.5px!important;line-height:1.1;font-weight:830!important;box-shadow:none!important}
+#trainingPlanPublication .atlas-i5-primary:active{background:#1789d4!important;transform:scale(.992)}
+#trainingPlanPublication .atlas-i5-primary:disabled{opacity:.42;transform:none}
+#trainingPlanPublication .atlas-i5-primary.hidden{display:none!important}
+.atlas-i5-secondary-actions{margin-top:3px}
+#trainingPlanPublication .atlas-i5-unpublish{appearance:none;width:100%;min-height:44px;border:0;border-radius:13px;background:transparent!important;color:#d7dce0!important;font-size:12.5px!important;font-weight:750!important;box-shadow:none!important}
+#trainingPlanPublication .atlas-i5-unpublish:active{background:rgba(255,255,255,.045)!important}
+#trainingPlanPublication .atlas-i5-unpublish.hidden{display:none!important}
+.atlas-i5-danger-zone{margin-top:15px;padding-top:9px;border-top:2px solid var(--line)}
+#trainingPlanPublication .atlas-i5-delete{appearance:none;width:100%;min-height:43px;border:0!important;border-radius:13px!important;background:transparent!important;color:var(--red)!important;font-size:12.5px!important;font-weight:770!important;box-shadow:none!important}
+#trainingPlanPublication .atlas-i5-delete:active{background:rgba(244,33,46,.055)!important}
+.atlas-i5-publication-error{margin:2px 0 9px;padding:8px 10px;border-radius:12px;background:rgba(244,33,46,.065);color:#ff9ca2;font-size:11.5px;line-height:1.42}
+@media (prefers-reduced-motion:reduce){.atlas-i5-progress-spinner{animation:none}.atlas-i5-progress-fill{transition:none}}
+
+
+/* ===== ɅTLɅS v1.6.25 · I6 Perfil: histórico de umbral + Zonas ===== */
+.profile-dashboard-performance-cell.atlas-i6-threshold-tile{
+  cursor:pointer;appearance:none;border:0;background:transparent;color:inherit;font:inherit
+}
+.profile-dashboard-performance-cell.atlas-i6-threshold-tile:active{background:rgba(29,155,240,.055)}
+.profile-dashboard-performance-cell.atlas-i6-threshold-tile:focus-visible{outline:2px solid var(--blue);outline-offset:-3px;border-radius:12px}
+
+/* Zonas: sin divisores y con lectura claramente mayor. */
+.profile-zone-unified-row+.profile-zone-unified-row::before{display:none!important;content:none!important}
+.profile-zone-unified-head{min-height:38px!important;font-size:14.2px!important;font-weight:760!important}
+.profile-zone-unified-row{min-height:50px!important;padding:8px 0!important}
+.profile-zone-unified-cell{font-size:15.5px!important;line-height:1.22!important;font-weight:760!important;padding:0 7px!important}
+.profile-zone-unified-cell.zone{font-size:15.5px!important;font-weight:820!important}
+.profile-zone-unified-zone-code{font-size:14.5px!important}
+.profile-zone-unified-zone-name{font-size:15.5px!important}
+.profile-zone-unified-cell.pace,.profile-zone-unified-cell.hr{font-size:15.2px!important;font-variant-numeric:tabular-nums}
+.profile-zone-unified .profile-zone-unit{font-size:10.8px!important;font-weight:650!important;margin-left:2px!important}
+@media(max-width:390px){
+  .profile-zone-unified-head{font-size:12.8px!important}
+  .profile-zone-unified-row{min-height:48px!important;padding:7px 0!important}
+  .profile-zone-unified-cell{padding-left:4px!important;padding-right:4px!important}
+  .profile-zone-unified-zone-code{font-size:12.8px!important}
+  .profile-zone-unified-zone-name{font-size:13.5px!important}
+  .profile-zone-unified-cell.pace,.profile-zone-unified-cell.hr{font-size:13.6px!important}
+  .profile-zone-unified .profile-zone-unit{font-size:9.5px!important}
+}
+
+/* Gráfica de umbral: dos escalas sincronizadas. */
+.atlas-i6-line-pace{fill:none;stroke:var(--blue);stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.atlas-i6-line-hr{fill:none;stroke:var(--red);stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.atlas-i6-point-pace{fill:#fff;stroke:var(--blue);stroke-width:1.8;vector-effect:non-scaling-stroke}
+.atlas-i6-point-hr{fill:#fff;stroke:var(--red);stroke-width:1.8;vector-effect:non-scaling-stroke}
+.atlas-i6-axis-right{fill:rgba(255,255,255,.58);font-size:8.8px;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
+.atlas-i6-latest-label{font-size:8.2px;font-weight:760;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
+.atlas-i6-latest-label.pace{fill:#7fc8ff}.atlas-i6-latest-label.hr{fill:#ff8078}
+
+
+/* ===== ɅTLɅS v1.6.26 · I7 Configuración ===== */
+html{color-scheme:dark!important}
+#dataSystemDetail .data-detail-inner{padding-bottom:calc(28px + env(safe-area-inset-bottom))}
+#dataSystemDetail .metric-detail-head{margin-bottom:10px}
+#dataSystemDetail .data-detail-section-title.atlas-i7-section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:22px 2px 8px;font-size:20px!important;line-height:1.15;font-weight:830!important;letter-spacing:-.25px;color:#fff}
+#dataSystemDetail .atlas-i7-system-card,#dataSystemDetail .atlas-i7-version-card{margin:0 0 4px;padding:0!important;border:0!important;border-radius:0!important;background:#000!important;box-shadow:none!important}
+#dataSystemDetail .action-grid{gap:7px!important}
+#dataSystemDetail .action{min-height:48px!important;border:0!important;border-radius:14px!important;background:#11171d!important;color:#fff!important;font-size:13.2px!important;font-weight:760!important;box-shadow:none!important}
+#dataSystemDetail .action.primary{background:var(--blue)!important;color:#fff!important}
+#dataSystemDetail .action.danger{background:rgba(255,69,58,.10)!important;color:#ff6961!important}
+#dataSystemDetail .action:active{transform:scale(.985)}
+#dataSystemDetail .connection-action-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+#dataSystemDetail .atlas-i7-database-actions{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.atlas-i7-connection-indicator{width:16px;height:16px;display:grid;place-items:center;flex:0 0 16px}
+.atlas-i7-connection-dot{width:10px;height:10px;border-radius:50%;display:block;background:#ff453a;box-shadow:0 0 0 3px rgba(255,69,58,.11);transition:background .16s ease,box-shadow .16s ease}
+.atlas-i7-connection-indicator.connected .atlas-i7-connection-dot{background:#30d158;box-shadow:0 0 0 3px rgba(48,209,88,.11)}
+.atlas-i7-sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.atlas-i7-version-card{min-height:66px;display:flex;align-items:center}
+.atlas-i7-version-brand{display:flex;align-items:center;gap:12px;padding:9px 2px}
+.atlas-i7-version-glyph{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:rgba(29,155,240,.12);color:var(--blue);font-size:23px;line-height:1;font-weight:860}
+.atlas-i7-version-brand strong{display:block;color:#fff;font-size:16px;line-height:1.15;font-weight:820}
+.atlas-i7-version-brand div>span{display:block;margin-top:3px;color:var(--muted2);font-size:12px;line-height:1.2;font-weight:690;font-variant-numeric:tabular-nums}
+.atlas-i7-settings-dialog{background:rgba(7,9,12,.98)!important;border:1px solid rgba(255,255,255,.08)!important}
+.atlas-i7-settings-sheet{padding:18px!important}
+.atlas-i7-settings-sheet .sheet-head{margin-bottom:18px}
+.atlas-i7-settings-sheet .sheet-title{font-size:24px!important;line-height:1.1;font-weight:840!important;letter-spacing:-.4px}
+.atlas-i7-settings-sheet .close{background:rgba(255,255,255,.07)!important;color:#fff!important}
+.atlas-i7-settings-section+.atlas-i7-settings-section{margin-top:22px}
+.atlas-i7-settings-section-title{margin:0 0 10px;font-size:18px;line-height:1.15;font-weight:820;color:#fff;letter-spacing:-.2px}
+.atlas-i7-settings-sheet label{margin:11px 2px 6px!important;font-size:12px!important;line-height:1.2!important;color:var(--muted2)!important;font-weight:700!important;letter-spacing:0!important;text-transform:none!important}
+.atlas-i7-settings-sheet input[type="url"],.atlas-i7-settings-sheet input[type="password"],.atlas-i7-settings-sheet input[type="date"],.atlas-i7-settings-sheet input[type="number"]{min-height:48px!important;height:48px!important;border:1px solid var(--line-strong)!important;border-radius:13px!important;background:#000!important;color:#fff!important;font-size:14px!important;font-weight:650!important;box-shadow:none!important}
+.atlas-i7-settings-sheet input:focus{border-color:var(--blue)!important;outline:none!important;box-shadow:0 0 0 2px rgba(29,155,240,.10)!important}
+.atlas-i7-settings-sheet .note{margin:8px 2px 0!important;font-size:11px!important;line-height:1.42!important;color:var(--muted)!important}
+.atlas-i7-settings-sheet .sheet-actions{gap:8px;margin-top:24px!important}
+.atlas-i7-settings-sheet .sheet-actions .action{min-height:48px;border:0!important;border-radius:14px!important;background:#11171d;color:#fff;font-size:14px;font-weight:780}
+.atlas-i7-settings-sheet .sheet-actions .action.primary{background:var(--blue)!important;color:#fff!important}
+@media(max-width:360px){#dataSystemDetail .atlas-i7-database-actions{grid-template-columns:1fr 1fr!important}#dataSystemDetail .atlas-i7-database-actions .action:last-child{grid-column:1/-1}}
+
+
+/* ===== ɅTLɅS v1.6.27 · I8 cierre visual de Plan ===== */
+#view-plan .page-header{padding-bottom:3px!important}
+#view-plan .training-plan-list{margin-top:-1px!important;margin-bottom:1px!important}
+#view-plan .plan-range-sub{font-size:10.5px!important;line-height:1.18!important;font-weight:720!important}
+#view-plan .plan-today-btn{font-size:11.2px!important;line-height:1.18!important;font-weight:770!important;margin-top:4px!important;padding:2px 5px!important}
 </style>
 
 
@@ -1888,7 +2053,7 @@
 <section class="view" id="view-data">
 <div class="page-header profile-dashboard-header">
 <div class="page-title">Perfil</div>
-<button aria-label="Conexión y datos" class="profile-header-settings data-page-open" data-data-page="system" title="Conexión y datos" type="button">⚙️</button>
+<button aria-label="Configuración" class="profile-header-settings data-page-open" data-data-page="system" title="Configuración" type="button">⚙️</button>
 </div>
 
 <section class="profile-dashboard-card profile-identity-card"><div class="profile-dashboard-avatar" id="profileDashboardAvatar">AT</div><div class="profile-dashboard-identity"><div class="profile-dashboard-name" id="dataHomeName">Perfil</div><div class="profile-dashboard-location" id="profileTileNote">—</div><button class="profile-dashboard-shoes-row data-page-open" data-data-page="shoes" type="button"><span class="profile-dashboard-shoes-icon">👟</span><span class="profile-dashboard-shoes-label">Zapatillas</span><span class="profile-dashboard-shoes-chevron">›</span></button></div><div aria-hidden="true" class="hidden"><span id="profileHomeHeight"></span><span id="profileHomeWeight"></span><span id="performanceHomeNote"></span><span id="shoesTileNote"></span><span id="connectionTileNote"></span></div></section>
@@ -1973,33 +2138,25 @@
 </div>
 </section>
 <section aria-hidden="true" class="data-detail hidden" id="dataSystemDetail">
-<div class="data-detail-inner">
+<div class="data-detail-inner atlas-i7-settings-page">
 <div class="metric-detail-head">
 <div class="metric-back-row"><button aria-label="Volver" class="metric-back data-detail-back" data-close-data-detail="">‹</button></div>
-<div class="metric-title-row"><div class="metric-detail-emoji">⚙️</div><div class="metric-detail-title">Conexión y datos</div></div>
+<div class="metric-title-row"><div class="metric-detail-emoji">⚙️</div><div class="metric-detail-title">Configuración</div></div>
 </div>
-<div class="data-detail-section-title">Intervals.icu</div>
-<div class="data-system-card">
-<div class="data-system-status"><span>Estado</span><strong aria-live="polite" id="connectionState" role="status">Sin configurar</strong></div>
+<div class="data-detail-section-title atlas-i7-section-title"><span>Sincronización</span><span aria-label="Sin configurar" class="atlas-i7-connection-indicator" id="atlasI7ConnectionIndicator" role="status"><span aria-hidden="true" class="atlas-i7-connection-dot"></span><span class="atlas-i7-sr-only" id="connectionState">Sin configurar</span></span></div>
+<div class="data-system-card atlas-i7-system-card">
 <div class="action-grid connection-action-grid"><button class="action primary" id="smartSyncBtn">⚡ Sincronizar</button><button class="action" id="testBtn">🔌 Probar</button><button class="action" id="settingsBtn">⚙️ Ajustes</button><button class="action" id="fullSyncBtn">🗂️ Rango manual</button></div>
 </div>
-<div class="data-detail-section-title">Base de datos</div>
-<div class="data-system-card">
-<div class="data-system-status"><span>Copia local</span><strong>IndexedDB</strong></div>
-<div class="action-grid"><button class="action" id="exportBtn">⬆️ Exportar</button><button class="action" id="importBtn">⬇️ Importar</button><button class="action danger" id="clearBtn">🗑️ Borrar</button></div>
+<div class="data-detail-section-title atlas-i7-section-title"><span>Base de datos</span></div>
+<div class="data-system-card atlas-i7-system-card">
+<div class="action-grid atlas-i7-database-actions"><button class="action" id="exportBtn">⬆️ Exportar</button><button class="action" id="importBtn">⬇️ Importar</button><button class="action danger" id="clearBtn">🗑️ Borrar</button></div>
 <input accept="application/json,.json" id="fileInput" type="file"/>
 </div>
-<div class="data-detail-section-title">Diagnóstico</div>
-<div class="data-system-card atlas-runtime-card">
-<div class="atlas-runtime-grid">
-<div class="atlas-runtime-stat"><span>Versión</span><strong id="runtimeDiagVersion">—</strong></div>
-<div class="atlas-runtime-stat"><span>Última sync</span><strong id="runtimeDiagSync">—</strong></div>
-<div class="atlas-runtime-stat"><span>Registro</span><strong id="runtimeDiagLogs">—</strong></div>
-<div class="atlas-runtime-stat"><span>Estado</span><strong id="runtimeDiagHealth">—</strong></div>
-</div>
-<div class="atlas-runtime-reading" id="runtimeDiagReading">ATLAS todavía no ha calculado el diagnóstico local.</div>
-<div class="atlas-runtime-events" id="runtimeDiagEvents"></div>
-<div class="action-grid atlas-runtime-actions"><button class="action" id="runtimeDiagRefresh">↻ Actualizar</button><button class="action" id="runtimeDiagExport">⬆️ Diagnóstico</button><button class="action danger" id="runtimeDiagClear">🧹 Limpiar registro</button></div>
+<div class="data-detail-section-title atlas-i7-section-title"><span>Versión</span></div>
+<div class="data-system-card atlas-i7-version-card"><div class="atlas-i7-version-brand"><span class="atlas-i7-version-glyph">Ʌ</span><div><strong>ɅTLɅS</strong><span id="atlasI7VersionText">v1.6.27</span></div></div></div>
+<div aria-hidden="true" class="hidden" id="atlasRuntimeDiagnosticsInternal">
+<div id="runtimeDiagVersion">—</div><div id="runtimeDiagSync">—</div><div id="runtimeDiagLogs">—</div><div id="runtimeDiagHealth">—</div><div id="runtimeDiagReading"></div><div id="runtimeDiagEvents"></div>
+<button id="runtimeDiagRefresh" type="button"></button><button id="runtimeDiagExport" type="button"></button><button id="runtimeDiagClear" type="button"></button>
 </div>
 <button class="metric-footer-back data-detail-bottom-back" data-close-data-detail="" type="button">Volver</button>
 </div>
@@ -2146,14 +2303,20 @@
 <button class="nav-btn" data-tab="data"><span class="nav-icon">👤</span><span class="nav-label">Perfil</span></button>
 </nav>
 <div aria-live="polite" class="toast" id="toast" popover="manual" role="status"></div>
-<dialog aria-labelledby="settingsDialogTitle" id="settingsDialog">
-<form class="sheet" id="settingsForm" method="dialog">
-<div class="sheet-head"><div class="sheet-title" id="settingsDialogTitle">⚙️ Conexión</div><button aria-label="Cerrar" class="close" formnovalidate="" value="cancel">✕</button></div>
-<label for="workerUrl">Cloudflare Worker</label><input autocomplete="off" id="workerUrl" inputmode="url" placeholder="https://atlas-api...workers.dev" type="url"/>
-<label for="clientToken">Token privado de ɅTLɅS</label><input autocomplete="off" id="clientToken" placeholder="ATLAS_CLIENT_TOKEN" type="password"/>
-<div class="form-row"><div><label for="oldestDate">Rango · desde</label><input id="oldestDate" type="date"/></div><div><label for="newestDate">Rango · hasta</label><input id="newestDate" type="date"/></div></div>
-<div class="form-row"><div><label for="historyStart">Inicio histórico</label><input id="historyStart" type="date"/></div><div><label for="overlapDays">Solapamiento</label><input id="overlapDays" inputmode="numeric" max="90" min="3" step="1" type="number"/></div></div>
-<div class="note">El solapamiento vuelve a consultar algunos días recientes para recoger cambios posteriores.</div>
+<dialog aria-labelledby="settingsDialogTitle" class="atlas-i7-settings-dialog" id="settingsDialog">
+<form class="sheet atlas-i7-settings-sheet" id="settingsForm" method="dialog">
+<div class="sheet-head"><div class="sheet-title" id="settingsDialogTitle">Sincronización</div><button aria-label="Cerrar" class="close" formnovalidate="" value="cancel">✕</button></div>
+<div class="atlas-i7-settings-section">
+<div class="atlas-i7-settings-section-title">Conexión</div>
+<label for="workerUrl">Servidor de ɅTLɅS</label><input autocomplete="off" id="workerUrl" inputmode="url" placeholder="https://atlas-api...workers.dev" type="url"/>
+<label for="clientToken">Token privado</label><input autocomplete="off" id="clientToken" placeholder="ATLAS_CLIENT_TOKEN" type="password"/>
+</div>
+<div class="atlas-i7-settings-section">
+<div class="atlas-i7-settings-section-title">Histórico</div>
+<div class="form-row"><div><label for="oldestDate">Rango manual · desde</label><input id="oldestDate" type="date"/></div><div><label for="newestDate">Hasta</label><input id="newestDate" type="date"/></div></div>
+<div class="form-row"><div><label for="historyStart">Inicio del histórico</label><input id="historyStart" type="date"/></div><div><label for="overlapDays">Solapamiento</label><input id="overlapDays" inputmode="numeric" max="90" min="3" step="1" type="number"/></div></div>
+<div class="note">El solapamiento vuelve a consultar algunos días recientes para incorporar correcciones o datos que hayan llegado después.</div>
+</div>
 <div class="sheet-actions"><button class="action" value="cancel">Cancelar</button><button class="action primary" id="saveSettingsBtn" value="default">Guardar</button></div>
 </form>
 </dialog>
@@ -2198,7 +2361,7 @@ const AtlasHrv=(()=>{
   return Object.freeze({POLICY,records,baseline,status});
 })();
 
-const APP_VERSION="1.6.22",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="1.6.27",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 /* G5: wrapper/residual consolidation. No sport, Adaptive, CAS or publication contract changes. */
 // Training Engine implementation track: v0.2 — input contract + athlete snapshot + base classification.
 
@@ -14291,10 +14454,379 @@ atlasV0811DynamicsComment=function(a){return atlasI33DynamicsReview(a);};
 renderActivityRunningDynamics=function(a){const section=atlasV0810EnsureRunningDynamics(),grid=$("activityRunningDynamicsGrid"),rows=atlasV0810RunningDynamicsRows(a);section.querySelector(".activity-running-dynamics-title")?.remove();section.querySelector(".activity-running-dynamics-note")?.remove();section.classList.toggle("hidden",!rows.length);if(grid)grid.innerHTML=rows.map(r=>atlasV0810Metric(...r)).join("");const comment=atlasV0811EnsureDynamicsComment(section),analysis=atlasI33DynamicsReview(a);comment.textContent=analysis;comment.style.display=analysis?"block":"none";};
 
 
+
+
+/* ===== ɅTLɅS v1.6.23 · I4 intervalos reales + fuerza canónica ===== */
+const ATLAS_I4_VERSION="1.6.23";
+const ATLAS_I4_INTERVAL_POLICY=Object.freeze({version:ATLAS_I4_VERSION,recoveryDistance:"estimated_from_recovery_anchor",recoveryCount:"repeat_semantics",total:"integer_when_possible",cooldown:"to_total"});
+const ATLAS_I4_STRENGTH_UI=Object.freeze({version:ATLAS_I4_VERSION,canonicalPlanDetail:true,manualEdit:true,moveDay:true,legacyShellRetired:true});
+
+function atlasI4Round10(m){const n=Number(m);return Number.isFinite(n)?Math.max(0,Math.round(n/10)*10):0;}
+function atlasI4RecoveryAnchor(anchors){return trainingEnginePaceCopy(anchors?.recovery)||trainingEnginePaceCopy(anchors?.easy)||null;}
+function atlasI4RecoveryMoves(mode){const s=String(mode||"").toLowerCase();return /trote|jog|andar|andando|walk/.test(s)&&!/parado|stop|completa parado/.test(s);}
+function atlasI4RecoveryDistanceM(main,anchors){const sec=Number(main?.recoverySec)||0;if(!(sec>0)||!atlasI4RecoveryMoves(main?.recoveryMode))return 0;const p=trainingEnginePaceMid(atlasI4RecoveryAnchor(anchors));return p>0?atlasI4Round10(sec/p*1000):0;}
+function atlasI4StepDistance(step){const n=Number(step?.distanceM);return n>0?n:0;}
+function atlasI4QualityMain(session){return(session?.steps||[]).find(st=>Number(st?.reps)>=2&&Number(st?.recoverySec)>0&&Number(st?.repDistanceM)>0)||null;}
+function atlasI4StripStepEmoji(label){return String(label||"").replace(/^[🔥⚡❄️]\s*/,"").trim();}
+function atlasI4NormalizeQualitySession(session,anchors,{force=false}={}){
+  if(!session||session.type!=="Run")return session;if(session.i4RecoveryDistanceVersion===ATLAS_I4_VERSION&&!force)return session;
+  const main=atlasI4QualityMain(session);if(!main)return session;
+  const rx=atlasV0814Clone(session),m=atlasI4QualityMain(rx),steps=rx.steps||[],warm=steps.find(st=>st.section==="warmup"),cool=steps.find(st=>st.section==="cooldown"),reps=Math.max(2,Math.round(Number(m.reps)||0)),recoverySec=Number(m.recoverySec)||0;
+  const recoveryCount=recoverySec>0?reps:0,recoveryEachM=atlasI4RecoveryDistanceM(m,anchors),recoveryTotalM=recoveryEachM*recoveryCount,workM=Number(m.workDistanceM)>0?Number(m.workDistanceM):Number(m.repDistanceM)*reps,warmM=atlasI4StepDistance(warm),baseCoolM=atlasI4StepDistance(cool),easyAnchor=trainingEnginePaceCopy(anchors?.easy),easySec=trainingEnginePaceMid(easyAnchor);
+  m.recoveryCount=recoveryCount;m.recoveryDistanceMEstimate=recoveryEachM;m.recoveryDistanceEstimated=!!recoveryEachM;
+  rx.recovery={...(rx.recovery||{}),seconds:recoverySec||null,mode:m.recoveryMode||rx.recovery?.mode||null,count:recoveryCount,estimatedDistanceMEach:recoveryEachM||0,estimatedTotalM:recoveryTotalM||0,estimateAnchor:"recovery"};
+  if(warmM>0&&baseCoolM>0&&workM>0){
+    const rawM=warmM+workM+baseCoolM+recoveryTotalM,nonCoolM=warmM+workM+recoveryTotalM,minCoolM=1000,priorTargetKm=Number(session?.i4RecoveryDistance?.totalKm);let targetKm=priorTargetKm>0?Math.round(priorTargetKm):Math.max(1,Math.round(rawM/1000));
+    if(targetKm*1000-nonCoolM<minCoolM)targetKm=Math.ceil((nonCoolM+minCoolM)/1000);
+    const targetM=targetKm*1000,coolM=Math.max(minCoolM,targetM-nonCoolM);cool.distanceM=atlasI4Round10(coolM);cool.pace=cool.pace||easyAnchor;cool.label=`❄️ CD · hasta ${formatNatural(targetKm,0)} km`;
+    rx.distanceM=targetM;rx.distanceKm=targetKm;rx.warmCool={...(rx.warmCool||{}),plannedKm:Math.round((warmM+cool.distanceM)/100)/10,explicit:true,cooldownToKm:targetKm};
+    const mainText=atlasI4StripStepEmoji(m.label);rx.structure=`WU + ${mainText} + CD hasta ${formatNatural(targetKm,0)} km`;
+    const workSec=Number(m.workSec)||0,duration=(workSec>0?workSec:0)+recoverySec*recoveryCount+(easySec>0?(warmM+cool.distanceM)/1000*easySec:0);if(duration>0)rx.durationSec=Math.round(duration);
+  }else if(recoveryTotalM>0&&Number(rx.distanceM)>0){
+    const estimateM=Number(rx.distanceM)+recoveryTotalM;rx.distanceM=atlasI4Round10(estimateM);rx.distanceKm=Math.round(rx.distanceM/100)/10;rx.distanceEstimated=true;
+    if(Number(rx.durationSec)>0)rx.durationSec=Math.round(Number(rx.durationSec)+recoverySec);
+  }
+  if(rx.evenDistancePolicy)rx.evenDistancePolicy={...rx.evenDistancePolicy,finalKm:Number(rx.distanceKm)||rx.evenDistancePolicy.finalKm,supersededBy:ATLAS_I4_VERSION};rx.i4RecoveryDistanceVersion=ATLAS_I4_VERSION;rx.i4RecoveryDistance={count:recoveryCount,eachM:recoveryEachM,totalM:recoveryTotalM,totalKm:Number(rx.distanceKm)||null,cooldownToKm:Number(rx.warmCool?.cooldownToKm)||null};
+  rx.metaLabel=trainingEngineSessionMeta(rx);return rx;
+}
+
+const atlasI4PrescribeQualityBase=trainingEnginePrescribeQuality;
+trainingEnginePrescribeQuality=function(session,week,input,anchors,level,variantOffset=0){return atlasI4NormalizeQualitySession(atlasI4PrescribeQualityBase(session,week,input,anchors,level,variantOffset),anchors);};
+
+const atlasI4ApplyIntervalEditBase=atlasV157ApplyIntervalEdit;
+atlasV157ApplyIntervalEdit=function(session,edit,plan){const rx=atlasI4ApplyIntervalEditBase(session,edit,plan);delete rx.i4RecoveryDistanceVersion;delete rx.i4RecoveryDistance;return atlasI4NormalizeQualitySession(rx,plan?.engine?.paceAnchors||{}, {force:true});};
+
+trainingPresentationBlockRows=function(session){
+  if(session?.family==="Fuerza")return[];const steps=Array.isArray(session?.steps)?session.steps:[],rows=[],plan=activeTrainingPlan(),recoveryAnchor=trainingEnginePaceCopy(plan?.engine?.paceAnchors?.recovery),easyAnchor=trainingEnginePaceCopy(plan?.engine?.paceAnchors?.easy);let n=1;
+  const add=(kind,distanceM,timeSec,pace,label,estimated=false,shortLabel=null)=>rows.push({index:n++,kind,distanceM:Number(distanceM)>0?Math.round(Number(distanceM)):null,timeSec:Number(timeSec)>0?Math.round(Number(timeSec)):null,pace:pace||null,paceLabel:label||trainingPresentationPaceLabel(pace,"—"),estimated:!!estimated,shortLabel:shortLabel||String(n-1)});
+  const main=steps.find(x=>Number(x?.reps)>=2);
+  if(main){let warm=steps.find(x=>x.section==="warmup"),cool=steps.find(x=>x.section==="cooldown"),warmM=Number(warm?.distanceM)||null,coolM=Number(cool?.distanceM)||null;if(!(warmM>0||coolM>0)&&Number(session?.warmCool?.plannedKm)>0){const total=Number(session.warmCool.plannedKm),wu=Math.ceil(total*2*.55)/2,cd=Math.max(.5,Math.round((total-wu)*2)/2);warmM=Math.round(wu*1000);coolM=Math.round(cd*1000);}if(warm)add("warmup",warmM,trainingPresentationEstimatedStepTime(warmM,warm.pace||easyAnchor),warm.pace||easyAnchor,trainingPresentationPaceLabel(warm.pace||easyAnchor,"Fácil"),!Number(warm.distanceM),"WU");
+    const reps=Math.max(2,Math.round(Number(main.reps)||0)),repDistanceM=Number(main.repDistanceM)>0?Number(main.repDistanceM):null,workSecTotal=Number(main.workSec)>0?Number(main.workSec):null,perRepSec=repDistanceM&&workSecTotal?workSecTotal/reps:Number(main.workSec)>0&&!repDistanceM?Number(main.workSec):null,workPace=main.pace||session.targetPace||null,workLabel=session.targetLabel||trainingPresentationPaceLabel(workPace,session.status==="NEEDS_ANCHOR_TEST"?"⚠️ Ritmo pendiente":"Intensidad prescrita"),recoveryCount=Math.max(0,Math.round(Number(main.recoveryCount??session?.recovery?.count??reps))),recoveryM=Number(main.recoveryDistanceMEstimate)||Number(session?.recovery?.estimatedDistanceMEach)||trainingPresentationEstimateDistanceFromTime(main.recoverySec,recoveryAnchor);
+    for(let i=0;i<reps;i++){const t=perRepSec||trainingPresentationEstimatedStepTime(repDistanceM,workPace);add("work",repDistanceM,t,workPace,workLabel,false,String(i+1));if(i<recoveryCount&&Number(main.recoverySec)>0)add("recovery",recoveryM,main.recoverySec,recoveryAnchor,main.recoveryMode?`Recuperación · ${main.recoveryMode}`:"Recuperación",true,"R");}
+    if(cool)add("cooldown",coolM,trainingPresentationEstimatedStepTime(coolM,cool.pace||easyAnchor),cool.pace||easyAnchor,atlasI4StripStepEmoji(cool.label)||trainingPresentationPaceLabel(cool.pace||easyAnchor,"Fácil"),!Number(cool.distanceM),"CD");return rows;
+  }
+  for(const step of steps){const kind=step.section==="warmup"?"warmup":step.section==="cooldown"?"cooldown":"work",distanceM=Number(step.distanceM)>0?Number(step.distanceM):null,pace=step.pace||session.targetPace||easyAnchor,timeSec=trainingPresentationEstimatedStepTime(distanceM,pace);if(distanceM||timeSec)add(kind,distanceM,timeSec,pace,step.label?.replace(/^[🔥⚡❄️]\s*/,"")||trainingPresentationPaceLabel(pace,"Intensidad prescrita"),false,kind==="warmup"?"WU":kind==="cooldown"?"CD":"•");}
+  if(!rows.length&&Number(session?.distanceM)>0){const pace=session.targetPace||easyAnchor,time=Number(session.durationSec)>0?session.durationSec:trainingPresentationEstimatedStepTime(session.distanceM,pace);add("work",session.distanceM,time,pace,session.targetLabel||trainingPresentationPaceLabel(pace,"Continuo"),false,"•");}
+  return rows;
+};
+trainingPresentationIntervalRows=function(session){return trainingPresentationBlockRows(session);};
+
+function atlasI4StrengthBlocks(session){return atlasV120StrengthBlocks(session||{});}
+function atlasI4StrengthExerciseHtml(ex){const cat=ATLAS_V123_EXERCISE_CATALOG?.[ex.asset]||{},muscles=(ex.muscles?.length?ex.muscles:cat.muscles)||[],dose=[ex.sets,ex.reps,ex.rest&&ex.rest!=="—"?`Descanso ${ex.rest}`:null].filter(Boolean).join(" · "),visual=atlasV122Image(ex.asset);return`<div class="atlas-i4-strength-ex"><button type="button" class="atlas-i4-strength-visual" data-atlas-force-asset="${esc(ex.asset||"")}" data-atlas-force-name="${esc(ex.name||cat.name||"")}" aria-label="Ver ${esc(ex.name||cat.name||"ejercicio")}">${visual}</button><div class="atlas-i4-strength-copy"><div class="atlas-i4-strength-name">${esc(ex.name||cat.name||"Ejercicio")}</div>${dose?`<div class="atlas-i4-strength-dose">${esc(dose)}</div>`:""}${ex.cue?`<div class="atlas-i4-strength-cue">${esc(ex.cue)}</div>`:""}${muscles.length?`<div class="atlas-i4-strength-muscles">${esc(muscles.join(" · "))}</div>`:""}</div></div>`;}
+function atlasI4StrengthMarkup(session){const blocks=atlasI4StrengthBlocks(session);return blocks.map(b=>`<section class="atlas-i4-strength-block"><div class="atlas-i4-strength-block-head"><div class="atlas-i4-strength-block-title">${esc(b.title||"Bloque")}</div>${b.subtitle?`<div class="atlas-i4-strength-block-sub">${esc(b.subtitle)}</div>`:""}</div><div class="atlas-i4-strength-list">${(b.exercises||[]).map(atlasI4StrengthExerciseHtml).join("")}</div></section>`).join("");}
+function atlasI4DetailStatLabels(){return qsa(".plan-detail-summary .plan-detail-stat .plan-detail-label",ui.planDetail||document);}
+function atlasI4RestoreRunDetail(){ui.planDetail?.classList.remove("atlas-i4-strength-detail");ui.planDetailStructureLine?.classList.remove("hidden");const labels=atlasI4DetailStatLabels();if(labels[0])labels[0].textContent="Distancia";if(labels[1])labels[1].textContent="Tiempo";if(ui.planDetailStructureTitle)ui.planDetailStructureTitle.textContent="Estructura";const unit1=ui.planDetailDistance?.parentElement?.querySelector(".plan-detail-unit");if(unit1)unit1.textContent="km";}
+function atlasI4RenderStrengthDetail(session){
+  if(!session)return;currentPlanEvent=session;atlasV0814CurrentSessionId=String(session.id||"");trainingPresentationResetDetailExtras();atlasI4RestoreRunDetail();ui.planDetail.classList.add("prescribed-running-detail","atlas-i4-strength-detail");ui.planDetail.classList.remove("atlas-force-v120-open");
+  const summary=atlasV120StrengthSummary(session),spec=session.strengthPlan||{},blocks=atlasI4StrengthBlocks(session),count=blocks.reduce((n,b)=>n+(b.exercises?.length||0),0),labels=atlasI4DetailStatLabels();
+  ui.planDetailDate.textContent=atlasDateLabel(session.date);ui.planDetailIcon.textContent="🏋🏻";ui.planDetailTitle.textContent=summary.title||session.name||"Fuerza";
+  if(labels[0])labels[0].textContent="Tipo";if(labels[1])labels[1].textContent="Tiempo";if(ui.planDetailTargetLabel)ui.planDetailTargetLabel.textContent="Ejercicios";
+  ui.planDetailDistance.textContent=summary.level||"Fuerza";const unit1=ui.planDetailDistance?.parentElement?.querySelector(".plan-detail-unit");if(unit1)unit1.textContent="";ui.planDetailDuration.textContent=summary.duration||"—";ui.planDetailTarget.textContent=String(count||"—");const targetUnit=$("planDetailTargetUnit");if(targetUnit)targetUnit.textContent="";
+  if(ui.planDetailStructureTitle)ui.planDetailStructureTitle.textContent="Ejercicios";if(ui.planDetailStructureLine){ui.planDetailStructureLine.textContent=String(spec.focus||"");ui.planDetailStructureLine.classList.toggle("hidden",!spec.focus);}ui.planDetailSteps.innerHTML=atlasI4StrengthMarkup(session)||'<div class="plan-detail-purpose">Sin ejercicios detallados.</div>';
+  ui.planDetailPurpose.textContent=summary.purpose||"Fuerza útil para correr con el menor coste de fatiga compatible con el estímulo previsto.";
+  if(summary.notes?.length&&ui.planDetailNotesCard&&ui.planDetailNotes){ui.planDetailNotesCard.classList.remove("hidden");ui.planDetailNotes.innerHTML=summary.notes.map(n=>`<div class="plan-step">${esc(n)}</div>`).join("");}else ui.planDetailNotesCard?.classList.add("hidden");
+  atlasV0814UpdateDetailActions(session);if(typeof atlasV164RenderNormalExplanation==="function")atlasV164RenderNormalExplanation(activeTrainingPlan(),session);ui.planDetail.classList.remove("hidden");ui.planDetail.setAttribute("aria-hidden","false");setAtlasSubpageNavHidden(true);ui.planDetail.scrollTop=0;requestAnimationFrame(()=>{if(typeof atlasV087FitWorkoutTitle==="function")atlasV087FitWorkoutTitle();});
+}
+
+const atlasI4OpenPrescribedBase=openPrescribedPlanDetail;
+openPrescribedPlanDetail=function(id){const session=trainingPresentationSessionById(id);if(atlasV115IsStrengthSession(session))return atlasI4RenderStrengthDetail(session);atlasI4RestoreRunDetail();return atlasI4OpenPrescribedBase(id);};
+const atlasI4OpenSyncedBase=openPlanDetail;
+openPlanDetail=async function(id){atlasI4RestoreRunDetail();return atlasI4OpenSyncedBase(id);};
+const atlasI4CloseDetailBase=closePlanDetail;
+closePlanDetail=function(){const result=atlasI4CloseDetailBase.apply(this,arguments);atlasI4RestoreRunDetail();return result;};
+
+const atlasI4EditSignatureBase=atlasV157EditSignature;
+atlasV157EditSignature=function(list){return JSON.stringify((list||[]).map(e=>({sessionKey:e.sessionKey,deleted:!!e.deleted,mode:e.mode,reps:e.reps,repDistanceM:e.repDistanceM,totalKm:e.totalKm,durationMin:e.durationMin,strengthExercises:Array.isArray(e.strengthExercises)?e.strengthExercises.map(x=>({asset:x.asset,name:x.name,sets:x.sets,reps:x.reps,rest:x.rest})):null,updatedAt:e.updatedAt,deviceRevision:e.deviceRevision})).sort((a,b)=>String(a.sessionKey).localeCompare(String(b.sessionKey))));};
+function atlasI4ApplyStrengthEdit(session,edit){const rx=atlasV0814Clone(session),spec=atlasV0814Clone(rx.strengthPlan||atlasV150StrengthSpec(rx)),duration=Math.max(10,Math.min(120,Math.round(Number(edit.durationMin)||Number(spec?.durationMin)||Number(rx.durationSec)/60||35))),map=new Map((edit.strengthExercises||[]).map(x=>[`${x.asset||""}|${x.name||""}`,x]));for(const b of spec?.blocks||[])for(const ex of b.exercises||[]){const ov=map.get(`${ex.asset||""}|${ex.name||""}`)||map.get(`|${ex.name||""}`);if(!ov)continue;if(String(ov.sets||"").trim())ex.sets=String(ov.sets).trim();if(String(ov.reps||"").trim())ex.reps=String(ov.reps).trim();if(String(ov.rest||"").trim())ex.rest=String(ov.rest).trim();}spec.durationMin=duration;rx.strengthPlan=spec;rx.durationSec=duration*60;rx.structure=`${rx.name||spec.title||"Fuerza"} · ${duration} min`;rx.steps=[trainingEngineStep("main",`⚡ ${rx.structure}`)];rx.metaLabel=trainingEngineSessionMeta(rx);rx._atlasManualEdited=true;rx._atlasEditId=edit.id;rx.notes=[...(rx.notes||[]).filter(n=>!String(n).startsWith("Modificación manual ·")),"Modificación manual · fuerza."];return rx;}
+const atlasI4ApplyEditBase=atlasV157ApplyEditToSession;
+atlasV157ApplyEditToSession=function(session,edit,plan){if(edit?.mode==="STRENGTH")return atlasI4ApplyStrengthEdit(session,edit);const rx=atlasI4ApplyEditBase(session,edit,plan);return edit?.mode==="INTERVALS"?atlasI4NormalizeQualitySession(rx,plan?.engine?.paceAnchors||{}, {force:true}):rx;};
+
+const atlasI4OpenEditBase=atlasV157OpenEditSheet;
+atlasV157OpenEditSheet=function(sessionId){const plan=activeTrainingPlan(),session=atlasV0814EffectiveSessionById(sessionId);if(!plan||!session)return;if(!atlasV115IsStrengthSession(session))return atlasI4OpenEditBase(sessionId);const overlay=atlasV157EnsureEditSheet(),fields=$("atlasEditFields"),blocks=atlasI4StrengthBlocks(session),duration=Math.max(10,Math.round((Number(session.durationSec)||2100)/60));atlasV157EditContext={sessionId:String(sessionId),mode:"STRENGTH"};$("atlasEditTitle").textContent=`Modificar ${atlasV0814SessionShortName(session)}`;$("atlasEditSub").textContent="Ajusta la duración o la dosis de los ejercicios. El cambio queda en el borrador del plan hasta Publicar cambios.";let idx=0;fields.innerHTML=`<label class="atlas-v157-field"><span>Duración total (min)</span><input id="atlasI4StrengthDuration" type="number" inputmode="numeric" min="10" max="120" step="5" value="${duration}"></label>`+blocks.flatMap(b=>(b.exercises||[]).map(ex=>{const i=idx++;return`<div class="atlas-i4-strength-edit-group" data-i4-strength-edit="${i}" data-asset="${esc(ex.asset||"")}" data-name="${esc(ex.name||"")}"><div class="atlas-i4-strength-edit-name">${esc(ex.name||"Ejercicio")}</div><div class="atlas-i4-strength-edit-grid"><label><span>Series</span><input data-field="sets" value="${esc(ex.sets||"")}"></label><label><span>Repeticiones</span><input data-field="reps" value="${esc(ex.reps||"")}"></label><label><span>Descanso</span><input data-field="rest" value="${esc(ex.rest||"")}"></label></div></div>`;})).join("");overlay.classList.remove("hidden");overlay.setAttribute("aria-hidden","false");};
+const atlasI4CommitEditBase=atlasV157CommitEdit;
+atlasV157CommitEdit=async function(){if(atlasV157EditContext?.mode!=="STRENGTH")return atlasI4CommitEditBase();const plan=activeTrainingPlan(),session=atlasV0814EffectiveSessionById(atlasV157EditContext?.sessionId);if(!plan||!session)return;const durationMin=Math.round(Number($("atlasI4StrengthDuration")?.value));if(!(durationMin>=10&&durationMin<=120)){toast("⚠️ Revisa la duración de la sesión.",true);return;}const strengthExercises=qsa("[data-i4-strength-edit]",$("atlasEditFields")).map(g=>({asset:String(g.dataset.asset||""),name:String(g.dataset.name||""),sets:String(g.querySelector('[data-field="sets"]')?.value||"").trim(),reps:String(g.querySelector('[data-field="reps"]')?.value||"").trim(),rest:String(g.querySelector('[data-field="rest"]')?.value||"").trim()})),key=atlasV0814SessionKey(session),prior=atlasV157LatestEdit(plan,key),now=new Date().toISOString(),record={id:prior?.id||`edit:${key}`,sessionKey:key,type:"EDIT",mode:"STRENGTH",durationMin,strengthExercises,deleted:false,createdAt:prior?.createdAt||now,updatedAt:now,deviceRevision:Date.now()},list=atlasV157PlanEdits(plan),idx=list.findIndex(e=>String(e.sessionKey)===String(key));if(idx>=0)list[idx]=record;else list.push(record);plan.updatedAt=now;trainingPlanMarkPublicationDirty(plan);await persistTrainingPlans();atlasV157CloseEditSheet();renderTrainingPlanWorkouts(atlasV0814RawSchedule(plan));renderPlan();openPrescribedPlanDetail(session.id);toast("Entrenamiento de fuerza modificado.");};
+
+const atlasI4UpdateActionsBase=atlasV0814UpdateDetailActions;
+atlasV0814UpdateDetailActions=function(session){atlasI4UpdateActionsBase(session);atlasV157EnsureDetailButtons();const edit=$("planDetailEditSessionBtn"),restore=$("planDetailRestoreEditBtn"),allowed=!!session?.prescribed&&!atlasV0814IsCompetition(session)&&(session?.type==="Run"||atlasV115IsStrengthSession(session));edit?.classList.toggle("hidden",!allowed);if(restore){const active=allowed?atlasV157LatestEdit(activeTrainingPlan(),atlasV0814SessionKey(session)):null;restore.classList.toggle("hidden",!active||active.deleted);}};
+
+function atlasI4NormalizeEngine(engine,plan){if(!engine)return engine;const anchors=engine?.paceAnchors||{};for(const d of engine?.prescriptionCore?.schedule?.days||[])d.sessions=(d.sessions||[]).map(s=>atlasI4NormalizeQualitySession(s,anchors,{force:true}));if(typeof atlasV158CanonicalFinalState==="function")atlasV158CanonicalFinalState(engine,plan);engine.i4Version=ATLAS_I4_VERSION;engine.intervalDistancePolicyVersion=ATLAS_I4_VERSION;engine.strengthCanonicalUiVersion=ATLAS_I4_VERSION;engine.trainingEngineRevision=trainingEngineDigest({version:ATLAS_I4_VERSION,planId:plan?.id,canonical:engine?.canonicalFinalState,schedule:engine?.prescriptionCore?.schedule?.days||[]});return engine;}
+const atlasI4CollectBase=collectTrainingEngineInput;
+collectTrainingEngineInput=async function(plan,asOfDate=fmtDate(new Date())){const engine=await atlasI4CollectBase(plan,asOfDate);return atlasI4NormalizeEngine(engine,plan);};
+const atlasI4UpgradeBase=upgradeTrainingEnginePlans;
+upgradeTrainingEnginePlans=async function(){const changed=await atlasI4UpgradeBase();const today=fmtDate(new Date()),stale=(currentTrainingPlans||[]).filter(p=>p?.engine?.i4Version!==ATLAS_I4_VERSION);if(!stale.length)return changed;for(const plan of stale){const pending=plan?.engine?.pendingRevision||null,refreshAt=plan?.startDate&&today>=plan.startDate?plan.startDate:today;plan.engine=await collectTrainingEngineInput(plan,refreshAt);if(pending)plan.engine.pendingRevision=pending;plan.updatedAt=new Date().toISOString();trainingPlanMarkPublicationDirty(plan);}await persistTrainingPlans();return true;};
+
+atlasDomReadyInitializers.push(()=>{atlasV157EnsureDetailButtons();});
+
+
+
+/* ===== ɅTLɅS v1.6.24 · I5 Publicación canónica + feedback de progreso =====
+   Presentación mínima: estado, cambios pendientes y acciones. El borrador sigue
+   sincronizándose entre dispositivos, pero ningún workout remoto cambia sin el
+   gesto explícito Publicar / Publicar cambios. */
+const ATLAS_I5_VERSION="1.6.24";
+let atlasI5PublicationProgress={active:false,mode:null,label:"",percent:0};
+
+function atlasI5DateLabel(date){return date?atlasDateLabel(String(date).slice(0,10)):"—";}
+function atlasI5Km(m){const n=Number(m);return n>0?`${formatNatural(n/1000,n%1000?1:0)} km`:null;}
+function atlasI5Duration(sec){return Number(sec)>0?formatDuration(Number(sec)):null;}
+function atlasI5SessionSnapshot(plan,event){
+  const key=String(event?._atlas?.sessionKey||""),s=key?((typeof atlasV0814EffectiveSessionById==="function"?atlasV0814EffectiveSessionById(key):null)||trainingPresentationSessionById(key)):null;
+  return{externalId:String(event?.external_id||""),sessionKey:key,date:String(event?.start_date_local||"").slice(0,10),name:String(event?.name||s?.name||s?.family||"Entrenamiento"),type:String(event?.type||""),family:String(s?.family||event?._atlas?.family||""),distanceM:Number(s?.distanceM)||null,durationSec:Number(s?.durationSec)||null,targetLabel:String(s?.targetLabel||""),structure:String(s?.structure||""),hash:atlasV090EventDigest(event)};
+}
+function atlasI5PublishedSnapshot(plan,diff){return(diff?.desired?.events||[]).map(e=>atlasI5SessionSnapshot(plan,e));}
+function atlasI5SnapshotMap(plan){return new Map((plan?.publication?.i5PublishedSnapshot||[]).map(x=>[String(x.externalId||""),x]).filter(([id])=>id));}
+function atlasI5DesiredSnapshotMap(plan,diff){return new Map((diff?.desired?.events||[]).map(e=>{const x=atlasI5SessionSnapshot(plan,e);return[x.externalId,x];}));}
+function atlasI5ChangeDetail(prior,next){
+  if(!prior||!next)return"";const bits=[];
+  if(prior.date&&next.date&&prior.date!==next.date)bits.push(`${atlasI5DateLabel(prior.date)} → ${atlasI5DateLabel(next.date)}`);
+  if(Number(prior.distanceM)>0&&Number(next.distanceM)>0&&Math.abs(Number(prior.distanceM)-Number(next.distanceM))>=400)bits.push(`${atlasI5Km(prior.distanceM)} → ${atlasI5Km(next.distanceM)}`);
+  else if(Number(prior.durationSec)>0&&Number(next.durationSec)>0&&Math.abs(Number(prior.durationSec)-Number(next.durationSec))>=300)bits.push(`${atlasI5Duration(prior.durationSec)} → ${atlasI5Duration(next.durationSec)}`);
+  if(prior.targetLabel&&next.targetLabel&&prior.targetLabel!==next.targetLabel)bits.push("ritmo actualizado");
+  if(prior.structure&&next.structure&&prior.structure!==next.structure&&!bits.some(x=>x.includes("km")||x.includes("ritmo")))bits.push("estructura actualizada");
+  return bits.slice(0,2).join(" · ");
+}
+function atlasI5PendingChanges(plan,diff){
+  const oldLedger=new Map((plan?.publication?.remoteEvents||[]).map(x=>[String(x.externalId||""),x])),snap=atlasI5SnapshotMap(plan),desired=atlasI5DesiredSnapshotMap(plan,diff),items=[];
+  for(const e of diff?.upserts||[]){const id=String(e.external_id||""),next=desired.get(id)||atlasI5SessionSnapshot(plan,e),priorSnap=snap.get(id),prior=priorSnap||oldLedger.get(id);let kind="update",icon="✎",verb="Actualizar";if(!prior){kind="add";icon="＋";verb="Añadir";}else if(String(prior.date||"")!==String(next.date||"")){kind="move";icon="↔";verb="Mover";}const detail=priorSnap?atlasI5ChangeDetail(priorSnap,next):(prior&&prior.date!==next.date?`${atlasI5DateLabel(prior.date)} → ${atlasI5DateLabel(next.date)}`:"");items.push({kind,icon,verb,name:next.name||prior?.name||"Entrenamiento",date:next.date,detail});}
+  for(const d of diff?.deletes||[]){const id=String(d.external_id||""),prior=snap.get(id)||oldLedger.get(id)||d;items.push({kind:"remove",icon:"−",verb:"Retirar",name:prior.name||"Entrenamiento",date:prior.date||d.date,detail:atlasI5DateLabel(prior.date||d.date)});}
+  return items.sort((a,b)=>String(a.date||"").localeCompare(String(b.date||""))||a.verb.localeCompare(b.verb));
+}
+function atlasI5EnsurePublicationUi(){
+  if(!ui.trainingPlanPublication)return;
+  const root=ui.trainingPlanPublication;if(!root.querySelector(".atlas-i5-publication"))atlasV090EnsurePublicationUi();
+  const primary=ui.trainingPlanPublicationBtn,remove=$("trainingPlanUnpublishBtn"),del=$("trainingPlanDeleteBtn");if(!primary||!del)return;
+  if(!root.querySelector(".atlas-i5-publication")){
+    primary.remove();remove?.remove();del.remove();root.innerHTML=`<div class="atlas-i5-publication"><div class="atlas-i5-publication-head"><div class="atlas-i5-publication-destination">Intervals.icu</div><span class="atlas-i5-publication-badge ready" id="atlasI5PublicationBadge">Pendiente</span></div><div class="atlas-i5-publication-summary" id="atlasI5PublicationSummary"></div><div class="atlas-i5-publication-error hidden" id="atlasI5PublicationError"></div><div class="atlas-i5-progress hidden" id="atlasI5PublicationProgress" role="status" aria-live="polite"><div class="atlas-i5-progress-top"><span class="atlas-i5-progress-spinner" aria-hidden="true"></span><span class="atlas-i5-progress-label" id="atlasI5ProgressLabel">Preparando…</span><strong class="atlas-i5-progress-pct" id="atlasI5ProgressPct">0%</strong></div><div class="atlas-i5-progress-track"><div class="atlas-i5-progress-fill" id="atlasI5ProgressFill"></div></div></div><div class="atlas-i5-changes hidden" id="atlasI5Changes"><div class="atlas-i5-changes-title" id="atlasI5ChangesTitle">Cambios pendientes</div><div class="atlas-i5-change-list" id="atlasI5ChangeList"></div><div class="atlas-i5-change-more hidden" id="atlasI5ChangeMore"></div></div><div class="atlas-i5-no-changes hidden" id="atlasI5NoChanges"><span class="atlas-i5-no-changes-icon">✓</span><span id="atlasI5NoChangesText">Todo está actualizado.</span></div><div class="atlas-i5-publication-actions" id="atlasI5PrimaryActions"></div><div class="atlas-i5-secondary-actions" id="atlasI5SecondaryActions"></div><div class="atlas-i5-danger-zone" id="atlasI5DangerZone"></div></div>`;
+    primary.className="atlas-i5-primary";$("atlasI5PrimaryActions").appendChild(primary);
+    if(remove){remove.className="atlas-i5-unpublish hidden";$("atlasI5SecondaryActions").appendChild(remove);}
+    del.className="atlas-i5-delete";$("atlasI5DangerZone").appendChild(del);
+  }
+}
+function atlasI5SetProgress(mode,label,percent){
+  atlasI5PublicationProgress={active:true,mode,label:String(label||"Procesando…"),percent:clamp(Math.round(Number(percent)||0),0,100)};
+  const box=$("atlasI5PublicationProgress"),lab=$("atlasI5ProgressLabel"),pct=$("atlasI5ProgressPct"),fill=$("atlasI5ProgressFill"),badge=$("atlasI5PublicationBadge");box?.classList.remove("hidden");if(lab)lab.textContent=atlasI5PublicationProgress.label;if(pct)pct.textContent=`${atlasI5PublicationProgress.percent}%`;if(fill)fill.style.width=`${atlasI5PublicationProgress.percent}%`;if(badge){badge.className="atlas-i5-publication-badge busy";badge.textContent=mode==="unpublish"?"Retirando":mode==="delete"?"Eliminando":"Publicando";}
+}
+function atlasI5ClearProgress(){atlasI5PublicationProgress={active:false,mode:null,label:"",percent:0};$("atlasI5PublicationProgress")?.classList.add("hidden");}
+function atlasI5RenderChanges(plan,diff,state){
+  const wrap=$("atlasI5Changes"),list=$("atlasI5ChangeList"),more=$("atlasI5ChangeMore"),none=$("atlasI5NoChanges"),title=$("atlasI5ChangesTitle");if(!wrap||!list||!more||!none)return;
+  const first=plan?.publication?.status!=="published",changes=atlasI5PendingChanges(plan,diff),pending=changes.length>0;
+  if(first){wrap.classList.remove("hidden");none.classList.add("hidden");if(title)title.textContent="Primera publicación";list.innerHTML=`<div class="atlas-i5-change"><span class="atlas-i5-change-icon">↑</span><div class="atlas-i5-change-copy">Se publicarán <strong>${diff.desired.events.length} entrenamientos futuros</strong> en el calendario.</div></div>`;more.classList.add("hidden");return;}
+  if(!pending){wrap.classList.add("hidden");none.classList.remove("hidden");const t=$("atlasI5NoChangesText");if(t)t.textContent="El calendario publicado está actualizado.";return;}
+  none.classList.add("hidden");wrap.classList.remove("hidden");if(title)title.textContent="Cambios pendientes";const visible=changes.slice(0,8);list.innerHTML=visible.map(x=>`<div class="atlas-i5-change"><span class="atlas-i5-change-icon">${x.icon}</span><div class="atlas-i5-change-copy">${esc(x.verb)} <strong>${esc(x.name)}</strong>${x.detail?` · ${esc(x.detail)}`:x.date?` · ${esc(atlasI5DateLabel(x.date))}`:""}</div></div>`).join("");const rest=changes.length-visible.length;more.classList.toggle("hidden",rest<=0);more.textContent=rest>0?`+ ${rest} cambio${rest===1?"":"s"} adicional${rest===1?"":"es"}`:"";
+}
+renderTrainingPlanPublication=async function(){
+  atlasI5EnsurePublicationUi();const plan=activeTrainingPlan(),btn=ui.trainingPlanPublicationBtn,remove=$("trainingPlanUnpublishBtn"),del=$("trainingPlanDeleteBtn"),badge=$("atlasI5PublicationBadge"),summary=$("atlasI5PublicationSummary"),err=$("atlasI5PublicationError");if(!plan||!btn||!badge||!summary)return;
+  const state=atlasV090PublicationState(plan),diff=state.diff||atlasV090PublicationDiff(plan),pending=(diff.upserts?.length||0)+(diff.deletes?.length||0),busy=atlasV090PublicationBusy||atlasV150RemoteSyncBusy||atlasI5PublicationProgress.active;
+  if(!atlasI5PublicationProgress.active){badge.className=`atlas-i5-publication-badge ${state.kind}`;badge.textContent=state.kind==="ready"?"Sin publicar":state.label;}
+  if(state.kind==="error")summary.textContent=state.copy||"El plan todavía no está listo para publicarse.";
+  else if(plan.publication?.status!=="published")summary.innerHTML=`El borrador está preparado. <strong>Nada llegará al calendario hasta que publiques el plan.</strong>`;
+  else if(pending)summary.innerHTML=`El borrador contiene cambios. <strong>Plan y Hoy seguirán mostrando la última versión publicada</strong> hasta confirmar esta actualización.`;
+  else summary.innerHTML=`La versión publicada coincide con el borrador actual.${plan.publication?.lastPublishAt?` · Última publicación ${esc(atlasV092DateTimeLabel(plan.publication.lastPublishAt))}`:""}`;
+  const errorText=String(plan.publication?.lastError||"").trim();if(err){err.classList.toggle("hidden",!errorText||busy);err.textContent=errorText?`Último intento: ${errorText}`:"";}
+  atlasI5RenderChanges(plan,diff,state);
+  const first=plan.publication?.status!=="published";btn.textContent=first?"Publicar plan":"Publicar cambios";btn.classList.toggle("hidden",!first&&!pending);btn.disabled=busy||state.kind==="error"||!diff.desired.events.length||(!first&&!pending);
+  const hasRemote=plan.publication?.status==="published"&&Array.isArray(plan.publication?.remoteEvents)&&plan.publication.remoteEvents.some(e=>String(e.date||"")>=atlasV090Today());if(remove){remove.textContent="Retirar entrenamientos de Intervals.icu";remove.classList.toggle("hidden",!hasRemote);remove.disabled=busy;}
+  if(del)del.disabled=busy;if(atlasI5PublicationProgress.active)atlasI5SetProgress(atlasI5PublicationProgress.mode,atlasI5PublicationProgress.label,atlasI5PublicationProgress.percent);atlasV164UpdatePublicationIndicator();
+};
+
+const atlasI5ApplyBatchProgressBase=atlasV094ApplyProgress;
+atlasV094ApplyProgress=function(){atlasI5ApplyBatchProgressBase();const p=atlasV094PublicationProgress;if(!atlasI5PublicationProgress.active||!p)return;const withdrawing=atlasI5PublicationProgress.mode==="unpublish"||atlasI5PublicationProgress.mode==="delete",start=withdrawing?20:22,end=withdrawing?62:58,ratio=p.total>0?p.current/p.total:1,percent=Math.round(start+(end-start)*ratio);atlasI5SetProgress(atlasI5PublicationProgress.mode,withdrawing?`Retirando entrenamientos · lote ${p.current} de ${p.total}`:`Enviando entrenamientos · lote ${p.current} de ${p.total}`,percent);};
+
+atlasV150SyncPlanNow=async function(plan,{toastSuccess=false}={}){
+  if(!plan||atlasV150RemoteSyncBusy||!atlasOnline())return false;const diff=atlasV090PublicationDiff(plan);if(!diff.desired.events.length)return false;atlasV150RemoteSyncBusy=true;if(!atlasI5PublicationProgress.active)atlasI5SetProgress("publish","Preparando publicación…",6);
+  try{
+    atlasI5SetProgress("publish","Comprobando conexión…",12);const caps=await atlasV090WorkerCapabilities();if(caps?.publication!==true)throw new Error("El Worker no tiene habilitada la publicación.");
+    atlasI5SetProgress("publish","Enviando entrenamientos…",22);const first=await atlasV094PublishDiffInBatches(plan,diff);
+    atlasI5SetProgress("publish","Verificando Intervals.icu…",66);const verified=await atlasV152VerifyPublish(plan,diff,first),result=verified.result,ledger=atlasV090RemoteLedger(diff.desired.events,result.events||[],plan.publication?.remoteEvents||[]),now=new Date().toISOString(),snapshot=atlasI5PublishedSnapshot(plan,diff);
+    atlasI5SetProgress("publish","Guardando versión publicada…",84);plan.publication={...(plan.publication||{}),status:"published",dirty:false,schema:ATLAS_PUBLICATION_SCHEMA,version:ATLAS_PUBLICATION_VERSION,publishedAt:plan.publication?.publishedAt||now,updatedAt:now,lastPublishAt:now,manifestDigest:diff.desired.digest,remoteRevision:Number(result?.revision)||Number(plan.publication?.remoteRevision||0)+1,remoteEvents:ledger,lastError:null,lastErrorAt:null,lastResult:{upserted:Number(result?.upserted)||0,deleted:Number(result?.deleted)||0,missing:Array.isArray(result?.missing)?result.missing.length:0,garminEnabled:result?.garmin?.enabled===true,verified:true,remoteCount:verified.audit.remoteCount},publishedRestDates:atlasI1ComputePublishedRestDates(plan),publishedViewVersion:"I1",i5PublishedSnapshot:snapshot,i5PublishedSnapshotVersion:ATLAS_I5_VERSION};plan.updatedAt=now;await persistTrainingPlans();
+    atlasI5SetProgress("publish","Actualizando calendario…",93);await syncCalendar(false);renderPlan();renderUpcomingTrainings();atlasI5SetProgress("publish","Publicación completada",100);await renderTrainingPlanPublication();if(toastSuccess)toast(`✅ Intervals.icu verificado · ${ledger.length} sesiones.`);return true;
+  }catch(error){recordRuntimeAudit("training-plan-sync-i5",error,{planId:plan.id}).catch(()=>{});plan.publication={...(plan.publication||{}),lastError:String(error?.message||error),lastErrorAt:new Date().toISOString(),dirty:true};await persistTrainingPlans().catch(()=>{});toast(`⚠️ Publicación pendiente: ${error.message}`,true);return false;}
+  finally{atlasV150RemoteSyncBusy=false;atlasV094PublicationProgress=null;}
+};
+
+atlasV090PublishPlan=async function(){
+  if(atlasV090PublicationBusy||atlasV150RemoteSyncBusy)return;const plan=activeTrainingPlan();if(!plan)return;const diff=atlasV090PublicationDiff(plan),first=plan.publication?.status!=="published",pending=(diff.upserts?.length||0)+(diff.deletes?.length||0);if(!diff.desired.events.length){toast("⚠️ No hay sesiones futuras para publicar.",true);return;}if(!first&&!pending){toast("El calendario ya está actualizado.");return;}const action=first?`Publicar ${diff.desired.events.length} entrenamientos en Intervals.icu`:`Publicar ${pending} cambio${pending===1?"":"s"} en Intervals.icu`;if(!confirm(`${action}?\n\nPlan y Hoy se actualizarán únicamente después de que Intervals.icu confirme la publicación.`))return;atlasV090PublicationBusy=true;atlasI5SetProgress("publish","Preparando publicación…",5);await renderTrainingPlanPublication();try{const ok=await atlasV150SyncPlanNow(plan,{toastSuccess:true});if(!ok&&!atlasOnline())toast("⚠️ Sin conexión: los cambios siguen pendientes.",true);}finally{atlasV090PublicationBusy=false;atlasI5ClearProgress();await renderTrainingPlanPublication();}
+};
+
+atlasV150UnpublishAll=async function(plan){
+  const all=atlasV150RemoteCandidates(plan);if(!all.length)return{deleted:0,missing:0,verified:true,retries:0};let deleted=0,missing=[],chunks=atlasV094Chunk(all);for(let i=0;i<chunks.length;i++){atlasV094PublicationProgress={current:i+1,total:chunks.length};atlasV094ApplyProgress();const result=await atlasV152DeleteChunk(plan,chunks[i]);deleted+=Number(result?.deleted)||0;if(Array.isArray(result?.missing))missing.push(...result.missing);}atlasI5SetProgress(atlasI5PublicationProgress.mode||"unpublish","Verificando retirada…",72);const verified=await atlasV152VerifyUnpublish(plan,all,{deleted,missing});atlasI5SetProgress(atlasI5PublicationProgress.mode||"unpublish","Actualizando calendario…",92);await syncCalendar(false);return verified;
+};
+atlasV090UnpublishPlan=async function(){
+  if(atlasV090PublicationBusy)return;const plan=activeTrainingPlan();if(!plan)return;const all=atlasV150RemoteCandidates(plan);if(!all.length){toast("No quedan entrenamientos futuros que retirar.");return;}if(!confirm(`¿Retirar ${all.length} entrenamientos futuros de Intervals.icu?\n\nEl borrador del plan se conservará en ɅTLɅS.`))return;atlasV090PublicationBusy=true;atlasI5SetProgress("unpublish","Preparando retirada…",8);await renderTrainingPlanPublication();try{const result=await atlasV150UnpublishAll(plan),now=new Date().toISOString();atlasI5SetProgress("unpublish","Guardando estado local…",96);plan.publication={status:"draft",dirty:false,schema:ATLAS_PUBLICATION_SCHEMA,version:ATLAS_PUBLICATION_VERSION,updatedAt:now,unpublishedAt:now,remoteEvents:(plan.publication?.remoteEvents||[]).filter(e=>String(e.date||"")<atlasV090Today()),lastResult:result,publishedRestDates:[],i5PublishedSnapshot:[],i5PublishedSnapshotVersion:ATLAS_I5_VERSION,lastError:null,lastErrorAt:null};plan.updatedAt=now;await persistTrainingPlans();renderPlan();renderUpcomingTrainings();atlasI5SetProgress("unpublish","Entrenamientos retirados",100);toast("✅ Entrenamientos retirados de Intervals.icu.");}catch(error){recordRuntimeAudit("training-plan-unpublish-i5",error,{planId:plan.id}).catch(()=>{});toast(`⚠️ No se han podido retirar: ${error.message}`,true);}finally{atlasV090PublicationBusy=false;atlasV094PublicationProgress=null;atlasI5ClearProgress();await renderTrainingPlanPublication();}
+};
+
+deleteActiveTrainingPlan=async function(){
+  const plan=activeTrainingPlan();if(!plan)return;const remote=atlasV150RemoteCandidates(plan);if(!confirm(`¿Eliminar “${plan.name}”?${remote.length?`\n\nAntes se retirarán ${remote.length} entrenamientos futuros de Intervals.icu.`:""}\n\nLas actividades realizadas no se borrarán.`))return;atlasV090PublicationBusy=true;if(remote.length){atlasI5SetProgress("delete","Retirando entrenamientos antes de eliminar…",8);await renderTrainingPlanPublication();}try{if(remote.length)await atlasV150UnpublishAll(plan);atlasI5SetProgress("delete","Eliminando plan…",96);currentTrainingPlans=currentTrainingPlans.filter(p=>p.id!==plan.id);currentTrainingPlanId=currentTrainingPlans[0]?.id||null;await persistTrainingPlans();atlasI5SetProgress("delete","Plan eliminado",100);closeTrainingPlanWorkspace();renderPlan();renderUpcomingTrainings();toast("✅ Plan eliminado.");}catch(error){recordRuntimeAudit("training-plan-delete-i5",error,{planId:plan.id}).catch(()=>{});toast(`⚠️ El plan NO se ha eliminado: ${error.message}`,true);}finally{atlasV090PublicationBusy=false;atlasV094PublicationProgress=null;atlasI5ClearProgress();}
+};
+
+atlasDomReadyInitializers.push(()=>{atlasI5EnsurePublicationUi();renderTrainingPlanPublication().catch(()=>{});});
+
+
+/* ===== ɅTLɅS v1.6.25 · I6 Perfil: histórico de umbral + Zonas ===== */
+const ATLAS_I6_VERSION="1.6.25";
+METRIC_DETAIL_CONFIG["Umbral de lactato"]={emoji:"🔥",key:"threshold",title:"Umbral de lactato"};
+
+function atlasI6ActivityThresholdPaceSec(a){
+  const n=Number(pick(a||{},["threshold_pace","thresholdPace"]));
+  if(!(n>0))return null;
+  if(n<15)return 1000/n;
+  if(n>=120&&n<=900)return n;
+  return null;
+}
+function atlasI6ThresholdHistory(){
+  const byDate=new Map();
+  const runs=(currentActivities||[]).filter(isRun).slice().sort((a,b)=>activityStamp(a).localeCompare(activityStamp(b)));
+  for(const a of runs){
+    const date=activityDate(a);if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date||"")))continue;
+    const pace=atlasI6ActivityThresholdPaceSec(a),rawHr=Number(pick(a,["lthr","threshold_hr","thresholdHr"])),hr=rawHr>=120&&rawHr<=220?rawHr:null;
+    if(!(pace>0)&&!(hr>0))continue;
+    const prior=byDate.get(date)||{date,paceSecKm:null,heartRate:null,source:"activity"};
+    if(pace>=150&&pace<=600)prior.paceSecKm=Math.round(pace*10)/10;
+    if(hr>0)prior.heartRate=Math.round(hr);
+    byDate.set(date,prior);
+  }
+  const sport=runningSportSettings({sportSettings:Array.isArray(atlasG3Snapshot?.sportSettings)?atlasG3Snapshot.sportSettings:[]});
+  const currentPace=sportThresholdPaceSecKm(sport),currentHr=Number(sport?.lthr),today=fmtDate(new Date());
+  if((currentPace>=150&&currentPace<=600)||(currentHr>=120&&currentHr<=220)){
+    const prior=byDate.get(today)||{date:today,paceSecKm:null,heartRate:null,source:"current"};
+    if(currentPace>=150&&currentPace<=600)prior.paceSecKm=Math.round(currentPace*10)/10;
+    if(currentHr>=120&&currentHr<=220)prior.heartRate=Math.round(currentHr);
+    prior.source="current";byDate.set(today,prior);
+  }
+  return[...byDate.values()].filter(x=>Number.isFinite(x.paceSecKm)||Number.isFinite(x.heartRate)).sort((a,b)=>a.date.localeCompare(b.date));
+}
+function atlasI6ThresholdSeries(start,end){
+  return atlasI6ThresholdHistory().filter(x=>x.date>=start&&x.date<=end).map(x=>({date:x.date,value:x.paceSecKm,paceSecKm:x.paceSecKm,heartRate:x.heartRate,source:x.source}));
+}
+const atlasI6DetailSeriesBase=detailSeries;
+detailSeries=function(key,start,end,days){return key==="threshold"?atlasI6ThresholdSeries(start,end):atlasI6DetailSeriesBase(key,start,end,days);};
+const atlasI6EarliestMetricDateBase=earliestMetricDate;
+earliestMetricDate=function(key){if(key==="threshold")return atlasI6ThresholdHistory()[0]?.date||fmtDate(new Date());return atlasI6EarliestMetricDateBase(key);};
+
+function atlasI6NiceDomain(values,{step=5,pad=5,minSpan=20}={}){
+  const v=values.map(Number).filter(Number.isFinite);if(!v.length)return null;
+  let min=Math.floor((Math.min(...v)-pad)/step)*step,max=Math.ceil((Math.max(...v)+pad)/step)*step;
+  if(max-min<minSpan){const extra=(minSpan-(max-min))/2;min=Math.floor((min-extra)/step)*step;max=Math.ceil((max+extra)/step)*step;}
+  const ticks=[];const target=5,span=Math.max(step,max-min),raw=span/(target-1),mult=Math.max(1,Math.ceil(raw/step)),tickStep=step*mult;
+  min=Math.floor(min/tickStep)*tickStep;max=Math.ceil(max/tickStep)*tickStep;
+  for(let x=min;x<=max+tickStep*.1;x+=tickStep)ticks.push(x);
+  return{min,max,ticks};
+}
+function atlasI6DrawThresholdChart(series,range){
+  const svg=ui.metricChart,H=236,L=42,R=33,T=18,B=30,W=Math.max(1,Math.round((ui.metricChartScroll?.clientWidth||360)*chartZoom)),plotX0=L,plotW=Math.max(1,W-L-R),plotH=H-T-B;
+  const paces=series.map(x=>x.paceSecKm).filter(Number.isFinite),hrs=series.map(x=>x.heartRate).filter(Number.isFinite),paceDomain=atlasI6NiceDomain(paces,{step:5,pad:4,minSpan:20}),hrDomain=atlasI6NiceDomain(hrs,{step:5,pad:3,minSpan:20});
+  currentChartState={series,key:"threshold",range,plotX0,plotW,W,isBar:false,T,plotH,paceDomain,hrDomain};
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);svg.style.width=`${W}px`;svg.style.minWidth=`${W}px`;svg.innerHTML="";ui.chartLegend.className="chart-legend active";ui.chartLegend.innerHTML='<span class="legend-item"><span class="legend-dot" style="background:#1d9bf0"></span>Ritmo umbral</span><span class="legend-item"><span class="legend-dot" style="background:#ff453a"></span>FC umbral</span>';
+  if(!series.length||(!paceDomain&&!hrDomain)){svg.innerHTML=`<text class="chart-empty" x="${W/2}" y="116" text-anchor="middle">Sin datos en este periodo</text>`;return;}
+  const total=Math.max(1,dateDiff(range.start,range.end)),x=d=>plotX0+(clamp(dateDiff(range.start,d),0,total)/total)*plotW,
+    yp=v=>paceDomain?T+(v-paceDomain.min)/(paceDomain.max-paceDomain.min)*plotH:null,
+    yh=v=>hrDomain?T+(hrDomain.max-v)/(hrDomain.max-hrDomain.min)*plotH:null;
+  let m="";
+  if(paceDomain){for(const tick of paceDomain.ticks){const yy=yp(tick);m+=`<line class="chart-grid" x1="${plotX0}" y1="${yy}" x2="${W-R}" y2="${yy}"/><text class="chart-label" x="${L-5}" y="${yy+3}" text-anchor="end">${formatPaceValue(tick)}</text>`;}}
+  if(hrDomain){for(const tick of hrDomain.ticks){const yy=yh(tick);m+=`<text class="atlas-i6-axis-right" x="${W-R+5}" y="${yy+3}" text-anchor="start">${Math.round(tick)}</text>`;}}
+  m+=`<line class="chart-axis-line" x1="${plotX0}" y1="${T}" x2="${plotX0}" y2="${T+plotH}"/><line class="chart-axis-line" x1="${W-R}" y1="${T}" x2="${W-R}" y2="${T+plotH}"/>`;
+  const pacePts=series.filter(d=>Number.isFinite(d.paceSecKm)),hrPts=series.filter(d=>Number.isFinite(d.heartRate));
+  if(pacePts.length>1)m+=`<polyline class="atlas-i6-line-pace" points="${pacePts.map(d=>`${x(d.date)},${yp(d.paceSecKm)}`).join(" ")}"/>`;
+  if(hrPts.length>1)m+=`<polyline class="atlas-i6-line-hr" points="${hrPts.map(d=>`${x(d.date)},${yh(d.heartRate)}`).join(" ")}"/>`;
+  const pLast=pacePts.at(-1),hLast=hrPts.at(-1);if(pLast){const xx=x(pLast.date),yy=yp(pLast.paceSecKm);m+=`<circle class="atlas-i6-point-pace" cx="${xx}" cy="${yy}" r="3.2"/><text class="atlas-i6-latest-label pace" x="${Math.min(W-R-2,xx+5)}" y="${Math.max(T+8,yy-6)}">${formatPaceValue(pLast.paceSecKm)}</text>`;}if(hLast){const xx=x(hLast.date),yy=yh(hLast.heartRate);m+=`<circle class="atlas-i6-point-hr" cx="${xx}" cy="${yy}" r="3.2"/><text class="atlas-i6-latest-label hr" x="${Math.min(W-R-2,xx+5)}" y="${Math.min(T+plotH-2,yy+12)}">${Math.round(hLast.heartRate)}</text>`;}
+  for(const d of xAxisDates(range.start,range.end,currentMetricDays)){const xx=x(d),anchor=d===range.start?"start":d===range.end?"end":"middle",label=axisDateLabel(d,currentMetricDays);if(label)m+=`<text class="chart-label" x="${xx}" y="${H-8}" text-anchor="${anchor}" style="font-size:7.2px">${label}</text>`;}
+  svg.innerHTML=m;
+}
+const atlasI6DrawMetricChartBase=drawMetricChart;
+drawMetricChart=function(series,key,range){if(key==="threshold")return atlasI6DrawThresholdChart(series,range);return atlasI6DrawMetricChartBase(series,key,range);};
+
+const atlasI6ShowChartTouchMarkerBase=showChartTouchMarker;
+showChartTouchMarker=function(item,key){
+  if(key!=="threshold")return atlasI6ShowChartTouchMarkerBase(item,key);
+  const st=currentChartState;if(!st||!item)return;hideChartTouchMarker();const total=Math.max(1,dateDiff(st.range.start,st.range.end)),xx=st.plotX0+(clamp(dateDiff(st.range.start,item.date),0,total)/total)*st.plotW,parts=[];
+  if(Number.isFinite(item.paceSecKm)&&st.paceDomain){const d=st.paceDomain,yy=st.T+(item.paceSecKm-d.min)/(d.max-d.min)*st.plotH;parts.push(`<circle class="atlas-i6-point-pace" cx="${xx}" cy="${yy}" r="4"/>`);}
+  if(Number.isFinite(item.heartRate)&&st.hrDomain){const d=st.hrDomain,yy=st.T+(d.max-item.heartRate)/(d.max-d.min)*st.plotH;parts.push(`<circle class="atlas-i6-point-hr" cx="${xx}" cy="${yy}" r="4"/>`);}
+  if(parts.length)ui.metricChart.insertAdjacentHTML("beforeend",`<g id="chartTouchMarker">${parts.join("")}</g>`);
+};
+const atlasI6ChartTouchTextBase=chartTouchText;
+chartTouchText=function(item,key){if(key!=="threshold")return atlasI6ChartTouchTextBase(item,key);const bits=[touchDateLabel(item.date)];if(Number.isFinite(item.paceSecKm))bits.push(`${formatPaceValue(item.paceSecKm)} min/km`);if(Number.isFinite(item.heartRate))bits.push(`${Math.round(item.heartRate)} ppm`);return bits.join(" · ");};
+
+const atlasI6RenderDetailStatsBase=renderDetailStats;
+renderDetailStats=function(series,key){
+  if(key!=="threshold")return atlasI6RenderDetailStatsBase(series,key);
+  ui.detailStatSub1.textContent="";ui.detailStatSub2.textContent="";ui.detailStatSub3.textContent="";
+  const valid=series.filter(x=>Number.isFinite(x.paceSecKm)||Number.isFinite(x.heartRate));if(!valid.length){[ui.detailStatValue1,ui.detailStatValue2,ui.detailStatValue3].forEach(x=>x.textContent="—");return;}
+  const latest=valid.at(-1),paceSeries=valid.filter(x=>Number.isFinite(x.paceSecKm)),firstPace=paceSeries[0],lastPace=paceSeries.at(-1),delta=firstPace&&lastPace?lastPace.paceSecKm-firstPace.paceSecKm:null;
+  ui.detailStatLabel1.textContent="Ritmo actual";ui.detailStatValue1.textContent=Number.isFinite(latest.paceSecKm)?`${formatPaceValue(latest.paceSecKm)} min/km`:"—";ui.detailStatSub1.textContent=formatStatDate(latest.date);
+  ui.detailStatLabel2.textContent="Cambio";ui.detailStatValue2.textContent=Number.isFinite(delta)?(Math.abs(delta)<1?"Estable":`${Math.abs(Math.round(delta))} s/km ${delta<0?"más rápido":"más lento"}`):"—";ui.detailStatSub2.textContent=firstPace&&lastPace&&firstPace.date!==lastPace.date?`Desde ${formatStatDate(firstPace.date)}`:"";
+  ui.detailStatLabel3.textContent="FC umbral";ui.detailStatValue3.textContent=Number.isFinite(latest.heartRate)?`${Math.round(latest.heartRate)} ppm`:"—";ui.detailStatSub3.textContent=formatStatDate(latest.date);
+};
+const atlasI6RenderDetailExtrasBase=renderDetailExtras;
+renderDetailExtras=function(key){if(key!=="threshold")return atlasI6RenderDetailExtrasBase(key);ui.metricContext.className="metric-context active";ui.metricContext.innerHTML='<div class="metric-explanation"><strong>Umbral de lactato.</strong> Histórico construido con los valores almacenados en tus actividades de carrera y el valor actual recibido de Intervals.icu. ɅTLɅS no recalcula ni interpola el umbral: muestra la evolución de los snapshots disponibles de ritmo y FC.</div>';};
+
+function atlasI6EnableThresholdTile(){
+  const box=$("profileDashboardPerformance");if(!box)return;const cells=[...box.querySelectorAll(".profile-dashboard-performance-cell")],cell=cells.find(x=>String(x.querySelector(".profile-dashboard-performance-label")?.textContent||"").trim()==="Umbral");if(!cell)return;cell.classList.add("atlas-i6-threshold-tile");cell.setAttribute("role","button");cell.setAttribute("tabindex","0");cell.setAttribute("aria-label","Abrir histórico del umbral de lactato");
+}
+const atlasI6RenderProfilePanelBase=renderProfilePanel;
+renderProfilePanel=function(athlete){atlasI6RenderProfilePanelBase(athlete);atlasI6EnableThresholdTile();};
+
+atlasDomReadyInitializers.push(()=>{
+  const box=$("profileDashboardPerformance");if(box&&!box.dataset.atlasI6Bound){box.dataset.atlasI6Bound="1";box.addEventListener("click",e=>{const cell=e.target.closest(".atlas-i6-threshold-tile");if(cell)openMetricDetail("Umbral de lactato");});box.addEventListener("keydown",e=>{const cell=e.target.closest(".atlas-i6-threshold-tile");if(cell&&(e.key==="Enter"||e.key===" ")){e.preventDefault();openMetricDetail("Umbral de lactato");}});}atlasI6EnableThresholdTile();
+});
+
+/* Zonas I6: mismo renderer, únicamente cambia jerarquía tipográfica mediante CSS. */
+const ATLAS_I6_PROFILE=Object.freeze({version:ATLAS_I6_VERSION,thresholdHistory:"activity snapshots + current sport settings",thresholdMetrics:["pace","heartRate"],periods:[7,30,180,365,"all"],zones:"dividerless-large-type"});
+
+/* ===== ɅTLɅS v1.6.26 · I7 Configuración ===== */
+const ATLAS_I7_VERSION="1.6.26";
+function atlasI7RefreshConnectionIndicator(){
+  const state=$("connectionState"),indicator=$("atlasI7ConnectionIndicator");if(!state||!indicator)return;
+  const text=String(state.textContent||"").trim(),connected=/^Conectado$/i.test(text);
+  indicator.classList.toggle("connected",connected);indicator.setAttribute("aria-label",text||"Sin configurar");
+}
+function atlasI7InitializeSettings(){
+  document.documentElement.dataset.theme="dark";document.documentElement.style.colorScheme="dark";
+  const version=$("atlasI7VersionText");if(version)version.textContent=`v${APP_VERSION}`;
+  const state=$("connectionState");if(state&&!state.dataset.atlasI7Observed){state.dataset.atlasI7Observed="1";new MutationObserver(atlasI7RefreshConnectionIndicator).observe(state,{childList:true,characterData:true,subtree:true});}
+  atlasI7RefreshConnectionIndicator();
+}
+atlasDomReadyInitializers.push(atlasI7InitializeSettings);
+const ATLAS_I7_SETTINGS=Object.freeze({version:ATLAS_I7_VERSION,theme:"dark-only",sections:["Sincronización","Base de datos","Versión"],connectionIndicator:"red-green",visibleDiagnostics:false,internalDiagnostics:true});
+
 const ATLAS_H5_ACCESSIBILITY=Object.freeze({version:"1.6.15",planAccordions:7,profileAccordions:true,semanticStates:true,keyboardFocus:true,reducedMotion:true});
 const ATLAS_H6_THEME=Object.freeze({version:"1.6.16",mode:"dark-only",legacyThemePreferenceRetired:true});
 const ATLAS_G5_CONSOLIDATION=Object.freeze({version:"1.6.10",domReadyDispatcher:true,duplicateDeclarationsRemoved:0,uiChainsFlattened:["renderPlan","renderTrainingPlanWorkspace","renderTrainingPlanPublication","openPrescribedPlanDetail","closePlanDetail","trainingPlanMarkPublicationDirty","adaptiveUi"]});
 const ATLAS_G6_COMPACTION=Object.freeze({version:ATLAS_G6_COMPACT_VERSION,storage:"single-representation",rehydration:"deterministic-order-preserving",removedDuplicates:["weeklySkeleton.weeks[].sessions","prescriptionCore.weeks[].days","prescriptionCore.schedule.days"],canonicalPreserved:["weeklySkeleton.schedule","prescriptionCore.schedule.weeks"]});
 })();
+
+
+/* ===== ɅTLɅS v1.6.27 · I8 Regresión integral y cierre de Fase I =====
+   Pulido estrictamente de presentación. No modifica Training Engine, Adaptive
+   Engine, publicación, sincronización ni modelos de datos. */
+const ATLAS_I8_VERSION="1.6.27";
+const ATLAS_I8_CLOSURE=Object.freeze({
+  version:ATLAS_I8_VERSION,phase:"I",schemaVersion:SCHEMA_VERSION,dbVersion:DB_VERSION,
+  planPolish:Object.freeze({hideCurrentWeekReturn:true,hideInProgressLabel:true,hidePassiveStructuralWatch:true})
+});
+function atlasI8PlanWeekPolish(){
+  if(!ui?.planToday)return;
+  const current=mondayOf(new Date()),selected=currentPlanWeekStart?mondayOf(new Date(currentPlanWeekStart)):current,same=fmtDate(selected)===fmtDate(current);
+  ui.planToday.classList.toggle("hidden",same);
+  ui.planToday.setAttribute("aria-hidden",same?"true":"false");
+  ui.planToday.tabIndex=same?-1:0;
+}
+const atlasI8RenderPlanBase=renderPlan;
+renderPlan=function(){const result=atlasI8RenderPlanBase.apply(this,arguments);atlasI8PlanWeekPolish();return result;};
+
+function atlasI8WorkspaceStatusPolish(){
+  const el=ui?.trainingPlanWorkspaceSubtitle,plan=activeTrainingPlan();if(!el||!plan)return;
+  const status=trainingPlanStatus(plan),passive=status==="En curso"||status==="Plan";
+  el.textContent=passive?"":status;el.classList.toggle("hidden",passive);
+}
+const atlasI8RenderTrainingPlanWorkspaceBase=renderTrainingPlanWorkspace;
+renderTrainingPlanWorkspace=function(){const result=atlasI8RenderTrainingPlanWorkspaceBase.apply(this,arguments);atlasI8WorkspaceStatusPolish();return result;};
+
+const atlasI8StructuralNoticeBase=atlasV164StructuralNotice;
+atlasV164StructuralNotice=function(plan){
+  if(String(plan?.adaptiveEngine?.structural?.decision?.action||"")==="STRUCTURAL_WATCH")return null;
+  return atlasI8StructuralNoticeBase(plan);
+};
+
+atlasDomReadyInitializers.push(()=>{atlasI8PlanWeekPolish();atlasI8WorkspaceStatusPolish();});
 </script></body>
 </html>
