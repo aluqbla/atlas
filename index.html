@@ -2328,7 +2328,7 @@ const AtlasHrv=(()=>{
 /* ===== ɅTLɅS v1.6.33 · K2.3 canonical Plan / Publication / Sync bindings =====
    Historical public overrides removed where the final implementation was self-contained.
    Golden K2.1 contracts remain the behavioral authority. */
-const APP_VERSION="1.6.36",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="1.6.37",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 /* G5: wrapper/residual consolidation. No sport, Adaptive, CAS or publication contract changes. */
 // Training Engine implementation track: v0.2 — input contract + athlete snapshot + base classification.
 
@@ -6977,7 +6977,7 @@ function atlasV090WorkoutDescription(session){
       if(reps>1){
         lines.push(`Main Set ${reps}x`);
         lines.push(atlasV090StepLine({distanceM:repDistance,durationSec:repDistance?null:repDuration,pace:s.pace,intensity:"interval"}));
-        if(recoverySec>0)lines.push(atlasV090StepLine({durationSec:recoverySec,intensity:"recovery"}));
+        if(recoverySec>0)lines.push(atlasV090StepLine({durationSec:recoverySec,pace:atlasK243RecoveryPace(s,session),intensity:"recovery"}));
         lines.push("");
       }else{
         if(!lines.length||lines.at(-1)!=="Main Set")lines.push("Main Set");
@@ -9368,7 +9368,7 @@ atlasV090WorkoutDescription=function(session){
       if(reps>1){
         lines.push(`Main Set ${reps}x`);
         lines.push(atlasV090StepLine({distanceM:repDistance,durationSec:repDistance?null:repDuration,pace:s.pace,intensity:"interval"}));
-        if(recoverySec>0)lines.push(atlasV090StepLine({durationSec:recoverySec,intensity:"recovery"}));
+        if(recoverySec>0)lines.push(atlasV090StepLine({durationSec:recoverySec,pace:atlasK243RecoveryPace(s,session),intensity:"recovery"}));
         lines.push("");
       }else{
         if(!lines.length||lines.at(-1)!=="Main Set")lines.push("Main Set");
@@ -9382,8 +9382,8 @@ atlasV090WorkoutDescription=function(session){
   if(cool.length){
     lines.push("Cooldown");
     for(const s of cool){
-      const fallback=!Number(s.distanceM)&&!Number(s.durationSec)&&!Number(s.workSec)?300:null;
-      lines.push(atlasV090StepLine({distanceM:s.distanceM,durationSec:s.durationSec||s.workSec||fallback,pace:s.pace,intensity:"cooldown"}));
+      const fallback=!Number(s.distanceM)&&!Number(s.durationSec)&&!Number(s.workSec)?300:null,openKm=Number(s?.openUntilTotalKm),open=!!s?.openEnded&&openKm>0,estimate=Number(s?.durationSec)||Number(s?.workSec)||trainingPresentationEstimatedStepTime(Number(s?.distanceM)||0,s?.pace||null);
+      lines.push(open?atlasV090StepLine({durationSec:estimate||fallback||300,pace:s.pace,intensity:"cooldown",pressLap:true,cue:`hasta ${formatNatural(openKm,0)} km totales`}):atlasV090StepLine({distanceM:s.distanceM,durationSec:s.durationSec||s.workSec||fallback,pace:s.pace,intensity:"cooldown"}));
     }
   }
   return lines.filter((x,i,a)=>!(x===""&&a[i-1]==="")).join("\n").trim();
@@ -13990,6 +13990,180 @@ collectRuntimeDiagnostics=async function(){
   const out=await atlasJ3CollectRuntimeDiagnosticsBase.apply(this,arguments);
   out.fastSync={version:ATLAS_J3_VERSION,...ATLAS_J3_PERF,averageCriticalMs:ATLAS_J3_PERF.success?Math.round(ATLAS_J3_PERF.criticalTotalMs/ATLAS_J3_PERF.success):null,averageBackgroundMs:ATLAS_J3_PERF.backgroundRuns?Math.round(ATLAS_J3_PERF.backgroundTotalMs/ATLAS_J3_PERF.backgroundRuns):null};return out;
 };
+
+
+/* ===== ɅTLɅS v1.6.37 · K2.4.3 Remote-truth Publication + recovery-distance parity =====
+   Intervals.icu is authoritative for what is actually published. Local publication
+   metadata is a cache only. Timed moving recoveries carry a pace target so Intervals
+   can estimate their distance and its planned total matches ɅTLɅS. */
+const ATLAS_K243_VERSION="1.6.37";
+const ATLAS_K243_POLICY=Object.freeze({
+  remoteTruth:"intervals_calendar_external_id",
+  externalId:"stable_plan_session_key",
+  states:["unpublished","published","pending","incomplete"],
+  externalChanges:"never_overwrite_silently",
+  movingRecovery:"time_plus_estimated_pace",
+  cooldown:"press_lap_to_atlas_total",
+  schemaMigration:false
+});
+const atlasK243RemoteTruthCache=new Map();
+const atlasK243DiffCache=new WeakMap();
+const atlasK243ForceLocalIds=new Set();
+let atlasK243RemoteRefreshPromise=null;
+const ATLAS_K243_REMOTE_TTL_MS=15000;
+
+function atlasK243RecoveryPace(step,session){
+  const sec=Number(step?.recoverySec)||0,dist=Number(step?.recoveryDistanceMEstimate)||Number(session?.recovery?.estimatedDistanceMEach)||0;
+  if(!(sec>0&&dist>0))return null;
+  const pace=sec/(dist/1000);return pace>=150&&pace<=900?{paceSecKm:Math.round(pace*10)/10,source:"recovery_distance_estimate",confidence:"estimated"}:null;
+}
+function atlasK243NormText(v){return String(v??"").replace(/\r\n?/g,"\n").replace(/[ \t]+$/gm,"").trim();}
+function atlasK243RemoteComparable(e){
+  const id=atlasV152ExternalId(e),date=atlasV152EventDate(e),rawType=e?.type??e?.sport??e?.activity_type??e?.activityType??"",name=planEventName(e),hasDescription=e?.description!=null||e?.notes!=null,description=atlasK243NormText(e?.description??e?.notes??"");
+  return{externalId:id,date,type:String(rawType||"").trim(),name:String(name||"").trim(),description,descriptionKnown:!!hasDescription,intervalsId:e?.id??e?.intervalsId??null};
+}
+function atlasK243DesiredComparable(e){return{externalId:String(e?.external_id||""),date:String(e?.start_date_local||"").slice(0,10),type:String(e?.type||"").trim(),name:String(e?.name||"").trim(),description:atlasK243NormText(e?.description||""),descriptionKnown:true};}
+function atlasK243ComparableFingerprint(c){return trainingEngineDigest({id:String(c?.externalId||""),date:String(c?.date||""),type:String(c?.type||"").toLowerCase(),name:String(c?.name||""),description:c?.descriptionKnown===false?null:atlasK243NormText(c?.description||"")});}
+function atlasK243DesiredHash(e){return atlasV090EventDigest(e);}
+function atlasK243RemoteMatchesDesired(remote,desired){
+  if(!remote||!desired)return false;const r=atlasK243RemoteComparable(remote),d=atlasK243DesiredComparable(desired);
+  if(r.externalId!==d.externalId||r.date!==d.date||r.name!==d.name)return false;
+  if(r.type&&d.type&&r.type.toLowerCase()!==d.type.toLowerCase())return false;
+  if(r.descriptionKnown&&atlasK243NormText(r.description)!==atlasK243NormText(d.description))return false;
+  return true;
+}
+function atlasK243RemoteChangedFromSnapshot(remote,snapshot){
+  if(!snapshot)return false;if(!remote)return true;const r=atlasK243RemoteComparable(remote);
+  if(String(snapshot.date||"")!==r.date||String(snapshot.name||"")!==r.name)return true;
+  if(snapshot.type&&r.type&&String(snapshot.type).toLowerCase()!==r.type.toLowerCase())return true;
+  if(snapshot.description!=null&&r.descriptionKnown&&atlasK243NormText(snapshot.description)!==atlasK243NormText(r.description))return true;
+  return false;
+}
+function atlasK243AcceptedMap(plan){const raw=plan?.publication?.k243AcceptedRemote;return raw&&typeof raw==="object"&&!Array.isArray(raw)?raw:{};}
+function atlasK243AcceptedMatch(plan,id,remote,desired){
+  const a=atlasK243AcceptedMap(plan)[id];if(!a)return false;const localHash=atlasK243DesiredHash(desired),remoteFp=remote?atlasK243ComparableFingerprint(atlasK243RemoteComparable(remote)):"MISSING";
+  return String(a.localHash||"")===String(localHash)&&String(a.remoteFingerprint||"")===String(remoteFp);
+}
+function atlasK243TruthKey(plan){return String(plan?.id||"");}
+function atlasK243Truth(plan){return atlasK243RemoteTruthCache.get(atlasK243TruthKey(plan))||null;}
+function atlasK243TruthFingerprint(remote){return trainingEngineDigest((remote||[]).map(e=>{const c=atlasK243RemoteComparable(e);return{id:c.externalId,date:c.date,type:c.type,name:c.name,description:c.descriptionKnown?c.description:null};}).sort((a,b)=>a.id.localeCompare(b.id)));}
+function atlasK243StableLedger(remote,old=[]){
+  const prior=new Map((old||[]).map(x=>[String(x.externalId||""),x]));return(remote||[]).map(e=>{const c=atlasK243RemoteComparable(e),p=prior.get(c.externalId)||{};return{sessionKey:String(c.externalId).split(":").slice(1).join(":"),externalId:c.externalId,intervalsId:c.intervalsId??p.intervalsId??null,date:c.date,type:c.type,name:c.name,hash:atlasK243ComparableFingerprint(c),remoteFingerprint:atlasK243ComparableFingerprint(c),updatedAt:p.updatedAt||new Date().toISOString()};}).sort((a,b)=>a.date.localeCompare(b.date)||a.externalId.localeCompare(b.externalId));
+}
+function atlasK243PublicationMaterial(pub){return trainingEngineDigest({status:pub?.status||"draft",dirty:!!pub?.dirty,manifestDigest:pub?.manifestDigest||null,remoteEvents:(pub?.remoteEvents||[]).map(x=>({externalId:x.externalId,intervalsId:x.intervalsId,date:x.date,type:x.type,name:x.name,hash:x.hash,remoteFingerprint:x.remoteFingerprint})),snapshot:(pub?.i5PublishedSnapshot||[]).map(x=>({externalId:x.externalId,date:x.date,name:x.name,type:x.type,hash:x.hash,description:x.description??null})),accepted:pub?.k243AcceptedRemote||{}});}
+function atlasK243BuildDiff(plan){
+  const desired=atlasV090DesiredManifest(plan),truth=atlasK243Truth(plan),remoteVerified=!!truth?.verified,remote=remoteVerified?(truth.remote||[]):null,old=remoteVerified?atlasK243StableLedger(remote,plan?.publication?.remoteEvents||[]):(Array.isArray(plan?.publication?.remoteEvents)?plan.publication.remoteEvents:[]),today=atlasV090Today(),desiredMap=new Map(desired.events.map(e=>[String(e.external_id),e])),oldMap=new Map(old.map(e=>[String(e.externalId||""),e])),remoteMap=remoteVerified?new Map(remote.map(e=>[atlasV152ExternalId(e),e]).filter(([id])=>id)):null,snap=atlasI5SnapshotMap(plan),upserts=[],deletes=[],conflicts=[],acceptedExternal=[];
+  for(const e of desired.events){
+    const id=String(e.external_id||""),prior=oldMap.get(id),r=remoteMap?.get(id)||null,snapshot=snap.get(id)||null,forced=atlasK243ForceLocalIds.has(id);
+    if(remoteVerified){
+      if(!r){
+        if(snapshot&&!forced&&!atlasK243AcceptedMatch(plan,id,null,e)){conflicts.push({id,kind:"external_delete",desired:e,remote:null,snapshot,remoteFingerprint:"MISSING",localHash:atlasK243DesiredHash(e)});continue;}
+        if(atlasK243AcceptedMatch(plan,id,null,e)){acceptedExternal.push({id,kind:"accepted_delete",desired:e,remote:null});continue;}
+        upserts.push(e);continue;
+      }
+      if(atlasK243RemoteMatchesDesired(r,e))continue;
+      if(atlasK243AcceptedMatch(plan,id,r,e)){acceptedExternal.push({id,kind:"accepted_change",desired:e,remote:r});continue;}
+      if(snapshot&&atlasK243RemoteChangedFromSnapshot(r,snapshot)&&!forced){const c=atlasK243RemoteComparable(r);conflicts.push({id,kind:"external_change",desired:e,remote:r,snapshot,remoteFingerprint:atlasK243ComparableFingerprint(c),localHash:atlasK243DesiredHash(e)});continue;}
+      upserts.push(e);continue;
+    }
+    const hash=atlasV090EventDigest(e);if(!prior||prior.hash!==hash||prior.date!==e.start_date_local.slice(0,10))upserts.push(e);
+  }
+  for(const p of old){const id=String(p.externalId||"");if(String(p.date||"")>=today&&!desiredMap.has(id))deletes.push({external_id:id,date:p.date});}
+  const key=trainingEngineDigest({desired:desired.digest,truth:truth?.fingerprint||"local",accepted:plan?.publication?.k243AcceptedRemote||{},force:[...atlasK243ForceLocalIds].sort()});
+  return{desired,upserts,deletes,old,conflicts,acceptedExternal,remoteVerified,remoteCount:remoteVerified?remote.length:old.length,remoteFingerprint:truth?.fingerprint||null,key};
+}
+function atlasV090PublicationDiff(plan){
+  if(!plan)return atlasPublicationDiffCore(plan);const truth=atlasK243Truth(plan),desired=atlasV090DesiredManifest(plan),key=trainingEngineDigest({desired:desired.digest,truth:truth?.fingerprint||"local",accepted:plan?.publication?.k243AcceptedRemote||{},force:[...atlasK243ForceLocalIds].sort()}),cached=atlasK243DiffCache.get(plan);if(cached?.key===key)return cached.diff;const diff=atlasK243BuildDiff(plan);atlasK243DiffCache.set(plan,{key,diff});return diff;
+}
+function atlasK243SnapshotWithDescription(plan,event){const x=atlasI5SessionSnapshot(plan,event);x.description=atlasK243NormText(event?.description||"");return x;}
+atlasI5PublishedSnapshot=function(plan,diff){return(diff?.desired?.events||[]).map(e=>atlasK243SnapshotWithDescription(plan,e));};
+
+async function atlasK243RefreshRemoteTruth(plan,{force=false,persist=true}={}){
+  if(!plan||!atlasOnline())return atlasK243Truth(plan);const key=atlasK243TruthKey(plan),cached=atlasK243RemoteTruthCache.get(key),now=Date.now();if(!force&&cached?.verified&&now-cached.at<ATLAS_K243_REMOTE_TTL_MS)return cached;
+  if(atlasK243RemoteRefreshPromise&&atlasK243RemoteRefreshPromise.key===key)return atlasK243RemoteRefreshPromise.promise;
+  const promise=(async()=>{
+    try{
+      const remote=await atlasV152FetchRemotePlanEvents(plan),truth={verified:true,error:null,at:Date.now(),remote,fingerprint:atlasK243TruthFingerprint(remote)};atlasK243RemoteTruthCache.set(key,truth);atlasK243DiffCache.delete(plan);
+      const before=atlasK243PublicationMaterial(plan.publication||{}),oldPub=plan.publication||{},ledger=atlasK243StableLedger(remote,oldPub.remoteEvents||[]);let nextPub={...oldPub,status:remote.length?"published":"draft",remoteEvents:ledger};const diff=atlasK243BuildDiff(plan),pending=diff.upserts.length+diff.deletes.length+diff.conflicts.length;nextPub.dirty=pending>0;
+      if(!remote.length){nextPub.i5PublishedSnapshot=[];nextPub.k243AcceptedRemote={};nextPub.manifestDigest=null;}
+      else if(pending===0){nextPub.manifestDigest=diff.desired.digest;if(!Array.isArray(nextPub.i5PublishedSnapshot)||!nextPub.i5PublishedSnapshot.length)nextPub.i5PublishedSnapshot=atlasI5PublishedSnapshot(plan,diff);}
+      const accepted={...(nextPub.k243AcceptedRemote||{})};for(const [id,a] of Object.entries(accepted)){const d=diff.desired.events.find(e=>String(e.external_id)===id),r=remote.find(e=>atlasV152ExternalId(e)===id);if(!d||!atlasK243AcceptedMatch({...plan,publication:{...nextPub,k243AcceptedRemote:accepted}},id,r||null,d))delete accepted[id];else if(r&&atlasK243RemoteMatchesDesired(r,d))delete accepted[id];}nextPub.k243AcceptedRemote=accepted;
+      const after=atlasK243PublicationMaterial(nextPub);if(before!==after){const iso=new Date().toISOString();nextPub.updatedAt=iso;plan.publication=nextPub;plan.updatedAt=iso;atlasK243DiffCache.delete(plan);if(persist)await persistTrainingPlans();}else plan.publication=nextPub;
+      return truth;
+    }catch(error){const truth={verified:false,error:String(error?.message||error),at:Date.now(),remote:cached?.remote||[],fingerprint:cached?.fingerprint||null};atlasK243RemoteTruthCache.set(key,truth);return truth;}
+    finally{if(atlasK243RemoteRefreshPromise?.key===key)atlasK243RemoteRefreshPromise=null;}
+  })();atlasK243RemoteRefreshPromise={key,promise};return promise;
+}
+function atlasK243PublicationState(plan){
+  if(!plan?.engine||plan.engine.status!=="PRESCRIBED")return{kind:"error",label:"No disponible",copy:"El plan todavía no contiene una prescripción publicable.",diff:null};const truth=atlasK243Truth(plan),diff=atlasV090PublicationDiff(plan);
+  if(!truth)return{kind:"error",label:"Sincronización incompleta",copy:"El estado remoto de Intervals.icu todavía no se ha verificado.",diff};
+  if(!truth.verified)return{kind:"error",label:"Sincronización incompleta",copy:"No se ha podido verificar el estado real de Intervals.icu.",diff};
+  if(diff.conflicts?.length)return{kind:"error",label:"Sincronización incompleta",copy:`Intervals.icu contiene ${diff.conflicts.length} cambio${diff.conflicts.length===1?"":"s"} externo${diff.conflicts.length===1?"":"s"} que ɅTLɅS no sobrescribirá sin tu decisión.`,diff};
+  if(diff.remoteVerified&&diff.remoteCount===0)return{kind:"ready",label:"Sin publicar",copy:`${diff.desired.events.length} sesiones preparadas para publicar.`,diff};
+  const pending=diff.upserts.length+diff.deletes.length;if(pending)return{kind:"dirty",label:"Cambios pendientes",copy:`${diff.upserts.length} sesiones por crear/actualizar${diff.deletes.length?` · ${diff.deletes.length} por retirar`:""}.`,diff};
+  const accepted=diff.acceptedExternal?.length||0;return{kind:"published",label:"Publicado y actualizado",copy:accepted?`Calendario remoto confirmado · ${accepted} cambio${accepted===1?"":"s"} externo${accepted===1?"":"s"} conservado${accepted===1?"":"s"} en Intervals.icu.`:`${diff.remoteCount} sesiones verificadas directamente en Intervals.icu.`,diff};
+}
+function atlasV090PublicationState(plan){return atlasK243PublicationState(plan);}
+
+function atlasK243EnsureConflictUi(){
+  const root=ui.trainingPlanPublication;if(!root)return null;let box=$("atlasK243ConflictActions");if(box)return box;box=document.createElement("div");box.id="atlasK243ConflictActions";box.className="atlas-i5-secondary-actions hidden";box.innerHTML='<button type="button" class="atlas-i5-primary" id="atlasK243UseAtlas">Aplicar versión de ɅTLɅS</button><button type="button" class="atlas-i5-unpublish" id="atlasK243KeepIntervals">Conservar versión de Intervals.icu</button>';const primary=$("atlasI5PrimaryActions"),secondary=$("atlasI5SecondaryActions");if(primary)primary.parentElement.insertBefore(box,secondary||primary.nextSibling);else root.appendChild(box);on($("atlasK243UseAtlas"),"click",atlasK243ResolveConflictsLocal);on($("atlasK243KeepIntervals"),"click",atlasK243ResolveConflictsRemote);return box;
+}
+function atlasK243RenderConflicts(diff){
+  const conflicts=diff?.conflicts||[],wrap=$("atlasI5Changes"),list=$("atlasI5ChangeList"),title=$("atlasI5ChangesTitle"),more=$("atlasI5ChangeMore"),none=$("atlasI5NoChanges");if(!conflicts.length)return false;none?.classList.add("hidden");wrap?.classList.remove("hidden");if(title)title.textContent="Cambios externos detectados";if(list)list.innerHTML=conflicts.slice(0,8).map(c=>{const d=atlasK243DesiredComparable(c.desired),r=c.remote?atlasK243RemoteComparable(c.remote):null,detail=c.kind==="external_delete"?"eliminado en Intervals.icu":r&&r.date!==d.date?`${atlasI5DateLabel(r.date)} → ${atlasI5DateLabel(d.date)}`:r&&r.name!==d.name?`“${esc(r.name)}” en Intervals.icu`:"contenido modificado en Intervals.icu";return`<div class="atlas-i5-change"><span class="atlas-i5-change-icon">⚠️</span><div class="atlas-i5-change-copy"><strong>${esc(d.name||"Entrenamiento")}</strong> · ${detail}</div></div>`;}).join("");const rest=conflicts.length-8;if(more){more.classList.toggle("hidden",rest<=0);more.textContent=rest>0?`+ ${rest} conflicto${rest===1?"":"s"}`:"";}return true;
+}
+const atlasK243RenderPublicationBase=renderTrainingPlanPublication;
+renderTrainingPlanPublication=async function(){
+  const plan=activeTrainingPlan();atlasI5EnsurePublicationUi();atlasK243EnsureConflictUi();if(plan&&atlasOnline()&&!atlasV090PublicationBusy&&!atlasV150RemoteSyncBusy&&!atlasI5PublicationProgress.active)await atlasK243RefreshRemoteTruth(plan,{force:false,persist:true});await atlasK243RenderPublicationBase();if(!plan)return;
+  const state=atlasK243PublicationState(plan),diff=state.diff||atlasV090PublicationDiff(plan),badge=$("atlasI5PublicationBadge"),summary=$("atlasI5PublicationSummary"),btn=ui.trainingPlanPublicationBtn,remove=$("trainingPlanUnpublishBtn"),confBox=$("atlasK243ConflictActions"),busy=atlasV090PublicationBusy||atlasV150RemoteSyncBusy||atlasI5PublicationProgress.active;
+  if(!atlasI5PublicationProgress.active&&badge){badge.className=`atlas-i5-publication-badge ${state.kind}`;badge.textContent=state.label;}
+  if(summary)summary.innerHTML=state.kind==="error"?esc(state.copy):state.kind==="ready"?`El plan está preparado. <strong>Aún no existe una versión publicada en Intervals.icu.</strong>`:state.kind==="dirty"?`Intervals.icu contiene una versión anterior. <strong>${diff.upserts.length+diff.deletes.length} cambio${diff.upserts.length+diff.deletes.length===1?"":"s"} pendiente${diff.upserts.length+diff.deletes.length===1?"":"s"}.</strong>`:state.copy;
+  const conflicts=diff.conflicts||[];if(conflicts.length)atlasK243RenderConflicts(diff);else atlasI5RenderChanges(plan,diff,state);
+  if(confBox)confBox.classList.toggle("hidden",!conflicts.length||busy);
+  if(btn){const first=diff.remoteVerified?diff.remoteCount===0:plan.publication?.status!=="published",pending=diff.upserts.length+diff.deletes.length;btn.textContent=first?"Publicar plan":"Actualizar cambios";btn.classList.toggle("hidden",!!conflicts.length||(!first&&!pending));btn.disabled=busy||!diff.desired.events.length||(!first&&!pending);}
+  if(remove){remove.classList.toggle("hidden",!(diff.remoteVerified&&diff.remoteCount>0));remove.disabled=busy;}
+  atlasV164UpdatePublicationIndicator();
+};
+
+async function atlasK243ResolveConflictsLocal(){
+  const plan=activeTrainingPlan();if(!plan)return;await atlasK243RefreshRemoteTruth(plan,{force:true,persist:true});const diff=atlasV090PublicationDiff(plan),conflicts=diff.conflicts||[];if(!conflicts.length){await renderTrainingPlanPublication();return;}if(!confirm(`¿Aplicar la versión de ɅTLɅS sobre ${conflicts.length} cambio${conflicts.length===1?"":"s"} externo${conflicts.length===1?"":"s"}?\n\nSólo se modificarán entrenamientos cuyo external_id pertenece a este plan.`))return;for(const c of conflicts)atlasK243ForceLocalIds.add(c.id);try{await atlasV150SyncPlanNow(plan,{toastSuccess:true});}finally{for(const c of conflicts)atlasK243ForceLocalIds.delete(c.id);atlasK243DiffCache.delete(plan);await atlasK243RefreshRemoteTruth(plan,{force:true,persist:true});await renderTrainingPlanPublication();}
+}
+async function atlasK243ResolveConflictsRemote(){
+  const plan=activeTrainingPlan();if(!plan)return;await atlasK243RefreshRemoteTruth(plan,{force:true,persist:true});const diff=atlasV090PublicationDiff(plan),conflicts=diff.conflicts||[];if(!conflicts.length){await renderTrainingPlanPublication();return;}if(!confirm(`¿Conservar en Intervals.icu ${conflicts.length} cambio${conflicts.length===1?"":"s"} externo${conflicts.length===1?"":"s"}?\n\nɅTLɅS no sobrescribirá esas sesiones mientras el borrador local no vuelva a modificarlas.`))return;const accepted={...atlasK243AcceptedMap(plan)},now=new Date().toISOString();for(const c of conflicts)accepted[c.id]={remoteFingerprint:c.remoteFingerprint,localHash:c.localHash,acceptedAt:now};plan.publication={...(plan.publication||{}),k243AcceptedRemote:accepted,dirty:false,updatedAt:now};plan.updatedAt=now;atlasK243DiffCache.delete(plan);const next=atlasV090PublicationDiff(plan);plan.publication.dirty=(next.upserts.length+next.deletes.length+next.conflicts.length)>0;await persistTrainingPlans();await renderTrainingPlanPublication();toast("✅ Cambios externos conservados en Intervals.icu.");
+}
+
+const atlasK243SyncPlanNowBase=atlasV150SyncPlanNow;
+atlasV150SyncPlanNow=async function(plan,options={}){
+  if(!plan)return false;const truth=await atlasK243RefreshRemoteTruth(plan,{force:true,persist:true});if(!truth?.verified){toast("⚠️ No se puede actualizar el plan sin verificar primero Intervals.icu.",true);return false;}const pre=atlasV090PublicationDiff(plan);if(pre.conflicts?.length&&!pre.conflicts.every(c=>atlasK243ForceLocalIds.has(c.id))){await renderTrainingPlanPublication();toast("⚠️ Hay cambios externos en Intervals.icu que requieren tu decisión.",true);return false;}const ok=await atlasK243SyncPlanNowBase(plan,options);if(ok){atlasK243DiffCache.delete(plan);await atlasK243RefreshRemoteTruth(plan,{force:true,persist:true});const post=atlasV090PublicationDiff(plan);if(!post.conflicts.length&&!post.upserts.length&&!post.deletes.length){const accepted={...atlasK243AcceptedMap(plan)};for(const e of post.desired.events)if(post.remoteVerified){const r=(atlasK243Truth(plan)?.remote||[]).find(x=>atlasV152ExternalId(x)===String(e.external_id));if(r&&atlasK243RemoteMatchesDesired(r,e))delete accepted[String(e.external_id)];}plan.publication={...(plan.publication||{}),k243AcceptedRemote:accepted,dirty:false,manifestDigest:post.desired.digest,i5PublishedSnapshot:atlasI5PublishedSnapshot(plan,post),i5PublishedSnapshotVersion:ATLAS_I5_VERSION};await persistTrainingPlans();}}
+  return ok;
+};
+
+const atlasK243PublishPlanBase=atlasV090PublishPlan;
+atlasV090PublishPlan=async function(){
+  if(atlasV090PublicationBusy||atlasV150RemoteSyncBusy)return;const plan=activeTrainingPlan();if(!plan)return;const truth=await atlasK243RefreshRemoteTruth(plan,{force:true,persist:true});if(!truth?.verified){await renderTrainingPlanPublication();toast("⚠️ No se ha podido verificar Intervals.icu. No se publicará ningún cambio.",true);return;}const diff=atlasV090PublicationDiff(plan);if(diff.conflicts?.length){await renderTrainingPlanPublication();toast("⚠️ Revisa los cambios externos antes de actualizar Intervals.icu.",true);return;}const first=diff.remoteVerified?diff.remoteCount===0:plan.publication?.status!=="published",pending=diff.upserts.length+diff.deletes.length;if(!diff.desired.events.length){toast("⚠️ No hay sesiones futuras para publicar.",true);return;}if(!first&&!pending){toast("El calendario ya está actualizado.");return;}const action=first?`Publicar ${diff.desired.events.length} entrenamientos en Intervals.icu`:`Actualizar ${pending} cambio${pending===1?"":"s"} en Intervals.icu`;if(!confirm(`${action}?\n\nɅTLɅS volverá a consultar Intervals.icu antes y después de aplicar los cambios.`))return;atlasV090PublicationBusy=true;atlasI5SetProgress("publish",first?"Preparando publicación…":"Preparando actualización…",5);await renderTrainingPlanPublication();try{await atlasV150SyncPlanNow(plan,{toastSuccess:true});}finally{atlasV090PublicationBusy=false;atlasI5ClearProgress();await atlasK243RefreshRemoteTruth(plan,{force:true,persist:true});await renderTrainingPlanPublication();}
+};
+
+const atlasK243RemoteCandidatesBase=atlasV150RemoteCandidates;
+atlasV150RemoteCandidates=function(plan){const truth=atlasK243Truth(plan);if(truth?.verified)return(truth.remote||[]).map(e=>({external_id:atlasV152ExternalId(e),date:atlasV152EventDate(e)})).filter(e=>e.external_id&&e.date>=atlasV090Today()).sort((a,b)=>a.date.localeCompare(b.date)||a.external_id.localeCompare(b.external_id));return atlasK243RemoteCandidatesBase(plan);};
+const atlasK243UnpublishBase=atlasV090UnpublishPlan;
+atlasV090UnpublishPlan=async function(){const plan=activeTrainingPlan();if(!plan)return;const truth=await atlasK243RefreshRemoteTruth(plan,{force:true,persist:true});if(!truth?.verified){toast("⚠️ No se puede retirar el plan sin verificar primero Intervals.icu.",true);return;}const out=await atlasK243UnpublishBase.apply(this,arguments);atlasK243RemoteTruthCache.delete(atlasK243TruthKey(plan));atlasK243DiffCache.delete(plan);await atlasK243RefreshRemoteTruth(plan,{force:true,persist:true});return out;};
+const atlasK243DeletePlanBase=deleteActiveTrainingPlan;
+deleteActiveTrainingPlan=async function(){const plan=activeTrainingPlan();if(!plan)return;const truth=await atlasK243RefreshRemoteTruth(plan,{force:true,persist:true});if(!truth?.verified){toast("⚠️ No se puede eliminar el plan sin verificar primero Intervals.icu.",true);return;}return atlasK243DeletePlanBase.apply(this,arguments);};
+
+const atlasK243AuditPublishedBase=atlasV152AuditPublished;
+atlasV152AuditPublished=function(plan,remote){
+  const desired=atlasV152DesiredMap(plan),remoteMap=new Map((remote||[]).map(e=>[atlasV152ExternalId(e),e]).filter(([id])=>id)),missing=[],stale=[],mismatched=[];
+  for(const [id,d] of desired){const r=remoteMap.get(id);if(!r){missing.push(id);continue;}if(!atlasK243RemoteMatchesDesired(r,d)){const rc=atlasK243RemoteComparable(r);mismatched.push({id,desiredDate:atlasV152EventDate(d),remoteDate:rc.date,desiredName:String(d?.name||""),remoteName:rc.name,structureChecked:rc.descriptionKnown});}}
+  for(const [id,r] of remoteMap)if(!desired.has(id))stale.push({external_id:id,date:atlasV152EventDate(r)});return{ok:missing.length===0&&stale.length===0&&mismatched.length===0,missing,stale,mismatched,remoteCount:remoteMap.size,desiredCount:desired.size};
+};
+
+const atlasK243PublicationIndicatorBase=atlasV164UpdatePublicationIndicator;
+atlasV164UpdatePublicationIndicator=function(){const plan=activeTrainingPlan(),dot=atlasV164EnsurePublicationDot();if(!dot)return;const diff=plan?atlasV090PublicationDiff(plan):null,conflicts=diff?.conflicts?.length||0,pending=(diff?.upserts?.length||0)+(diff?.deletes?.length||0);dot.classList.toggle("active",!!(conflicts||pending));dot.title=conflicts?"Sincronización incompleta":pending?"Cambios pendientes de actualizar":"";const head=document.querySelector('[data-training-plan-section="publication"] .training-plan-section-head');if(head)head.setAttribute("aria-label",conflicts?"Publicación · sincronización incompleta":pending?"Publicación · cambios pendientes":"Publicación");};
+
+/* Un refresh de calendario puede cambiar la verdad remota aunque el borrador local no cambie. */
+const atlasK243SyncCalendarBase=syncCalendar;
+syncCalendar=async function(){const result=await atlasK243SyncCalendarBase.apply(this,arguments);const plan=activeTrainingPlan();if(plan){atlasK243RemoteTruthCache.delete(atlasK243TruthKey(plan));atlasK243DiffCache.delete(plan);}return result;};
+
+atlasDomReadyInitializers.push(()=>{atlasK243EnsureConflictUi();});
 
 })();
 
