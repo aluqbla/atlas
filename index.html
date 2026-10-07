@@ -2329,7 +2329,8 @@ const AtlasHrv=(()=>{
 /* ===== ɅTLɅS v1.6.33 · K2.3 canonical Plan / Publication / Sync bindings =====
    Historical public overrides removed where the final implementation was self-contained.
    Golden K2.1 contracts remain the behavioral authority. */
-const APP_VERSION="1.6.38",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="1.6.39",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+/* K2.6: confirmed dead-code removal only; no observable behavior changes. */
 /* G5: wrapper/residual consolidation. No sport, Adaptive, CAS or publication contract changes. */
 // Training Engine implementation track: v0.2 — input contract + athlete snapshot + base classification.
 
@@ -3630,18 +3631,8 @@ async function syncCalendar(showToast=false,{render=true}={}){
   try{return await calendarSyncPromise;}
   finally{calendarSyncPromise=null;}
 }
-async function refreshCalendarFromCloud(force=false,{render=true}={}){
-  if(!force&&Date.now()-lastCalendarRefreshAt<ATLAS_G4_SYNC_POLICY.calendar)return false;
-  if(!force&&!(await atlasG4ShouldFetchAux("calendar")))return false;
-  const w=await storeGet("settings","workerUrl"),t=await storeGet("settings","clientToken");if(!w?.value||!t?.value)return false;
-  const result=await syncCalendar(false,{render});return result?.ok===true;
-}
 
 
-async function loadLocalSnapshot(){
-  const[activities,wellness,gear,sportSettings,events,profile,athlete,worker,cachedVo2]=await Promise.all([storeGetAll("activities"),storeGetAll("wellness"),storeGetAll("gear"),storeGetAll("sportSettings"),storeGetAll("events"),storeGet("profile","me"),storeGet("athlete","me"),storeGet("settings","workerUrl"),storeGet("meta","latestRunVo2")]);
-  return{activities,wellness,gear,sportSettings,events,profile,athlete,worker,cachedVo2};
-}
 
 
 function atlasDateLabel(value){const d=String(value||"").slice(0,10);if(!/^\d{4}-\d{2}-\d{2}$/.test(d))return"—";const dt=new Date(`${d}T12:00:00`);return new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short",year:"numeric"}).format(dt).replace(/\./g,"");}
@@ -4024,7 +4015,6 @@ function trainingPlansLocalEnvelope(updatedAt=new Date().toISOString()){return{v
 function trainingPlansCloudManifestFromEnvelope(value){return{schema:TRAINING_PLANS_CLOUD_SCHEMA,version:TRAINING_PLANS_VERSION,activeId:value?.activeId||null,updatedAt:value?.updatedAt||new Date().toISOString(),plans:atlasG6CompactPlans(value?.plans)};}
 function trainingPlansCloudState(manifest){return{version:2,goal:null,secondaryGoals:[],availabilityExceptions:[],planManifest:manifest,planRevisionDraft:null,planRevisionHistory:[]};}
 function trainingPlansCloudExtract(remote){const m=remote?.state?.planManifest;return m&&m.schema===TRAINING_PLANS_CLOUD_SCHEMA&&Array.isArray(m.plans)?m:null;}
-function trainingPlanCloudStamp(value){const t=Date.parse(value||"");return Number.isFinite(t)?t:0;}
 async function readTrainingPlansCloudMeta(){return(await storeGet("meta",TRAINING_PLANS_CLOUD_META_KEY).catch(()=>null))?.value||null;}
 async function writeTrainingPlansCloudMeta(value){await storePut("meta",{key:TRAINING_PLANS_CLOUD_META_KEY,value});return value;}
 async function markTrainingPlansCloudDirty(updatedAt){const prev=await readTrainingPlansCloudMeta()||{};await writeTrainingPlansCloudMeta({...prev,schema:TRAINING_PLANS_CLOUD_SCHEMA,dirty:true,dirtyAt:updatedAt||new Date().toISOString()});}
@@ -4074,9 +4064,7 @@ function trainingEngineAbilityDistanceDef(key){return TRAINING_ENGINE_ABILITY_DI
 function trainingEngineAbilityDistanceKey(distanceM){const m=Number(distanceM);if(!(m>0))return null;let best=null;for(const def of TRAINING_ENGINE_ABILITY_DISTANCE_DEFS){const delta=Math.abs(m-def.meters)/def.meters;if(!best||delta<best.delta)best={key:def.key,delta};}return best&&best.delta<=.04?best.key:null;}
 function trainingEngineDaysAgo(date,asOfDate){const d=String(date||"").slice(0,10),a=String(asOfDate||"").slice(0,10);if(!/^\d{4}-\d{2}-\d{2}$/.test(d)||!/^\d{4}-\d{2}-\d{2}$/.test(a))return null;const n=dateDiff(d,a);return Number.isFinite(n)&&n>=0?n:null;}
 function trainingEngineRecency(date,asOfDate){const days=trainingEngineDaysAgo(date,asOfDate);if(!Number.isFinite(days))return{days:null,bucket:"unknown",usable180:false,usable84:false};if(days<=42)return{days,bucket:"current",usable180:true,usable84:true};if(days<=84)return{days,bucket:"valid",usable180:true,usable84:true};if(days<=180)return{days,bucket:"context",usable180:true,usable84:false};return{days,bucket:"historical",usable180:false,usable84:false};}
-function trainingEngineConfidenceLabel(value){return value==="high"?"Alta":value==="medium"?"Media":value==="low"?"Baja":"—";}
 function trainingEngineEvidencePriority(kind){return kind==="race_test"?3:kind==="best_effort"?2:1;}
-function trainingEngineConfidenceRank(value){return value==="high"?3:value==="medium"?2:value==="low"?1:0;}
 function trainingEngineRiegelTime(timeSec,fromM,toM){const t=Number(timeSec),d1=Number(fromM),d2=Number(toM);if(!(t>0&&d1>=5000&&d1<=21097.5&&d2>=5000&&d2<=21097.5))return null;return t*Math.pow(d2/d1,TRAINING_ENGINE_RIEGEL_EXPONENT);}
 function trainingEngineCurrentAbilityEvidence(snapshot,asOfDate){const out=[];for(const r of snapshot?.racesTests||[]){const rec=trainingEngineRecency(r.date,asOfDate),distanceKey=r.distanceKey||trainingEngineAbilityDistanceKey(r.distanceM),secs=Number(r.normalizedTimeSec)||Number(r.durationSec),def=trainingEngineAbilityDistanceDef(distanceKey);if(!rec.usable180||!(secs>0)||!distanceKey||!def)continue;out.push({kind:"race_test",date:r.date,ageDays:rec.days,recency:rec.bucket,distanceKey,distanceM:def.meters,observedDistanceM:Number(r.distanceM)||null,timeSec:secs,activityId:r.activityId||null,name:r.name||"Carrera/Test"});}for(const group of snapshot?.bestEfforts||[]){const distanceKey=String(group?.key||"");const def=trainingEngineAbilityDistanceDef(distanceKey);if(!def)continue;for(const x of group.top||[]){const rec=trainingEngineRecency(x.date,asOfDate),secs=Number(x.secs);if(!rec.usable180||!(secs>0))continue;out.push({kind:"best_effort",date:x.date,ageDays:rec.days,recency:rec.bucket,distanceKey,distanceM:def.meters,timeSec:secs,activityId:x.activityId||null,name:x.activityName||group.label||"Mejor esfuerzo"});}}return out.sort((a,b)=>(a.ageDays-b.ageDays)||(trainingEngineEvidencePriority(b.kind)-trainingEngineEvidencePriority(a.kind))||(a.timeSec-b.timeSec));}
 function trainingEngineEvidenceCandidateView(c){return{source:c.kind,originDistanceKey:c.originDistanceKey,date:c.date||null,ageDays:Number.isFinite(c.ageDays)?c.ageDays:null,recency:c.recency||"unknown",direct:!!c.direct,predictedTimeSec:Math.round(c.predictedTimeSec),activityId:c.activityId||null};}
@@ -4096,7 +4084,6 @@ function trainingEngineBuildCurrentAbility(snapshot,asOfDate){const evidence=tra
 function trainingEnginePaceRangeFromThreshold(thresholdSec,slowSpeedFraction,fastSpeedFraction){const t=Number(thresholdSec),slow=Number(slowSpeedFraction),fast=Number(fastSpeedFraction);if(!(t>0&&slow>0&&fast>0))return null;const fastPace=t/Math.max(slow,fast),slowPace=t/Math.min(slow,fast);return{fastSecKm:Math.round(fastPace*10)/10,slowSecKm:Math.round(slowPace*10)/10};}
 function trainingEngineBuildPaceAnchors(currentAbility){const u=Number(currentAbility?.thresholdAnchor?.paceSecKm),uSource=currentAbility?.thresholdAnchor?.source||null,uConfidence=currentAbility?.thresholdAnchor?.confidence||null,fromU=(slow,fast)=>Number.isFinite(u)?{...trainingEnginePaceRangeFromThreshold(u,slow,fast),source:uSource,confidence:uConfidence}:null,specific=key=>{const a=currentAbility?.distances?.[key];return Number(a?.paceSecKm)>0?{paceSecKm:a.paceSecKm,source:a.selection,confidence:a.confidence,evidenceNewestDate:a.evidenceNewestDate}:null;};return{status:currentAbility?.anchorTest?.required?"NEEDS_ANCHOR_TEST":Number.isFinite(u)?"READY":"PARTIAL",recovery:fromU(.68,.76),easy:fromU(.75,.84),aerobic:fromU(.82,.90),threshold:fromU(.985,1.015),marathon:specific("marathon"),half:specific("half"),tenK:specific("10k"),fiveK:specific("5k"),vo2:null,repetitions:null};}
 
-function trainingEngineAnchorSourceLabel(anchor){if(!anchor)return"Sin anclaje";const source=anchor.source==="intervals_threshold_pace"||anchor.source==="intervals_sport_settings"?"Umbral Intervals.icu":anchor.source==="same_distance_race_test"?"Carrera/Test reciente":anchor.source==="direct_best_effort"?"Mejor esfuerzo reciente":anchor.source==="consensus_median"?"Consenso de evidencias":anchor.source==="recent_conservative"?"Evidencia reciente conservadora":anchor.source==="durability_adjusted_equivalence"?"Equivalencia + durabilidad personal":anchor.source==="goal_weighted_specific_progression"?"Progresión hacia el objetivo":anchor.source==="single_equivalence"?"Equivalencia de rendimiento":anchor.source||"Capacidad actual";return anchor.confidence?`${source} · confianza ${trainingEngineConfidenceLabel(anchor.confidence)}`:source;}
 function trainingEngineDigest(value){const text=JSON.stringify(value),bytes=new TextEncoder().encode(text);let h=2166136261;for(const b of bytes){h^=b;h=Math.imul(h,16777619);}return`fnv1a-${(h>>>0).toString(16).padStart(8,"0")}`;}
 async function buildTrainingEngineAthleteSnapshot(asOfDate){const weeks=trainingEngineCompleteWeeks(asOfDate).map(range=>trainingEngineWeekSummary(currentActivities,range)),base=trainingEngineBaseClassification(weeks),continuity=trainingEngineContinuity(weeks),longRun=trainingEngineLongRunBaseline(weeks),strengthSessions=weeks.reduce((sum,w)=>sum+w.strengthSessions,0),strengthWeeks=weeks.filter(w=>w.strengthSessions>0).length;let recordsRow=await storeGet("meta",RUN_RECORDS_CACHE_KEY).catch(()=>null);if(recordsRow?.value?.signature!==runHistorySignature()){try{await loadRunningRecords(false);recordsRow=await storeGet("meta",RUN_RECORDS_CACHE_KEY).catch(()=>recordsRow);}catch(error){recordRuntimeAudit("training-engine-running-records",error).catch(()=>{});}}const sportSettings=await storeGetAll("sportSettings").catch(()=>[]),sport=runningSportSettings({sportSettings}),thresholdPaceSecKm=sportThresholdPaceSecKm(sport),thresholdHr=Number(sport?.lthr),sportUpdated=String(sport?.updated||sport?.created||"").slice(0,10),observedAt=/^\d{4}-\d{2}-\d{2}$/.test(sportUpdated)?sportUpdated:null,bestEfforts=trainingEngineBestEfforts(recordsRow?.value?.records),racesTests=trainingEngineRaceTestSummary(currentActivities,asOfDate);return{version:TRAINING_ENGINE_VERSION,window:{weeks:8,completeWeeksOnly:true,start:weeks[0]?.start||null,end:weeks.at(-1)?.end||null},weeks,base,continuity,longRun,quality:{established:base.qualityEstablished,weeksWithQuality:base.qualityWeeks,activeWeeksExamined:base.last6ActiveWeeks},strength:{sessions:strengthSessions,weeksWithStrength:strengthWeeks},threshold:{paceSecKm:Number.isFinite(thresholdPaceSecKm)?Math.round(thresholdPaceSecKm*10)/10:null,heartRateBpm:Number.isFinite(thresholdHr)&&thresholdHr>0?Math.round(thresholdHr):null,source:thresholdPaceSecKm||thresholdHr?"intervals_threshold_pace":null,observedAt,sourceDateKnown:!!observedAt},racesTests,bestEfforts};}
 const TRAINING_ENGINE_MACRO_CONFIG=Object.freeze({
@@ -4122,12 +4109,8 @@ function trainingEngineAllocatePhases(buildWeeks,base,snapshot,config,directSpec
   return{preparation,development,specific,directSpecific:false,compressed:false,minRequired,extensionWeeks};
 }
 function trainingEngineMacroPhaseSequence(allocation,taperWeeks){return[...Array(allocation.preparation).fill("preparation"),...Array(allocation.development).fill("development"),...Array(allocation.specific).fill("specific"),...Array(taperWeeks).fill("taper")];}
-function trainingEngineVolumeBand(center,s){const c=Number(center),step=Number(s);if(!(c>0&&step>0))return null;return{minKm:trainingEngineRoundedKm(Math.max(0,c-step/2)),maxKm:trainingEngineRoundedKm(c+step/2),centerKm:trainingEngineRoundedKm(c)};}
 function trainingEngineGoalConflict(input,currentAbility){const key=input?.goal?.distanceKey,targetPace=Number(input?.goal?.targetPaceSecKm);if(!(targetPace>0))return null;const checks=key==="10k"?["5k"]:key==="half"?["10k","5k"]:key==="marathon"?["half","10k","5k"]:[];for(const shorter of checks){const pace=Number(currentAbility?.distances?.[shorter]?.paceSecKm);if(pace>0&&targetPace<=pace)return{shorterDistanceKey:shorter,shorterPaceSecKm:pace,targetPaceSecKm:targetPace};}return null;}
 function trainingEngineAssessGoal(input,snapshot,currentAbility,macroPlan){const target=Number(input?.goal?.targetTimeSec),key=input?.goal?.distanceKey,ability=currentAbility?.distances?.[key],current=Number(ability?.timeSec),conflict=trainingEngineGoalConflict(input,currentAbility),availabilityDays=input?.availability?.days?.length||0,gapSec=current>0&&target>0?current-target:null,gapPct=current>0&&target>0?Math.round((gapSec/current)*1000)/10:null;if(macroPlan?.phases?.compressed)return{status:"ASSESSED",state:"PREPARATION_INSUFFICIENT",label:"🔴 Preparación insuficiente",reason:"El horizonte no permite encajar sin compresión la preparación mínima correspondiente a la base actual.",gapSec,gapPct,currentAbilityTimeSec:current>0?current:null,targetTimeSec:target||null,confidence:ability?.confidence||"low",availabilityDays};if(currentAbility?.anchorTest?.required)return{status:"NEEDS_ANCHOR_TEST",state:null,label:"NEEDS_ANCHOR_TEST",reason:currentAbility.anchorTest.reason,gapSec,gapPct,currentAbilityTimeSec:current>0?current:null,targetTimeSec:target||null,confidence:null,availabilityDays};if(conflict)return{status:"ASSESSED",state:"NOT_SUPPORTED_CURRENTLY",label:"🟠 No respaldado actualmente",reason:"El ritmo objetivo de una distancia mayor iguala o supera una capacidad reciente de una distancia más corta.",gapSec,gapPct,currentAbilityTimeSec:current>0?current:null,targetTimeSec:target||null,confidence:"low",availabilityDays,conflict};if(current>0&&target>=current)return{status:"ASSESSED",state:"SUPPORTED",label:"✅ Respaldado",reason:"La capacidad actual estimada ya respalda el tiempo objetivo o uno más rápido.",gapSec,gapPct,currentAbilityTimeSec:current,targetTimeSec:target,confidence:ability?.confidence||"medium",availabilityDays};if(current>0)return{status:"ASSESSED",state:"DEMANDING",label:"🟡 Exigente",reason:"El objetivo es más rápido que la capacidad actual estimada; orienta la progresión pero no sustituye los ritmos actuales.",gapSec,gapPct,currentAbilityTimeSec:current,targetTimeSec:target,confidence:ability?.confidence||"medium",availabilityDays};return{status:"ASSESSED",state:"DEMANDING",label:"🟡 Exigente",reason:"No hay una capacidad específica de esta distancia suficientemente directa para dar el objetivo por respaldado; se conserva el objetivo sin usarlo como capacidad actual.",gapSec:null,gapPct:null,currentAbilityTimeSec:null,targetTimeSec:target||null,confidence:"low",availabilityDays};}
-function trainingEnginePhaseLabel(value){return value==="preparation"?"Preparación/Base":value==="development"?"Desarrollo":value==="specific"?"Específica":value==="taper"?"Taper":"—";}
-function trainingEngineMacroSummary(macro){if(!macro?.phases)return"—";const p=macro.phases,parts=[];if(p.preparationWeeks)parts.push(`Base ${p.preparationWeeks}`);if(p.developmentWeeks)parts.push(`Desarrollo ${p.developmentWeeks}`);if(p.specificWeeks)parts.push(`Específica ${p.specificWeeks}`);if(p.taperWeeks)parts.push(`Taper ${p.taperWeeks}`);return parts.join(" · ")||"—";}
-function trainingEngineMacroBandLabel(band){return band&&Number.isFinite(Number(band.minKm))&&Number.isFinite(Number(band.maxKm))?`${formatNatural(Number(band.minKm),1)}–${formatNatural(Number(band.maxKm),1)} km`:"—";}
 const TRAINING_ENGINE_SESSION_FAMILIES=Object.freeze(["Descanso","Recuperación","Fácil","Aeróbico","Tirada larga","Umbral","Intervalos VO₂","Ritmo específico","Repeticiones rápidas","Cuestas","Fuerza","Activación","Competición","Recuperación postcompetición"]);
 function trainingEngineSessionFamilyLabel(family){return TRAINING_ENGINE_SESSION_FAMILIES.includes(family)?family:"Fácil";}
 function trainingEngineSessionType(family){return family==="Fuerza"?"Strength":family==="Descanso"?"Rest":"Run";}
@@ -4146,7 +4129,6 @@ function trainingEnginePickEmptyDate(days,{preferWeekdays=[],minHardGap=0,strict
 function trainingEnginePickLongRunDate(days,raceDate=null){const candidates=days.filter(d=>d.available&&!d.sessions.length&&(!raceDate||d.date!==raceDate));if(!candidates.length)return null;candidates.sort((a,b)=>{const rank=w=>w===7?0:w===6?1:2,ra=rank(a.weekday),rb=rank(b.weekday);return ra!==rb?ra-rb:b.date.localeCompare(a.date);});return candidates[0]||null;}
 function trainingEnginePickActivationDate(days,raceDate){const preferred=[addDays(raceDate,-2),addDays(raceDate,-3),addDays(raceDate,-1)];for(const date of preferred){const d=days.find(x=>x.date===date&&x.available&&!x.sessions.length);if(d)return d;}return trainingEnginePickEmptyDate(days,{beforeDate:raceDate,preferWeekdays:[5,4,6,3],minHardGap:1,latest:true});}
 function trainingEngineAddSkeletonSession(day,week,distanceKey,family,role,opts={}){if(!day)return null;const modifier=opts.modifier||null,strengthLevel=opts.strengthLevel||null,majorStimulus=!!opts.majorStimulus,doseConstraint=opts.doseConstraint||null,ordinal=day.sessions.length+1,name=trainingEngineSessionName(family,distanceKey,{modifier,strengthLevel}),distanceKm=Number(opts.distanceKm)>0?trainingEngineRoundedKm(opts.distanceKm):null,meta=[];if(distanceKm)meta.push(`${formatNatural(distanceKm,1)} km`);if(modifier==="specific")meta.push("específica");if(opts.nutrition)meta.push("nutrición");if(doseConstraint)meta.push(doseConstraint==="LOW_OR_MEDIUM"?"dosis ≤ Media":"dosis pendiente");const spacingHard=opts.spacingHard??majorStimulus;const session={id:`sk-${week.index}-${day.date}-${String(role).replace(/[^a-z0-9_-]/gi,"-")}-${ordinal}`,skeleton:true,status:"SKELETON",date:day.date,family:trainingEngineSessionFamilyLabel(family),name,type:trainingEngineSessionType(family),role,modifier,strengthLevel,nutrition:!!opts.nutrition,majorStimulus,spacingHard,doseConstraint,distanceKm,distanceM:distanceKm?Math.round(distanceKm*1000):null,purpose:trainingEngineSessionPurpose(family,distanceKey,modifier),metaLabel:meta.join(" · ")||"Esqueleto · detalles pendientes"};day.sessions.push(session);return session;}
-function trainingEngineSkeletonSummary(skeleton){if(!skeleton?.weeks?.length)return"—";const sessions=skeleton.weeks.reduce((n,w)=>n+(w.sessions?.length||0),0),warnings=skeleton.warnings?.length||0;return`${skeleton.weeks.length} semanas · ${sessions} bloques${warnings?` · ${warnings} ajustes`:""}`;}
 
 
 /* ===== Motor Mínimo v0.6 · Session Prescription Core ===== */
@@ -4190,7 +4172,6 @@ function trainingEngineSpecificWorkKm(key,level,paceSecKm,maxAvailableKm){const 
 function trainingEngineWeekVolumeTarget(week,macroWeek,snapshot){const band=macroWeek?.volumeBandKm;if(band&&Number(band.centerKm)>0)return{targetKm:Math.round(Number(band.centerKm)),minKm:Number(band.minKm),maxKm:Number(band.maxKm),source:"macro_band"};const H=Number(snapshot?.base?.habitualVolumeKm),freq=Math.max(1,Number(snapshot?.base?.frequencyDays)||3),perRun=H>0?Math.max(4,Math.round(H/freq)):6;if(week?.raceWeek)return{targetKm:null,minKm:null,maxKm:null,source:"race_week",defaultContinuousKm:Math.max(4,perRun-2)};return{targetKm:null,minKm:null,maxKm:null,source:week?.phase==="taper"?"taper_no_quota":"no_macro_band",defaultContinuousKm:Math.max(4,perRun-(week?.phase==="taper"?1:0))};}
 function trainingEngineFunctionalWeekSignature(week){return(week?.sessions||[]).map(s=>[s.family,s.role,s.dose||"-",Number(s.distanceKm)>0?Number(s.distanceKm).toFixed(1):"-",s.structure||"-",s.strengthLevel||"-"].join("~")).sort().join("|");}
 function trainingEngineRefreshContinuousSession(session,week,anchors,family,distanceKm){const sk={...session,family,name:family,purpose:trainingEngineSessionPurpose(family,null,null)},rx=trainingEnginePrescribeContinuous(sk,week,anchors,distanceKm);Object.assign(session,rx,{metaLabel:trainingEngineSessionMeta(rx)});}
-function trainingEnginePrescriptionSummary(core){if(!core?.weeks?.length)return"—";const sessions=core.weeks.reduce((n,w)=>n+(w.sessions?.length||0),0),partial=core.validation?.needsAnchorSessions||0;return`${core.weeks.length} semanas · ${sessions} sesiones${partial?` · ${partial} sin ritmo inventado`:""}`;}
 
 /* ===== ɅTLɅS v0.8.2 · Goal-led progression overrides ===== */
 function trainingEnginePaceCopy(anchor){if(!anchor)return null;return{paceSecKm:Number(anchor.paceSecKm)>0?Number(anchor.paceSecKm):null,fastSecKm:Number(anchor.fastSecKm)>0?Number(anchor.fastSecKm):null,slowSecKm:Number(anchor.slowSecKm)>0?Number(anchor.slowSecKm):null,source:anchor.source||anchor.selection||null,confidence:anchor.confidence||null,evidenceNewestDate:anchor.evidenceNewestDate||null,goalWeight:Number(anchor.goalWeight)>=0?Number(anchor.goalWeight):null,currentAbilityPaceSecKm:Number(anchor.currentAbilityPaceSecKm)>0?Number(anchor.currentAbilityPaceSecKm):null,targetPaceSecKm:Number(anchor.targetPaceSecKm)>0?Number(anchor.targetPaceSecKm):null};}
@@ -4312,13 +4293,11 @@ async function collectTrainingEngineInput(plan,asOfDate=fmtDate(new Date())){
 }
 
 function trainingEngineBaseLabel(value){return value==="high"?"Alta":value==="medium"?"Media":value==="low"?"Baja":"—";}
-function trainingEngineDoubleSessionsLabel(value){return value==="avoid"?"Evitar":value==="if_needed"?"Permitir si son necesarias":value==="no_preference"?"Sin preferencia":"—";}
 function trainingEngineTargetRevision(existing,targetTimeSec,startDate,asOfDate){if(!existing||Number(existing.targetTimeSec)===Number(targetTimeSec))return existing?.engine?.pendingRevision||null;const effectiveFromDate=String(asOfDate)<String(startDate)?String(startDate):String(asOfDate);return{type:"TARGET_TIME",policy:"FUTURE_ONLY",preservePast:true,effectiveFromDate,previousTargetTimeSec:Number(existing.targetTimeSec)||null,targetTimeSec:Number(targetTimeSec)||null,status:"PENDING_REBUILD"};}
 function trainingPlanId(){try{return crypto.randomUUID();}catch{return`plan-${Date.now()}-${Math.random().toString(36).slice(2,9)}`;}}
 function activeTrainingPlan(){return currentTrainingPlans.find(p=>p.id===currentTrainingPlanId)||currentTrainingPlans[0]||null;}
 function trainingPlanDistanceLabel(plan){return trainingPlanDistanceDef(plan?.distanceKey,plan).label;}
 function trainingPlanTimePartsToSec(h,m,s){const hh=Number(h||0),mm=Number(m||0),ss=Number(s||0);if(![hh,mm,ss].every(Number.isFinite)||hh<0||mm<0||ss<0||mm>59||ss>59)return null;const total=hh*3600+mm*60+ss;return total>0?Math.round(total):null;}
-function trainingPlanTimeToSec(value){const bits=String(value||"").trim().split(":");if(bits.length===2)return trainingPlanTimePartsToSec(0,bits[0],bits[1]);if(bits.length===3)return trainingPlanTimePartsToSec(bits[0],bits[1],bits[2]);return null;}
 function trainingPlanGoalLabel(plan){return plan?.goalMode==="finish"?"Terminar":Number(plan?.targetTimeSec)>0?formatDuration(Number(plan.targetTimeSec)):"—";}
 function trainingPlanWeeks(plan){const n=Number(plan?.engine?.input?.horizon?.calendarWeeks);if(Number.isFinite(n)&&n>0)return n;const d=dateDiff(plan?.startDate,plan?.raceDate);return Number.isFinite(d)&&d>=0?Math.max(1,Math.ceil((d+1)/7)):null;}
 function trainingPlanStatus(plan){const today=fmtDate(new Date());if(!plan?.raceDate)return"Plan";if(today>plan.raceDate)return"Finalizado";if(plan.startDate&&today<plan.startDate)return"Próximo";return"En curso";}
@@ -4345,7 +4324,6 @@ async function loadTrainingPlans(){
 }
 async function persistTrainingPlans({fromCloud=false}={}){const value=trainingPlansLocalEnvelope();await storePut("meta",{key:TRAINING_PLANS_META_KEY,value});if(!fromCloud){await markTrainingPlansCloudDirty(value.updatedAt).catch(()=>{});scheduleTrainingPlansCloudPush();}return value;}
 function renderTrainingPlanHome(){if(!ui.trainingPlanList)return;ui.trainingPlanList.innerHTML=currentTrainingPlans.map(plan=>`<button class="training-plan-row" type="button" data-training-plan-id="${esc(plan.id)}"><span class="training-plan-row-name">${esc(plan.name)}</span><span class="training-plan-row-chevron">›</span></button>`).join("");requestAnimationFrame(fitTrainingPlanTypography);}
-function trainingPlanRouteInfoRows(plan){const r=plan?.routeProfile;if(!r)return[];const rows=[{l:"Recorrido",v:r.fileName||r.format||"Archivo adjunto"}];if(Number.isFinite(Number(r.distanceKm)))rows.push({l:"Distancia del recorrido",v:`${formatNatural(Number(r.distanceKm),1)} km`});if(Number.isFinite(Number(r.elevationGainM)))rows.push({l:"Desnivel positivo",v:`+${formatNatural(Number(r.elevationGainM),0)} m`});if(Number.isFinite(Number(r.elevationLossM)))rows.push({l:"Desnivel negativo",v:`−${formatNatural(Number(r.elevationLossM),0)} m`});return rows;}
 function collapseTrainingPlanSections(){qsa("[data-training-plan-section]",ui.trainingPlanWorkspace).forEach(section=>{section.classList.remove("open");section.querySelector("[data-training-plan-section-body]")?.classList.add("hidden");section.querySelector("[data-training-plan-section-toggle]")?.setAttribute("aria-expanded","false");});}
 function handleTrainingPlanSectionToggle(e){const b=e.target.closest("[data-training-plan-section-toggle]");if(!b)return;const section=b.closest("[data-training-plan-section]"),body=section?.querySelector("[data-training-plan-section-body]");if(!section||!body)return;const open=!section.classList.contains("open");section.classList.toggle("open",open);body.classList.toggle("hidden",!open);b.setAttribute("aria-expanded",open?"true":"false");if(open&&b.dataset.trainingPlanSectionToggle==="workouts")requestAnimationFrame(()=>{fitActivityTitles();fitTrainingPlanTypography();});}
 function trainingPlanMarkPublicationDirty(plan){if(!plan)return;if(plan.publication?.status==="published")plan.publication={...plan.publication,dirty:true,updatedAt:new Date().toISOString()};else plan.publication=plan.publication||{status:"draft",dirty:false};}
@@ -4364,7 +4342,6 @@ async function resetTrainingPlanWeekAvailability(){const plan=activeTrainingPlan
 function resetNewPlanForm(){currentTrainingPlanEditId=null;newPlanGoalMode="time";newPlanRouteDraft=null;ui.newPlanForm?.reset();if(ui.newPlanStartDate)ui.newPlanStartDate.value=fmtDate(new Date());if(ui.newPlanTitle)ui.newPlanTitle.textContent="Nuevo plan";if(ui.newPlanSubmit)ui.newPlanSubmit.textContent="Crear plan";ui.newPlanTargetTimeWrap?.classList.remove("hidden");qsa("[data-weekday]",ui.newPlanWeekdays).forEach(b=>{b.classList.remove("active");b.setAttribute("aria-pressed","false");});if(ui.newPlanDoubleSessions)ui.newPlanDoubleSessions.value="";if(ui.newPlanRouteNote){ui.newPlanRouteNote.textContent="Opcional · GPX, TCX, KML o GeoJSON";ui.newPlanRouteNote.classList.remove("ready");}}
 function openNewPlanDetail(){resetNewPlanForm();ui.newPlanDetail?.classList.remove("hidden");ui.newPlanDetail?.setAttribute("aria-hidden","false");setAtlasSubpageNavHidden(true);document.body.style.overflow="hidden";if(ui.newPlanDetail)ui.newPlanDetail.scrollTop=0;setTimeout(()=>ui.newPlanName?.focus(),120);}
 function closeNewPlanDetail(){if(!ui.newPlanDetail||ui.newPlanDetail.classList.contains("hidden"))return;ui.newPlanDetail.classList.add("hidden");ui.newPlanDetail.setAttribute("aria-hidden","true");document.body.style.overflow="";refreshAtlasSubpageNav();}
-function handleNewPlanGoalMode(){newPlanGoalMode="time";ui.newPlanTargetTimeWrap?.classList.remove("hidden");}
 function handleNewPlanWeekday(e){const b=e.target.closest("[data-weekday]");if(!b)return;const active=!b.classList.contains("active");b.classList.toggle("active",active);b.setAttribute("aria-pressed",active?"true":"false");}
 function trainingPlanHaversine(a,b){const R=6371000,rad=Math.PI/180,dLat=(b.lat-a.lat)*rad,dLon=(b.lon-a.lon)*rad,x=Math.sin(dLat/2)**2+Math.cos(a.lat*rad)*Math.cos(b.lat*rad)*Math.sin(dLon/2)**2;return 2*R*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
 function trainingPlanRoutePointsFromGeoJSON(obj){const out=[];const visit=c=>{if(!Array.isArray(c))return;if(c.length>=2&&Number.isFinite(Number(c[0]))&&Number.isFinite(Number(c[1]))){out.push({lon:Number(c[0]),lat:Number(c[1]),ele:Number.isFinite(Number(c[2]))?Number(c[2]):null});return;}for(const x of c)visit(x);};const geo=obj?.type==="Feature"?obj.geometry:obj?.type==="FeatureCollection"?null:obj;if(obj?.type==="FeatureCollection")for(const f of obj.features||[])visit(f?.geometry?.coordinates);else visit(geo?.coordinates);return out;}
@@ -4500,9 +4477,7 @@ function trainingPresentationBlockRows(session){
   return rows;
 }
 function trainingPresentationIntervalRows(session){return trainingPresentationBlockRows(session);}
-function trainingPresentationLapDistance(m,estimated=false){if(!(Number(m)>0))return"—";return`${estimated?"≈ ":""}${trainingEngineFormatDistanceM(Number(m))}`;}
 function trainingPresentationLapTime(sec,estimated=false){if(!(Number(sec)>0))return"—";return`${estimated?"≈ ":""}${formatDuration(Number(sec))}`;}
-function trainingPresentationRenderLapTable(rows){if(!ui.planDetailLapTable)return;ui.planDetailLapTable.innerHTML='<div class="plan-prescribed-lap-columns"><span>Nº</span><span>Distancia</span><span>Tiempo</span><span>Ritmo objetivo</span></div>'+rows.map(r=>`<div class="plan-prescribed-lap-row${r.kind==="recovery"?" recovery":""}${r.estimated?" estimated":""}"><div class="plan-prescribed-lap-index">${esc(r.shortLabel||r.index)}</div><div class="plan-prescribed-lap-distance">${esc(trainingPresentationLapDistance(r.distanceM,r.estimated))}</div><div class="plan-prescribed-lap-time">${esc(trainingPresentationLapTime(r.timeSec,false))}</div><div class="plan-prescribed-lap-pace">${esc(r.paceLabel||"—")}</div></div>`).join("");}
 
 
 
@@ -4854,7 +4829,6 @@ function inferIntervalPhases(rows){const phases=new Array(rows.length).fill(null
  for(let i=0;i<rows.length;i++)phases[i]=i<first?"Calentamiento":i>last?"Enfriamiento":"Bloque principal";
  return{quality:true,phases};}
 function elevationClass(v){return!Number.isFinite(v)||Math.round(v)===0?"":v>0?"elev-pos":"elev-neg";}
-function signedElevation(v){if(!Number.isFinite(v))return"—";const n=Math.round(v);return`${n>0?"+":n<0?"−":""}${Math.abs(n)}`;}
 function phaseEmoji(phase){return phase==="Calentamiento"?"🔥":phase==="Bloque principal"?"⚡":phase==="Enfriamiento"?"❄️":"";}
 function activityLapRows(){
   let source=rawActivityLaps(currentActivityDetail);const hasReal=source.length>0;if(!source.length&&isRun(currentActivityDetail))source=syntheticKmLaps();
@@ -5729,13 +5703,7 @@ function trainingPlanPremiumInfoRows(plan){const pace=trainingPlanTargetPace(pla
 function trainingPlanPremiumCurrentRows(plan,snapshot,currentAbility,goalAssessment){const th=currentAbility?.thresholdAnchor;return[{e:'🧱',l:'Base',v:trainingEngineBaseLabel(snapshot?.base?.effective)},{e:'📈',l:'Volumen habitual',v:Number.isFinite(snapshot?.base?.habitualVolumeKm)?`${formatNatural(snapshot.base.habitualVolumeKm,1)} km/sem`:'—'},{e:'📅',l:'Frecuencia habitual',v:Number.isFinite(snapshot?.base?.frequencyDays)?`${formatNatural(snapshot.base.frequencyDays,1)} días/sem`:'—'},{e:'↗️',l:'Tirada larga reciente',v:Number.isFinite(snapshot?.longRun?.lr0Km)?`${formatNatural(snapshot.longRun.lr0Km,1)} km`:'—'},{e:'🔥',l:'Umbral',v:Number(th?.paceSecKm)>0?`${formatPaceValue(th.paceSecKm)} min/km${Number(th?.heartRateBpm)>0?` · ${Math.round(th.heartRateBpm)} ppm`:''}`:'—'},{e:'🧭',l:'Capacidad actual',v:trainingPlanCurrentAbilityLabel(plan,currentAbility)},{e:'⚡',l:'Calidad establecida',v:snapshot?.quality?.established?'Sí':'No'},{e:'🎯',l:'Estado del objetivo',v:goalAssessment?.label||'—'}];}
 function trainingPlanPremiumPaceRows(anchors){return[['🫧','Recuperación',anchors?.recovery],['🌿','Fácil',anchors?.easy],['🫁','Aeróbico',anchors?.aerobic],['🏁','Maratón',anchors?.marathon],['🏃🏻‍♂️','Media maratón',anchors?.half],['🔥','Umbral',anchors?.threshold],['⚡','10K',anchors?.tenK],['🚀','5K',anchors?.fiveK]].map(([e,l,a])=>({e,l,v:a?trainingEnginePaceRangeLabel(a):'—'}));}
 function atlasNormalizeSecondaryRace(r){if(!r||!r.date)return null;const distanceDef=trainingPlanDistanceDef(r.distanceKey,r);const distanceM=Number(r.distanceM)>0?Number(r.distanceM):Number(distanceDef?.distanceM)||0;return{name:String(r.name||distanceDef?.label||'Carrera secundaria'),date:String(r.date),distanceKey:String(r.distanceKey||distanceDef?.key||''),distanceM,targetTimeSec:Number(r.targetTimeSec)||0,goalMode:String(r.goalMode||((Number(r.targetTimeSec)>0)?'time':'finish'))};}
-function atlasSecondaryRacePaceSecKm(race){return Number(race?.targetTimeSec)>0&&Number(race?.distanceM)>0?Number(race.targetTimeSec)/(Number(race.distanceM)/1000):null;}
 function atlasSecondaryRaceDisplayName(race){const key=String(race?.distanceKey||'');if(key==='half')return 'Media maratón';if(key==='10k')return '10K';if(key==='5k')return '5K';if(key==='marathon')return 'Maratón';return 'Carrera secundaria';}
-function atlasSecondaryRaceSession(plan,race){const paceSecKm=atlasSecondaryRacePaceSecKm(race),targetPace=Number.isFinite(paceSecKm)&&paceSecKm>0?{paceSecKm,source:'secondary_race_goal',confidence:'goal'}:null,distanceM=Number(race.distanceM)||null,durationSec=Number(race.targetTimeSec)||null;return{id:`secondary-race-${race.date}-${String(race.distanceKey||'x')}`,prescribed:true,type:'Run',family:'Competición',name:race.name||atlasSecondaryRaceDisplayName(race),date:race.date,role:'competition_secondary',modifier:'secondary_race',distanceM,distanceKm:distanceM?trainingEngineRoundedKm(distanceM/1000):null,durationSec,targetPace,targetLabel:targetPace?`${formatPaceValue(targetPace.paceSecKm)} min/km`:(race.goalMode==='finish'?'Competición':'—'),structure:distanceM?`${trainingEngineFormatDistanceM(distanceM)}${targetPace?` @ ${formatPaceValue(targetPace.paceSecKm)} min/km`:''}`:'Competición',purpose:`Carrera secundaria integrada en el plan. Se utiliza como estímulo competitivo y punto de control del proceso hacia la prueba principal.`,notes:[`ATLAS la trata como carrera secundaria planificada.`],steps:[]};}
-function atlasActivationSession(race,date){return{id:`secondary-activation-${date}-${race.distanceKey}`,prescribed:true,type:'Run',family:'Activación',name:'Activación',date,role:'activation_secondary',distanceM:4000,distanceKm:4,durationSec:26*60+30,targetPace:{minSecKm:320,maxSecKm:359,paceSecKm:339.5,source:'easy_activation'},targetLabel:'5:20–5:59 min/km',structure:'4 km @ 5:20–5:59 min/km',purpose:`Activación breve para llegar con buenas sensaciones a ${race.name||'la carrera secundaria'}.`,notes:[],steps:[]};}
-function atlasRecoverySession(date){return{id:`secondary-recovery-${date}`,prescribed:true,type:'Run',family:'Recuperación',name:'Recuperación',date,role:'recovery_secondary',distanceM:6000,distanceKm:6,durationSec:36*60,targetPace:{minSecKm:354,maxSecKm:396,paceSecKm:375,source:'recovery_post_race'},targetLabel:'5:54–6:36 min/km',structure:'6 km @ 5:54–6:36 min/km',purpose:'Rodaje muy suave para asimilar la competición y reiniciar la carga sin acumular fatiga innecesaria.',notes:[],steps:[]};}
-function atlasSessionDate(session){return String(session?.date||'');}
-function atlasRecomputeWeekVolumeFromDays(days,start,end){const inWeek=days.filter(d=>d.date>=start&&d.date<=end);const sessions=inWeek.flatMap(d=>d.sessions||[]);const explicitKm=sessions.reduce((sum,s)=>sum+((Number(s.distanceM)>0?Number(s.distanceM):0)/1000),0);const longRun=sessions.filter(s=>s.role==='long_run').reduce((m,s)=>Math.max(m,Number(s.distanceKm)||((Number(s.distanceM)||0)/1000)||0),0);return{explicitKm:Math.round(explicitKm*10)/10,longRunKm:longRun||null};}
 atlasSecondaryEditorSave=async function(){const plan=activeTrainingPlan();if(!plan)return;plan.intermediateRaces=atlasSecondaryEditorDraft.map(x=>({...x}));plan.updatedAt=new Date().toISOString();plan.engine=await collectTrainingEngineInput(plan,fmtDate(new Date()));trainingPlanMarkPublicationDirty(plan);await persistTrainingPlans();closeTrainingPlanSecondaryEditor();renderTrainingPlanWorkspace();renderPlan();toast('Carreras secundarias integradas y plan recalculado.');};
 
 trainingPlanRenderCurrentRows=function(rows){const currentBox=$("trainingPlanCurrentState");if(currentBox)trainingPlanRenderPremiumCards(currentBox,rows||[]);};
@@ -7049,14 +7017,6 @@ function atlasPublicationDiffCore(plan){
   const deletes=old.filter(e=>String(e.date||"")>=today&&!desiredMap.has(e.externalId)).map(e=>({external_id:e.externalId,date:e.date}));
   return{desired,upserts,deletes,old};
 }
-function atlasV090CachedAthlete(){
-  const row=(currentActivities&&currentActivities.__athlete)||null;
-  return null;
-}
-async function atlasV090AthleteSettings(){
-  const row=await storeGet("athlete","me").catch(()=>null);
-  return row?.data||null;
-}
 function atlasPublicationStateCore(plan){
   if(!plan?.engine||plan.engine.status!=="PRESCRIBED")return{kind:"error",label:"No disponible",copy:"El plan todavía no contiene una prescripción publicable."};
   const diff=atlasV090PublicationDiff(plan),pub=plan.publication||{status:"draft",dirty:false},hasRemote=Array.isArray(pub.remoteEvents)&&pub.remoteEvents.length>0;
@@ -8290,23 +8250,6 @@ function atlasV096ReasonText(code){
     REPEATED_OVERPERFORMANCE:"Rendimiento superior repetido"
   })[code]||code;
 }
-function atlasV096AvailableEmptyDate(schedule,fromDate,maxDays,session){
-  for(let delta=1;delta<=maxDays;delta++){
-    const date=addDays(fromDate,delta),day=(schedule?.days||[]).find(d=>d.date===date);
-    if(!day||day.available===false||date<fmtDate(new Date()))continue;
-    const sessions=day.sessions||[];
-    if(sessions.some(atlasV096IsCompetitionSession))continue;
-    if(sessions.length)continue;
-    const prev=(schedule.days||[]).find(d=>d.date===addDays(date,-1))?.sessions||[],
-          next=(schedule.days||[]).find(d=>d.date===addDays(date,1))?.sessions||[];
-    if(atlasV0814IsQuality(session)||atlasV0814IsLong(session)){
-      if([...prev,...next].some(x=>atlasV0814IsQuality(x)||atlasV0814IsLong(x)))continue;
-    }
-    if(atlasV0814IsStrength(session)&&next.some(x=>atlasV0814IsQuality(x)||atlasV0814IsLong(x)))continue;
-    return date;
-  }
-  return null;
-}
 function atlasV096Operation(id,session,action,reason,extra={}){
   return{
     id,sessionKey:atlasV0814SessionKey(session),action,reasonCode:reason,
@@ -8357,20 +8300,6 @@ function atlasV096ScaleSession(session,factor,reason){
   }
   return s;
 }
-function atlasV096RecoverySession(session,plan,reason){
-  const s=atlasV0814Clone(session),easy=plan?.adaptiveEngine?.anchorOverride?.paceAnchors?.easy||plan?.engine?.paceAnchors?.easy||null;
-  const km=Math.max(3,Math.min(6,Math.round((Number(s.distanceKm)||Number(s.distanceM)/1000||6)*.55)));
-  s.family="Recuperación";s.name="Recuperación adaptada";s.role="adaptive_recovery";
-  s.majorStimulus=false;s.spacingHard=false;s.modifier="adaptive";
-  s.distanceKm=km;s.distanceM=km*1000;s.targetPace=easy;s.targetLabel=trainingEnginePaceRangeLabel(easy);
-  s.durationSec=trainingEngineEstimatedRunDuration(km,easy);
-  s.structure=`${km} km @ ${s.targetLabel||"ritmo de recuperación"}`;
-  s.steps=[trainingEngineStep("main",`⚡ ${km} km @ ${s.targetLabel||"ritmo de recuperación"}`,{distanceM:km*1000,pace:easy})];
-  s.purpose="Favorecer la recuperación sin añadir un estímulo exigente.";
-  s.notes=[...(s.notes||[]),`Adaptado por ɅTLɅS · ${atlasV096ReasonText(reason)}.`];
-  s._atlasAdaptive=true;s._atlasAdaptiveReason=reason;
-  return s;
-}
 function atlasV096ApplyAnchorToSession(session,anchors){
   const s=session;
   if(!s||!anchors)return s;
@@ -8397,134 +8326,6 @@ atlasV0814EffectiveSchedule=function(plan,schedule=null,overridesOverride=null){
   return atlasV096ApplyAdaptiveSchedule(plan,manual);
 };
 
-function atlasV096ReadinessOps(plan,schedule,state,today){
-  const score=Number(currentAtlasState?.score);
-  if(!Number.isFinite(score)||score>=65)return[];
-  const end=addDays(today,2),ops=[];
-  for(const d of schedule?.days||[]){
-    if(d.date<today||d.date>end)continue;
-    for(const s of d.sessions||[]){
-      if(atlasV096IsCompetitionSession(s)||atlasV0814ActiveOverride(plan,atlasV0814SessionKey(s)))continue;
-      const key=atlasV0814SessionKey(s);
-      if(score<35){
-        if(atlasV0814IsQuality(s)||atlasV0814IsLong(s)||atlasV0814IsStrength(s)){
-          ops.push(atlasV096Operation(`ready:${key}:${today}`,s,"CANCEL","READINESS_VERY_LOW",{scope:"readiness",sourceScore:score}));
-        }else if(s.type==="Run"){
-          ops.push(atlasV096Operation(`ready:${key}:${today}`,s,"SUBSTITUTE","READINESS_VERY_LOW",{scope:"readiness",sourceScore:score}));
-        }
-      }else if(score<50){
-        if(atlasV0814IsStrength(s)){
-          ops.push(atlasV096Operation(`ready:${key}:${today}`,s,"CANCEL","READINESS_LOW",{scope:"readiness",sourceScore:score}));
-        }else if(atlasV0814IsQuality(s)||atlasV0814IsLong(s)){
-          const target=atlasV096AvailableEmptyDate(schedule,d.date,2,s);
-          if(target)ops.push(atlasV096Operation(`ready:${key}:${today}`,s,"MOVE","READINESS_LOW",{scope:"readiness",targetDate:target,sourceScore:score}));
-          else ops.push(atlasV096Operation(`ready:${key}:${today}`,s,"SUBSTITUTE","READINESS_LOW",{scope:"readiness",sourceScore:score}));
-        }else if(s.type==="Run"){
-          ops.push(atlasV096Operation(`ready:${key}:${today}`,s,"MODIFY","READINESS_LOW",{scope:"readiness",factor:.7,sourceScore:score}));
-        }
-      }else{
-        if(atlasV0814IsQuality(s)||atlasV0814IsLong(s))ops.push(atlasV096Operation(`ready:${key}:${today}`,s,"MODIFY","READINESS_LOW",{scope:"readiness",factor:.8,sourceScore:score}));
-        else if(atlasV0814IsStrength(s))ops.push(atlasV096Operation(`ready:${key}:${today}`,s,"MODIFY","READINESS_LOW",{scope:"readiness",factor:.75,sourceScore:score}));
-      }
-    }
-  }
-  return ops;
-}
-function atlasV096StructuralOps(plan,schedule,records,today){
-  const ops=[],recent=records.filter(r=>{
-    const age=atlasV096DaysBetween(r.date,today);return age!=null&&age>=0&&age<=14;
-  });
-
-  for(const r of recent.filter(x=>x.status==="MISSED")){
-    const age=atlasV096DaysBetween(r.date,today);if(age==null)continue;
-    const s=r.session,key=atlasV0814SessionKey(s);
-    if(atlasV0814ActiveOverride(plan,key))continue;
-    if(atlasV0814IsQuality(s)&&age<=2){
-      const target=atlasV096AvailableEmptyDate(schedule,r.date,2,s);
-      if(target)ops.push(atlasV096Operation(`missq:${key}:${r.date}`,s,"MOVE","MISSED_QUALITY",{targetDate:target}));
-    }else if(atlasV0814IsLong(s)&&age<=2){
-      const target=atlasV096AvailableEmptyDate(schedule,r.date,2,s);
-      if(target)ops.push(atlasV096Operation(`misslr:${key}:${r.date}`,s,"MOVE","MISSED_LONG_RUN",{targetDate:target}));
-    }else if(atlasV0814IsStrength(s)&&age<=3){
-      const target=atlasV096AvailableEmptyDate(schedule,r.date,3,s);
-      if(target)ops.push(atlasV096Operation(`missst:${key}:${r.date}`,s,"MOVE","MISSED_STRENGTH",{targetDate:target}));
-    }
-  }
-
-  const failures=records.filter(r=>{
-    const age=atlasV096DaysBetween(r.date,today);
-    return age!=null&&age>=0&&age<=10&&atlasV096IsKeySession(r.session)&&["MISSED","COMPLETED_REDUCED","COMPLETED_DIFFERENT"].includes(r.status);
-  });
-  if(failures.length>=2){
-    const until=addDays(today,7);
-    for(const d of schedule?.days||[]){
-      if(d.date<today||d.date>until)continue;
-      for(const s of d.sessions||[]){
-        if(atlasV096IsCompetitionSession(s)||atlasV0814ActiveOverride(plan,atlasV0814SessionKey(s)))continue;
-        const factor=atlasV0814IsQuality(s)?.80:atlasV0814IsLong(s)?.85:s.type==="Run"?.90:null;
-        if(factor)ops.push(atlasV096Operation(`under:${atlasV0814SessionKey(s)}:${today}`,s,"MODIFY","REPEATED_UNDERPERFORMANCE",{factor}));
-      }
-    }
-  }
-
-  const completedLr=records.filter(r=>atlasV0814IsLong(r.session)&&r.activity&&["COMPLETED_AS_PLANNED","COMPLETED_REDUCED","COMPLETED_OVER","COMPLETED_DIFFERENT"].includes(r.status))
-    .sort((a,b)=>b.date.localeCompare(a.date))[0];
-  if(completedLr&&Number.isFinite(completedLr.ratio)&&completedLr.ratio<.90){
-    const futureLr=[];
-    for(const d of schedule?.days||[])if(d.date>=today)for(const s of d.sessions||[])if(atlasV0814IsLong(s))futureLr.push({d,s});
-    const next=futureLr.sort((a,b)=>a.d.date.localeCompare(b.d.date))[0];
-    if(next&&!atlasV0814ActiveOverride(plan,atlasV0814SessionKey(next.s))){
-      if(completedLr.ratio>=.75){
-        const prevKm=Number(completedLr.session.distanceKm)||Number(completedLr.session.distanceM)/1000,
-              nextKm=Number(next.s.distanceKm)||Number(next.s.distanceM)/1000;
-        if(prevKm>0&&nextKm>prevKm){
-          ops.push(atlasV096Operation(`lrcons:${atlasV0814SessionKey(next.s)}:${completedLr.date}`,next.s,"MODIFY","LONG_RUN_CONSOLIDATE",{factor:Math.max(.75,prevKm/nextKm)}));
-        }
-      }else{
-        const rpe=activityRpe(completedLr.activity),feel=String(activityFeel(completedLr.activity)||"").toLowerCase(),
-              fatigue=(rpe&&rpe>=8)||/flojo|debil|débil/.test(feel);
-        if(fatigue)ops.push(atlasV096Operation(`lrfat:${atlasV0814SessionKey(next.s)}:${completedLr.date}`,next.s,"MODIFY","LONG_RUN_INCOMPLETE",{factor:.85}));
-      }
-    }
-  }
-  return ops;
-}
-async function atlasV096AnchorRevision(plan,records,today,state){
-  const snapshot=await buildTrainingEngineAthleteSnapshot(today),
-        ability=trainingEngineBuildCurrentAbility(snapshot,today),
-        anchors=trainingEngineBuildPaceAnchors(ability),
-        oldTh=Number(plan?.engine?.athleteSnapshot?.threshold?.paceSecKm),
-        newTh=Number(snapshot?.threshold?.paceSecKm),
-        race=(snapshot?.racesTests||[]).filter(r=>r?.date&&r.date<=today).sort((a,b)=>b.date.localeCompare(a.date))[0],
-        priorRace=state.anchorOverride?.evidenceDate||null,
-        overs=records.filter(r=>{
-          const age=atlasV096DaysBetween(r.date,today);
-          return age!=null&&age>=0&&age<=14&&atlasV096IsKeySession(r.session)&&r.status==="COMPLETED_OVER";
-        });
-
-  let reason=null,evidenceDate=null;
-  if(newTh>0&&(!oldTh||Math.abs(newTh-oldTh)>=.5)){
-    reason="NEW_THRESHOLD";evidenceDate=snapshot?.threshold?.observedAt||today;
-  }else if(race&&race.date!==priorRace){
-    reason="RACE_RESULT";evidenceDate=race.date;
-  }else if(overs.length>=2){
-    reason="REPEATED_OVERPERFORMANCE";evidenceDate=overs.sort((a,b)=>b.date.localeCompare(a.date))[0].date;
-  }
-  if(!reason)return state.anchorOverride||null;
-
-  return{
-    reasonCode:reason,reason:atlasV096ReasonText(reason),evidenceDate,
-    updatedAt:new Date().toISOString(),
-    currentAbility:ability,paceAnchors:anchors,
-    thresholdChangePct:oldTh>0&&newTh>0?(newTh/oldTh-1)*100:null
-  };
-}
-function atlasV096AdaptiveSignature(state){
-  return trainingEngineDigest({
-    operations:(state.operations||[]).map(o=>({key:o.sessionKey,a:o.action,t:o.targetDate||null,f:o.factor||null,r:o.reasonCode})),
-    anchor:state.anchorOverride?{r:state.anchorOverride.reasonCode,d:state.anchorOverride.evidenceDate,p:state.anchorOverride.paceAnchors}:null
-  });
-}
 async function atlasV096EvaluateAdaptivePlan(plan,{force=false}={}){return false;}
 async function atlasV096EvaluateActivePlan(){
   if(atlasV096AdaptiveBusy)return false;
@@ -8925,33 +8726,6 @@ atlasV096Operation=function(id,session,action,reason,extra={}){
 /* ===== ɅTLɅS v0.9.8 · estabilización final Adaptive Engine ===== */
 const ATLAS_ADAPTIVE_STABILIZATION_VERSION="0.9.8";
 
-function atlasV098LatestSnapshotRaceDate(plan,today){
-  return (plan?.engine?.athleteSnapshot?.racesTests||[])
-    .map(r=>r?.date).filter(d=>d&&d<=today).sort().at(-1)||null;
-}
-function atlasV098ThresholdEvidence(threshold){
-  if(!threshold)return null;
-  return{
-    paceSecKm:Number(threshold.paceSecKm)||null,
-    heartRateBpm:Number(threshold.heartRateBpm)||null,
-    source:threshold.source||null,
-    observedAt:threshold.observedAt||null
-  };
-}
-function atlasV098InitEvidenceState(plan,state,today){
-  if(!state.lastRaceEvidenceDate)state.lastRaceEvidenceDate=atlasV098LatestSnapshotRaceDate(plan,today);
-  if(!state.lastThresholdEvidenceDigest){
-    state.lastThresholdEvidenceDigest=trainingEngineDigest(atlasV098ThresholdEvidence(plan?.engine?.athleteSnapshot?.threshold));
-  }
-  /* v0.9.6/0.9.7 podía etiquetar como nueva una carrera que ya formaba parte
-     del snapshot con el que se creó el plan. Se elimina únicamente ese falso legado. */
-  const baselineRace=atlasV098LatestSnapshotRaceDate(plan,today);
-  if(state.anchorOverride?.reasonCode==="RACE_RESULT"&&baselineRace&&state.anchorOverride.evidenceDate<=baselineRace){
-    state.anchorOverride=null;
-  }
-  state.stabilizationVersion=ATLAS_ADAPTIVE_STABILIZATION_VERSION;
-  return state;
-}
 function atlasV098IsGoalSpecificAnchor(anchor){
   const src=String(anchor?.source||"");
   return src.startsWith("goal_specific_target")||src.startsWith("goal_weighted_specific_progression")||src.startsWith("race_demand_progression")||src.startsWith("secondary_goal_progression");
@@ -9062,22 +8836,6 @@ atlasV096ApplyAnchorToSession=function(session,anchors){
    sustituye temporalmente a cualquier operación estructural sobre esa misma sesión. */
 
 
-async function atlasV098AnchorRevision(plan,records,today,state,snapshot){
-  const live=snapshot||await buildTrainingEngineAthleteSnapshot(today),ability=trainingEngineBuildCurrentAbility(live,today),anchors=trainingEngineBuildPaceAnchors(ability),
-        thresholdEvidence=atlasV098ThresholdEvidence(live?.threshold),thresholdDigest=trainingEngineDigest(thresholdEvidence),
-        race=(live?.racesTests||[]).filter(r=>r?.date&&r.date<=today).sort((a,b)=>b.date.localeCompare(a.date))[0]||null,
-        overs=records.filter(r=>{const age=atlasV096DaysBetween(r.date,today);return age!=null&&age>=0&&age<=14&&atlasV096IsKeySession(r.session)&&r.status==="COMPLETED_OVER";});
-  let reason=null,evidenceDate=null;
-  if(thresholdDigest!==state.lastThresholdEvidenceDigest){reason="NEW_THRESHOLD";evidenceDate=live?.threshold?.observedAt||today;state.lastThresholdEvidenceDigest=thresholdDigest;}
-  else if(race&&(!state.lastRaceEvidenceDate||race.date>state.lastRaceEvidenceDate)){reason="RACE_RESULT";evidenceDate=race.date;state.lastRaceEvidenceDate=race.date;}
-  else if(overs.length>=2){
-    const latestOver=overs.sort((a,b)=>b.date.localeCompare(a.date))[0].date;
-    if(!state.lastOverperformanceEvidenceDate||latestOver>state.lastOverperformanceEvidenceDate){reason="REPEATED_OVERPERFORMANCE";evidenceDate=latestOver;state.lastOverperformanceEvidenceDate=latestOver;}
-  }
-  if(!reason)return state.anchorOverride||null;
-  const oldTh=Number(plan?.engine?.athleteSnapshot?.threshold?.paceSecKm),newTh=Number(live?.threshold?.paceSecKm);
-  return{reasonCode:reason,reason:atlasV096ReasonText(reason),evidenceDate,updatedAt:new Date().toISOString(),currentAbility:ability,paceAnchors:anchors,thresholdChangePct:oldTh>0&&newTh>0?(newTh/oldTh-1)*100:null};
-}
 
 /* v0.9.8: el digest usa el umbral vivo y la carrera viva. La recalibración de
    anchors no espera 72 h; sólo las operaciones estructurales usan ese cooldown. */
@@ -9518,102 +9276,12 @@ const ATLAS_V130_STRENGTH_MUSCLES={
   bulgarianSplitSquat:["Cuádriceps","Glúteos","Isquios","Gemelos"]
 };
 Object.assign(ATLAS_V120_MUSCLES,ATLAS_V130_STRENGTH_MUSCLES);
-function atlasV130Exercise(asset,sets,reps,rest,cue,tags=[]){
-  const cat=ATLAS_V123_EXERCISE_CATALOG[asset]||{};
-  return{name:cat.name||asset,asset,sets,reps,rest,cue,tags:[...tags]};
-}
-function atlasV130StrengthPhase(session){return String(session?.phase||session?.strengthPhase||"preparation");}
 function atlasV130StrengthVariant(session){
   if(session?.strengthVariant==="A"||session?.strengthVariant==="B")return session.strengthVariant;
   const date=String(session?.date||""),d=/^\d{4}-\d{2}-\d{2}$/.test(date)?new Date(`${date}T12:00:00`):new Date();
   const weekday=((d.getDay()+6)%7)+1,idx=Number(session?.weekIndex||session?.macroWeekIndex||0)||0;
   return((idx+weekday)%2===0)?"A":"B";
 }
-function atlasV130FoundationDose(session){
-  const pw=Math.max(1,Number(session?.phaseWeek)||1),history=Math.max(0,Number(session?.strengthHistoryWeeks)||0);
-  if(history<2&&pw<=2)return{mainSets:"2 series",mainReps:"8 repeticiones",upperSets:"2 series",upperReps:"8–10 repeticiones",duration:42,note:"Entrada progresiva: durante las primeras semanas prioriza técnica y deja 3 repeticiones en reserva."};
-  if(pw<=2)return{mainSets:"3 series",mainReps:"8 repeticiones",upperSets:"2 series",upperReps:"8–10 repeticiones",duration:48,note:"Carga moderada y técnica limpia; deja 2–3 repeticiones en reserva."};
-  return{mainSets:"3 series",mainReps:"6–8 repeticiones",upperSets:"2 series",upperReps:"6–8 repeticiones",duration:50,note:"Progresa la carga sólo si mantienes técnica y 2 repeticiones en reserva."};
-}
-function atlasV130DevelopmentDose(session){
-  const pw=Math.max(1,Number(session?.phaseWeek)||1);
-  return pw<=2?{mainSets:"3 series",mainReps:"6 repeticiones",upperSets:"2 series",upperReps:"6–8 repeticiones",duration:48,note:"Sube ligeramente la carga respecto a la fase base, sin acercarte al fallo."}:{mainSets:"3 series",mainReps:"5–6 repeticiones",upperSets:"2 series",upperReps:"6 repeticiones",duration:48,note:"Fuerza alta con volumen contenido: intención rápida al subir y ejecución controlada."};
-}
-function atlasV130PrincipalSpec(session,variant){
-  const phase=atlasV130StrengthPhase(session),dev=phase==="development",dose=dev?atlasV130DevelopmentDose(session):atlasV130FoundationDose(session),phaseLabel=ATLAS_V130_STRENGTH_PHASE_LABELS[phase]||"Base de fuerza";
-  if(variant==="B")return{
-    version:ATLAS_STRENGTH_PRESCRIPTION_VERSION,title:`Fuerza B · ${phaseLabel}`,durationMin:dose.duration,focus:"Unilateral + glúteo + tirón/empuje + core",purpose:"Construir fuerza útil para correr con predominio unilateral y de cadera, manteniendo un tren superior equilibrado sin generar fatiga innecesaria.",
-    blocks:[
-      {title:"Preparación",subtitle:"5–6 min",exercises:[atlasV130Exercise("mobility","1 ronda","6 repeticiones por lado","—","Moviliza tobillo y cadera y abre la columna torácica sin buscar fatiga.",["Movilidad"])]},
-      {title:"Tren inferior",subtitle:dev?"Fuerza":"Base",exercises:[
-        atlasV130Exercise("hipthrust",dose.mainSets,dev?"5–6 repeticiones":dose.mainReps,dev?"120 s":"90 s","Extiende la cadera y pausa arriba sin hiperextender la zona lumbar.",["Glúteo","Cadena posterior"]),
-        atlasV130Exercise("bulgarianSplitSquat",dose.mainSets,dev?"5 repeticiones por pierna":"6 repeticiones por pierna",dev?"90 s":"75–90 s","Rodilla estable, tronco alto y presión completa sobre el pie delantero.",["Unilateral"]),
-        atlasV130Exercise("calf","2 series",dev?"8–10 repeticiones":"10–12 repeticiones","45 s","Sube hasta el final del recorrido, pausa y baja con control.",["Pie/tobillo"])
-      ]},
-      {title:"Tren superior",subtitle:"Mantenimiento estructural",exercises:[
-        atlasV130Exercise("overheadPress",dose.upperSets,dose.upperReps,"60–75 s","Costillas controladas; empuja vertical sin arquear la espalda.",["Empuje"]),
-        atlasV130Exercise("latPulldown",dose.upperSets,dose.upperReps,"60–75 s","Baja los hombros antes de tirar y lleva la barra hacia la parte alta del pecho.",["Tirón"])
-      ]},
-      {title:"Core",subtitle:"Estabilidad",exercises:[atlasV130Exercise("sideplank","2 series",dev?"25–30 s por lado":"25–35 s por lado","35 s","Mantén hombro, cadera y tobillo alineados.",["Lateral"])]}
-    ],
-    notes:[dose.note,"No entrenes al fallo. La fuerza debe mejorar la carrera, no comprometer la siguiente sesión clave."]
-  };
-  return{
-    version:ATLAS_STRENGTH_PRESCRIPTION_VERSION,title:`Fuerza A · ${phaseLabel}`,durationMin:dose.duration,focus:"Bilateral + cadena posterior + empuje/tirón + core",purpose:"Desarrollar fuerza general con prioridad en piernas y cadena posterior, añadiendo el mínimo eficaz de tren superior y estabilidad.",
-    blocks:[
-      {title:"Preparación",subtitle:"5–6 min",exercises:[atlasV130Exercise("mobility","1 ronda","6 repeticiones por lado","—","Moviliza tobillo, cadera y columna torácica con amplitud cómoda.",["Movilidad"])]},
-      {title:"Tren inferior",subtitle:dev?"Fuerza":"Base",exercises:[
-        atlasV130Exercise("squat",dose.mainSets,dose.mainReps,dev?"120 s":"90 s","Tronco estable, rodillas siguiendo la línea de los pies y subida firme.",["Bilateral"]),
-        atlasV130Exercise("deadlift",dose.mainSets,dose.mainReps,dev?"120 s":"90 s","Bisagra real de cadera, espalda neutra y tensión continua en isquios y glúteos.",["Cadena posterior"]),
-        atlasV130Exercise("calf","2 series",dev?"8–10 repeticiones":"10–12 repeticiones","45 s","Recorrido completo, pausa arriba y descenso controlado.",["Pie/tobillo"])
-      ]},
-      {title:"Tren superior",subtitle:"Mantenimiento estructural",exercises:[
-        atlasV130Exercise(dev?"benchPress":"pushup",dose.upperSets,dev?dose.upperReps:"8–12 repeticiones","60–75 s",dev?"Escápulas estables y barra controlada; termina cada serie con margen.":"Cuerpo alineado y pecho descendiendo entre las manos; evita hundir la cadera.",["Empuje"]),
-        atlasV130Exercise("oneArmRow",dose.upperSets,dev?`${dose.upperReps} por lado`:"8 repeticiones por lado","60–75 s","Tira con el codo hacia la cadera sin rotar el tronco.",["Tirón"])
-      ]},
-      {title:"Core",subtitle:"Anti-rotación",exercises:[atlasV130Exercise("pallof","2 series","8 repeticiones por lado","35–45 s","Extiende los brazos sin permitir que el tronco rote.",["Anti-rotación"])]}
-    ],
-    notes:[dose.note,"No entrenes al fallo. La técnica y la frescura para correr tienen prioridad sobre añadir peso."]
-  };
-}
-function atlasV130MaintenanceSpec(session,variant){
-  const title=`Fuerza ${variant} · Mantenimiento específico`;
-  if(variant==="B")return{
-    version:ATLAS_STRENGTH_PRESCRIPTION_VERSION,title,durationMin:34,focus:"Unilateral + glúteo + torso",purpose:"Conservar la fuerza ya construida con una dosis pequeña que no interfiera con el trabajo específico de carrera.",
-    blocks:[
-      {title:"Principal",subtitle:"Dosis mínima eficaz",exercises:[
-        atlasV130Exercise("hipthrust","2 series","6 repeticiones","90 s","Pausa arriba y mantén pelvis neutra.",["Glúteo"]),
-        atlasV130Exercise("bulgarianSplitSquat","2 series","5 repeticiones por pierna","75 s","Controla la bajada y empuja con toda la planta del pie delantero.",["Unilateral"]),
-        atlasV130Exercise("overheadPress","2 series","6 repeticiones","60 s","Empuja vertical manteniendo el tronco estable.",["Empuje"]),
-        atlasV130Exercise("latPulldown","2 series","6–8 repeticiones","60 s","Hombros abajo y tirón limpio hacia el pecho.",["Tirón"]),
-        atlasV130Exercise("sideplank","2 series","25 s por lado","30 s","Alinea cuerpo y mantén la cadera alta.",["Core"])
-      ]}
-    ],notes:["Mantén 2–3 repeticiones en reserva. Si la carga de carrera aumenta, recorta una serie antes de tocar las sesiones clave."]
-  };
-  return{
-    version:ATLAS_STRENGTH_PRESCRIPTION_VERSION,title,durationMin:34,focus:"Bilateral + posterior + torso",purpose:"Mantener fuerza y rigidez útil con el mínimo volumen necesario durante la fase específica.",
-    blocks:[
-      {title:"Principal",subtitle:"Dosis mínima eficaz",exercises:[
-        atlasV130Exercise("squat","2 series","5–6 repeticiones","90 s","Repeticiones limpias y rápidas al subir, sin apurar.",["Bilateral"]),
-        atlasV130Exercise("deadlift","2 series","5–6 repeticiones","90 s","Bisagra compacta y control excéntrico.",["Cadena posterior"]),
-        atlasV130Exercise("pushup","2 series","8–10 repeticiones","45–60 s","Mantén el cuerpo en bloque y deja margen.",["Empuje"]),
-        atlasV130Exercise("seatedRow","2 series","8 repeticiones","60 s","Tira hacia el abdomen con pecho estable y hombros lejos de las orejas.",["Tirón"]),
-        atlasV130Exercise("pallof","2 series","6 repeticiones por lado","30–40 s","Resiste cualquier giro del tronco.",["Core"])
-      ]}
-    ],notes:["La sesión debe terminar con sensación de control. No persigas fatiga ni agujetas en fase específica."]
-  };
-}
-function atlasV130MicrodoseSpec(session){return{
-  version:ATLAS_STRENGTH_PRESCRIPTION_VERSION,title:"Fuerza · Microdosis taper",durationMin:18,focus:"Activación neuromuscular",purpose:"Conservar sensación de fuerza y estabilidad sin generar fatiga residual antes de competir.",
-  blocks:[
-    {title:"Microdosis",subtitle:"1–2 rondas",exercises:[
-      atlasV130Exercise("lunge","1–2 series","4 repeticiones por pierna","30 s","Movimiento fácil y limpio, sin quemazón.",["Unilateral"]),
-      atlasV130Exercise("gluteBridge","1–2 series","6 repeticiones","30 s","Pausa breve arriba; sensación de activación, no de esfuerzo.",["Glúteo"]),
-      atlasV130Exercise("calf","1–2 series","8 repeticiones","25 s","Sube rápido y baja con control.",["Pie/tobillo"]),
-      atlasV130Exercise("birdDog","1–2 series","5 repeticiones por lado","25 s","Pelvis quieta y extensión larga del brazo y pierna opuestos.",["Core"])
-    ]}
-  ],notes:["Termina fresco. Si deja fatiga perceptible, la dosis es demasiado alta."]
-};}
 /* Frecuencia: 2 → 1 → mínima. La segunda sesión sólo aparece si cabe sin robar frecuencia de carrera. */
 
 /* Añade contexto de fase a las sesiones generadas para que la prescripción de fuerza sea reproducible. */
@@ -9726,20 +9394,6 @@ function atlasV132Variant(session){return atlasV130StrengthVariant(session);}
 function atlasV132LoadText(ex){
   const parts=[];if(ex?.load)parts.push(ex.load);if(ex?.rpe)parts.push(`RPE ${ex.rpe}`);if(ex?.rir)parts.push(`${ex.rir} RIR`);return parts.join(" · ");
 }
-function atlasV132StrengthDose(session){
-  const phase=atlasV132Phase(session),distance=atlasV132DistanceKey(session),pw=Math.max(1,Number(session?.phaseWeek)||1),history=Math.max(0,Number(session?.strengthHistoryWeeks)||0),short=["5k","10k"].includes(distance);
-  if(phase==="preparation"){
-    if(history<2&&pw<=2)return{mainSets:"2 series",mainReps:"8 repeticiones",uniSets:"2 series",uniReps:"8 por pierna",rpe:"6",rir:"3–4",rest:"90 s",duration:44};
-    return{mainSets:"3 series",mainReps:short?"6 repeticiones":"6–8 repeticiones",uniSets:"2 series",uniReps:"8 por pierna",rpe:short?"6–7":"6–7",rir:"3",rest:"90–120 s",duration:48};
-  }
-  if(phase==="development")return{mainSets:"3 series",mainReps:short?(pw<=2?"5–6 repeticiones":"4–6 repeticiones"):(pw<=2?"6–8 repeticiones":"5–6 repeticiones"),uniSets:"3 series",uniReps:short?"6 por pierna":"6–8 por pierna",rpe:short?"7–8":"7–7,5",rir:short?"2":"2–3",rest:"120 s",duration:50};
-  if(phase==="specific")return{mainSets:"2 series",mainReps:short?"4–6 repeticiones":"5–6 repeticiones",uniSets:"2 series",uniReps:"5–6 por pierna",rpe:"7",rir:"2–3",rest:"90–120 s",duration:34};
-  return{mainSets:"1–2 series",mainReps:"5–6 repeticiones",uniSets:"1–2 series",uniReps:"4–5 por pierna",rpe:"5–6",rir:"4",rest:"60–90 s",duration:20};
-}
-function atlasV132WarmupBlock(){return{title:"Preparación",subtitle:"6–8 min",exercises:[
-  atlasV132Exercise("Movilidad dinámica","mobility","1 ronda","6 por lado","—",{load:"Peso corporal",cue:"Tobillo, cadera y columna torácica; amplitud cómoda, sin fatiga.",tags:["Movilidad"]}),
-  atlasV132Exercise("Sentadilla sin peso","squat","2 series","10 repeticiones","30 s",{load:"Peso corporal",rpe:"3–4",rir:"Amplio margen",cue:"Movimiento fluido para preparar rodillas, cadera y patrón de sentadilla.",tags:["Activación"]})
-]};}
 
 /* Frecuencia por distancia/fase: 2 → 1 → microdosis, sin ejercicios de torso automáticos. */
 let atlasV132StrengthDistanceContext=null;
@@ -9827,9 +9481,6 @@ function atlasV132FinalizeEngine(engine,plan){
 /* Snapshot inicial: al llegar el inicio real del plan se rehace una vez con la última semana completa disponible. */
 
 /* Actividad no planificada: consume presupuesto del microciclo en vez de sumarse a él. */
-function atlasV132UnplannedRunKmThisWeek(plan,today){
-  const start=fmtDate(mondayOf(new Date(`${today}T12:00:00`))),end=addDays(start,6),schedule=atlasV096EffectiveScheduleBase(plan);let km=0;for(const a of currentActivities||[]){const d=activityDate(a);if(!isRun(a)||!d||d<start||d>end||d>today)continue;if(atlasV096ActivityPlanMatch(a))continue;const plannedRuns=(schedule?.days||[]).find(x=>x.date===d)?.sessions?.filter(s=>s.type==="Run")||[];if(plannedRuns.length){const ad=(Number(activityDistanceM(a))||0)/1000,compatible=plannedRuns.some(s=>{const pd=(Number(s.distanceM)||0)/1000;return !(pd>0)||!(ad>0)||(ad/pd>=.65&&ad/pd<=1.5);});if(compatible)continue;}km+=(Number(activityDistanceM(a))||0)/1000;}return Math.round(km*10)/10;
-}
 const atlasV132AdaptiveBase=atlasV096EvaluateAdaptivePlan;
 
 
@@ -10030,45 +9681,6 @@ atlasV132FinalizeEngine=function(engine,plan){
 
 /* 3) Actividad no planificada: reconstruye su ajuste y absorbe todo el exceso
       disponible: fácil/recuperación → tirada larga → semana siguiente. */
-function atlasV133SessionKm(s){return Math.max(0,(Number(s?.distanceM)||0)/1000);}
-function atlasV133PushUnplannedOp(state,s,action,today,extra,reasonSuffix="",factor=null){
-  const key=atlasV0814SessionKey(s),
-        op=atlasV096Operation(`unplanned133:${key}:${today}`,s,action,"UNPLANNED_LOAD",{
-          scope:"structural",sessionDate:s.date,unplannedKm:extra,unplannedV133:true,
-          ...(Number.isFinite(Number(factor))?{factor:Number(factor)}:{})
-        });
-  op.reason=`Actividad no planificada · ${formatNatural(extra,1)} km ya consumen carga del microciclo${reasonSuffix?` · ${reasonSuffix}`:""}.`;
-  state.operations.push(op);
-  return op;
-}
-function atlasV133AbsorbFromSessions(state,sessions,remaining,today,extra,{allowCancel=true,minFactor=.35,label=""}={}){
-  let rem=remaining,added=false;
-  for(const s of sessions){
-    if(rem<.5)break;
-    const km=atlasV133SessionKm(s);if(!(km>0))continue;
-    const key=atlasV0814SessionKey(s);
-    if((state.operations||[]).some(o=>o.sessionKey===key))continue;
-
-    const floor=s.family==="Recuperación"?4:s.family==="Tirada larga"?Math.max(10,km*.75):5,
-          maxReduction=Math.max(0,km-floor);
-
-    if(allowCancel&&["Fácil","Aeróbico","Recuperación"].includes(s.family)&&rem>=km*.70){
-      atlasV133PushUnplannedOp(state,s,"CANCEL",today,extra,label);
-      rem=Math.max(0,rem-km);added=true;continue;
-    }
-
-    if(maxReduction>.25){
-      const wanted=Math.min(rem,maxReduction),
-            factor=Math.max(minFactor,(km-wanted)/km),
-            absorbed=km*(1-factor);
-      if(absorbed>.25){
-        atlasV133PushUnplannedOp(state,s,"MODIFY",today,extra,label,factor);
-        rem=Math.max(0,rem-absorbed);added=true;
-      }
-    }
-  }
-  return{remaining:rem,added};
-}
 
 const atlasV133AdaptiveBase=atlasV096EvaluateAdaptivePlan;
 
@@ -10110,7 +9722,6 @@ openPlanDetail=async function(id){
   return atlasV115OpenPlanDetailBase(id);
 };
 
-function atlasV134ComponentValue(score,weight){return Number.isFinite(score)?score*weight/100:0;}
 computeAtlasState=function({activities,wellness,today}){
   const r=atlasRecoverySnapshot(activities,wellness,today),scoreAvailable=[];
   if(r.stale)return null;
@@ -10691,34 +10302,6 @@ function scheduleTrainingPlansCloudPush(){
 /* Arranque cloud-first. Una revisión remota —también si contiene 0 planes tras
    un borrado— sustituye el IndexedDB local antes de renderizar Plan. Sólo se
    migra local→Worker cuando servidor y navegador están realmente en revisión 0. */
-async function atlasV153InitialCloudBootstrap(){
-  if(atlasV153InitialRemoteResolved||!atlasOnline()||!hasAtlasConnectionConfig())return false;
-  const [localRow,meta,remote]=await Promise.all([
-    storeGet("meta",TRAINING_PLANS_META_KEY).catch(()=>null),
-    readTrainingPlansCloudMeta(),
-    atlasV153FetchRemote()
-  ]);
-  const local=localRow?.value||{version:TRAINING_PLANS_VERSION,activeId:null,updatedAt:null,plans:[]},
-    localHas=Array.isArray(local.plans)&&local.plans.length>0,
-    localRevision=Number(meta?.revision)||0,
-    remoteRevision=atlasV153RemoteRevision(remote),
-    explicitRemote=!!trainingPlansCloudExtract(remote);
-
-  if(explicitRemote||remoteRevision>0||localRevision>0){
-    await atlasV153WriteRemoteToLocal(remote,{invalidatePending:true});
-    atlasV153InitialRemoteResolved=true;
-    return true;
-  }
-
-  if(localHas){
-    await atlasV153SetDirty(local.updatedAt);
-    await atlasV153QueueCommit(local,{remote});
-  }else{
-    await writeTrainingPlansCloudMeta({schema:TRAINING_PLANS_CLOUD_SCHEMA,revision:0,updatedAt:remote?.updatedAt||null,dirty:false,authoritative:true});
-  }
-  atlasV153InitialRemoteResolved=true;
-  return false;
-}
 loadTrainingPlans=async function(){
   /* G2: el primer render nunca espera al Worker. La revisión monotónica sigue
      reconciliándose en startupIntervalsSync() inmediatamente después del render local. */
@@ -11577,11 +11160,6 @@ function atlasV159RefreshSchedule(schedule){
 /* Ejecutor genérico: aplica sólo payloads ya resueltos por futuras capas.
    No contiene umbrales, decisiones de readiness, matching ni reglas deportivas. */
 
-function atlasV159ApplyAdaptiveCore(plan,schedule){
-  /* K2.5: Readiness/Weekly/Structural sólo generan evidencia y recomendaciones.
-     El Effective Plan cambia exclusivamente por una acción manual del usuario. */
-  return atlasV159Clone(schedule);
-}
 /* Compatibilidad histórica: ningún consumidor puede aplicar operaciones Adaptive. */
 
 
@@ -11704,8 +11282,6 @@ function atlasV160IsSpecificLong(s){const f=atlasV160SessionFamily(s);return atl
 function atlasV160IsQualitySession(s){const f=atlasV160SessionFamily(s);return atlasV0814IsQuality(s)||/umbral|threshold|tempo|vo2|interval|repet|cuesta|fartlek|ritmo especific|specific/.test(f);}
 function atlasV160IsCompetitionSession(s){return atlasV0814IsCompetition(s)||/competicion|competition/.test(atlasV160SessionFamily(s));}
 function atlasV160IsTestSession(s){return /test|prueba/.test(atlasV160SessionFamily(s));}
-function atlasV160IsEasySession(s){const f=atlasV160SessionFamily(s);return /facil|easy|recuperacion|recovery|aerobico|aerobic/.test(f)&&!atlasV160IsQualitySession(s)&&!atlasV160IsLongSession(s);}
-function atlasV160IsProgressiveSession(s){return /progresiv|progressive|activacion|activation/.test(atlasV160SessionFamily(s));}
 function atlasV160SportFamilySession(s){if(atlasV160IsStrengthSession(s))return"strength";return atlasV093SportFamily(s?.type||s?.family||"");}
 function atlasV160SportCompatible(session,activity){return atlasV160SportFamilySession(session)===atlasV093SportFamily(activityType(activity));}
 function atlasV160WindowDays(session){if(atlasV160IsCompetitionSession(session))return atlasV160IsTestSession(session)?1:0;if(atlasV160IsLongSession(session))return 1;if(atlasV160IsStrengthSession(session))return 1;if(atlasV160IsQualitySession(session))return 2;return 1;}
@@ -12028,7 +11604,6 @@ function atlasV161BuildReadinessDecision(plan,{today=fmtDate(new Date()),stateSn
   const signals=atlasV161Signals(state,recent),cause=atlasV161Cause(state,signals,persistence,recent,health),tier=atlasV161Tier(cause.primary,signals,persistence),suggestion=atlasV161SuggestedAction(plan,context,tier,cause.primary,signals,today),manual=atlasV159HasManualAuthority(plan,sessionKey),mainRace=context.next.kind==="MAIN_RACE",actualAction=mainRace?"KEEP_LOCKED":manual?(suggestion.action==="KEEP"?"KEEP_MANUAL_OVERRIDE":"KEEP_MANUAL_OVERRIDE"):suggestion.action,manualConflict=manual&&!['KEEP','NO_ACTION','KEEP_LOCKED'].includes(suggestion.action),ev=atlasV161Evidence(state,signals,persistence,recent,health);
   return{decisionId:atlasV161DecisionId(plan.id,sessionKey,inputDigest),schema:2,readinessVersion:ATLAS_V161_READINESS_VERSION,shadow:true,status:"SHADOW_READY",checkpoint,planId:plan.id,sessionKey,effectiveDate:session.date||today,sessionKind:context.next.kind,atlasScore:state?.score??null,atlasBand:state?.band??null,primaryCause:cause.primary,secondaryCauses:cause.secondary,causeConfidence:cause.confidence,persistence:persistence.status,persistenceDetail:persistence,decisionTier:tier,action:actualAction,suggestedAction:suggestion.action,fallbackAction:suggestion.fallbackAction||null,doseChange:suggestion.doseChange,moveRequest:suggestion.moveRequest,manualOverride:manual,manualConflict,evidence:ev.evidence,protectiveEvidence:ev.protectiveEvidence,reasonText:atlasV161ReasonText(cause.primary,tier,suggestion.action),inputDigest};
 }
-function atlasV161ReadinessLayer(plan,decision){return{schema:ATLAS_V161_READINESS_SCHEMA,status:decision?.status||"SHADOW_READY",mode:"SHADOW",readinessVersion:ATLAS_V161_READINESS_VERSION,inputDigest:decision?.inputDigest||null,decision:decision||null,updatedAt:null};}
 
 /* v1.6.1 extiende la evaluación A. B queda en shadow mode y nunca escribe operations. */
 const atlasV161EvaluateBase=atlasV096EvaluateAdaptivePlan;
@@ -12406,7 +11981,6 @@ function atlasI1PublishedRestDates(plan){
 /* Guardia adicional: aunque una capa antigua invoque el scheduler, I1 mantiene
    la publicación de workouts estrictamente manual. */
 if(atlasV150RemoteSyncTimer){clearTimeout(atlasV150RemoteSyncTimer);atlasV150RemoteSyncTimer=null;}
-function atlasV150ScheduleRemoteSync(){return false;}
 
 /* Plan semanal = calendario ya publicado. Sólo cuando borrador y publicación
    coinciden se reutiliza la ficha local enriquecida; con cambios pendientes se
@@ -12892,7 +12466,6 @@ function atlasI4Round10(m){const n=Number(m);return Number.isFinite(n)?Math.max(
 function atlasI4RecoveryAnchor(anchors){return trainingEnginePaceCopy(anchors?.recovery)||trainingEnginePaceCopy(anchors?.easy)||null;}
 function atlasI4RecoveryMoves(mode){const s=String(mode||"").toLowerCase();return /trote|jog|andar|andando|walk/.test(s)&&!/parado|stop|completa parado/.test(s);}
 function atlasI4RecoveryDistanceM(main,anchors){const sec=Number(main?.recoverySec)||0;if(!(sec>0)||!atlasI4RecoveryMoves(main?.recoveryMode))return 0;const p=trainingEnginePaceMid(atlasI4RecoveryAnchor(anchors));return p>0?atlasI4Round10(sec/p*1000):0;}
-function atlasI4StepDistance(step){const n=Number(step?.distanceM);return n>0?n:0;}
 function atlasI4QualityMain(session){return(session?.steps||[]).find(st=>Number(st?.reps)>=2&&Number(st?.recoverySec)>0&&Number(st?.repDistanceM)>0)||null;}
 function atlasI4StripStepEmoji(label){return String(label||"").replace(/^[🔥⚡❄️]\s*/,"").trim();}
 function atlasI4NormalizeQualitySession(session,anchors,{force=false}={}){
