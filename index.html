@@ -1647,7 +1647,7 @@
 
 
 
-/* ===== ɅTLɅS v1.6.43 · K3.2 Activity Analysis ===== */
+/* ===== ɅTLɅS v1.6.44 · K3.2.1 Startup order fix · Activity Analysis ===== */
 .activity-local-analysis{margin:12px 2px 14px!important;padding:0!important;color:var(--muted2)!important;text-align:left!important;background:transparent!important;border:0!important;box-shadow:none!important}
 .activity-local-analysis p{margin:0!important;font-size:14px!important;line-height:1.54!important;font-weight:500!important}
 @media(min-width:600px){.activity-local-analysis p{font-size:14.5px!important;line-height:1.56!important}}
@@ -2264,7 +2264,7 @@ const AtlasHrv=(()=>{
 /* ===== ɅTLɅS v1.6.33 · K2.3 canonical Plan / Publication / Sync bindings =====
    Historical public overrides removed where the final implementation was self-contained.
    Golden K2.1 contracts remain the behavioral authority. */
-const APP_VERSION="1.6.43",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="1.6.44",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 try{if("scrollRestoration" in history)history.scrollRestoration="manual";}catch{}
 /* K2.6: confirmed dead-code removal only; no observable behavior changes. */
 /* G5: wrapper/residual consolidation. No sport, Adaptive, CAS or publication contract changes. */
@@ -2562,6 +2562,10 @@ dataSyncPromise=null,calendarSyncPromise=null,foregroundRefreshPromise=null,runt
 initStarted=false,initCompleted=false,currentActivityRequestToken=0,assistantChats=[],currentAssistantChatId=null,assistantSending=false,assistantFirstEntryPending=true,
 assistantPendingError="",assistantScrollRaf=0,activityAiRequestToken=0,activityAiCache=new Map(),vo2HistoryBackfillPromise=null,
 vo2HistoryBackfillTimer=null,vo2HistoryBackfillRange=null;
+/* K3.2.1: startup metrics must exist before bootstrap can reference them.
+   Declared with the core runtime state to avoid any temporal-dead-zone ordering issue. */
+const atlasK31StartupMetrics={startedAt:null,dbReadyMs:null,firstRenderMs:null,readyMs:null,auxLoadedMs:null,backgroundSyncMs:null,backgroundComplete:false};
+let atlasK31LocalDeferredPromise=null,atlasK31SilentSyncPromise=null;
 const atlasDomReadyInitializers=[];
 window.addEventListener("DOMContentLoaded",()=>{
   bootstrapAtlas().catch(reportFatalError);
@@ -12780,8 +12784,7 @@ atlasDomReadyInitializers.push(()=>{atlasK25EnsureAdvisoryBox();});
    - El mantenimiento profundo se difiere fuera del primer paint.
    - La ficha de actividad no muestra un análisis provisional que luego sea sustituido. */
 const ATLAS_K31_VERSION="1.6.41";
-const atlasK31StartupMetrics={startedAt:null,dbReadyMs:null,firstRenderMs:null,readyMs:null,auxLoadedMs:null,backgroundSyncMs:null,backgroundComplete:false};
-let atlasK31LocalDeferredPromise=null,atlasK31SilentSyncPromise=null;
+/* K3.2.1: startup state declared with the core runtime globals above. */
 
 /* K3: propietario explícito de responsabilidades sin duplicar el estado histórico. */
 const ATLAS_STATE=Object.freeze({
