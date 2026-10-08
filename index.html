@@ -1888,6 +1888,21 @@ html{color-scheme:dark!important}
 .atlas-l1-advisory-alarm[aria-hidden="true"]{display:none!important}
 .atlas-k25-advisory.atlas-l1-advisory-box{background:rgba(255,69,58,.075)}
 .atlas-k25-advisory.atlas-l1-advisory-box .atlas-k25-advisory-action{color:#ffb0ab}
+
+/* ===== ɅTLɅS v1.6.51 · L2 · Recommendation Resolver ===== */
+.atlas-l2-resolution{margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,69,58,.14)}
+.atlas-l2-resolution-title{color:#fff;font-size:10.7px;line-height:1.35;font-weight:800}
+.atlas-l2-resolution-copy{margin-top:3px;color:#ffb0ab;font-size:10.7px;line-height:1.4;font-weight:740}
+.atlas-l2-resolution-note{margin-top:4px;color:var(--muted2);font-size:9.7px;line-height:1.38}
+.atlas-l2-alternatives{margin-top:5px;color:var(--muted);font-size:9.3px;line-height:1.35}
+/* ===== ɅTLɅS v1.6.52 · L3 · decisiones Adaptive explícitas ===== */
+.atlas-l3-advisory-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
+.atlas-l3-advisory-btn{appearance:none;min-height:40px;padding:8px 9px;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:rgba(255,255,255,.045);color:#fff;font-size:10.2px;line-height:1.15;font-weight:780;text-align:center}
+.atlas-l3-advisory-btn.primary{border-color:rgba(29,155,240,.52);background:rgba(29,155,240,.16);color:#9ed8fa}
+.atlas-l3-advisory-btn:active{transform:scale(.985)}
+.atlas-l3-advisory-btn:disabled{opacity:.45}
+.atlas-l3-advisory-foot{margin-top:7px;color:var(--muted);font-size:8.9px;line-height:1.35}
+@media(max-width:360px){.atlas-l3-advisory-actions{grid-template-columns:1fr}.atlas-l3-advisory-btn{min-height:38px}}
 </style>
 
 
@@ -2336,7 +2351,7 @@ const AtlasHrv=(()=>{
 /* ===== ɅTLɅS v1.6.33 · K2.3 canonical Plan / Publication / Sync bindings =====
    Historical public overrides removed where the final implementation was self-contained.
    Golden K2.1 contracts remain the behavioral authority. */
-const APP_VERSION="1.6.50",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="1.6.52",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const ATLAS_RUNTIME=Object.freeze({appVersion:APP_VERSION,schemaVersion:SCHEMA_VERSION,dbName:DB_NAME,dbVersion:DB_VERSION,contractVersion:1});
 const atlasDiagnosticsRegistry=Object.create(null);
 function registerAtlasDiagnostic(name,value){if(!name)return value;atlasDiagnosticsRegistry[String(name)]=value;return value;}
@@ -13479,6 +13494,347 @@ collectRuntimeDiagnostics=async function(){
   out.l1={version:ATLAS_L1_VERSION,schema:ATLAS_L1_ADVISORY_SCHEMA,policy:ATLAS_L1_POLICY,actionableActions:[...ATLAS_L1_ACTIONABLE_ACTIONS]};
   return out;
 };
+
+
+
+/* ===== ɅTLɅS v1.6.51 · L2 · Recommendation Resolver =====
+   L2 resuelve la recomendación de L1 en una propuesta concreta, pero NO la ejecuta.
+   Reutiliza reglas deportivas ya validadas para elegir fecha, intercambio, reducción,
+   sustitución o cancelación. L3 será la primera capa capaz de convertir una aceptación
+   explícita del usuario en un manual override/edit. */
+const ATLAS_L2_VERSION="1.6.51";
+const ATLAS_L2_ADVISORY_SCHEMA=2;
+const ATLAS_L2_RESOLUTION_SCHEMA=1;
+const ATLAS_L2_POLICY=Object.freeze({
+  mode:"advisory_only",
+  resolver:"deterministic_existing_rules",
+  resolvedActions:Object.freeze(["MOVE","SWAP","SOFTEN","SUBSTITUTE","CANCEL","HOLD","REVIEW"]),
+  automaticPlanChanges:false,
+  automaticRemoteWrites:false,
+  requiresExplicitUserDecision:true,
+  applicationLayer:"L3",
+  schemaMigration:false
+});
+const atlasL2GetAdvisoryBase=getAdaptiveAdvisoryContract;
+function atlasL2Freeze(value){
+  if(value===null||typeof value!=="object")return value;
+  if(Object.isFrozen(value))return value;
+  if(Array.isArray(value))return Object.freeze(value.map(atlasL2Freeze));
+  return Object.freeze(Object.fromEntries(Object.entries(value).map(([k,v])=>[k,atlasL2Freeze(v)])));
+}
+function atlasL2DateLabel(date){
+  if(!date)return"";
+  try{return typeof atlasDateLabel==="function"?atlasDateLabel(date):String(date);}catch{return String(date);}
+}
+function atlasL2SessionName(session){
+  if(!session)return"entrenamiento";
+  try{return typeof atlasV0814SessionShortName==="function"?atlasV0814SessionShortName(session):String(session.name||session.family||"entrenamiento");}catch{return String(session.name||session.family||"entrenamiento");}
+}
+function atlasL2SessionMetrics(session){
+  const km=Number(session?.distanceKm)||Number(session?.distanceM)/1000||0,sec=Number(session?.durationSec)||0;
+  let reps=null,repDistanceM=null;
+  try{const main=typeof atlasV157IntervalMain==="function"?atlasV157IntervalMain(session):null;if(main){reps=Number(main.reps)||null;repDistanceM=Number(main.repDistanceM)||null;}}catch{}
+  return{km,sec,reps,repDistanceM};
+}
+function atlasL2MetricText(session){
+  const m=atlasL2SessionMetrics(session),bits=[];
+  if(m.km>0)bits.push(`${formatNatural(m.km,1)} km`);
+  if(m.reps&&m.repDistanceM)bits.push(`${m.reps} × ${m.repDistanceM>=1000?`${formatNatural(m.repDistanceM/1000,1)} km`:`${Math.round(m.repDistanceM)} m`}`);
+  if(m.sec>0&&!bits.length){const min=Math.round(m.sec/60);bits.push(`${min} min`);}
+  return bits.join(" · ")||atlasL2SessionName(session);
+}
+function atlasL2PrimaryOperation(plan,sessionKey){
+  const priority={READINESS:0,WEEKLY:1,STRUCTURAL:2};
+  return(plan?.adaptiveEngine?.operations||[]).filter(o=>o&&o.status==="ACTIVE"&&String(o.sessionKey||"")===String(sessionKey||"")).sort((a,b)=>(priority[atlasV159OperationLayer(a)]??9)-(priority[atlasV159OperationLayer(b)]??9)||String(b.updatedAt||"").localeCompare(String(a.updatedAt||"")))[0]||null;
+}
+function atlasL2ScheduleOperation(plan,action){
+  return(plan?.adaptiveEngine?.operations||[]).filter(o=>o&&o.status==="ACTIVE"&&String(o.action||"").toUpperCase()===String(action||"").toUpperCase()&&String(o.scope||"").toUpperCase()==="SCHEDULE").sort((a,b)=>String(b.updatedAt||"").localeCompare(String(a.updatedAt||"")))[0]||null;
+}
+function atlasL2ReadinessDecision(plan,sessionKey){const d=plan?.adaptiveEngine?.readiness?.decision;return d&&String(d.sessionKey||"")===String(sessionKey||"")?d:null;}
+function atlasL2StructuralDecision(plan,sessionKey){const d=plan?.adaptiveEngine?.structural?.decision,keys=new Set(d?.affectedSessionKeys||[]);return d&&keys.has(String(sessionKey||""))?d:null;}
+function atlasL2MoveWindow(plan,session,raw,op){
+  const rd=atlasL2ReadinessDecision(plan,atlasV0814SessionKey(session)),requested=Math.max(1,Number(rd?.moveRequest?.preferredWindowDays)||Number(op?.payload?.preferredWindowDays)||2),latest=String(rd?.moveRequest?.latestAcceptableDate||op?.payload?.latestAcceptableDate||"");
+  return{days:Math.min(3,requested),latest};
+}
+function atlasL2MoveAlternatives(plan,session,raw,op){
+  const source=String(session?.date||""),today=fmtDate(new Date()),window=atlasL2MoveWindow(plan,session,raw,op),rows=[];
+  if(!source||!session?.id)return rows;
+  for(let delta=-window.days;delta<=window.days;delta++){
+    if(delta===0)continue;
+    const date=addDays(source,delta);if(date<today||(window.latest&&date>window.latest))continue;
+    let a=null;try{a=atlasV0814SimulateMove(plan,String(session.id),date);}catch{}
+    if(!a||a.blocked)continue;
+    const warningCount=(a.warnings||[]).length,swap=a.swap||null,sameWeek=atlasV0814SameWeek(source,date),distance=Math.abs(delta);
+    rows.push({date,swap,warningCount,warnings:[...(a.warnings||[])],sameWeek,distance});
+  }
+  rows.sort((a,b)=>a.warningCount-b.warningCount||Number(!!a.swap)-Number(!!b.swap)||Number(b.sameWeek)-Number(a.sameWeek)||a.distance-b.distance||a.date.localeCompare(b.date));
+  return rows.slice(0,3);
+}
+function atlasL2ResolveMove(plan,session,raw,op){
+  const sourceDate=String(session?.date||""),direct=String(op?.payload?.targetDate||op?.toDate||"");
+  let candidates=[];
+  if(direct&&direct!==sourceDate){let a=null;try{a=session?.id?atlasV0814SimulateMove(plan,String(session.id),direct):null;}catch{};if(a&&!a.blocked)candidates=[{date:direct,swap:a.swap||null,warningCount:(a.warnings||[]).length,warnings:[...(a.warnings||[])],sameWeek:atlasV0814SameWeek(sourceDate,direct),distance:atlasV162DateDistance(sourceDate,direct)}];else if(!session?.id)candidates=[{date:direct,swap:null,warningCount:0,warnings:[],sameWeek:atlasV0814SameWeek(sourceDate,direct),distance:atlasV162DateDistance(sourceDate,direct)}];}
+  if(!candidates.length)candidates=atlasL2MoveAlternatives(plan,session,raw,op);
+  const best=candidates[0];
+  if(!best)return null;
+  const swap=best.swap,action=swap?"SWAP":"MOVE",targetLabel=atlasL2DateLabel(best.date),swapName=swap?atlasL2SessionName(swap):null;
+  const label=swap?`Intercambiar con ${swapName} del ${targetLabel}`:`Mover al ${targetLabel}`;
+  const explanation=swap?`${atlasL2SessionName(session)} pasaría al ${targetLabel} y ${swapName} ocuparía el ${atlasL2DateLabel(sourceDate)}.`:`${targetLabel} es el hueco compatible más próximo encontrado por las reglas actuales del plan.`;
+  const alternatives=candidates.slice(1).map(c=>({action:c.swap?"SWAP":"MOVE",targetDate:c.date,targetLabel:atlasL2DateLabel(c.date),swapSessionKey:c.swap?String(atlasV0814SessionKey(c.swap)||""):null,swapSessionName:c.swap?atlasL2SessionName(c.swap):null,warnings:c.warnings}));
+  return{action,label,targetDate:best.date,targetLabel,swapSessionKey:swap?String(atlasV0814SessionKey(swap)||""):null,swapSessionName:swapName,previewSession:null,explanation,warnings:best.warnings,alternatives};
+}
+function atlasL2AfterSession(plan,session,raw,op){
+  if(op?.payload?.afterSession)return atlasV159Clone(op.payload.afterSession);
+  const rd=atlasL2ReadinessDecision(plan,atlasV0814SessionKey(session));
+  if(String(raw?.action||"").toUpperCase()==="SOFTEN")try{return atlasV162SoftenSession(plan,session,rd?.doseChange||op?.payload||{});}catch{return null;}
+  if(String(raw?.action||"").toUpperCase()==="SUBSTITUTE")try{return atlasV162SubstituteSession(plan,session);}catch{return null;}
+  return null;
+}
+function atlasL2ResolveSoften(plan,session,raw,op){
+  const after=atlasL2AfterSession(plan,session,raw,op),beforeText=atlasL2MetricText(session),afterText=after?atlasL2MetricText(after):"una dosis menor";
+  return{action:"SOFTEN",label:`Reducir la carga: ${beforeText} → ${afterText}`,targetDate:String(session?.date||""),targetLabel:atlasL2DateLabel(session?.date),swapSessionKey:null,swapSessionName:null,previewSession:after,explanation:"Mantener el objetivo de la sesión, pero con una dosis menor para proteger la recuperación.",warnings:[],alternatives:[]};
+}
+function atlasL2ResolveSubstitute(plan,session,raw,op){
+  const after=atlasL2AfterSession(plan,session,raw,op)||(()=>{try{return atlasV162SubstituteSession(plan,session);}catch{return null;}})(),text=after?`${atlasL2SessionName(after)} · ${atlasL2MetricText(after)}`:"una sesión de recuperación";
+  return{action:"SUBSTITUTE",label:`Sustituir por ${text}`,targetDate:String(session?.date||""),targetLabel:atlasL2DateLabel(session?.date),swapSessionKey:null,swapSessionName:null,previewSession:after,explanation:"Conservar el día de entrenamiento, sustituyendo el estímulo previsto por uno compatible con la recuperación actual.",warnings:[],alternatives:[]};
+}
+function atlasL2ResolveAvailability(plan,session){
+  const key=String(atlasV0814SessionKey(session)||""),op=atlasL2ScheduleOperation(plan,"AVAILABILITY_REMAP"),mapping=op?.payload||{},move=(mapping.moves||[]).find(x=>String(x.sessionKey||"")===key),cancel=(mapping.cancels||[]).find(x=>String(x.sessionKey||"")===key);
+  if(move){const pseudo={payload:{targetDate:move.targetDate},toDate:move.targetDate};return atlasL2ResolveMove(plan,session,{action:"MOVE"},pseudo);}
+  if(cancel)return{action:"CANCEL",label:"Eliminar esta sesión de la semana",targetDate:null,targetLabel:null,swapSessionKey:null,swapSessionName:null,previewSession:null,explanation:"La nueva disponibilidad no deja un hueco seguro para esta sesión sin sobrecargar la semana.",warnings:[],alternatives:[]};
+  return null;
+}
+function atlasL2ResolveAnchor(plan,session,op){
+  let preview=null;try{if(op?.payload?.anchors&&typeof atlasV096ApplyAnchorToSession==="function"){preview=atlasV159Clone(session);atlasV096ApplyAnchorToSession(preview,op.payload.anchors);}}catch{}
+  return{action:"REVIEW",label:"Actualizar los ritmos objetivo con el nuevo umbral",targetDate:String(session?.date||""),targetLabel:atlasL2DateLabel(session?.date),swapSessionKey:null,swapSessionName:null,previewSession:preview,explanation:"La estructura y la fecha se mantienen; sólo deben revisarse los ritmos futuros derivados del nuevo umbral.",warnings:[],alternatives:[]};
+}
+function atlasL2ResolveRecommendation(plan,session,base){
+  const rawAction=String(base?.action||"").toUpperCase(),key=String(atlasV0814SessionKey(session)||""),op=atlasL2PrimaryOperation(plan,key),opAction=String(op?.action||"").toUpperCase(),action=opAction||rawAction;
+  let r=null;
+  if(rawAction==="AVAILABILITY_REMAP")r=atlasL2ResolveAvailability(plan,session);
+  if(!r&&["MOVE","MOVE_REQUEST"].includes(action)){
+    r=atlasL2ResolveMove(plan,session,base,op);
+    if(!r){const rd=atlasL2ReadinessDecision(plan,key),fallback=String(rd?.fallbackAction||"").toUpperCase();if(fallback==="SOFTEN")r=atlasL2ResolveSoften(plan,session,{...base,action:"SOFTEN"},null);else if(fallback==="SUBSTITUTE")r=atlasL2ResolveSubstitute(plan,session,{...base,action:"SUBSTITUTE"},null);else if(fallback==="CANCEL")r={action:"CANCEL",label:"No realizar esta sesión",targetDate:null,targetLabel:null,swapSessionKey:null,swapSessionName:null,previewSession:null,explanation:"No hay un hueco seguro dentro de la ventana de recolocación; ɅTLɅS recomienda retirarla en lugar de acumular carga.",warnings:[],alternatives:[]};}
+  }
+  if(!r&&action==="SOFTEN")r=atlasL2ResolveSoften(plan,session,base,op);
+  if(!r&&action==="SUBSTITUTE")r=atlasL2ResolveSubstitute(plan,session,base,op);
+  if(!r&&action==="CANCEL")r={action:"CANCEL",label:"No realizar esta sesión",targetDate:null,targetLabel:null,swapSessionKey:null,swapSessionName:null,previewSession:null,explanation:"La recomendación es retirar esta sesión y no compensarla acumulándola después.",warnings:[],alternatives:[]};
+  if(!r&&action==="ANCHOR_REFRESH")r=atlasL2ResolveAnchor(plan,session,op);
+  if(!r&&action==="REENTRY_BLOCK")r=atlasL2ResolveSoften(plan,session,base,op);
+  if(!r&&["PROGRESSION_HOLD","CONSOLIDATE"].includes(action))r={action:"HOLD",label:"Mantener la carga sin progresar",targetDate:String(session?.date||""),targetLabel:atlasL2DateLabel(session?.date),swapSessionKey:null,swapSessionName:null,previewSession:null,explanation:"Consolidar la última carga tolerable antes de volver a progresar.",warnings:[],alternatives:[]};
+  if(!r)r={action:"REVIEW",label:base?.actionLabel||"Revisar esta sesión",targetDate:String(session?.date||""),targetLabel:atlasL2DateLabel(session?.date),swapSessionKey:null,swapSessionName:null,previewSession:null,explanation:"ɅTLɅS recomienda revisar la sesión antes de realizarla tal como está prevista.",warnings:[],alternatives:[]};
+  return atlasL2Freeze({schema:ATLAS_L2_RESOLUTION_SCHEMA,...r,sourceAction:rawAction,sourceOperationId:op?.operationId||null,sourceLayer:op?atlasV159OperationLayer(op):String(base?.source||"ADAPTIVE"),requiresUserDecision:true,autoApply:false});
+}
+getAdaptiveAdvisoryContract=function(plan,session){
+  const base=atlasL2GetAdvisoryBase(plan,session);if(!base)return null;
+  const resolution=atlasL2ResolveRecommendation(plan,session,base);
+  return atlasL2Freeze({...base,schema:ATLAS_L2_ADVISORY_SCHEMA,actionLabel:resolution.label,targetDate:resolution.targetDate||null,alternatives:resolution.alternatives||[],resolvedAction:resolution.action,resolutionSchema:ATLAS_L2_RESOLUTION_SCHEMA,resolution,requiresUserDecision:true,autoApply:false});
+};
+
+/* La ficha muestra ahora la acción ya resuelta: día recomendado, intercambio o
+   modificación concreta. Sigue sin ofrecer ningún botón de aplicación en L2. */
+atlasK25RenderSessionAdvisory=function(session){
+  const box=atlasK25EnsureAdvisoryBox(),advisory=getAdaptiveAdvisoryContract(activeTrainingPlan(),session);
+  if(!advisory){box.className="atlas-k25-advisory hidden";box.innerHTML="";return;}
+  const r=advisory.resolution||{},alts=(r.alternatives||[]).slice(0,2),altText=alts.length?`Alternativas seguras: ${alts.map(x=>x.action==="SWAP"?`${x.targetLabel} · intercambio con ${x.swapSessionName}`:x.targetLabel).join(" · ")}.`:"";
+  const warningText=(r.warnings||[]).length?`Precaución: ${(r.warnings||[])[0]}`:"";
+  box.className="atlas-k25-advisory atlas-l1-advisory-box";
+  box.innerHTML=`<div class="atlas-k25-advisory-head"><span>🚨</span><span>ɅTLɅS recomienda revisar este entrenamiento</span></div><div class="atlas-k25-advisory-copy">${esc(advisory.reason)}</div><div class="atlas-l2-resolution"><div class="atlas-l2-resolution-title">Recomendación concreta</div><div class="atlas-l2-resolution-copy">${esc(r.label||advisory.actionLabel)}</div>${r.explanation?`<div class="atlas-l2-resolution-note">${esc(r.explanation)}</div>`:""}${warningText?`<div class="atlas-l2-resolution-note">${esc(warningText)}</div>`:""}${altText?`<div class="atlas-l2-alternatives">${esc(altText)}</div>`:""}</div><div class="atlas-k25-advisory-foot">El entrenamiento no se ha modificado. L2 sólo resuelve qué haría ɅTLɅS; aplicarlo requerirá tu decisión expresa.</div>`;
+};
+
+registerAtlasDiagnostic("recommendationResolver",Object.freeze({
+  version:ATLAS_L2_VERSION,
+  advisorySchema:ATLAS_L2_ADVISORY_SCHEMA,
+  resolutionSchema:ATLAS_L2_RESOLUTION_SCHEMA,
+  policy:ATLAS_L2_POLICY
+}));
+const atlasL2CollectRuntimeDiagnosticsBase=collectRuntimeDiagnostics;
+collectRuntimeDiagnostics=async function(){
+  const out=await atlasL2CollectRuntimeDiagnosticsBase.apply(this,arguments);
+  out.l2={version:ATLAS_L2_VERSION,advisorySchema:ATLAS_L2_ADVISORY_SCHEMA,resolutionSchema:ATLAS_L2_RESOLUTION_SCHEMA,policy:ATLAS_L2_POLICY};
+  return out;
+};
+
+
+/* ===== ɅTLɅS v1.6.52 · L3 · Apply / Keep recommendation + publication dirty =====
+   L3 es la primera capa que puede cambiar el Effective Plan a petición del usuario.
+   Principios:
+   - Nunca aplica una recomendación sin pulsar explícitamente “Aplicar recomendación”.
+   - MOVE/SWAP reutilizan manualSessionOverrides; SOFTEN/SUBSTITUTE/REVIEW y CANCEL
+     reutilizan manualSessionEdits, manteniendo intacto el Canonical Plan.
+   - “Mantener entrenamiento” sólo descarta la recomendación concreta vigente.
+   - Un cambio efectivo en un plan publicado marca publication.dirty, pero NUNCA
+     escribe en Intervals.icu: la publicación sigue requiriendo su gesto explícito. */
+const ATLAS_L3_VERSION="1.6.52";
+const ATLAS_L3_DECISION_SCHEMA=1;
+const ATLAS_L3_DECISIONS_VERSION=1;
+const ATLAS_L3_POLICY=Object.freeze({
+  mode:"explicit_user_apply_only",
+  applyTarget:"effective_plan_manual_layers",
+  keepBehavior:"dismiss_current_recommendation_only",
+  publicationDirty:"only_when_effective_plan_changes",
+  automaticPlanChanges:false,
+  automaticRemoteWrites:false,
+  requiresExplicitUserDecision:true,
+  schemaMigration:false
+});
+
+function atlasL3PlanDecisions(plan){
+  if(!plan)return[];
+  if(!Array.isArray(plan.adaptiveUserDecisions))plan.adaptiveUserDecisions=[];
+  plan.adaptiveUserDecisionsVersion=ATLAS_L3_DECISIONS_VERSION;
+  return plan.adaptiveUserDecisions;
+}
+function atlasL3DecisionStamp(d){
+  const ts=Date.parse(d?.updatedAt||"");const rev=Number(d?.deviceRevision)||0;
+  return Math.max(Number.isFinite(ts)?ts:0,rev);
+}
+function atlasL3NewestDecision(a,b){
+  if(!a)return b;if(!b)return a;const sa=atlasL3DecisionStamp(a),sb=atlasL3DecisionStamp(b);
+  if(sb>sa)return b;if(sa>sb)return a;return String(b.id||"")>String(a.id||"")?b:a;
+}
+function atlasL3LatestDecision(plan,sessionKey){
+  return atlasL3PlanDecisions(plan).filter(d=>String(d?.sessionKey||"")===String(sessionKey||"")).reduce((a,b)=>atlasL3NewestDecision(a,b),null);
+}
+function atlasL3DecisionSignature(list){
+  return JSON.stringify((list||[]).map(d=>({sessionKey:d.sessionKey,token:d.token,disposition:d.disposition,action:d.action,updatedAt:d.updatedAt,deviceRevision:d.deviceRevision})).sort((a,b)=>String(a.sessionKey).localeCompare(String(b.sessionKey))));
+}
+function atlasL3MergeDecisionArrays(a,b){
+  const map=new Map();for(const d of [...(Array.isArray(a)?a:[]),...(Array.isArray(b)?b:[])]){if(!d?.sessionKey)continue;const k=String(d.sessionKey);map.set(k,atlasL3NewestDecision(map.get(k),d));}
+  return[...map.values()].sort((x,y)=>String(x.sessionKey).localeCompare(String(y.sessionKey)));
+}
+function atlasL3MergePlansDecisions(basePlans,otherPlans){
+  const other=new Map((otherPlans||[]).map(p=>[String(p.id),p])),changedPlans=[];
+  const plans=(basePlans||[]).map(base=>{const op=other.get(String(base.id));if(!op)return base;const merged=atlasL3MergeDecisionArrays(base.adaptiveUserDecisions,op.adaptiveUserDecisions);if(atlasL3DecisionSignature(merged)===atlasL3DecisionSignature(base.adaptiveUserDecisions||[]))return base;changedPlans.push(String(base.id));return{...base,adaptiveUserDecisionsVersion:ATLAS_L3_DECISIONS_VERSION,adaptiveUserDecisions:merged};});
+  return{plans,changedPlans};
+}
+function atlasL3AdvisoryToken(plan,session,advisory){
+  const key=String(advisory?.sessionKey||atlasV0814SessionKey(session)||""),r=advisory?.resolution||{};
+  const rd=typeof atlasL2ReadinessDecision==="function"?atlasL2ReadinessDecision(plan,key):null;
+  const sd=typeof atlasL2StructuralDecision==="function"?atlasL2StructuralDecision(plan,key):null;
+  const scheduleOp=typeof atlasL2ScheduleOperation==="function"?atlasL2ScheduleOperation(plan,advisory?.action):null;
+  const material={
+    advisoryId:String(advisory?.id||""),sessionKey:key,sourceAction:String(r.sourceAction||advisory?.action||""),sourceLayer:String(r.sourceLayer||advisory?.source||""),
+    sourceOperationId:String(r.sourceOperationId||scheduleOp?.operationId||""),
+    sourceInputDigest:String((r.sourceOperationId?null:scheduleOp?.inputDigest)||rd?.inputDigest||sd?.inputDigest||""),
+    sourceDecisionId:String(rd?.decisionId||sd?.decisionId||"")
+  };
+  return`l3:${typeof atlasV159Digest==="function"?atlasV159Digest(material):material.advisoryId+":"+material.sourceOperationId+":"+material.sourceInputDigest}`;
+}
+function atlasL3DecisionMatches(plan,session,advisory){
+  if(!plan||!session||!advisory)return false;const d=atlasL3LatestDecision(plan,advisory.sessionKey);return !!d&&String(d.token||"")===atlasL3AdvisoryToken(plan,session,advisory);
+}
+function atlasL3UpsertDecision(plan,session,advisory,disposition,now=new Date().toISOString()){
+  const key=String(advisory?.sessionKey||atlasV0814SessionKey(session)||""),prior=atlasL3LatestDecision(plan,key),record={
+    id:prior?.id||`adaptive-decision:${key}`,schema:ATLAS_L3_DECISION_SCHEMA,sessionKey:key,token:atlasL3AdvisoryToken(plan,session,advisory),advisoryId:String(advisory?.id||""),
+    disposition:String(disposition||"KEEP").toUpperCase(),action:String(advisory?.resolvedAction||advisory?.resolution?.action||advisory?.action||""),sourceOperationId:advisory?.resolution?.sourceOperationId||null,
+    createdAt:prior?.createdAt||now,updatedAt:now,deviceRevision:Date.now()
+  },list=atlasL3PlanDecisions(plan),idx=list.findIndex(d=>String(d.sessionKey)===key);
+  if(idx>=0)list[idx]=record;else list.push(record);return record;
+}
+
+/* Las decisiones explícitas se fusionan por sesión igual que movimientos/ediciones. */
+const atlasL3ApplyCloudBase=applyTrainingPlansCloudManifest;
+applyTrainingPlansCloudManifest=async function(manifest,remote){
+  const localRow=await storeGet("meta",TRAINING_PLANS_META_KEY).catch(()=>null),local=localRow?.value||null;if(!local)return atlasL3ApplyCloudBase(manifest,remote);
+  const merged=atlasL3MergePlansDecisions(manifest?.plans||[],local?.plans||[]);if(!merged.changedPlans.length)return atlasL3ApplyCloudBase(manifest,remote);
+  const now=new Date().toISOString(),next={...manifest,updatedAt:now,plans:merged.plans.map(p=>merged.changedPlans.includes(String(p.id))?{...p,updatedAt:now}:p)};
+  const result=await atlasL3ApplyCloudBase(next,remote);await markTrainingPlansCloudDirty(now).catch(()=>{});scheduleTrainingPlansCloudPush(120);return result;
+};
+const atlasL3PushCloudBase=pushTrainingPlansCloudBestEffort;
+pushTrainingPlansCloudBestEffort=async function({remote=null}={}){
+  if(!atlasOnline()||!hasAtlasConnectionConfig())return false;const currentRemote=remote||await apiRequest("/api/plan-state",{timeoutMs:12000,retries:1}),remoteManifest=trainingPlansCloudExtract(currentRemote);
+  if(remoteManifest){const localRow=await storeGet("meta",TRAINING_PLANS_META_KEY).catch(()=>null),local=localRow?.value;if(local){const merged=atlasL3MergePlansDecisions(local.plans||[],remoteManifest.plans||[]);if(merged.changedPlans.length){const now=new Date().toISOString(),value={...local,updatedAt:now,plans:merged.plans.map(p=>merged.changedPlans.includes(String(p.id))?{...p,updatedAt:now}:p)};await storePut("meta",{key:TRAINING_PLANS_META_KEY,value});await loadTrainingPlans();}}}
+  return atlasL3PushCloudBase({remote:currentRemote});
+};
+
+/* Una decisión KEEP/APPLIED oculta sólo la recomendación de la que procede. Si el
+   motor produce una recomendación nueva (nuevo operation/input digest), vuelve 🚨. */
+const atlasL3AdvisoryBase=getAdaptiveAdvisoryContract;
+getAdaptiveAdvisoryContract=function(plan,session){
+  const advisory=atlasL3AdvisoryBase(plan,session);if(!advisory)return null;if(atlasL3DecisionMatches(plan,session,advisory))return null;
+  return atlasL2Freeze({...advisory,decisionToken:atlasL3AdvisoryToken(plan,session,advisory),requiresUserDecision:true,autoApply:false});
+};
+
+/* SOFTEN/SUBSTITUTE/REVIEW aceptados se guardan como una edición manual que contiene
+   el preview ya resuelto por L2. CANCEL usa la misma autoridad manual pero elimina la
+   sesión únicamente de la vista efectiva. */
+const atlasL3ApplyEditBase=atlasV157ApplyEditToSession;
+atlasV157ApplyEditToSession=function(session,edit,plan){
+  if(edit&&!edit.deleted&&edit.mode==="ADAPTIVE_REPLACEMENT"&&edit.replacementSession){
+    const key=String(atlasV0814SessionKey(session)||edit.sessionKey||""),rx=atlasV0814Clone(edit.replacementSession);
+    rx.id=session?.id??rx.id;rx.date=session?.date||rx.date;rx.prescribed=session?.prescribed!==false;rx._atlasSourceSessionKey=key;rx._atlasOriginalDate=session?._atlasOriginalDate||session?.date||rx.date;rx._atlasManualEdited=true;rx._atlasAdaptiveAccepted=true;rx._atlasEditId=edit.id;
+    rx.notes=[...(rx.notes||[]).filter(n=>!String(n).startsWith("Recomendación ɅTLɅS aceptada ·")),`Recomendación ɅTLɅS aceptada · ${edit.adaptiveAction||"ajuste"}.`];return rx;
+  }
+  if(edit&&!edit.deleted&&edit.mode==="ADAPTIVE_CANCEL")return session;
+  return atlasL3ApplyEditBase(session,edit,plan);
+};
+function atlasL3RefreshEffectiveSummary(plan,schedule){
+  atlasV159RefreshSchedule(schedule);for(const w of schedule?.weeks||[]){const wd=(schedule.days||[]).filter(d=>d.date>=w.start&&d.date<=w.end),sessions=wd.flatMap(d=>d.sessions||[]),runs=sessions.filter(s=>s.type==="Run"),lr=runs.filter(s=>s.role==="long_run").sort((a,b)=>atlasV155Km(b)-atlasV155Km(a))[0],km=Math.round(runs.reduce((n,s)=>n+atlasV155Km(s),0)*10)/10;w.days=atlasV0814Clone(wd);w.sessions=atlasV0814Clone(sessions);w.volume={...(w.volume||{}),targetKm:km,explicitKm:km,effectiveTargetKm:km,source:"L3_user_accepted_adaptive",bandOk:true};w.longRunKm=lr?atlasV155Km(lr):null;}return schedule;
+}
+const atlasL3ApplyManualEditsBase=atlasV157ApplyManualEdits;
+atlasV157ApplyManualEdits=function(plan,schedule){
+  const next=atlasL3ApplyManualEditsBase(plan,schedule);if(!plan||!next)return next;
+  let changed=false;for(const d of next.days||[]){const before=(d.sessions||[]).length;d.sessions=(d.sessions||[]).filter(s=>{const e=atlasV157LatestEdit(plan,atlasV0814SessionKey(s));return !(e&&!e.deleted&&e.mode==="ADAPTIVE_CANCEL");});if((d.sessions||[]).length!==before)changed=true;}
+  return changed?atlasL3RefreshEffectiveSummary(plan,next):next;
+};
+
+function atlasL3SessionByKey(plan,key){
+  const schedule=buildEffectivePlan(plan);for(const d of schedule?.days||[]){const s=(d.sessions||[]).find(x=>String(atlasV0814SessionKey(x)||"")===String(key||""));if(s)return s;}return null;
+}
+function atlasL3UpsertEdit(plan,record){const list=atlasV157PlanEdits(plan),idx=list.findIndex(e=>String(e.sessionKey)===String(record.sessionKey));if(idx>=0)list[idx]=record;else list.push(record);}
+function atlasL3AdaptiveEditRecord(plan,session,advisory,mode,preview,now){
+  const key=String(atlasV0814SessionKey(session)||""),prior=atlasV157LatestEdit(plan,key);return{id:prior?.id||`edit:${key}`,sessionKey:key,type:"EDIT",mode,adaptiveAction:String(advisory?.resolution?.action||advisory?.resolvedAction||advisory?.action||""),adaptiveDecisionToken:atlasL3AdvisoryToken(plan,session,advisory),replacementSession:preview?atlasV0814Clone(preview):null,deleted:false,createdAt:prior?.createdAt||now,updatedAt:now,deviceRevision:Date.now()};
+}
+function atlasL3HasForeignManualAuthority(plan,sessionKey){
+  const move=atlasV0814ActiveOverride(plan,sessionKey),edit=atlasV157LatestEdit(plan,sessionKey);return !!move||!!(edit&&!edit.deleted&&!String(edit.mode||"").startsWith("ADAPTIVE_"));
+}
+async function atlasL3ApplyRecommendation(sessionKey){
+  const plan=activeTrainingPlan(),session=atlasL3SessionByKey(plan,sessionKey);if(!plan||!session){toast("⚠️ La sesión ya no está disponible. Vuelve a abrir el plan.",true);return false;}
+  const advisory=getAdaptiveAdvisoryContract(plan,session);if(!advisory){toast("La recomendación ya no está activa.");atlasL1RenderPlanAdvisories();return false;}
+  if(atlasL3HasForeignManualAuthority(plan,sessionKey)){toast("⚠️ Esta sesión ya contiene un cambio manual. Revísalo antes de aplicar otra recomendación.",true);return false;}
+  const r=advisory.resolution||{},action=String(r.action||advisory.resolvedAction||advisory.action||"").toUpperCase(),remoteNote=plan.publication?.status==="published"?"\n\nEl cambio quedará pendiente. Intervals.icu NO se actualizará hasta que pulses «Publicar cambios».":"";
+  if(!confirm(`¿Aplicar esta recomendación de ɅTLɅS?\n\n${r.label||advisory.actionLabel}${remoteNote}`))return false;
+  const now=new Date().toISOString();let changed=false,cancelled=false;
+  if(["MOVE","SWAP"].includes(action)){
+    const target=String(r.targetDate||"");if(!target){toast("⚠️ La recomendación ya no tiene un día válido.",true);return false;}
+    const assessment=atlasV0814SimulateMove(plan,session.id,target);if(assessment.blocked){toast(`⚠️ ${assessment.reason||"El movimiento ya no es seguro."}`,true);return false;}
+    if(action==="SWAP"&&(!assessment.swap||String(atlasV0814SessionKey(assessment.swap)||"")!==String(r.swapSessionKey||""))){toast("⚠️ La ocupación de ese día ha cambiado. Reabre la sesión para recalcular la recomendación.",true);return false;}
+    if(assessment.swap&&atlasL3HasForeignManualAuthority(plan,atlasV0814SessionKey(assessment.swap))){toast("⚠️ La sesión con la que habría que intercambiar ya contiene un cambio manual. ɅTLɅS no lo sobrescribirá.",true);return false;}
+    atlasV0814UpsertOverride(plan,atlasV0814OverrideRecord(plan,assessment.sourceSession,target,now,false));if(assessment.swap)atlasV0814UpsertOverride(plan,atlasV0814OverrideRecord(plan,assessment.swap,assessment.sourceDate,now,false));changed=true;
+  }else if(["SOFTEN","SUBSTITUTE","REVIEW"].includes(action)){
+    if(r.previewSession){atlasL3UpsertEdit(plan,atlasL3AdaptiveEditRecord(plan,session,advisory,"ADAPTIVE_REPLACEMENT",r.previewSession,now));changed=true;}
+    else if(action!=="REVIEW"){toast("⚠️ ɅTLɅS no puede aplicar este ajuste con seguridad. Mantén la sesión o modifícala manualmente.",true);return false;}
+  }else if(action==="CANCEL"){
+    atlasL3UpsertEdit(plan,atlasL3AdaptiveEditRecord(plan,session,advisory,"ADAPTIVE_CANCEL",null,now));changed=true;cancelled=true;
+  }else if(action==="HOLD"){
+    /* HOLD acepta la recomendación de consolidar sin alterar la sesión actual. */
+  }else{toast("⚠️ Esta recomendación requiere revisión manual y no puede aplicarse automáticamente.",true);return false;}
+  atlasL3UpsertDecision(plan,session,advisory,"APPLIED",now);plan.updatedAt=now;if(changed)trainingPlanMarkPublicationDirty(plan);await persistTrainingPlans();
+  renderTrainingPlanWorkouts(atlasV0814RawSchedule(plan));renderPlan();renderTrainingPlanPublication();
+  if(cancelled){closePlanDetail();toast("Recomendación aplicada · sesión retirada del Effective Plan.");}
+  else{const effective=atlasL3SessionByKey(plan,sessionKey);if(effective?.id)openPrescribedPlanDetail(effective.id);toast(changed?"Recomendación aplicada · cambio guardado en ɅTLɅS.":"Recomendación aceptada · sesión mantenida sin progresión.");}
+  return true;
+}
+async function atlasL3KeepRecommendation(sessionKey){
+  const plan=activeTrainingPlan(),session=atlasL3SessionByKey(plan,sessionKey);if(!plan||!session)return false;const advisory=getAdaptiveAdvisoryContract(plan,session);if(!advisory)return false;
+  if(!confirm("¿Mantener este entrenamiento tal como está?\n\nɅTLɅS descartará únicamente esta recomendación. Si cambian los datos y aparece una recomendación nueva, volverá a avisarte con 🚨."))return false;
+  const now=new Date().toISOString();atlasL3UpsertDecision(plan,session,advisory,"KEEP",now);plan.updatedAt=now;await persistTrainingPlans();atlasK25RenderSessionAdvisory(session);renderPlan();toast("Entrenamiento mantenido · recomendación descartada.");return true;
+}
+
+/* La ficha L3 añade las dos decisiones del usuario. Ningún botón publica remotamente. */
+atlasK25RenderSessionAdvisory=function(session){
+  const box=atlasK25EnsureAdvisoryBox(),plan=activeTrainingPlan(),advisory=getAdaptiveAdvisoryContract(plan,session);if(!advisory){box.className="atlas-k25-advisory hidden";box.innerHTML="";return;}
+  const r=advisory.resolution||{},alts=(r.alternatives||[]).slice(0,2),altText=alts.length?`Alternativas seguras: ${alts.map(x=>x.action==="SWAP"?`${x.targetLabel} · intercambio con ${x.swapSessionName}`:x.targetLabel).join(" · ")}.`:"",warningText=(r.warnings||[]).length?`Precaución: ${(r.warnings||[])[0]}`:"",key=String(advisory.sessionKey||atlasV0814SessionKey(session)||"");
+  const applicable=["MOVE","SWAP","SOFTEN","SUBSTITUTE","CANCEL","HOLD"].includes(String(r.action||"").toUpperCase())||(String(r.action||"").toUpperCase()==="REVIEW"&&!!r.previewSession);
+  box.className="atlas-k25-advisory atlas-l1-advisory-box";
+  box.innerHTML=`<div class="atlas-k25-advisory-head"><span>🚨</span><span>ɅTLɅS recomienda revisar este entrenamiento</span></div><div class="atlas-k25-advisory-copy">${esc(advisory.reason)}</div><div class="atlas-l2-resolution"><div class="atlas-l2-resolution-title">Recomendación concreta</div><div class="atlas-l2-resolution-copy">${esc(r.label||advisory.actionLabel)}</div>${r.explanation?`<div class="atlas-l2-resolution-note">${esc(r.explanation)}</div>`:""}${warningText?`<div class="atlas-l2-resolution-note">${esc(warningText)}</div>`:""}${altText?`<div class="atlas-l2-alternatives">${esc(altText)}</div>`:""}</div><div class="atlas-l3-advisory-actions">${applicable?'<button type="button" class="atlas-l3-advisory-btn primary" data-atlas-l3-apply>Aplicar recomendación</button>':""}<button type="button" class="atlas-l3-advisory-btn" data-atlas-l3-keep>Mantener entrenamiento</button></div><div class="atlas-l3-advisory-foot">Aplicar sólo cambia el plan local de ɅTLɅS. Si el plan está publicado, Intervals.icu seguirá intacto hasta que pulses «Publicar cambios».</div>`;
+  const apply=box.querySelector("[data-atlas-l3-apply]"),keep=box.querySelector("[data-atlas-l3-keep]");if(apply)on(apply,"click",()=>atlasL3ApplyRecommendation(key));if(keep)on(keep,"click",()=>atlasL3KeepRecommendation(key));
+};
+
+registerAtlasDiagnostic("adaptiveDecision",Object.freeze({version:ATLAS_L3_VERSION,decisionSchema:ATLAS_L3_DECISION_SCHEMA,policy:ATLAS_L3_POLICY}));
+const atlasL3CollectRuntimeDiagnosticsBase=collectRuntimeDiagnostics;
+collectRuntimeDiagnostics=async function(){const out=await atlasL3CollectRuntimeDiagnosticsBase.apply(this,arguments);out.l3={version:ATLAS_L3_VERSION,decisionSchema:ATLAS_L3_DECISION_SCHEMA,policy:ATLAS_L3_POLICY};return out;};
 
 })();
 
