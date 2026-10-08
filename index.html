@@ -642,12 +642,24 @@
 }
 .activity-running-dynamic:nth-child(even)::before{display:none!important}
 .activity-running-dynamic:nth-child(n+3)::after{height:2px!important}
+.activity-running-dynamics-comment{
+  position:relative;margin:13px 2px 0;padding:11px 1px 0;
+  color:#c7cdd3;font-size:12.5px;line-height:1.58;text-align:justify;text-justify:inter-word
+}
+.activity-running-dynamics-comment::before{
+  content:"";position:absolute;left:0;right:0;top:0;height:2px;background:var(--line)
+}
+.activity-running-dynamics-comment strong{
+  display:block;margin-bottom:4px;color:var(--blue);font-size:11px;font-weight:780;letter-spacing:.1px
+}
+
 /* Métricas principales de entrenamientos propuestos. */
 .prescribed-running-detail .plan-detail-value{font-size:25px!important;line-height:1!important;letter-spacing:-.55px!important}
 .prescribed-running-detail .plan-detail-unit{font-size:14px!important;margin-top:4px!important}
 @media(max-width:390px){
   .prescribed-running-detail .plan-detail-value{font-size:23px!important}
-  }
+  .activity-running-dynamics-comment{font-size:12px}
+}
 
 
 /* Información del plan, Estado actual y Ritmos: menos aire vertical. */
@@ -693,6 +705,18 @@
 .activity-running-dynamic-value{
   margin-top:3px!important;
 }
+.activity-running-dynamics-comment{
+  margin:10px 2px 0!important;
+  padding:0 1px!important;
+  font-size:15.6px!important;
+  line-height:1.65!important;
+  color:#d4d9de!important;
+  text-align:justify!important;
+  text-justify:inter-word!important;
+}
+.activity-running-dynamics-comment::before{display:none!important}
+.activity-running-dynamics-comment strong{display:none!important}
+
 /* Las tres métricas principales usan exactamente el mismo tamaño. */
 .prescribed-running-detail .plan-detail-value,
 .prescribed-running-detail .plan-detail-stat:nth-child(3) .plan-detail-value{
@@ -1257,6 +1281,19 @@
   color:#f5f7f9!important;
   font-weight:820!important;
 }
+.activity-running-dynamics-comment{
+  font-size:14.1px!important;
+  line-height:1.58!important;
+  color:#cbd1d6!important;
+  text-align:left!important;
+}
+.activity-running-dynamics-comment strong{
+  display:inline!important;
+  color:#f5f7f9!important;
+  font-size:inherit!important;
+  font-weight:820!important;
+}
+
 /* Los cuatro metadatos comparten una sola línea y el mismo tamaño. */
 .activity-top-meta{
   width:100%!important;
@@ -1544,6 +1581,19 @@
 
 .activity-local-analysis{margin:12px 0 12px!important;padding:0!important;font-size:13px!important;line-height:1.45!important;color:#d6dce2!important}
 .activity-local-analysis p{margin:0!important}
+.atlas-analysis2{display:flex;flex-direction:column;gap:9px}
+.atlas-analysis2-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 1px 2px}
+.atlas-analysis2-title{font-size:15px;font-weight:840;color:#fff;letter-spacing:-.15px}
+.atlas-analysis2-badge{font-size:10px;font-weight:800;padding:5px 8px;border-radius:999px;background:rgba(29,155,240,.13);color:#62b7ff;white-space:nowrap}
+.atlas-analysis2-row{padding:10px 11px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.05)}
+.atlas-analysis2-label{display:block;margin-bottom:4px;color:#8f99a4;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+.atlas-analysis2-copy{color:#dce2e7;font-size:12.6px;line-height:1.46}
+.atlas-analysis2-copy strong{color:#fff!important;font-weight:820!important}
+.activity-running-dynamics-comment{margin-top:9px!important;font-size:12.8px!important;line-height:1.48!important;color:#cfd6dc!important}
+.activity-running-dynamics-comment .atlas-dyn2-lead{color:#fff;font-weight:820}
+.activity-running-dynamics-comment .atlas-dyn2-detail{display:block;margin-top:4px;color:#b8c0c8}
+
+
 #upcomingTrainingList .activity-row-copy,#trainingPlanWorkouts .activity-row-copy,#planDays .activity-row-copy{min-width:0}
 #upcomingTrainingList .activity-row-title,#trainingPlanWorkouts .activity-row-title,#planDays .activity-row-title{display:flex!important}
 #upcomingTrainingList .activity-row-main,#trainingPlanWorkouts .activity-row-main,#planDays .activity-row-main{display:flex!important}
@@ -1647,10 +1697,25 @@
 
 
 
-/* ===== ɅTLɅS v1.6.44 · K3.2.1 Startup order fix · Activity Analysis ===== */
-.activity-local-analysis{margin:12px 2px 14px!important;padding:0!important;color:var(--muted2)!important;text-align:left!important;background:transparent!important;border:0!important;box-shadow:none!important}
-.activity-local-analysis p{margin:0!important;font-size:14px!important;line-height:1.54!important;font-weight:500!important}
-@media(min-width:600px){.activity-local-analysis p{font-size:14.5px!important;line-height:1.56!important}}
+/* ===== ɅTLɅS v1.6.22 · I3.3 Coach Review visual ===== */
+.activity-local-analysis{
+  margin:12px 2px 14px!important;padding:0!important;color:var(--muted2)!important;
+  text-align:left!important;background:transparent!important;border:0!important;box-shadow:none!important
+}
+.activity-local-analysis p{margin:0!important}
+.activity-local-analysis .atlas-i33-review{display:flex!important;flex-direction:column!important;gap:11px!important}
+.activity-local-analysis .atlas-i33-thought{
+  display:block!important;margin:0!important;color:var(--muted2)!important;
+  font-size:14px!important;line-height:1.54!important;font-weight:500!important
+}
+.activity-running-dynamics-comment{
+  display:block;margin-top:10px!important;color:var(--muted2)!important;font-size:14px!important;
+  line-height:1.54!important;font-weight:500!important;text-align:left!important
+}
+@media(min-width:600px){
+  .activity-local-analysis .atlas-i33-thought,.activity-running-dynamics-comment{font-size:14.5px!important;line-height:1.56!important}
+}
+
 
 /* ===== ɅTLɅS v1.6.23 · I4 intervalos reales + fuerza canónica ===== */
 #atlasForceV120Shell{display:none!important}
@@ -2264,7 +2329,7 @@ const AtlasHrv=(()=>{
 /* ===== ɅTLɅS v1.6.33 · K2.3 canonical Plan / Publication / Sync bindings =====
    Historical public overrides removed where the final implementation was self-contained.
    Golden K2.1 contracts remain the behavioral authority. */
-const APP_VERSION="1.6.44",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="1.6.42",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 try{if("scrollRestoration" in history)history.scrollRestoration="manual";}catch{}
 /* K2.6: confirmed dead-code removal only; no observable behavior changes. */
 /* G5: wrapper/residual consolidation. No sport, Adaptive, CAS or publication contract changes. */
@@ -2562,10 +2627,6 @@ dataSyncPromise=null,calendarSyncPromise=null,foregroundRefreshPromise=null,runt
 initStarted=false,initCompleted=false,currentActivityRequestToken=0,assistantChats=[],currentAssistantChatId=null,assistantSending=false,assistantFirstEntryPending=true,
 assistantPendingError="",assistantScrollRaf=0,activityAiRequestToken=0,activityAiCache=new Map(),vo2HistoryBackfillPromise=null,
 vo2HistoryBackfillTimer=null,vo2HistoryBackfillRange=null;
-/* K3.2.1: startup metrics must exist before bootstrap can reference them.
-   Declared with the core runtime state to avoid any temporal-dead-zone ordering issue. */
-const atlasK31StartupMetrics={startedAt:null,dbReadyMs:null,firstRenderMs:null,readyMs:null,auxLoadedMs:null,backgroundSyncMs:null,backgroundComplete:false};
-let atlasK31LocalDeferredPromise=null,atlasK31SilentSyncPromise=null;
 const atlasDomReadyInitializers=[];
 window.addEventListener("DOMContentLoaded",()=>{
   bootstrapAtlas().catch(reportFatalError);
@@ -6223,6 +6284,34 @@ function atlasV0811Dyn(a){
     power:activityPower(a)
   };
 }
+function atlasV0811DynamicsComment(a){
+  const pace=activityPaceSecKm(a),date=activityDate(a),cur=atlasV0811Dyn(a);
+  if(!(pace>0)||!date)return"Estas métricas describen tu mecánica en esta sesión. Conviene interpretarlas junto al ritmo, la fatiga y el terreno, no como valores aislados.";
+  const comps=(currentActivities||[]).filter(x=>x!==a&&isRun(x)&&activityDate(x)&&activityDate(x)<date&&dateDiff(activityDate(x),date)>=0&&dateDiff(activityDate(x),date)<=120).filter(x=>{const p=activityPaceSecKm(x);return p>0&&Math.abs(p-pace)/pace<=.12;});
+  if(comps.length<4)return"Hay pocos rodajes recientes a un ritmo comparable para establecer una referencia personal sólida. ATLAS conservará estas dinámicas como contexto para detectar tendencias cuando haya más muestras semejantes.";
+  const ds=comps.map(atlasV0811Dyn),median=k=>atlasV0811Median(ds.map(x=>x[k])),parts=[];
+  const pct=(v,m)=>v>0&&m>0?(v/m-1)*100:null;
+  const cad=pct(cur.cadence,median("cadence")),gct=pct(cur.gct,median("gct")),vr=pct(cur.vr,median("vr")),stride=pct(cur.stride,median("stride")),vo=pct(cur.vo,median("vo"));
+  if(Number.isFinite(cad)){
+    if(Math.abs(cad)<=2.5)parts.push("la cadencia se mantiene muy próxima a tu patrón habitual");
+    else parts.push(cad>0?"la cadencia es algo más alta de lo habitual a este ritmo":"la cadencia es algo más baja de lo habitual a este ritmo");
+  }
+  if(Number.isFinite(gct)&&Math.abs(gct)>=3)parts.push(gct<0?"el contacto con el suelo es algo más breve":"el contacto con el suelo es algo más prolongado");
+  if(Number.isFinite(vr)&&vr<=-5)parts.push(`el ratio vertical es aproximadamente ${Math.round(Math.abs(vr))}% menor`);
+  else if(Number.isFinite(vr)&&vr>=5)parts.push(`el ratio vertical es aproximadamente ${Math.round(vr)}% mayor`);
+  if(Number.isFinite(stride)&&Math.abs(stride)>=4)parts.push(stride>0?`la zancada es alrededor de ${Math.round(stride)}% más larga`:`la zancada es alrededor de ${Math.round(Math.abs(stride))}% más corta`);
+  if(Number.isFinite(vo)&&vo<=-7)parts.push(`la oscilación vertical es aproximadamente ${Math.round(Math.abs(vo))}% menor`);
+  if(!parts.length)return`Tus dinámicas están muy cerca de tu referencia personal en ${comps.length} carreras recientes a ritmo comparable. No aparece ahora mismo una desviación mecánica destacable.`;
+  const sentence=parts.length===1?parts[0]:parts.slice(0,-1).join(", ")+" y "+parts.at(-1);
+  return`Frente a ${comps.length} carreras recientes a ritmo comparable, ${sentence}. Es una lectura de tendencia: el terreno, la pendiente y la fatiga pueden modificar estas métricas de forma importante.`;
+}
+function atlasV0811EnsureDynamicsComment(section){
+  let c=section.querySelector(".activity-running-dynamics-comment");
+  if(!c){c=document.createElement("div");c.className="activity-running-dynamics-comment";section.appendChild(c);}
+  return c;
+}
+
+
 /* ---------- Mapa: OpenFreeMap Dark; nunca usa directamente tile.openstreetmap.org ---------- */
 function atlasV0811AddBaseMap(map){
   if(window.L&&typeof L.maplibreGL==="function"){
@@ -6241,6 +6330,13 @@ atlasDomReadyInitializers.push(()=>{
 
 /* ===== ɅTLɅS v0.8.12 · compactación visual ===== */
 /* H2: atlasV0812Style CSS consolidated into #atlas-canonical-style. */
+
+/* Lectura ATLAS sin cabecera. */
+atlasDomReadyInitializers.push(()=>{
+  const section=$("activityRunningDynamics");
+  const comment=section?.querySelector(".activity-running-dynamics-comment");
+  comment?.querySelector("strong")?.remove();
+});
 
 
 /* ===== ɅTLɅS v0.8.13 · cierre deportivo competitivo =====
@@ -7949,7 +8045,33 @@ atlasV0811AddBaseMap=function(map){
   return null;
 };
 
+/* ---------- DINÁMICAS con altura/peso ---------- */
+const atlasV096DynamicsCommentBase=atlasV0811DynamicsComment;
+atlasV0811DynamicsComment=function(a){
+  const base=atlasV096DynamicsCommentBase(a);
+  if(!isRun(a))return base;
+  const h=Number(atlasV096BodyProfile.height),w=Number(atlasV096BodyProfile.weight),
+        d=atlasV0811Dyn(a),extras=[];
+  if(h>0&&Number(d.stride)>0){
+    const pct=d.stride/h*100;
+    extras.push(`la zancada equivale al ${formatNatural(pct,0)}% de tu estatura`);
+  }
+  if(w>0&&Number(d.power)>0){
+    extras.push(`la potencia relativa es ${formatNatural(d.power/w,2)} W/kg`);
+  }
+  if(!extras.length)return base;
+  return`${base} Con tus datos corporales actuales (${h>0?`${formatNatural(h,2)} m`:"altura no disponible"}${h>0&&w>0?" · ":""}${w>0?`${formatNatural(w,1)} kg`:""}), ${extras.join(" y ")}. ATLAS usa estas relaciones para contextualizar tu mecánica personal, no como valores universales que debas perseguir.`;
+};
+
 /* ---------- ANÁLISIS LOCAL DE ACTIVIDADES ---------- */
+function atlasV096Median(values){
+  const a=(values||[]).map(Number).filter(Number.isFinite).sort((x,y)=>x-y);
+  if(!a.length)return null;
+  const n=a.length;return n%2?a[(n-1)/2]:(a[n/2-1]+a[n/2])/2;
+}
+function atlasV096Pct(v,ref){
+  return Number(v)>0&&Number(ref)>0?(Number(v)/Number(ref)-1)*100:null;
+}
 function atlasV096ActivityPlanMatch(a){
   const date=activityDate(a);
   if(!date)return null;
@@ -7963,6 +8085,79 @@ function atlasV096ActivityPlanMatch(a){
   }
   return null;
 }
+function atlasV096ComparableActivities(a){
+  const date=activityDate(a),pace=activityPaceSecKm(a),dur=activityElapsedSec(a),sport=atlasV093SportFamily(activityType(a));
+  if(!date)return[];
+  return(currentActivities||[]).filter(x=>{
+    if(x===a||activityDate(x)>=date||atlasV093SportFamily(activityType(x))!==sport)return false;
+    const age=Math.abs(dateDiff(activityDate(x),date));if(age>120)return false;
+    if(sport==="run"&&pace>0){
+      const p=activityPaceSecKm(x);return p>0&&Math.abs(p-pace)/pace<=.15;
+    }
+    if(dur>0){
+      const t=activityElapsedSec(x);return t>0&&Math.abs(t-dur)/dur<=.35;
+    }
+    return true;
+  }).slice(-40);
+}
+function atlasV096LocalActivityAnalysis(a){
+  if(!a)return"";
+  const sport=atlasV093SportFamily(activityType(a)),match=atlasV096ActivityPlanMatch(a),
+        comps=atlasV096ComparableActivities(a),parts=[],
+        dist=activityDistanceM(a),dur=activityElapsedSec(a),pace=activityPaceSecKm(a),
+        hr=activityHr(a),load=Number(pick(a,["icu_training_load","training_load"])),
+        rpe=activityRpe(a),feel=activityFeel(a);
+
+  if(match)parts.push(`La actividad corresponde a la sesión programada “${planEventName(match.event)}” y sustituye a la propuesta en el calendario.`);
+
+  if(sport==="run"){
+    const threshold=Number(activeTrainingPlan()?.engine?.currentAbility?.thresholdAnchor?.paceSecKm);
+    if(pace>0&&threshold>0){
+      const ratio=pace/threshold;
+      if(ratio<=1.03)parts.push(`El ritmo medio (${formatPaceValue(pace)} min/km) sitúa la sesión en torno al umbral o por encima, por lo que el coste fisiológico esperado es alto.`);
+      else if(ratio<=1.13)parts.push(`El ritmo medio (${formatPaceValue(pace)} min/km) cae en una zona sostenida próxima al trabajo aeróbico alto.`);
+      else parts.push(`El ritmo medio (${formatPaceValue(pace)} min/km) queda claramente por debajo del umbral y encaja mejor con trabajo aeróbico fácil/moderado.`);
+    }else if(dist>0&&dur>0){
+      parts.push(`Completaste ${formatNatural(dist/1000,2)} km en ${formatDuration(dur)}.`);
+    }
+
+    if(comps.length>=4){
+      const medHr=atlasV096Median(comps.map(activityHr)),
+            medLoad=atlasV096Median(comps.map(x=>Number(pick(x,["icu_training_load","training_load"])))),
+            hrDelta=atlasV096Pct(hr,medHr),loadDelta=atlasV096Pct(load,medLoad);
+      if(Number.isFinite(hrDelta)&&Math.abs(hrDelta)>=3){
+        parts.push(hrDelta<0
+          ?`A ritmo comparable, la FC media fue aproximadamente ${Math.round(Math.abs(hrDelta))}% menor que tu referencia reciente, compatible con un menor coste cardiovascular en esta sesión.`
+          :`A ritmo comparable, la FC media fue aproximadamente ${Math.round(hrDelta)}% mayor que tu referencia reciente, señal de un coste cardiovascular superior al habitual.`);
+      }else if(Number.isFinite(loadDelta)&&Math.abs(loadDelta)>=15){
+        parts.push(loadDelta>0
+          ?`La carga quedó alrededor de ${Math.round(loadDelta)}% por encima de sesiones recientes comparables.`
+          :`La carga quedó alrededor de ${Math.round(Math.abs(loadDelta))}% por debajo de sesiones recientes comparables.`);
+      }
+    }
+
+    const dyn=atlasV0811Dyn(a),h=Number(atlasV096BodyProfile.height),w=Number(atlasV096BodyProfile.weight),body=[];
+    if(h>0&&Number(dyn.stride)>0)body.push(`zancada/estatura ${formatNatural(dyn.stride/h*100,0)}%`);
+    if(w>0&&Number(dyn.power)>0)body.push(`${formatNatural(dyn.power/w,2)} W/kg`);
+    if(body.length)parts.push(`En mecánica relativa, ${body.join(" · ")}; ATLAS lo interpreta frente a tu propio historial, no frente a un valor universal.`);
+  }else if(sport==="strength"){
+    if(dur>0)parts.push(`La sesión de fuerza duró ${formatDuration(dur)}${Number.isFinite(hr)&&hr>0?` con ${formatNatural(hr,0)} ppm de FC media`:""}.`);
+    if(comps.length>=3){
+      const med=atlasV096Median(comps.map(activityElapsedSec)),delta=atlasV096Pct(dur,med);
+      if(Number.isFinite(delta)&&Math.abs(delta)>=15)parts.push(delta>0?`Fue aproximadamente ${Math.round(delta)}% más larga que tu sesión de fuerza reciente típica.`:`Fue aproximadamente ${Math.round(Math.abs(delta))}% más corta que tu sesión de fuerza reciente típica.`);
+    }
+  }else{
+    if(dur>0)parts.push(`La actividad duró ${formatDuration(dur)}${Number.isFinite(hr)&&hr>0?` con ${formatNatural(hr,0)} ppm de FC media`:""}.`);
+  }
+
+  if(rpe||feel){
+    const subjective=[rpe?`esfuerzo ${activityRpeLabel(rpe)}`:null,feel?`sensaciones ${feel}`:null].filter(Boolean).join(" · ");
+    parts.push(`La percepción subjetiva fue ${subjective}, útil para interpretar la carga junto a los datos objetivos.`);
+  }
+
+  if(!parts.length)return"ATLAS no dispone todavía de suficientes datos comparables para una lectura sólida de esta actividad. La conservará como nueva referencia personal para análisis posteriores.";
+  return parts.slice(0,4).join(" ");
+}
 function atlasV096EnsureLocalAnalysis(){
   let section=$("activityLocalAnalysis");
   if(section)return section;
@@ -7975,6 +8170,15 @@ function atlasV096EnsureLocalAnalysis(){
   else ui.activityAnalysis?.insertAdjacentElement("afterend",section);
   return section;
 }
+function atlasV096RenderLocalActivityAnalysis(a){
+  const section=atlasV096EnsureLocalAnalysis(),text=$("activityLocalAnalysisText"),analysis=atlasV096LocalActivityAnalysis(a);
+  section.classList.toggle("hidden",!analysis);
+  if(text)text.textContent=analysis;
+}
+requestActivityAiInsight=async function(){
+  if(currentActivityDetail)atlasV096RenderLocalActivityAnalysis(currentActivityDetail);
+};
+
 /* ---------- ADAPTIVE ENGINE ---------- */
 function atlasV096AdaptiveState(plan){
   if(!plan.adaptiveEngine||plan.adaptiveEngine.schema!==ATLAS_ADAPTIVE_SCHEMA){
@@ -8185,6 +8389,7 @@ atlasDomReadyInitializers.push(()=>{
 
 
 /* ===== ɅTLɅS v0.9.7 · Coach Analysis + validación Adaptive Engine ===== */
+const ATLAS_COACH_ANALYSIS_VERSION="0.9.7";
 
 /* ---------- Tipografía y ubicación ---------- */
 /* H2: atlasV097Style CSS consolidated into #atlas-canonical-style. */
@@ -8236,6 +8441,295 @@ atlasV096EnsureLocalAnalysis=function(){
   atlasV097PlaceLocalAnalysis();
   return section;
 };
+
+/* ---------- Utilidades de análisis de entrenador ---------- */
+function atlasV097Hash(value){
+  let h=2166136261;
+  for(const ch of String(value||"")){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}
+  return h>>>0;
+}
+function atlasV097PickVariant(a,arr,salt=""){
+  if(!arr?.length)return"";
+  return arr[atlasV097Hash(`${a?.id||activityDate(a)||""}|${salt}`)%arr.length];
+}
+function atlasV097Bold(value){return`<strong>${esc(String(value))}</strong>`;}
+function atlasV097ShortDate(date){
+  if(!date)return"";
+  const d=new Date(`${date}T12:00:00`);
+  return Number.isNaN(d.getTime())?date:new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short"}).format(d).replace(/\./g,"");
+}
+function atlasV097RunKind(a){
+  const name=atlasV093NormText(activityName(a));
+  if(a?.race===true||/\bcarrera\b|\brace\b|\bcompeticion\b|\btest\b|\bprueba\b/.test(name))return"race";
+  if(/\btirada larga\b|\blong run\b/.test(name))return"long";
+  if(/\bumbral\b|\btempo\b/.test(name))return"threshold";
+  if(/\bfacil\b|\beasy\b|\brecuperacion\b/.test(name))return"easy";
+  if(/\bvo2\b|\bseries\b|\binterval\b|\bfartlek\b/.test(name)||/\bx\s*\(/.test(String(activityName(a)||""))){
+    return"interval";
+  }
+  const sum=Array.isArray(a?.interval_summary)?a.interval_summary:[];
+  if(sum.some(x=>/^[2-9]\d*x\s+/i.test(String(x))))return"interval";
+  return"steady";
+}
+function atlasV097ParseClock(text){
+  const m=String(text||"").match(/(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?/i);
+  if(!m)return null;
+  const n=(Number(m[1])||0)*3600+(Number(m[2])||0)*60+(Number(m[3])||0);
+  return n>0?n:null;
+}
+function atlasV097IntervalBlock(a){
+  const lines=Array.isArray(a?.interval_summary)?a.interval_summary:[],blocks=[];
+  for(const line of lines){
+    const m=String(line).match(/^(\d+)x\s+([0-9hms]+)\s+(\d+:\d{2})$/i);
+    if(!m)continue;
+    const reps=Number(m[1]);if(reps<2)continue;
+    const ps=m[3].split(":").map(Number),paceSec=ps[0]*60+ps[1];
+    blocks.push({reps,durationSec:atlasV097ParseClock(m[2]),paceSec,line:String(line)});
+  }
+  if(!blocks.length)return null;
+  blocks.sort((x,y)=>(y.reps*(y.durationSec||0))-(x.reps*(x.durationSec||0)));
+  const b=blocks[0],name=String(activityName(a)||"");
+  const dist=name.match(/x\s*\(\s*(\d+(?:[.,]\d+)?)\s*km/i);
+  const rec=name.match(/\bR\s*(\d+)(?:['’m])(?:\s*(\d+))?/i);
+  b.repDistanceKm=dist?Number(dist[1].replace(",",".")):null;
+  b.recoverySec=rec?(Number(rec[1])*60+(Number(rec[2])||0)):null;
+  return b;
+}
+function atlasV097ComparableRuns(a,{sameKind=true,days=180,paceTolerance=.14}={}){
+  const date=activityDate(a),kind=atlasV097RunKind(a),pace=activityPaceSecKm(a);
+  if(!date||!isRun(a))return[];
+  return(currentActivities||[]).filter(x=>{
+    if(x===a||!isRun(x))return false;
+    const xd=activityDate(x),age=atlasV096DaysBetween(xd,date);
+    if(!xd||age==null||age<=0||age>days)return false;
+    if(sameKind&&atlasV097RunKind(x)!==kind)return false;
+    const p=activityPaceSecKm(x);
+    return !(pace>0&&p>0)||Math.abs(p-pace)/pace<=paceTolerance;
+  }).sort((x,y)=>activityDate(y).localeCompare(activityDate(x)));
+}
+function atlasV097MedianMetric(items,fn){
+  return atlasV096Median(items.map(fn).filter(Number.isFinite));
+}
+function atlasV097PlanCoachLine(a){
+  const plan=activeTrainingPlan();
+  if(!plan)return"";
+  const match=atlasV096ActivityPlanMatch(a);
+  if(match){
+    return`Dentro del plan, suma exactamente el tipo de estímulo que buscaba ${atlasV097Bold(planEventName(match.event))}; no tocaría nada por esta sesión.`;
+  }
+  const date=activityDate(a);
+  if(date&&date>=plan.startDate&&date<=plan.raceDate){
+    const schedule=atlasV0814EffectiveSchedule(plan),
+          next=(schedule?.days||[]).filter(d=>d.date>date).flatMap(d=>(d.sessions||[]).map(s=>({date:d.date,s}))).find(x=>atlasV096IsKeySession(x.s));
+    if(next)return`No estaba emparejada con una sesión del plan; la trataría como carga extra y protegería especialmente ${atlasV097Bold(next.s.name||next.s.family)} del ${atlasV097ShortDate(next.date)}.`;
+  }
+  return"";
+}
+function atlasV097RunCoachAnalysis(a){
+  const kind=atlasV097RunKind(a),dist=activityDistanceM(a)/1000,dur=activityElapsedSec(a),pace=activityPaceSecKm(a),
+        comps=atlasV097ComparableRuns(a,{sameKind:true}),prev=comps[0]||null,planLine=atlasV097PlanCoachLine(a),
+        out=[];
+
+  if(kind==="interval"){
+    const block=atlasV097IntervalBlock(a),prevBlock=prev?atlasV097IntervalBlock(prev):null;
+    const openers=[
+      "Sesión de calidad muy bien resuelta.",
+      "Aquí hay trabajo de calidad de verdad, pero bien controlado.",
+      "Buena sesión: exigente donde tenía que serlo y sin ruido alrededor."
+    ];
+    out.push(atlasV097PickVariant(a,openers,"interval-open"));
+
+    if(block){
+      const rep=block.repDistanceKm?`${block.reps} × ${String(block.repDistanceKm).replace(".",",")} km`:`${block.reps} repeticiones`;
+      const rec=block.recoverySec?` con ${atlasV097Bold(`${Math.floor(block.recoverySec/60)}'${block.recoverySec%60?String(block.recoverySec%60).padStart(2,"0")+'"':""}`)} de recuperación`:"";
+      out.push(`El bloque principal quedó en ${atlasV097Bold(rep)} alrededor de ${atlasV097Bold(`${formatPaceValue(block.paceSec)} min/km`)}${rec}, un estímulo muy útil para sostener ritmo rápido sin convertir la sesión en una carrera.`);
+    }else{
+      out.push(`El trabajo central fue claramente de intervalos y el conjunto mantuvo una estructura limpia de calentamiento, calidad y vuelta a la calma.`);
+    }
+
+    if(block&&prevBlock&&block.reps===prevBlock.reps){
+      const delta=block.paceSec-prevBlock.paceSec;
+      const sameDist=!block.repDistanceKm||!prevBlock.repDistanceKm||Math.abs(block.repDistanceKm-prevBlock.repDistanceKm)<.05;
+      if(sameDist){
+        if(Math.abs(delta)<=2){
+          out.push(`Está prácticamente al mismo nivel que la sesión del ${atlasV097Bold(atlasV097ShortDate(activityDate(prev)))}: buena señal de estabilidad, que ahora mismo vale más que intentar rascar segundos.`);
+        }else if(delta<-2){
+          out.push(`Frente al ${atlasV097Bold(atlasV097ShortDate(activityDate(prev)))}, el bloque salió algo más rápido sin cambiar la estructura: pequeño paso adelante, suficiente para confirmar progreso sin necesidad de forzar más.`);
+        }else if(delta>3){
+          out.push(`Fue algo más contenida que la del ${atlasV097Bold(atlasV097ShortDate(activityDate(prev)))}, pero sigue siendo una sesión útil; prefiero esta regularidad a convertir cada día de series en un test.`);
+        }
+      }
+    }
+
+    out.push(planLine||atlasV097PickVariant(a,[
+      "La daría por buena y dejaría que el siguiente rodaje fácil haga su trabajo: asimilar, no demostrar nada.",
+      "El valor está en haber acumulado calidad limpia. No añadiría más intensidad alrededor de esta sesión.",
+      "Buen estímulo para seguir construyendo velocidad sostenible; ahora toca absorberlo."
+    ],"interval-close"));
+    return out.filter(Boolean).slice(0,4).join(" ");
+  }
+
+  if(kind==="easy"){
+    const hr=activityHr(a),medHr=atlasV097MedianMetric(comps.slice(0,8),activityHr),
+          medPace=atlasV097MedianMetric(comps.slice(0,8),activityPaceSecKm),
+          dec=Number(a?.decoupling);
+    out.push(atlasV097PickVariant(a,[
+      "Rodaje fácil bien utilizado: sumar sin hipotecar el siguiente entrenamiento.",
+      "Este es el tipo de rodaje que construye forma sin hacer ruido.",
+      "Buen día aeróbico: sencillo, útil y con margen."
+    ],"easy-open"));
+    if(pace>0&&medPace>0&&hr>0&&medHr>0){
+      if(pace<=medPace-5&&hr<=medHr+2)out.push(`Has corrido más alegre que en tus rodajes fáciles recientes sin pagar más pulso: ${atlasV097Bold("muy buena economía aeróbica")}.`);
+      else if(pace>=medPace+8&&hr>=medHr+5)out.push(`Hoy el cuerpo pidió más para ir más despacio de lo habitual. No lo convertiría en un problema, pero sí en una señal para mantener el próximo día realmente cómodo.`);
+      else out.push(`Ritmo y pulso encajan con tu patrón reciente de rodaje fácil; no veo motivo para endurecerlo ni para convertirlo en algo que no es.`);
+    }
+    if(Number.isFinite(dec)&&dec<3)out.push(`Además, la respuesta cardiovascular se mantuvo muy estable hasta el final, justo lo que quiero ver en un rodaje de base.`);
+    out.push(planLine||atlasV097PickVariant(a,[
+      "Suma bien. Mañana deberías sentir que entrenaste, no que competiste.",
+      "Perfecto para seguir acumulando continuidad.",
+      "Mantendría este mismo criterio: fácil de verdad para llegar con chispa a los días importantes."
+    ],"easy-close"));
+    return out.filter(Boolean).slice(0,4).join(" ");
+  }
+
+  if(kind==="long"){
+    const dec=Number(a?.decoupling),prevDist=prev?activityDistanceM(prev)/1000:null;
+    out.push(atlasV097PickVariant(a,[
+      "Tirada larga sólida y con sentido.",
+      "Buen trabajo de resistencia: esto sí construye durabilidad.",
+      "Sesión larga bien gestionada, de las que dejan base para semanas posteriores."
+    ],"long-open"));
+    out.push(`Has acumulado ${atlasV097Bold(`${formatNatural(dist,1)} km`)} en ${atlasV097Bold(formatDuration(dur))} a ${atlasV097Bold(`${formatPaceValue(pace)} min/km`)}, una dosis suficiente para trabajar resistencia sin necesidad de convertir la tirada en una prueba.`);
+    if(Number.isFinite(dec)&&dec<4)out.push(`El pulso se sostuvo con bastante estabilidad conforme avanzó la sesión: buena señal de durabilidad aeróbica.`);
+    else if(Number.isFinite(dec)&&dec>7)out.push(`El final exigió claramente más al sistema cardiovascular; antes de alargar la próxima tirada, preferiría consolidar esta distancia.`);
+    if(prevDist&&dist>prevDist+1)out.push(`Respecto a tu última tirada comparable, has dado un paso de volumen claro; ahora toca consolidarlo, no encadenar otro salto.`);
+    out.push(planLine||"La siguiente mejora no tiene por qué ser correrla más rápido: primero quiero que esta distancia se vuelva normal.");
+    return out.filter(Boolean).slice(0,4).join(" ");
+  }
+
+  if(kind==="race"){
+    out.push(atlasV097PickVariant(a,[
+      "Aquí sí cuenta el resultado: fue un esfuerzo competitivo y conviene leerlo como referencia de capacidad.",
+      "Buen test competitivo: esta sesión dice más sobre tu estado real que un entrenamiento aislado.",
+      "Carrera útil como fotografía de forma."
+    ],"race-open"));
+    if(dist>0&&dur>0)out.push(`Completaste ${atlasV097Bold(`${formatNatural(dist,2)} km`)} en ${atlasV097Bold(formatDuration(dur))}, a ${atlasV097Bold(`${formatPaceValue(pace)} min/km`)}.`);
+    if(prev){
+      const pp=activityPaceSecKm(prev);
+      if(pp>0&&pace>0&&pace<pp-3)out.push(`Es una ejecución más rápida que tu referencia competitiva reciente del ${atlasV097Bold(atlasV097ShortDate(activityDate(prev)))}, una señal que ATLAS tendrá en cuenta cuando exista un plan activo.`);
+    }
+    out.push(planLine||"La recuperación posterior importa tanto como el resultado: esta sesión no necesita otro estímulo duro inmediatamente después.");
+    return out.filter(Boolean).slice(0,4).join(" ");
+  }
+
+  out.push(`Sesión aeróbica consistente: ${atlasV097Bold(`${formatNatural(dist,1)} km`)} en ${atlasV097Bold(formatDuration(dur))} a ${atlasV097Bold(`${formatPaceValue(pace)} min/km`)}.`);
+  if(prev)out.push(`Encaja bien con tus últimas sesiones de este tipo y no muestra una desviación que me haga cambiar el rumbo.`);
+  out.push(planLine||"La lectura importante es la continuidad: una sesión útil que suma sin necesidad de adornarla.");
+  return out.filter(Boolean).slice(0,4).join(" ");
+}
+function atlasV097OtherCoachAnalysis(a){
+  const sport=atlasV093SportFamily(activityType(a)),dur=activityElapsedSec(a),comps=atlasV096ComparableActivities(a),out=[];
+  if(sport==="strength"){
+    out.push(atlasV097PickVariant(a,[
+      "Buena sesión de fuerza: su valor está en complementar la carrera, no en competir con ella.",
+      "Trabajo de fuerza útil y bien colocado como soporte del corredor.",
+      "Sesión de fuerza cumplida; esto es inversión en economía y tolerancia muscular."
+    ],"strength"));
+    if(dur>0)out.push(`Con ${atlasV097Bold(formatDuration(dur))} de trabajo, la dosis es suficiente para generar estímulo sin necesitar una sesión interminable.`);
+    if(comps.length>=3){
+      const med=atlasV097MedianMetric(comps.slice(0,8),activityElapsedSec);
+      if(med&&Math.abs(dur-med)>600)out.push(dur>med?`Ha sido más larga que tu fuerza habitual; vigilaría que no reste frescura a la próxima calidad.`:`Más compacta que de costumbre, pero totalmente válida si mantuviste los ejercicios principales.`);
+    }
+    out.push("Lo que buscaría ahora es continuidad: dosificar bien la fuerza suele aportar más que hacer una sesión heroica de vez en cuando.");
+    return out.slice(0,4).join(" ");
+  }
+  return`Sesión completada con una carga útil para tu preparación general. ATLAS la guardará como referencia para compararla con actividades semejantes y detectar tendencias reales, no diferencias aisladas.`;
+}
+function atlasV097CoachActivityAnalysisHtml(a){
+  if(!a)return"";
+  return isRun(a)?atlasV097RunCoachAnalysis(a):atlasV097OtherCoachAnalysis(a);
+}
+atlasV096LocalActivityAnalysis=function(a){
+  /* Se conserva la firma anterior por compatibilidad, pero devuelve HTML de entrenador. */
+  return atlasV097CoachActivityAnalysisHtml(a);
+};
+atlasV096RenderLocalActivityAnalysis=function(a){
+  const section=atlasV096EnsureLocalAnalysis(),text=$("activityLocalAnalysisText"),
+        analysis=atlasV097CoachActivityAnalysisHtml(a);
+  atlasV097PlaceLocalAnalysis();
+  section.classList.toggle("hidden",!analysis);
+  if(text)text.innerHTML=analysis;
+};
+
+/* ---------- Dinámicas: lectura de entrenador, no informe estadístico ---------- */
+function atlasV097DynamicsComparables(a){
+  const date=activityDate(a),kind=atlasV097RunKind(a),pace=activityPaceSecKm(a);
+  if(!date||!isRun(a))return[];
+  let comps=(currentActivities||[]).filter(x=>{
+    if(x===a||!isRun(x)||activityDate(x)>=date)return false;
+    const age=atlasV096DaysBetween(activityDate(x),date);
+    if(age==null||age<=0||age>150)return false;
+    const p=activityPaceSecKm(x);
+    if(!(p>0&&pace>0)||Math.abs(p-pace)/pace>.12)return false;
+    return atlasV097RunKind(x)===kind;
+  }).sort((x,y)=>activityDate(y).localeCompare(activityDate(x)));
+  if(comps.length<3)comps=atlasV097ComparableRuns(a,{sameKind:false,days:150,paceTolerance:.10});
+  return comps.slice(0,12);
+}
+function atlasV097DynamicsCoachHtml(a){
+  if(!isRun(a))return"";
+  const d=atlasV0811Dyn(a),comps=atlasV097DynamicsComparables(a),ds=comps.map(atlasV0811Dyn),
+        med=k=>atlasV0811Median(ds.map(x=>x[k])),h=Number(atlasV096BodyProfile.height),
+        cad=Number(d.cadence),gct=Number(d.gct),vr=Number(d.vr),stride=Number(d.stride),bal=Number(d.balance),
+        cadMed=med("cadence"),gctMed=med("gct"),vrMed=med("vr"),strideMed=med("stride"),
+        out=[];
+
+  if(cad>0){
+    const heightNote=h>=1.82?`Con ${atlasV097Bold(`${formatNatural(h,2)} m`)} de altura, no tiene sentido perseguir 180 spm por sistema. `:"";
+    if(cadMed>0&&cad>=cadMed+3){
+      out.push(`${heightNote}Tus ${atlasV097Bold(`${formatNatural(cad,0)} spm`)} muestran una rotación más viva que en tus carreras comparables recientes; si además el apoyo no se alarga, es una mejora útil, no cadencia “forzada”.`);
+    }else if(cadMed>0&&cad<=cadMed-3){
+      out.push(`${heightNote}La cadencia quedó algo más baja que tu patrón habitual para este ritmo. No intentaría subirla de golpe: buscaría pasos un poco más rápidos y compactos al final de 4–6 progresivos cortos.`);
+    }else{
+      out.push(`${heightNote}La cadencia de ${atlasV097Bold(`${formatNatural(cad,0)} spm`)} encaja bien con tu mecánica habitual a este ritmo; no tocaría el número por tocarlo.`);
+    }
+  }
+
+  if(gct>0&&gctMed>0&&vr>0&&vrMed>0){
+    if(gct<=gctMed-5&&vr<=vrMed+.15){
+      out.push(`Me gusta especialmente que el apoyo sea más breve sin aumentar el rebote: eso suele traducirse en una zancada más rápida y limpia.`);
+    }else if(gct>=gctMed+7&&vr>=vrMed+.35){
+      out.push(`Aquí sí veo margen técnico: pasas algo más de tiempo apoyado y también rebotas más que en tus mejores referencias. Pensaría en “avanzar, no saltar” y en apoyar debajo del cuerpo, sin alargar la zancada delante.`);
+    }else if(vr>=vrMed+.45){
+      out.push(`El punto a vigilar es el rebote vertical. No necesitas más cadencia necesariamente; necesitas dirigir mejor la fuerza hacia delante.`);
+    }else if(gct>=gctMed+7){
+      out.push(`El contacto con el suelo fue algo más largo de lo habitual. Si aparece sobre todo al final, lo leería como fatiga mecánica antes que como un problema de técnica.`);
+    }else{
+      out.push(`Apoyo y movimiento vertical están bien equilibrados respecto a tu patrón reciente: mecánica estable, sin una señal clara que corregir.`);
+    }
+  }
+
+  if(stride>0&&strideMed>0){
+    if(stride>=strideMed+.06&&cad>=cadMed-1){
+      out.push(`Además, estás ganando longitud de zancada sin sacrificar frecuencia: buena forma de correr más rápido sin “estirarte” artificialmente.`);
+    }else if(stride<=strideMed-.07&&cad<=cadMed-2){
+      out.push(`La zancada salió algo más corta y lenta de giro. Si estabas fresco, unos progresivos y cuestas cortas pueden ayudarte a recuperar reactividad; si estabas cansado, lo dejaría simplemente como señal de fatiga.`);
+    }
+  }
+
+  if(Number.isFinite(bal)&&bal>0&&Math.abs(bal-50)>=1.5){
+    out.push(`La simetría de apoyo se desvía un poco del centro. No me preocuparía por una sesión aislada, pero sí lo vigilaría si se repite varias veces en la misma dirección.`);
+  }
+
+  if(!out.length)return`Las dinámicas son coherentes con tu historial reciente y no veo una palanca técnica clara que merezca intervenir ahora. En mecánica de carrera, muchas veces la mejor decisión es no tocar lo que ya funciona.`;
+  return out.slice(0,3).join(" ");
+}
+atlasV0811DynamicsComment=function(a){
+  /* Compatibilidad con llamadas anteriores. */
+  const tmp=document.createElement("div");tmp.innerHTML=atlasV097DynamicsCoachHtml(a);
+  return tmp.textContent||"";
+};
+
 
 /* ---------- Adaptive Engine: correcciones de estabilidad detectadas en validación ---------- */
 atlasV096Operation=function(id,session,action,reason,extra={}){
@@ -9372,6 +9866,67 @@ for(const k of ["benchPress","latPulldown","seatedRow"]){
   if(ATLAS_V123_EXERCISE_CATALOG)delete ATLAS_V123_EXERCISE_CATALOG[k];
 }
 if(ATLAS_V123_EXERCISE_CATALOG?.tricepsPushdown)ATLAS_V123_EXERCISE_CATALOG.tricepsPushdown.name="Extensión de tríceps con mancuerna";
+
+
+/* ===== ɅTLɅS v1.4.0 · Análisis 2.0 ===== */
+const ATLAS_ANALYSIS_VERSION="2.0";
+/* H2: atlasV140Style CSS consolidated into #atlas-canonical-style. */
+
+function atlasV140PlanSessionMatch(a){
+  const plan=activeTrainingPlan?.();if(!plan)return null;
+  const schedule=atlasV0814EffectiveSchedule(plan),published=atlasV096ActivityPlanMatch(a);
+  if(published){const key=atlasV096PlanEventKey(plan,published.event),found=key?atlasV096SessionByKey(schedule,key):null;if(found)return{plan,event:published.event,session:found.session,mode:published.mode||'published'};}
+  const date=activityDate(a),day=(schedule?.days||[]).find(d=>d.date===date);if(!day)return null;
+  const sport=atlasV093SportFamily(activityType(a)),ad=Number(activityDistanceM(a)),at=Number(activityElapsedSec(a));let best=null,bestScore=-1e9;
+  for(const s of day.sessions||[]){const st=atlasV093SportFamily(trainingEngineSessionType(s.family));if(st!==sport)continue;let score=10;const pd=Number(s.distanceM),pt=Number(s.durationSec);if(ad>0&&pd>0)score-=Math.abs(ad/pd-1)*8;else if(at>0&&pt>0)score-=Math.abs(at/pt-1)*5;if(sport==='run'&&s.family&&atlasV097RunKind(a)!=='steady'){const fam=atlasV093NormText(s.family+' '+(s.name||'')),kind=atlasV097RunKind(a);if((kind==='easy'&&/facil|recuper|aerob/.test(fam))||(kind==='long'&&/tirada/.test(fam))||(kind==='threshold'&&/umbral|tempo/.test(fam))||(kind==='interval'&&/interval|vo2|5k|10k|serie/.test(fam)))score+=3;}if(score>bestScore){bestScore=score;best=s;}}
+  return best&&bestScore>=5?{plan,event:null,session:best,mode:'local'}:null;
+}
+function atlasV140PaceRange(session){const t=session?.targetPace||{},p=Number(t.paceSecKm),fast=Number(t.fastSecKm),slow=Number(t.slowSecKm);if(fast>0&&slow>0)return{fast:Math.min(fast,slow),slow:Math.max(fast,slow)};if(p>0)return{fast:p,slow:p};return null;}
+function atlasV140PlanComparison(a,match){
+  if(!match?.session)return'';const s=match.session,actualKm=(Number(activityDistanceM(a))||0)/1000,plannedKm=(Number(s.distanceM)||0)/1000,actualSec=Number(activityElapsedSec(a))||0,plannedSec=Number(s.durationSec)||0,actualPace=Number(activityPaceSecKm(a)),range=atlasV140PaceRange(s),parts=[];
+  if(plannedKm>0&&actualKm>0){const pct=(actualKm/plannedKm-1)*100;if(Math.abs(pct)<=5)parts.push(`distancia clavada (${formatNatural(actualKm,1)} km)`);else parts.push(`${Math.abs(pct).toFixed(0)}% ${pct>0?'más':'menos'} distancia de la prescrita`);}else if(plannedSec>0&&actualSec>0){const pct=(actualSec/plannedSec-1)*100;if(Math.abs(pct)<=7)parts.push('duración muy próxima a la prescrita');else parts.push(`${Math.abs(pct).toFixed(0)}% ${pct>0?'más':'menos'} tiempo de trabajo`);}
+  if(isRun(a)&&range&&actualPace>0){if(actualPace>=range.fast-2&&actualPace<=range.slow+2)parts.push(`ritmo dentro del objetivo (${formatPaceValue(actualPace)} min/km)`);else if(actualPace<range.fast)parts.push(`${Math.round(range.fast-actualPace)} s/km más rápido que el límite previsto`);else parts.push(`${Math.round(actualPace-range.slow)} s/km más lento que el rango previsto`);}
+  return parts.length?`Frente a <strong>${esc(s.name||s.family||'la sesión prevista')}</strong>: ${parts.join(' · ')}.`:`Actividad vinculada a <strong>${esc(s.name||s.family||'la sesión prevista')}</strong>.`;
+}
+function atlasV140PacingSnapshot(a){
+  if(!isRun(a)||String(currentActivityDetail?.id)!==String(a?.id))return null;const rows=activityLapRows().rows.filter(r=>Number(r.d)>100&&Number(r.p)>0);if(rows.length<3)return null;
+  const total=rows.reduce((s,r)=>s+Number(r.d),0);if(!(total>0))return null;const mean=rows.reduce((s,r)=>s+Number(r.p)*Number(r.d),0)/total,variance=rows.reduce((s,r)=>s+Math.pow(Number(r.p)-mean,2)*Number(r.d),0)/total,cv=Math.sqrt(variance)/mean*100,half=total/2;let cum=0,firstT=0,firstD=0,secondT=0,secondD=0;
+  for(const r of rows){const d=Number(r.d),p=Number(r.p),before=cum,after=cum+d,c1=Math.max(0,Math.min(after,half)-before),c2=d-c1;if(c1>0){firstD+=c1;firstT+=c1*p;}if(c2>0){secondD+=c2;secondT+=c2*p;}cum=after;}
+  const first=firstD?firstT/firstD:null,second=secondD?secondT/secondD:null,split=first&&second?second-first:null;return{cv,first,second,split,rows:rows.length};
+}
+function atlasV140ActivityType(a,match){if(trainingEngineIsCompetitionRun(a))return{key:'race',label:'🏁 Competición'};if(trainingEngineIsRaceOrTestRun(a))return{key:'test',label:'🧪 Prueba / test'};if(match)return{key:'planned',label:'📋 Dentro del plan'};return{key:'training',label:'🏃🏻 Entrenamiento'};}
+function atlasV140ComparableLine(a){if(!isRun(a))return'';const comps=atlasV097ComparableRuns(a,{sameKind:true,days:180,paceTolerance:.18}).slice(0,8);if(comps.length<3)return'';const hr=activityHr(a),pace=activityPaceSecKm(a),hrMed=atlasV097MedianMetric(comps,activityHr),paceMed=atlasV097MedianMetric(comps,activityPaceSecKm),bits=[];if(pace>0&&paceMed>0){const d=pace-paceMed;if(Math.abs(d)>=5)bits.push(`${Math.abs(Math.round(d))} s/km ${d<0?'más rápido':'más lento'} que tu mediana comparable`);}if(hr>0&&hrMed>0){const d=hr-hrMed;if(Math.abs(d)>=3)bits.push(`${Math.abs(Math.round(d))} ppm ${d<0?'menos':'más'} de FC media`);}return bits.length?`Frente a ${comps.length} sesiones comparables: ${bits.join(' · ')}.`:'';}
+function atlasV140ActivityAnalysisHtml(a){
+  if(!a)return'';const match=atlasV140PlanSessionMatch(a),type=atlasV140ActivityType(a,match),rows=[],dist=(Number(activityDistanceM(a))||0)/1000,dur=Number(activityElapsedSec(a))||0,pace=Number(activityPaceSecKm(a)),hr=Number(activityHr(a)),rpe=activityRpe(a),kind=isRun(a)?atlasV097RunKind(a):null,pacing=atlasV140PacingSnapshot(a);let execution='';
+  if(type.key==='race'||type.key==='test'){const bits=[];if(dist>0)bits.push(`${formatNatural(dist,2)} km`);if(dur>0)bits.push(formatDuration(dur));if(pace>0)bits.push(`${formatPaceValue(pace)} min/km`);if(hr>0)bits.push(`${formatNatural(hr,0)} ppm`);execution=`${type.key==='race'?'Resultado de carrera':'Resultado del test'}: <strong>${bits.join(' · ')}</strong>.`;if(pacing){const split=Math.round(pacing.split||0),uniform=pacing.cv<1.8?'muy uniforme':pacing.cv<3?'controlado':'variable';execution+=` Pacing ${uniform} (variabilidad ${formatNatural(pacing.cv,1)}%).`;if(Math.abs(split)>=3)execution+=` Segunda mitad ${Math.abs(split)} s/km ${split<0?'más rápida':'más lenta'}.`;}}
+  else if(isRun(a)){const labels={easy:'Rodaje fácil',long:'Tirada larga',threshold:'Umbral / tempo',interval:'Calidad',steady:'Rodaje continuo'};execution=`${labels[kind]||'Carrera'} de <strong>${dist>0?`${formatNatural(dist,1)} km`:'—'}</strong>${dur>0?` en <strong>${formatDuration(dur)}</strong>`:''}${pace>0?` a <strong>${formatPaceValue(pace)} min/km</strong>`:''}${hr>0?` · ${formatNatural(hr,0)} ppm`:''}.`;}
+  else if(trainingEngineIsStrengthActivity(a))execution=`Sesión de fuerza de <strong>${dur>0?formatDuration(dur):'duración no disponible'}</strong>${hr>0?` · ${formatNatural(hr,0)} ppm`:''}.`;else execution=`Actividad completada${dur>0?` en <strong>${formatDuration(dur)}</strong>`:''}.`;
+  rows.push(['Ejecución',execution]);
+  if(match){let comp=atlasV140PlanComparison(a,match);if(trainingEngineIsStrengthActivity(a))comp+=` ATLAS puede comprobar duración y contexto del plan, pero no inventa series, repeticiones o kilos si la fuente no los registra.`;rows.push(['Plan',comp]);}else if(type.key==='training'&&activeTrainingPlan?.()){const plan=activeTrainingPlan(),date=activityDate(a);if(date>=plan.startDate&&date<=plan.raceDate)rows.push(['Plan','No coincide con una sesión prescrita: cuenta como carga adicional y debe ser absorbida por el Adaptive Engine.']);}
+  let meaning='';
+  if(type.key==='race'){const cmp=atlasV140ComparableLine(a);meaning=cmp||'Esta competición actualiza la referencia real de rendimiento; pesa más que una estimación aislada de entrenamiento.';if(pacing?.split>6)meaning+=' La pérdida de ritmo en la segunda mitad es la señal principal a estudiar; si el pulso también subió, apunta más a durabilidad/gestión que a velocidad pura.';else if(pacing&&Math.abs(pacing.split||0)<=3)meaning+=' La estabilidad entre mitades refuerza que el ritmo fue bien distribuido.';}
+  else if(kind==='long'){const dec=Number(a?.decoupling);meaning=Number.isFinite(dec)&&dec>7?'La deriva es elevada para una tirada larga: antes de aumentar distancia o ritmo conviene consolidar durabilidad, nutrición y control inicial.':Number.isFinite(dec)&&dec<4?'Buena durabilidad: el coste cardiovascular se mantuvo estable durante la sesión.':'El valor principal está en la dosis de tiempo/distancia; compárala con la recuperación de las próximas 24–48 h antes de progresar.';}
+  else if(kind==='interval'||kind==='threshold'){const block=atlasV097IntervalBlock(a);meaning=block?`El estímulo principal fue ${block.reps} repeticiones alrededor de ${formatPaceValue(block.paceSec)} min/km. Lo importante es repetir calidad limpia, no convertir cada sesión en un test.`:'El valor está en la calidad del bloque principal y en llegar al siguiente estímulo sin fatiga residual excesiva.';}
+  else if(kind==='easy'){const cmp=atlasV140ComparableLine(a);meaning=cmp||'Un rodaje fácil es bueno cuando suma volumen sin consumir la frescura de la siguiente sesión clave.';}
+  else if(trainingEngineIsStrengthActivity(a))meaning=match?'Su valor se juzga por transferencia a carrera y bajo coste de fatiga, no por buscar máximos o agujetas.':'ATLAS la conserva como carga complementaria; si no estaba prescrita, debe convivir sin perjudicar calidad ni tirada larga.';else meaning=atlasV140ComparableLine(a)||'ATLAS la incorpora a tu historial y sólo extraerá conclusiones fuertes cuando exista contexto comparable suficiente.';
+  rows.push(['Lectura ATLAS',meaning]);
+  if(rpe){const label=activityRpeLabel(rpe);rows.push(['Percepción',`RPE <strong>${formatNatural(rpe,0)}/10${label?` · ${esc(label)}`:''}</strong>. ATLAS lo usa para distinguir rendimiento real de un buen dato obtenido a un coste excesivo.`]);}
+  return `<div class="atlas-analysis2"><div class="atlas-analysis2-head"><div class="atlas-analysis2-title">Análisis 2.0</div><div class="atlas-analysis2-badge">${esc(type.label)}</div></div>${rows.slice(0,4).map(([l,c])=>`<div class="atlas-analysis2-row"><span class="atlas-analysis2-label">${esc(l)}</span><div class="atlas-analysis2-copy">${c}</div></div>`).join('')}</div>`;
+}
+atlasV096LocalActivityAnalysis=function(a){return atlasV140ActivityAnalysisHtml(a);};
+atlasV096RenderLocalActivityAnalysis=function(a){const section=atlasV096EnsureLocalAnalysis(),text=$('activityLocalAnalysisText'),analysis=atlasV140ActivityAnalysisHtml(a);atlasV097PlaceLocalAnalysis();section.classList.toggle('hidden',!analysis);if(text)text.innerHTML=analysis;};
+
+function atlasV140DynamicsInsight(a){
+  if(!isRun(a))return'';const cur=atlasV0811Dyn(a),comps=atlasV097DynamicsComparables(a);if(comps.length<3)return`<span class="atlas-dyn2-lead">Todavía no hay referencia suficiente.</span><span class="atlas-dyn2-detail">ATLAS necesita al menos tres carreras recientes de tipo y ritmo comparables antes de interpretar cambios mecánicos.</span>`;
+  const ds=comps.map(atlasV0811Dyn),med=k=>atlasV0811Median(ds.map(x=>x[k])),changes=[];const add=(key,label,val,ref,thr)=>{if(!(Number(val)>0&&Number(ref)>0))return;const pct=(val/ref-1)*100,score=Math.abs(pct)/thr;if(score<1)return;changes.push({key,label,pct,score});};
+  add('cad','Cadencia',cur.cadence,med('cadence'),2.5);add('gct','Contacto',cur.gct,med('gct'),3);add('vr','Ratio vertical',cur.vr,med('vr'),4);add('stride','Zancada',cur.stride,med('stride'),4);add('vo','Oscilación',cur.vo,med('vo'),5);add('power','Potencia',cur.power,med('power'),5);if(Number(cur.balance)>0&&Math.abs(cur.balance-50)>=1.3)changes.push({key:'balance',label:'Equilibrio',pct:cur.balance-50,score:Math.abs(cur.balance-50)/1.3,balance:true});
+  changes.sort((a,b)=>b.score-a.score);if(!changes.length)return`<span class="atlas-dyn2-lead">Mecánica estable.</span><span class="atlas-dyn2-detail">Ninguna dinámica se desvía lo suficiente de tus ${comps.length} referencias comparables como para justificar una corrección técnica.</span>`;
+  const top=changes.slice(0,2),fmt=x=>x.balance?`${x.label} ${formatNatural(Math.abs(x.pct),1)} pp de asimetría`:`${x.label} ${x.pct>0?'+':''}${formatNatural(x.pct,1)}%`,detail=top.map(fmt).join(' · ');let lead='Cambio mecánico relevante';const g=changes.find(x=>x.key==='gct'),v=changes.find(x=>x.key==='vr'),c=changes.find(x=>x.key==='cad'),s=changes.find(x=>x.key==='stride');if(g&&g.pct<0&&(!v||v.pct<=0))lead='Más reactividad sin más rebote';else if(g&&g.pct>0&&v&&v.pct>0)lead='Posible fatiga mecánica';else if(c&&c.pct<0&&s&&s.pct<0)lead='Zancada más apagada de lo habitual';else if(v&&v.pct>0)lead='Más movimiento vertical del habitual';else if(v&&v.pct<0)lead='Mejor dirección de la fuerza';const action=lead==='Posible fatiga mecánica'?'Si aparece sobre todo al final, interprétalo como fatiga antes que como un defecto técnico.':'No persigas un número aislado: confirma la tendencia en varias sesiones comparables.';return `<span class="atlas-dyn2-lead">${esc(lead)}.</span><span class="atlas-dyn2-detail">${esc(detail)} frente a ${comps.length} carreras comparables. ${esc(action)}</span>`;
+}
+atlasV097DynamicsCoachHtml=function(a){return atlasV140DynamicsInsight(a);};
+atlasV0811DynamicsComment=function(a){const tmp=document.createElement('div');tmp.innerHTML=atlasV140DynamicsInsight(a);return tmp.textContent||'';};
+
+
 
 
 /* ===== ɅTLɅS v1.5.0 · fuerza runner + VFC calibrada + Estado 2.1 + sync inmediata ===== */
@@ -11624,134 +12179,246 @@ renderAtlasState=function(state){const result=atlasI2RenderAtlasStateBase.apply(
 atlasDomReadyInitializers.push(()=>{requestAnimationFrame(atlasI2FitStateTypography);window.addEventListener("resize",()=>requestAnimationFrame(atlasI2FitStateTypography),{passive:true});});
 
 
-/* ===== ɅTLɅS v1.6.43 · K3.2 · Activity Analysis Engine =====
-   Un único motor textual, factual y plan-aware. Máximo dos frases.
-   Sin consejos genéricos, sin cambios de plan y sin narrativas separadas de dinámicas. */
-const ATLAS_K32_VERSION="1.6.43";
-const ATLAS_K32_ACTIVITY_ANALYSIS=Object.freeze({
-  version:"1.0",engine:"Activity Analysis Engine",maxSentences:2,planFirst:true,
-  factualOnly:true,genericFallback:false,advisoryOnly:true,dynamicsNarrative:false
+/* ===== ɅTLɅS v1.6.22 · I3.3 Coach Review Engine =====
+   Pulido narrativo final: evidencia -> historia -> contexto del plan -> valoración.
+   Sin primera persona. Los números sólo aparecen cuando aportan una relación derivada
+   que no está expuesta de forma directa en la ficha. */
+const ATLAS_I33_COACH_REVIEW=Object.freeze({
+  version:"3.0",maxParagraphs:2,firstPerson:false,planAware:true,
+  numericPolicy:"derived-high-signal-only",repetitionPolicy:"chronological-rotation",
+  sessionModels:["recovery","easy","steady","long","threshold","interval","test","race"]
 });
-function atlasK32Median(values){
-  const rows=(values||[]).map(Number).filter(Number.isFinite).sort((a,b)=>a-b);if(!rows.length)return null;
-  const n=rows.length;return n%2?rows[(n-1)/2]:(rows[n/2-1]+rows[n/2])/2;
-}
-function atlasK32Weighted(rows,key,weightKey="d"){
-  let sum=0,total=0;for(const row of rows||[]){const value=Number(row?.[key]),weight=Math.max(0,Number(row?.[weightKey])||1);if(Number.isFinite(value)&&weight>0){sum+=value*weight;total+=weight;}}return total?sum/total:null;
-}
-function atlasK32Rows(a){
+
+function atlasI33Laps(a){
   if(!a||String(currentActivityDetail?.id||"")!==String(a?.id||""))return[];
   try{return activityLapRows().rows.filter(r=>Number(r?.d)>30&&Number(r?.p)>0);}catch{return[];}
 }
-function atlasK32Slice(rows,from,to){
-  const clean=(rows||[]).filter(r=>Number(r?.d)>0),total=clean.reduce((sum,r)=>sum+Number(r.d),0);if(!(total>0))return null;
+function atlasI33Weighted(rows,key,weightKey="d"){
+  let sum=0,w=0;for(const r of rows||[]){const value=Number(r?.[key]),weight=Math.max(0,Number(r?.[weightKey])||1);if(Number.isFinite(value)&&weight>0){sum+=value*weight;w+=weight;}}return w?sum/w:null;
+}
+function atlasI33Median(values){const a=(values||[]).map(Number).filter(Number.isFinite).sort((x,y)=>x-y);if(!a.length)return null;const n=a.length;return n%2?a[(n-1)/2]:(a[n/2-1]+a[n/2])/2;}
+function atlasI33Slice(rows,from,to){
+  const clean=(rows||[]).filter(r=>Number(r?.d)>0),total=clean.reduce((s,r)=>s+Number(r.d),0);if(!(total>0))return null;
   const lo=total*from,hi=total*to;let cursor=0,distance=0,time=0,hrN=0,hrD=0;
-  for(const r of clean){const d=Number(r.d),a=cursor,b=cursor+d,over=Math.max(0,Math.min(b,hi)-Math.max(a,lo));cursor=b;if(!(over>0))continue;const pace=Number(r.p),hr=Number(r.hr);distance+=over;if(pace>0)time+=pace*(over/1000);if(hr>0){hrN+=hr*over;hrD+=over;}}
+  for(const r of clean){const d=Number(r.d),a=cursor,b=cursor+d,over=Math.max(0,Math.min(b,hi)-Math.max(a,lo));cursor=b;if(!(over>0))continue;const p=Number(r.p),hr=Number(r.hr);distance+=over;if(p>0)time+=p*(over/1000);if(hr>0){hrN+=hr*over;hrD+=over;}}
   return distance?{pace:time>0?time/(distance/1000):null,hr:hrD?hrN/hrD:null}:null;
 }
-function atlasK32Halves(rows){
-  if(!rows?.length)return null;const first=atlasK32Slice(rows,0,.5),last=atlasK32Slice(rows,.5,1);if(!first||!last)return null;
-  return{paceShift:first.pace&&last.pace?last.pace-first.pace:null,hrShift:Number.isFinite(first.hr)&&Number.isFinite(last.hr)?last.hr-first.hr:null,first,last};
+function atlasI33Pacing(a,rows){
+  if(!isRun(a)||!rows?.length)return null;const total=rows.reduce((s,r)=>s+(Number(r.d)||0),0);if(!(total>1000))return null;
+  const mean=atlasI33Weighted(rows,"p"),variance=mean?rows.reduce((s,r)=>{const p=Number(r.p),d=Number(r.d)||0;return Number.isFinite(p)?s+Math.pow(p-mean,2)*d:s;},0)/total:null,
+        cv=variance!=null?Math.sqrt(variance)/mean*100:null,first=atlasI33Slice(rows,0,.5),last=atlasI33Slice(rows,.5,1),paceShift=first?.pace&&last?.pace?last.pace-first.pace:null,hrShift=Number.isFinite(first?.hr)&&Number.isFinite(last?.hr)?last.hr-first.hr:null;
+  return{stability:cv==null?"unknown":cv<2?"high":cv<4?"good":cv<6?"mixed":"low",finish:paceShift==null?"unknown":paceShift<-7?"stronger":paceShift>10?"fading":Math.abs(paceShift)<=5?"held":paceShift<0?"slightly_stronger":"slightly_fading",cardiac:hrShift==null?"unknown":hrShift<=3?"stable":hrShift<=7?"rising":"drifting",paceShift,hrShift,mean};
 }
-function atlasK32Intervals(rows){
-  if(!rows?.length)return null;let main=rows;
-  try{const phase=inferIntervalPhases(rows);if(phase?.quality)main=rows.filter((_,i)=>phase.phases[i]==="Bloque principal");}catch{}
-  let work=[];try{const roles=classifyMainLaps(main);work=main.filter(r=>roles.get(r.index)==="run"&&Number(r.p)>0);}catch{work=main.filter(r=>Number(r.p)>0);}
-  if(work.length<2)return null;
-  const mean=atlasK32Weighted(work,"p"),total=work.reduce((sum,r)=>sum+Math.max(1,Number(r.d)||1),0),variance=mean&&total?work.reduce((sum,r)=>{const p=Number(r.p),w=Math.max(1,Number(r.d)||1);return Number.isFinite(p)?sum+Math.pow(p-mean,2)*w:sum;},0)/total:null;
-  const cv=variance!=null&&mean>0?Math.sqrt(variance)/mean*100:null,first=Number(work[0]?.p),last=Number(work.at(-1)?.p);
-  return{count:work.length,meanPace:mean,cv,paceShift:Number.isFinite(first)&&Number.isFinite(last)?last-first:null};
+function atlasI33Intervals(a,rows){
+  if(!isRun(a)||!rows?.length)return null;const phase=inferIntervalPhases(rows),main=phase?.quality?rows.filter((_,i)=>phase.phases[i]==="Bloque principal"):rows,roles=classifyMainLaps(main),work=main.filter(r=>roles.get(r.index)==="run"&&Number(r.p)>0),recovery=main.filter(r=>roles.get(r.index)==="recovery");if(work.length<2)return null;
+  const mean=atlasI33Weighted(work,"p"),paces=work.map(r=>Number(r.p)).filter(Number.isFinite),cv=mean&&paces.length?Math.sqrt(paces.reduce((s,p)=>s+Math.pow(p-mean,2),0)/paces.length)/mean*100:null,
+        first=work[0],last=work.at(-1),paceShift=Number(last?.p)-Number(first?.p),hrShift=Number(last?.hr)-Number(first?.hr),workHr=atlasI33Weighted(work,"hr"),recHr=atlasI33Weighted(recovery,"hr"),recoveryDrop=Number.isFinite(workHr)&&Number.isFinite(recHr)?workHr-recHr:null,
+        workSec=atlasI33Median(work.map(r=>r.t)),recoverySec=atlasI33Median(recovery.map(r=>r.t)),recoveryRatio=Number.isFinite(workSec)&&workSec>0&&Number.isFinite(recoverySec)?recoverySec/workSec:null;
+  return{work,recovery,meanPace:mean,paceShift,hrShift,recoveryDrop,recoveryRatio,
+    consistency:cv==null?"unknown":cv<1.6?"excellent":cv<3.2?"good":"uneven",
+    finish:!Number.isFinite(paceShift)?"unknown":paceShift<-3?"stronger":paceShift>5?"fading":"held",
+    effort:!Number.isFinite(hrShift)?"unknown":hrShift<=4?"controlled":hrShift<=10?"building":"costly",
+    recoveryQuality:!recovery.length||!Number.isFinite(recoveryDrop)?"unknown":recoveryDrop>=10?"good":recoveryDrop>=5?"adequate":"limited",
+    recoveryDemand:recoveryRatio==null?"unknown":recoveryRatio>=.72?"generous":recoveryRatio<=.48?"tight":"balanced"};
 }
-function atlasK32PaceRange(session){
-  const t=session?.targetPace||{},p=Number(t.paceSecKm),fast=Number(t.fastSecKm),slow=Number(t.slowSecKm);
-  if(fast>0&&slow>0)return{fast:Math.min(fast,slow),slow:Math.max(fast,slow)};
-  if(p>0)return{fast:p,slow:p};return null;
+function atlasI33History(a){
+  if(!isRun(a))return null;const comps=atlasV097ComparableRuns(a,{sameKind:true,days:180,paceTolerance:.20}).slice(0,8);if(comps.length<3)return null;
+  const pace=Number(activityPaceSecKm(a)),hr=Number(activityHr(a)),paceMed=atlasV097MedianMetric(comps,activityPaceSecKm),hrMed=atlasV097MedianMetric(comps,activityHr);if(!(pace>0&&hr>0&&paceMed>0&&hrMed>0))return null;
+  const pd=pace-paceMed,hd=hr-hrMed;if((pd<=-5&&hd<=2)||(Math.abs(pd)<=8&&hd<=-4))return{status:"better"};if(pd>=8&&hd>=4)return{status:"costlier"};return{status:"usual"};
 }
-function atlasK32RunKind(a,match){
-  if(trainingEngineIsCompetitionRun(a))return"race";
-  if(trainingEngineIsRaceOrTestRun(a))return"test";
-  const text=atlasV093NormText(`${activityName(a)} ${match?.session?.family||""} ${match?.session?.name||""}`);
-  if(/recuperacion|recovery/.test(text))return"recovery";
-  if(/tirada larga|long run/.test(text))return"long";
-  if(/umbral|tempo/.test(text))return"threshold";
-  if(/vo2|series|interval|fartlek|repeticion|ritmo 5k|ritmo 10k/.test(text)||/\bx\s*\(/.test(String(activityName(a)||"")))return"interval";
-  if(/facil|easy/.test(text))return"easy";
-  if(/aerobico|aerobic/.test(text))return"aerobic";
-  return"steady";
+function atlasI33PlanFit(a,interval){
+  const match=atlasV140PlanSessionMatch(a);if(!match?.session)return{match:null,intensity:"unknown",dose:"unknown"};const range=atlasV140PaceRange(match.session),actual=interval?.meanPace||Number(activityPaceSecKm(a)),actualD=Number(activityDistanceM(a)),plannedD=Number(match.session.distanceM);let intensity="unknown",dose="unknown";
+  if(range&&actual>0){if(actual<range.fast-5)intensity="harder";else if(actual>range.slow+7)intensity="easier";else intensity="aligned";}
+  if(actualD>0&&plannedD>0){const ratio=actualD/plannedD;if(ratio<.85)dose="short";else if(ratio>1.15)dose="long";else dose="aligned";}
+  return{match,intensity,dose};
 }
-function atlasK32PlanMatch(a){
-  const plan=activeTrainingPlan?.();if(!plan)return null;const schedule=atlasV0814EffectiveSchedule(plan),published=atlasV096ActivityPlanMatch(a);
-  if(published){const key=atlasV096PlanEventKey(plan,published.event),found=key?atlasV096SessionByKey(schedule,key):null;if(found)return{plan,event:published.event,session:found.session,mode:published.mode||"published"};}
-  const date=activityDate(a),day=(schedule?.days||[]).find(d=>d.date===date);if(!day)return null;
-  const sport=atlasV093SportFamily(activityType(a)),actualD=Number(activityDistanceM(a)),actualT=Number(activityElapsedSec(a));let best=null,bestScore=-1e9;
-  for(const session of day.sessions||[]){const sessionSport=atlasV093SportFamily(trainingEngineSessionType(session.family));if(sessionSport!==sport)continue;let score=10;const plannedD=Number(session.distanceM),plannedT=Number(session.durationSec);
-    if(actualD>0&&plannedD>0)score-=Math.abs(actualD/plannedD-1)*8;else if(actualT>0&&plannedT>0)score-=Math.abs(actualT/plannedT-1)*5;
-    if(sport==="run"){const family=atlasV093NormText(`${session.family||""} ${session.name||""}`),kind=atlasK32RunKind(a,{session});if((kind==="recovery"&&/recuper/.test(family))||(kind==="easy"&&/facil/.test(family))||(kind==="aerobic"&&/aerob/.test(family))||(kind==="long"&&/tirada/.test(family))||(kind==="threshold"&&/umbral|tempo/.test(family))||(kind==="interval"&&/interval|vo2|5k|10k|serie|ritmo/.test(family)))score+=3;}
-    if(score>bestScore){bestScore=score;best=session;}
+function atlasI33Type(a){
+  if(trainingEngineIsCompetitionRun(a))return"race";if(trainingEngineIsRaceOrTestRun(a))return"test";const name=atlasV093NormText(activityName(a));if(/recuperacion|recovery/.test(name))return"recovery";const kind=atlasV097RunKind(a);return kind==="race"?"test":kind;
+}
+function atlasI33Terrain(a){const km=(Number(activityDistanceM(a))||0)/1000,gain=Number(activityElevation(a));if(!(km>0&&Number.isFinite(gain)&&gain>0))return"unknown";const density=gain/km;return density>=20?"hilly":density>=10?"rolling":"flat";}
+function atlasI33PlanWeek(plan,date){
+  const groups=[plan?.engine?.prescriptionCore?.schedule?.weeks,plan?.engine?.macroPlan?.weeks,plan?.engine?.weeklySkeleton?.weeks].filter(Array.isArray);for(const weeks of groups){const hit=weeks.find(w=>String(w?.start||"")<=date&&String(w?.end||"")>=date);if(hit)return hit;}return null;
+}
+function atlasI33PlanContext(a,fit){
+  const plan=typeof activeTrainingPlan==="function"?activeTrainingPlan():null,today=fmtDate(new Date()),date=activityDate(a);if(!plan||!date||!plan.startDate||!plan.raceDate)return null;
+  if(today<plan.startDate||today>plan.raceDate||date<plan.startDate||date>plan.raceDate)return null;
+  const week=atlasI33PlanWeek(plan,date),phase=String(week?.phase||"").toLowerCase(),phaseLabel=({preparation:"preparación",development:"desarrollo",specific:"fase específica",taper:"taper"})[phase]||"fase actual";
+  return{plan,week,phase,phaseLabel,match:fit?.match||null};
+}
+function atlasI33Evidence(a){
+  const type=atlasI33Type(a),laps=atlasI33Laps(a),pacing=atlasI33Pacing(a,laps),interval=atlasI33Intervals(a,laps),plan=atlasI33PlanFit(a,interval),history=atlasI33History(a),rpe=Number(activityRpe(a));
+  return{a,type,laps,pacing,interval,plan,planContext:atlasI33PlanContext(a,plan),history,terrain:atlasI33Terrain(a),rpe:Number.isFinite(rpe)?rpe:null};
+}
+function atlasI33Hash(text){let h=2166136261;for(const c of String(text||"")){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;}
+function atlasI33Ordinal(a,scope="run"){
+  const target=String(a?.id||""),rows=(currentActivities||[]).filter(x=>isRun(x)).slice().sort((x,y)=>activityStamp(x).localeCompare(activityStamp(y))||String(x.id).localeCompare(String(y.id)));let filtered=rows;
+  if(scope.startsWith("type:")){const t=scope.slice(5);filtered=rows.filter(x=>atlasI33Type(x)===t);}const idx=filtered.findIndex(x=>String(x?.id||"")===target);return idx>=0?idx:0;
+}
+function atlasI33Variant(a,salt,items,scope="run"){
+  const list=(items||[]).filter(Boolean);if(!list.length)return"";const index=(atlasI33Ordinal(a,scope)+atlasI33Hash(salt))%list.length;return list[index];
+}
+function atlasI33Story(id,confidence="high"){return{id,confidence};}
+function atlasI33SelectStory(e){
+  const p=e.pacing,i=e.interval,fit=e.plan,h=e.history,r=e.rpe;
+  if(e.type==="recovery"){if(p?.cardiac==="drifting"||p?.finish==="fading"||(r!=null&&r>=6))return atlasI33Story("recovery_costly");if(h?.status==="costlier")return atlasI33Story("recovery_not_absorbed");return atlasI33Story("recovery_clean");}
+  if(e.type==="easy"){if(fit.intensity==="harder"||(r!=null&&r>=7))return atlasI33Story("easy_too_hard");if(p?.cardiac==="drifting"&&["held","slightly_fading","fading"].includes(p.finish))return atlasI33Story("easy_drift");if(p?.finish==="fading")return atlasI33Story("easy_fade");if(p&&["high","good"].includes(p.stability)&&p.cardiac==="stable")return atlasI33Story(h?.status==="better"?"easy_economy":"easy_clean");if(h?.status==="costlier")return atlasI33Story("easy_costlier");return atlasI33Story("easy_neutral","medium");}
+  if(e.type==="long"){if(p?.finish==="fading"&&p.cardiac==="drifting")return atlasI33Story("long_durability_limit");if(p?.cardiac==="drifting"&&["held","slightly_fading"].includes(p.finish))return atlasI33Story("long_cardiac_drift");if(p?.finish==="stronger"&&p.cardiac!=="drifting")return atlasI33Story("long_strong_finish");if(p&&["high","good"].includes(p.stability)&&p.cardiac==="stable")return atlasI33Story(h?.status==="better"?"long_economy":"long_durable");if(r!=null&&r>=8)return atlasI33Story("long_expensive");return atlasI33Story("long_mixed","medium");}
+  if(e.type==="interval"||e.type==="threshold"){
+    if(!i)return atlasI33Story(e.type==="threshold"?"threshold_no_detail":"interval_no_detail","medium");if(fit.intensity==="harder"&&i.effort==="costly")return atlasI33Story(e.type==="threshold"?"threshold_overcooked":"interval_overcooked");if(i.finish==="fading")return atlasI33Story(e.type==="threshold"?"threshold_fade":"interval_fade");
+    if(e.type==="interval"&&["excellent","good"].includes(i.consistency)&&["held","stronger"].includes(i.finish)&&i.effort!=="costly"){if(i.recoveryDemand==="generous")return atlasI33Story("interval_repeatable_generous");if(i.recoveryDemand==="tight")return atlasI33Story("interval_repeatable_tight");return atlasI33Story(i.finish==="stronger"?"interval_strong_finish":"interval_repeatable");}
+    if(e.type==="threshold"&&["excellent","good"].includes(i.consistency)&&["held","stronger"].includes(i.finish)&&i.effort!=="costly")return atlasI33Story(i.finish==="stronger"?"threshold_progressive_control":"threshold_sustainable");if(i.recoveryQuality==="limited")return atlasI33Story("interval_recovery_limited");if(h?.status==="better")return atlasI33Story(e.type==="threshold"?"threshold_form":"interval_form");return atlasI33Story(e.type==="threshold"?"threshold_mixed":"interval_mixed","medium");
   }
-  return best&&bestScore>=5?{plan,event:null,session:best,mode:"local"}:null;
+  if(e.type==="race"||e.type==="test"){const prefix=e.type==="race"?"race":"test";if(p?.finish==="fading"&&p.cardiac==="drifting")return atlasI33Story(`${prefix}_durability`);if(p?.finish==="stronger")return atlasI33Story(`${prefix}_negative_split`);if(p&&["high","good"].includes(p.stability))return atlasI33Story(h?.status==="better"?`${prefix}_form`:`${prefix}_well_managed`);if(h?.status==="costlier")return atlasI33Story(`${prefix}_costly`);return atlasI33Story(`${prefix}_irregular`,"medium");}
+  if(p?.finish==="stronger"&&p.cardiac!=="drifting")return atlasI33Story("steady_progressive");if(p?.finish==="fading"&&p.cardiac==="drifting")return atlasI33Story("steady_durability");if(p&&["high","good"].includes(p.stability)&&p.cardiac!=="drifting")return atlasI33Story(h?.status==="better"?"steady_economy":"steady_control");if(h?.status==="costlier")return atlasI33Story("steady_costly");return atlasI33Story("steady_mixed","medium");
 }
-function atlasK32FormatRange(range){return range?`${formatPaceValue(range.fast)}–${formatPaceValue(range.slow)} min/km`:"";}
-function atlasK32PlanSentence(a,match,kind,interval){
-  if(!match?.session||!isRun(a))return"";const session=match.session,name=String(session.name||session.family||"entrenamiento").trim(),actualD=Number(activityDistanceM(a)),plannedD=Number(session.distanceM),range=atlasK32PaceRange(session),quality=kind==="interval"||kind==="threshold",actualPace=quality?Number(interval?.meanPace):Number(activityPaceSecKm(a)),parts=[],issues=[];
-  if(actualD>0&&plannedD>0){const ratio=actualD/plannedD;if(ratio>=.95&&ratio<=1.05)parts.push(`${formatNatural(actualD/1000,1)} km`);else{parts.push(`${formatNatural(actualD/1000,1)} km frente a ${formatNatural(plannedD/1000,1)} km previstos`);issues.push("distance");}}
-  if(range&&actualPace>0){const tol=3;if(actualPace>=range.fast-tol&&actualPace<=range.slow+tol)parts.push(`${quality?"bloque principal":"ritmo medio"} a ${formatPaceValue(actualPace)} min/km dentro de ${atlasK32FormatRange(range)}`);else if(actualPace<range.fast-tol){parts.push(`${quality?"bloque principal":"ritmo medio"} ${Math.round(range.fast-actualPace)} s/km más rápido que el rango ${atlasK32FormatRange(range)}`);issues.push("pace");}else{parts.push(`${quality?"bloque principal":"ritmo medio"} ${Math.round(actualPace-range.slow)} s/km más lento que el rango ${atlasK32FormatRange(range)}`);issues.push("pace");}}
-  if(!parts.length)return"";return`${issues.length?"Ejecución distinta":"Ejecución ajustada"} a «${name}»: ${parts.join("; ")}.`;
-}
-function atlasK32IntervalSentence(interval){
-  if(!interval||interval.count<3)return"";const shift=Number(interval.paceShift),cv=Number(interval.cv);
-  if(Number.isFinite(shift)&&shift>=6)return`En el bloque principal, la última repetición fue ${Math.round(shift)} s/km más lenta que la primera.`;
-  if(Number.isFinite(shift)&&shift<=-6)return`En el bloque principal, la última repetición fue ${Math.round(Math.abs(shift))} s/km más rápida que la primera.`;
-  if(Number.isFinite(cv)&&cv<=1.8)return`Las ${interval.count} repeticiones fueron muy regulares: la dispersión del ritmo fue ${formatNatural(cv,1)}%.`;
-  if(Number.isFinite(cv)&&cv>=4)return`Las ${interval.count} repeticiones mostraron una dispersión de ritmo alta (${formatNatural(cv,1)}%).`;
-  return"";
-}
-function atlasK32EnduranceSentence(a,kind,halves){
-  if(!halves)return"";const paceShift=Number(halves.paceShift),hrShift=Number(halves.hrShift);
-  if(Number.isFinite(hrShift)&&hrShift>=8&&Number.isFinite(paceShift)&&Math.abs(paceShift)<=6)return`La FC aumentó ${Math.round(hrShift)} ppm entre mitades sin un cambio material de ritmo.`;
-  if(Number.isFinite(paceShift)&&paceShift>=10)return`La segunda mitad fue ${Math.round(paceShift)} s/km más lenta que la primera${Number.isFinite(hrShift)&&hrShift>=6?`, con ${Math.round(hrShift)} ppm más de FC`:""}.`;
-  if(Number.isFinite(paceShift)&&paceShift<=-10)return`La segunda mitad fue ${Math.round(Math.abs(paceShift))} s/km más rápida que la primera.`;
-  const rpe=Number(activityRpe(a));if(["recovery","easy"].includes(kind)&&Number.isFinite(rpe)&&rpe>=7)return`El RPE fue ${Math.round(rpe)}/10, alto para una sesión de ${kind==="recovery"?"recuperación":"rodaje fácil"}.`;
-  return"";
-}
-function atlasK32ComparableRuns(a,kind){
-  const date=activityDate(a),pace=Number(activityPaceSecKm(a));if(!date||!isRun(a))return[];
-  return(currentActivities||[]).filter(x=>{
-    if(x===a||!isRun(x))return false;const xd=activityDate(x),age=atlasV096DaysBetween(xd,date);if(!xd||age==null||age<=0||age>180)return false;
-    if(atlasK32RunKind(x,null)!==kind)return false;const p=Number(activityPaceSecKm(x));return !(pace>0&&p>0)||Math.abs(p-pace)/pace<=.12;
-  }).sort((x,y)=>activityDate(y).localeCompare(activityDate(x))).slice(0,8);
-}
-function atlasK32ComparableSentence(a){
-  if(!isRun(a))return"";const kind=atlasK32RunKind(a,null),comps=atlasK32ComparableRuns(a,kind);if(comps.length<3)return"";
-  const pace=Number(activityPaceSecKm(a)),hr=Number(activityHr(a)),paceMed=atlasK32Median(comps.map(activityPaceSecKm)),hrMed=atlasK32Median(comps.map(activityHr));if(!(pace>0&&hr>0&&paceMed>0&&hrMed>0))return"";
-  const pd=pace-paceMed,hd=hr-hrMed;
-  if(Math.abs(pd)<=6&&hd<=-4)return`A ritmo comparable, la FC media fue ${Math.round(Math.abs(hd))} ppm menor que la mediana de ${comps.length} sesiones similares.`;
-  if(Math.abs(pd)<=6&&hd>=5)return`A ritmo comparable, la FC media fue ${Math.round(hd)} ppm mayor que la mediana de ${comps.length} sesiones similares.`;
-  if(pd<=-5&&hd<=2)return`Frente a ${comps.length} sesiones similares, el ritmo fue ${Math.round(Math.abs(pd))} s/km más rápido con una FC media equivalente o menor.`;
-  if(pd>=8&&hd>=4)return`Frente a ${comps.length} sesiones similares, el ritmo fue ${Math.round(pd)} s/km más lento y la FC media ${Math.round(hd)} ppm mayor.`;
-  return"";
-}
-function atlasK32ActivityAnalysis(a){
-  if(!a||!isRun(a))return"";const match=atlasK32PlanMatch(a),kind=atlasK32RunKind(a,match),rows=atlasK32Rows(a),interval=(kind==="interval"||kind==="threshold")?atlasK32Intervals(rows):null,halves=rows.length>=3?atlasK32Halves(rows):null,out=[];
-  const plan=atlasK32PlanSentence(a,match,kind,interval);if(plan)out.push(plan);
-  let secondary="";
-  if(kind==="interval"||kind==="threshold")secondary=atlasK32IntervalSentence(interval);
-  else secondary=atlasK32EnduranceSentence(a,kind,halves);
-  if(!secondary)secondary=atlasK32ComparableSentence(a);
-  if(secondary&&secondary!==plan)out.push(secondary);
-  return out.slice(0,ATLAS_K32_ACTIVITY_ANALYSIS.maxSentences).join(" ");
-}
-function atlasK32RenderActivityAnalysis(a){
-  const section=atlasV096EnsureLocalAnalysis(),text=$("activityLocalAnalysisText"),analysis=atlasK32ActivityAnalysis(a);atlasV097PlaceLocalAnalysis();section.classList.toggle("hidden",!analysis);if(text){text.textContent=analysis;text.innerHTML=esc(analysis);}return analysis;
-}
-atlasV096LocalActivityAnalysis=function(a){return atlasK32ActivityAnalysis(a);};
-atlasV096RenderLocalActivityAnalysis=function(a){return atlasK32RenderActivityAnalysis(a);};
-requestActivityAiInsight=async function(){if(currentActivityDetail)return atlasK32RenderActivityAnalysis(currentActivityDetail);};
 
-/* Dinámicas: K3.2 conserva las métricas y elimina cualquier segundo análisis narrativo. */
-function renderActivityRunningDynamics(a){
-  const section=atlasV0810EnsureRunningDynamics(),grid=$("activityRunningDynamicsGrid"),rows=atlasV0810RunningDynamicsRows(a);section.querySelector(".activity-running-dynamics-title")?.remove();section.querySelector(".activity-running-dynamics-note")?.remove();section.querySelector(".activity-running-dynamics-comment")?.remove();section.classList.toggle("hidden",!rows.length);if(grid)grid.innerHTML=rows.map(r=>atlasV0810Metric(...r)).join("");
+const atlasI33PrimaryBank=Object.freeze({
+ recovery_clean:["Recuperación bien ejecutada. La sesión se mantiene lo bastante ligera como para facilitar la asimilación de la carga anterior y llegar con más margen al siguiente estímulo importante.","El rodaje cumple su función de descargar: deja movimiento y continuidad sin convertirse en otro entrenamiento que haya que recuperar después.","Día suave bien resuelto. La sensación global es de control y de poco desgaste, exactamente lo que interesa cuando la prioridad es absorber trabajo previo."],
+ recovery_costly:["La recuperación no ha salido realmente suave. El esfuerzo va creciendo y el cuerpo parece seguir arrastrando carga; en un día así conviene reducir más antes que defender el ritmo.","El organismo todavía no estaba preparado para tratar este rodaje como recuperación. La señal útil es la falta de margen, no el ritmo conseguido.","La sesión termina costando más de lo que corresponde a un día de descarga. Conviene interpretarlo como fatiga pendiente y proteger la siguiente sesión importante."],
+ recovery_not_absorbed:["Un esfuerzo que normalmente debería resultar sencillo está pidiendo más de lo habitual. La lectura encaja mejor con recuperación incompleta que con una pérdida de forma.","La sesión sale más pesada que otras recuperaciones comparables. Antes de extraer conclusiones sobre rendimiento, conviene dejar que la carga acumulada termine de asentarse."],
+ easy_clean:["Rodaje fácil bien ejecutado: cómodo, estable y sin una factura creciente al final. Suma base aeróbica sin gastar recursos que pertenecen a los días de calidad.","La sesión mantiene el carácter fácil de principio a fin. Ese control permite acumular volumen útil sin convertir cada salida en un estímulo exigente.","Buen rodaje de base. El esfuerzo queda contenido y termina con margen, que es precisamente lo que hace repetible este tipo de trabajo."],
+ easy_economy:["El rodaje sale fácil y además aparece una economía mejor que la habitual. La mejora es relevante porque llega sin necesidad de convertir el día en un entrenamiento rápido.","La señal positiva está en la soltura: un esfuerzo conocido se resuelve con menos exigencia que en referencias comparables. Es progreso aeróbico útil y sostenible.","Hay una mejora de eficiencia sin aumentar la exigencia de la sesión. Esa combinación tiene más valor para la base que cualquier pico puntual de velocidad."],
+ easy_drift:["El rodaje empieza cómodo, pero la segunda mitad exige cada vez más para sostener algo que debería seguir siendo fácil. La prioridad es recuperar margen al final, no correr más deprisa.","Por fuera la sesión parece estable; por dentro se va encareciendo. En un día fácil esa deriva pesa más que el ritmo y señala que faltó algo de frescura o de resistencia aeróbica ese día.","El carácter fácil se va perdiendo con el paso de los kilómetros. Conviene proteger mejor la comodidad final para que el rodaje cumpla su función sin dejar fatiga innecesaria."],
+ easy_fade:["La sesión pierde soltura según avanza. En un rodaje fácil no hace falta rescatar el ritmo: resulta más útil aceptar la fatiga del día y conservar el bajo coste del entrenamiento.","La parte final ya no tiene la misma facilidad que el inicio. La corrección no pasa por apretar, sino por terminar estos días con más reserva."],
+ easy_too_hard:["El rodaje se ha ido por encima de su función. La capacidad para correr más fuerte está ahí, pero usarla en un día fácil resta margen a las sesiones que sí deben exigir.","Un día pensado para sumar sin desgaste termina convirtiéndose en otro estímulo. Conviene separar mejor los objetivos: fácil debe seguir siendo fácil para que la calidad pueda ser realmente buena.","La sesión añade más exigencia de la necesaria. El problema no es poder sostenerla, sino el coste que deja para lo que viene después."],
+ easy_costlier:["Hoy un esfuerzo normalmente sencillo ha pedido más de lo habitual. La lectura apunta al contexto de recuperación del día más que a un cambio real de capacidad.","El rodaje sale algo más caro que tus referencias. Conviene vigilar la recuperación y la carga reciente antes de interpretar esta sesión como una señal de forma."],
+ easy_neutral:["El rodaje cumple su función sin dejar una señal especialmente fuerte, y eso es suficiente. Los días fáciles no necesitan demostrar nada para ser útiles.","Sesión correcta y repetible. No aparece una conclusión importante que justifique cargarla de significado; simplemente suma continuidad con poco desgaste."],
+ long_durability_limit:["La limitación aparece cuando la tirada ya pesa: aumenta el esfuerzo y la ejecución empieza a ceder. El siguiente avance está en conservar al final el mismo control que existe al principio.","Hay resistencia para completar la tirada, pero todavía falta margen para que la parte final siga teniendo la misma calidad. Antes de añadir más carga, conviene consolidar esa durabilidad.","La tirada expone un punto claro de mejora: cuando se acumula fatiga, cuesta sostener la misma respuesta. La prioridad es llegar al último tramo con más reserva, no endurecerlo todavía más."],
+ long_cardiac_drift:["La tirada se sostiene, pero el cuerpo necesita cada vez más esfuerzo para mantenerla. Es una señal de durabilidad todavía mejorable: primero conviene reducir esa deriva y después aumentar la exigencia.","La ejecución aguanta por fuera, aunque fisiológicamente va costando más. El objetivo siguiente es que el tramo final se parezca más al inicial en control y economía.","La resistencia permite mantener el trabajo, pero no todavía con el mismo margen de principio a fin. Esa diferencia es ahora más importante que añadir kilómetros o ritmo."],
+ long_strong_finish:["Muy buena gestión de la tirada. El final todavía tiene respuesta, señal de que la dosificación ha sido correcta y de que la fatiga acumulada no termina dominando la sesión.","La parte final confirma una buena durabilidad: después de acumular tiempo de carrera aún queda capacidad para responder sin desordenar la sesión.","La tirada termina mejor de lo que empieza a pesar. Esa reserva final habla bien tanto de la gestión como de la capacidad para sostener trabajo prolongado."],
+ long_durable:["Tirada sólida y estable. La fatiga no cambia de forma relevante la ejecución y el tramo final sigue pareciendo entrenamiento, no supervivencia.","La sesión mantiene el control cuando el tiempo de carrera empieza a contar. Esa estabilidad es una buena base para introducir trabajo más específico más adelante.","La durabilidad responde bien: el esfuerzo no se desordena y la parte final conserva el carácter previsto de la tirada."],
+ long_economy:["La tirada se sostiene con una eficiencia mejor que en referencias habituales. Es especialmente valioso porque la mejora aparece cuando la duración debería empezar a penalizar.","Hay una señal de progreso importante en la economía de la tirada: se mantiene el trabajo prolongado con menos exigencia relativa que antes."],
+ long_expensive:["La tirada deja más fatiga de la necesaria para el estímulo buscado. Conviene repetir una carga similar con más margen antes de aumentar duración o intensidad.","El entrenamiento cumple volumen, pero termina demasiado cerca del límite. La siguiente progresión debería venir de una mejor tolerancia a esta misma carga, no de añadir más."],
+ long_mixed:["La tirada suma resistencia, aunque no deja una señal dominante suficientemente clara. Conviene valorar la tendencia de varias semanas antes de cambiar la progresión por una sola sesión.","Sesión útil pero poco concluyente: hay trabajo acumulado sin un patrón claro de mejora o deterioro. La evolución de las próximas tiradas dará una lectura más fiable."],
+ threshold_no_detail:["El trabajo sostenido aporta estímulo, pero faltan vueltas suficientemente claras para juzgar bien cómo se comporta el bloque principal. Conviene evitar conclusiones finas con datos incompletos.","La sesión puede valorarse en conjunto, pero no hay suficiente detalle del bloque para separar control, deriva y respuesta final con fiabilidad."],
+ threshold_overcooked:["El trabajo de umbral se ha ido por encima de la intención. Cuando el esfuerzo deja de ser sostenible, el estímulo se acerca más a tolerar fatiga que a mejorar la capacidad de sostener intensidad.","La sesión cruza la frontera entre trabajo controlado y esfuerzo demasiado agresivo. Para que el umbral sea productivo, conviene terminar con sensación de control, no de haber vaciado el depósito."],
+ threshold_fade:["El bloque empieza bien, pero pierde calidad al final. Eso indica que la intensidad o la dosis estaban ligeramente por encima de lo sostenible hoy.","La parte final del umbral deja de parecerse a la inicial. El objetivo es sostener el mismo nivel con control; cuando eso se rompe, conviene ajustar antes el estímulo que forzar el cierre."],
+ threshold_progressive_control:["Muy buen trabajo de umbral: el bloque gana solidez según avanza sin convertirse en un esfuerzo descontrolado. Hay margen y capacidad para sostener intensidad con criterio.","La sesión progresa sin romper el carácter sostenible del trabajo. Esa combinación de control y capacidad final es una señal positiva para esfuerzos largos."],
+ threshold_sustainable:["El umbral está bien calibrado: el esfuerzo se mantiene estable y las últimas repeticiones conservan la misma calidad. El estímulo trabaja sostenibilidad, no supervivencia.","Sesión de umbral bien resuelta. La intensidad parece exigente pero repetible, que es justo la zona donde este tipo de trabajo aporta más.","La calidad se mantiene de principio a fin sin una caída clara. Eso indica que la dosis está bien ajustada para desarrollar resistencia a ritmos altos."],
+ threshold_form:["El trabajo sostenido sale con más soltura que en referencias comparables. Es una señal útil de forma porque aparece en una intensidad exigente y mantenida.","Hay una mejora de eficiencia en un esfuerzo sostenido que normalmente deja poco margen. Esa respuesta respalda una evolución positiva de la capacidad aeróbica alta."],
+ threshold_mixed:["El trabajo aporta estímulo, aunque la respuesta no es lo bastante limpia como para concluir si la limitación está en intensidad, recuperación o acumulación de fatiga.","Sesión exigente con señales mezcladas. Conviene observar el siguiente trabajo similar antes de modificar ritmos o dosis por esta única referencia."],
+ interval_no_detail:["La sesión de calidad está completada, pero el detalle disponible no permite separar con fiabilidad repeticiones y recuperaciones. Conviene no inventar una lectura fina donde faltan datos.","Hay estímulo de calidad, aunque no suficiente información estructurada para juzgar repetibilidad, recuperación y respuesta final con precisión."],
+ interval_overcooked:["Las series han terminado demasiado cerca del límite. La velocidad está disponible, pero el estímulo pierde calidad cuando cada repetición exige defenderse de la anterior.","El trabajo rápido se ha endurecido más de lo necesario. La prioridad es conservar calidad repetible, no demostrar el máximo nivel posible en cada sesión."],
+ interval_fade:["Las primeras repeticiones están por encima de lo que después puede sostenerse. La sesión habría sido más útil con una salida ligeramente más contenida y un bloque final de mayor calidad.","La calidad se deteriora en las últimas repeticiones. Eso apunta a una combinación de intensidad inicial y recuperación que hoy no permitía repetir el esfuerzo con suficiente control.","La sesión empieza con más ambición de la que puede mantener al final. El ajuste más útil sería proteger la regularidad antes que buscar una primera repetición más rápida."],
+ interval_strong_finish:["Muy buena sesión de calidad: las últimas repeticiones mantienen o mejoran el nivel cuando ya hay fatiga. Eso habla de control y de una intensidad bien elegida.","El bloque termina con respuesta, no con supervivencia. La velocidad se sostiene cuando el trabajo ya pesa, una señal clara de buena asimilación.","Las repeticiones finales conservan calidad y todavía permiten progresar. Esa reserva es más valiosa que una salida especialmente rápida."],
+ interval_repeatable:["Las series están bien resueltas: las últimas conservan la misma calidad que las primeras. El ritmo parece bien elegido y el estímulo trabaja repetibilidad, no sólo tolerancia al esfuerzo.","La sesión mantiene un nivel homogéneo de principio a fin. Esa regularidad indica que la intensidad permite acumular trabajo rápido con calidad.","Buen bloque de series. No hay una caída apreciable cuando aparece fatiga, señal de que el entrenamiento está bien dimensionado."],
+ interval_repeatable_generous:["Las series mantienen muy buena calidad, aunque las recuperaciones dejan bastante margen entre esfuerzos. La lectura positiva es el control; todavía no conviene atribuir toda la regularidad a una mejora de resistencia específica.","El bloque sale limpio y estable, pero con recuperaciones suficientemente amplias como para facilitar mucho cada repetición. Es una buena sesión de velocidad; la repetibilidad debe confirmarse cuando la recuperación sea más exigente.","La calidad se mantiene de principio a fin, con una ayuda importante de las recuperaciones. El estímulo está bien ejecutado, aunque no mide todavía toda la capacidad para encadenar esfuerzos con poco margen."],
+ interval_repeatable_tight:["La regularidad tiene especial valor porque las recuperaciones son exigentes. Mantener la calidad con poco margen entre esfuerzos habla de una buena capacidad para repetir intensidad.","Las series se sostienen sin caída pese a una recuperación ajustada. Esa combinación señala que el trabajo rápido se está asimilando bien y que la fatiga entre repeticiones no domina la sesión.","Muy buena repetibilidad: la calidad no se rompe aun cuando el descanso obliga a volver a trabajar pronto. Es una señal más sólida que simplemente correr rápido con recuperaciones amplias."],
+ interval_recovery_limited:["El principal límite de la sesión aparece entre repeticiones: la recuperación no devuelve suficiente margen y cada nuevo esfuerzo empieza algo más comprometido.","La calidad del trabajo está condicionada por una recuperación incompleta entre esfuerzos. Antes de subir la velocidad, conviene conseguir que cada repetición empiece en mejores condiciones."],
+ interval_form:["La calidad sale con más soltura que en sesiones comparables. Es una señal de forma útil porque aparece justo cuando toca producir intensidad y repetirla.","El trabajo rápido se resuelve con mejor relación entre rendimiento y esfuerzo que en referencias recientes. Eso respalda una adaptación positiva al estímulo de calidad."],
+ interval_mixed:["La sesión suma calidad, aunque no deja una señal dominante clara sobre control, recuperación o fatiga. Conviene usarla como una pieza más de la tendencia, no como una conclusión aislada.","Hay buen trabajo realizado, pero la respuesta es demasiado mixta para señalar una única fortaleza o limitación. La siguiente sesión comparable será más informativa."],
+ steady_progressive:["El rodaje sostenido está bien gestionado y termina con capacidad de progresar sin perder control. La intensidad parece bien dosificada y queda reserva para cerrar con calidad.","La sesión construye intensidad de forma ordenada y termina con respuesta. Es un buen ejemplo de esfuerzo sostenido sin convertir el final en una lucha."],
+ steady_durability:["La sesión sostenida pierde control cuando se acumula fatiga. El margen de mejora está en mantener la misma economía durante más tiempo, no en elevar el ritmo inicial.","El esfuerzo empieza estable, pero la parte final ya exige demasiado para sostener la misma calidad. La prioridad es ampliar la duración del control antes que subir la intensidad."],
+ steady_economy:["El esfuerzo sostenido sale con más soltura que en referencias comparables. Esa economía indica que la base está trasladándose a ritmos moderados con menos desgaste.","Hay una mejora útil de eficiencia en un trabajo continuo. El progreso aparece sin necesidad de convertir la sesión en un test."],
+ steady_control:["Rodaje sostenido bien resuelto: el esfuerzo mantiene orden y estabilidad sin una deriva relevante. La intensidad parece adecuada para acumular trabajo de calidad aeróbica.","La sesión mantiene un esfuerzo continuo con buen control. No hace falta endurecerla para que sea productiva; la consistencia ya aporta el estímulo buscado."],
+ steady_costly:["El esfuerzo sostenido pide más de lo habitual para una sesión comparable. Conviene revisar recuperación y carga acumulada antes de interpretarlo como un cambio de capacidad.","La sesión sale algo más pesada que tus referencias a intensidad parecida. La lectura más prudente es contextual hasta comprobar cómo responde el siguiente entrenamiento."],
+ steady_mixed:["La sesión suma trabajo sostenido, pero no ofrece una señal dominante suficientemente clara. La tendencia de las próximas sesiones será más útil que forzar una conclusión hoy.","Trabajo útil pero poco concluyente: no aparece un patrón suficientemente claro de mejora, deterioro o limitación principal."],
+ race_durability:["La carrera se decide en la parte final, donde el esfuerzo sigue creciendo mientras la ejecución empieza a ceder. La oportunidad principal está en llegar a ese tramo con más durabilidad y mejor gestión.","El límite aparece cuando la carrera ya exige sostener rendimiento bajo fatiga. La velocidad inicial no parece ser el problema principal; falta conservarla durante más tiempo.","La parte final revela una pérdida de margen progresiva. El siguiente salto competitivo pasa más por durabilidad que por buscar una salida más rápida."],
+ race_negative_split:["Muy buena gestión competitiva. La segunda mitad conserva o mejora la ejecución, señal de paciencia al inicio y de reserva disponible cuando la carrera empieza a decidirse.","La carrera está bien distribuida y termina con capacidad de respuesta. Esa gestión permite que el rendimiento aparezca en el tramo donde más valor tiene.","El esfuerzo se reparte con criterio: no se gasta todo al principio y el final todavía tiene calidad. Es una señal de buena lectura de carrera."],
+ race_well_managed:["El reparto del esfuerzo está bien resuelto y la estrategia no parece ser el principal limitante. El margen de mejora está más en aumentar capacidad que en cambiar la distribución.","Carrera ordenada y estable. La ejecución permite valorar el estado físico sin que una mala gestión distorsione demasiado el resultado."],
+ race_form:["La carrera combina buena gestión con una respuesta más eficiente que en referencias recientes. Es una señal de forma relevante porque aparece en un esfuerzo competitivo completo.","El rendimiento competitivo se sostiene con mejor economía que en referencias comparables. Esa mejora tiene más valor que una diferencia aislada de ritmo."],
+ race_costly:["El resultado ha exigido más de lo habitual para un esfuerzo comparable. Antes de sacar conclusiones sobre la forma conviene separar cuánto puede venir de condiciones, recuperación o carga previa.","La carrera sale más cara de lo esperable para una referencia similar. La lectura debe quedar condicionada por el contexto hasta comprobar la recuperación y las siguientes sesiones."],
+ race_irregular:["La carrera ha sido demasiado irregular para separar con claridad capacidad física y decisiones de ritmo. Una ejecución más ordenada permitiría identificar mejor dónde está el límite real.","La variabilidad de la carrera hace difícil atribuir el resultado a una sola causa. El aprendizaje principal está en estabilizar la gestión antes de buscar conclusiones fisiológicas más finas."],
+ test_durability:["El test pierde calidad de referencia en la parte final porque el esfuerzo crece mientras la ejecución cede. La señal apunta más a durabilidad que a falta de velocidad pura.","La referencia es útil, pero el tramo final muestra que todavía cuesta sostener el nivel cuando se acumula fatiga. Ese es el aspecto que más condiciona la lectura del test."],
+ test_negative_split:["Test bien gestionado: el final conserva capacidad de mejorar la ejecución, de modo que la referencia no queda distorsionada por una salida demasiado agresiva.","La distribución del esfuerzo permite que el test termine con respuesta. Eso hace que el resultado sea una referencia bastante limpia del nivel actual."],
+ test_well_managed:["El test está controlado y ofrece una referencia fiable de la capacidad actual. La ejecución no parece haber condicionado de forma importante el resultado.","Buena gestión del test. El esfuerzo se reparte con suficiente estabilidad como para que la lectura tenga valor para orientar el entrenamiento."],
+ test_form:["El test combina buena gestión con una respuesta más eficiente que en referencias recientes. Es una señal sólida de progreso porque no depende sólo de haber salido más fuerte.","La referencia mejora y lo hace con una ejecución ordenada. Esa combinación permite interpretar el resultado como progreso con bastante más confianza."],
+ test_costly:["El test ha salido más caro de lo habitual para un esfuerzo comparable. Conviene conservarlo como referencia, pero con cautela hasta saber cuánto influyó el contexto de recuperación.","La respuesta del día parece condicionada por un coste mayor del habitual. No es una buena base para ajustar conclusiones importantes sin otra referencia cercana."],
+ test_irregular:["El test aporta información, aunque la ejecución irregular dificulta saber cuánto refleja capacidad y cuánto decisiones de ritmo. Una referencia más estable tendría más valor para ajustar el entrenamiento.","La sesión sirve como dato, pero no como medida limpia del nivel actual. La variabilidad de la ejecución introduce demasiado ruido para sacar conclusiones finas."]
+});
+function atlasI33PrimaryText(e,story){const list=atlasI33PrimaryBank[story.id]||[];return atlasI33Variant(e.a,`primary:${story.id}`,list,`type:${e.type}`);}
+function atlasI33NumericSupport(e,story){
+  const p=e.pacing,i=e.interval,id=story.id;
+  if(p&&Number.isFinite(p.hrShift)&&p.hrShift>=10&&Number.isFinite(p.paceShift)&&Math.abs(p.paceShift)<=6&&/easy_drift|long_cardiac_drift|long_durability_limit|steady_durability/.test(id))return`La relación entre mitades lo confirma: la FC sube alrededor de ${Math.round(p.hrShift)} ppm sin un cambio equivalente del ritmo.`;
+  if(i&&Number.isFinite(i.recoveryDrop)&&i.recoveryDrop>=10&&["interval_repeatable_tight","interval_strong_finish"].includes(id))return`Entre esfuerzos, la FC cae de media unos ${Math.round(i.recoveryDrop)} ppm antes de volver a trabajar; esa recuperación ayuda a sostener la calidad.`;
+  if(i&&Number.isFinite(i.paceShift)&&i.paceShift>=10&&id==="interval_fade")return`La diferencia entre la primera y la última repetición ronda los ${Math.round(i.paceShift)} s/km, suficiente para considerar la caída relevante y no una simple oscilación.`;
+  if(p&&Number.isFinite(p.paceShift)&&p.paceShift<=-8&&/race_negative_split|test_negative_split/.test(id))return`La segunda mitad resulta aproximadamente ${Math.round(Math.abs(p.paceShift))} s/km más rápida, una diferencia suficientemente clara para hablar de una gestión progresiva.`;
+  return"";
 }
+function atlasI33PlanText(e,story){
+  const c=e.planContext;if(!c)return"";const fit=e.plan||{},phase=c.phaseLabel,type=e.type,a=e.a,v=(salt,arr)=>atlasI33Variant(a,`plan:${story.id}:${salt}`,arr,`type:${type}`);
+  if(!c.match){return v("extra",[
+    `Esta actividad no coincide con una sesión prevista del plan y, por tanto, cuenta como carga añadida dentro de la ${phase}. Conviene que no comprometa el siguiente entrenamiento clave.`,
+    `Dentro del plan, esta sesión entra como trabajo extra durante la ${phase}. Su valor depende de que se absorba sin desplazar ni empeorar el estímulo prioritario que viene después.`,
+    `No estaba programada como sesión del plan. En la ${phase} actual conviene tratarla como carga adicional y ajustar expectativas del siguiente día exigente si deja fatiga residual.`
+  ]);}
+  if(fit.intensity==="harder"||fit.dose==="long")return v("hard",[
+    `Dentro del plan, la sesión ha quedado más exigente de lo previsto para esta ${phase}. La carga extra debe considerarse antes de la siguiente sesión clave, aunque el entrenamiento haya salido bien.`,
+    `La ejecución supera la intención prevista por el plan. En esta ${phase}, el punto importante es absorber ese exceso sin convertirlo en una cadena de días más duros de lo programado.`,
+    `Respecto al plan, el estímulo ha crecido por encima de lo previsto. Conviene proteger la recuperación posterior para que una buena sesión no termine alterando la progresión semanal.`
+  ]);
+  if(fit.intensity==="easier"||fit.dose==="short")return v("light",[
+    `Dentro del plan, el estímulo ha quedado algo por debajo de la prescripción. Si respondió a sensaciones o fatiga del día, puede ser una adaptación acertada; si se repite con frescura, habrá que revisar la dosis.`,
+    `La sesión aporta menos carga de la prevista en el plan. En esta ${phase} no supone un problema aislado, pero conviene comprobar que no se convierta en un patrón de trabajo insuficiente.`,
+    `Respecto a la prescripción, hoy se ha quedado algo de estímulo sin completar. Puede ser una buena decisión si protegía la recuperación; la tendencia de las próximas sesiones dirá si hace falta ajustar el plan.`
+  ]);
+  const aligned={
+    recovery:[`Dentro del plan, cumple bien la función de descargar entre estímulos. En esta ${phase}, llegar fresco a la siguiente sesión importante vale más que añadir trabajo hoy.`,`Encaja bien en el plan: aporta continuidad sin robar recuperación a lo que viene después, que es justo la función de este día dentro de la ${phase}.`],
+    easy:[`Dentro del plan, este rodaje hace exactamente el trabajo silencioso que necesita la ${phase}: sumar base sin interferir con la próxima sesión de calidad.`,`Encaja con la intención del plan. La utilidad está en acumular trabajo aeróbico con poco desgaste para llegar con margen al siguiente estímulo prioritario.`],
+    long:[`Dentro del plan, esta tirada es una pieza importante de la ${phase}. La lectura de hoy sirve para decidir si la progresión debe continuar o si antes conviene consolidar la durabilidad actual.`,`La tirada está bien situada dentro del plan: en esta ${phase}, su valor está en construir resistencia utilizable más adelante, no sólo en acumular distancia.`],
+    interval:[`Dentro del plan, esta sesión confirma cómo se está tolerando el trabajo rápido de la ${phase}. La calidad mantenida permite seguir progresando sin necesidad de acelerar la dosis por una sola buena sesión.`,`El entrenamiento encaja bien con la progresión del plan. En esta ${phase}, mantener calidad repetible importa más que buscar una sesión extraordinaria aislada.`],
+    threshold:[`Dentro del plan, este trabajo aporta una referencia directa de cuánto esfuerzo sostenido puede acumularse con control en la ${phase} actual.`,`La sesión cumple una función importante en el plan: acercar la capacidad de sostener intensidad a las demandas de la ${phase} sin convertir cada bloque en un test.`],
+    steady:[`Dentro del plan, este trabajo sostenido suma una carga intermedia útil en la ${phase}: más específica que un rodaje fácil, pero sin el coste de una sesión máxima.`,`Encaja con el plan porque añade tiempo de calidad aeróbica sin invadir el terreno de los estímulos realmente duros de la semana.`],
+    race:[`Dentro del plan, la competición ofrece una referencia especialmente útil sobre cómo se está trasladando el entrenamiento al rendimiento real. La lectura debe pesar más que una sesión ordinaria al valorar la evolución.`,`Esta carrera funciona como control de la preparación: muestra qué capacidades del plan ya están apareciendo bajo exigencia competitiva y cuál sigue siendo el principal margen de mejora.`],
+    test:[`Dentro del plan, el test aporta una referencia para comprobar si la dirección del entrenamiento es correcta sin convertir un único resultado en una orden automática de cambiar ritmos.`,`La sesión tiene valor como punto de control del plan: ayuda a contrastar la capacidad actual con la progresión prevista y a decidir si conviene mantener o ajustar el rumbo.`]
+  }[type]||[];return v("aligned",aligned);
+}
+function atlasI33SecondaryText(e,story){
+  if(e.planContext)return atlasI33PlanText(e,story);const h=e.history,i=e.interval,id=story.id,a=e.a;
+  if(h?.status==="better"&&!/economy|form/.test(id))return atlasI33Variant(a,"secondary:better",["Además, el esfuerzo sale con más soltura que en referencias comparables. Esa mejora respalda la lectura principal sin necesidad de convertir la sesión en un test.","Frente a sesiones similares, la respuesta es más económica. Es una señal secundaria, pero coherente con una adaptación positiva."],`type:${e.type}`);
+  if(h?.status==="costlier"&&!/costly|expensive|drift|durability/.test(id))return atlasI33Variant(a,"secondary:costlier",["La sesión también resulta algo más costosa que referencias comparables. Conviene interpretarlo como contexto de recuperación antes que como una pérdida de forma.","Hay un coste mayor de lo habitual para un trabajo parecido. La siguiente sesión comparable ayudará a distinguir fatiga puntual de una tendencia real."],`type:${e.type}`);
+  if(i?.recoveryQuality==="good"&&e.type==="interval"&&["interval_repeatable","interval_strong_finish"].includes(id))return atlasI33Variant(a,"secondary:recovery",["Las recuperaciones están bien calibradas: devuelven margen suficiente para mantener la calidad sin romper por completo la continuidad del estímulo.","Entre esfuerzos se recupera lo necesario para volver a correr bien. Eso favorece una sesión de calidad repetible en lugar de una acumulación desordenada de fatiga."],`type:${e.type}`);
+  return"";
+}
+function atlasI33Safe(text){return String(text||"").replace(/\s+/g," ").trim();}
+function atlasI33Review(a){
+  if(!a)return[];if(!isRun(a)){if(trainingEngineIsStrengthActivity(a))return["Sesión de fuerza completada. ɅTLɅS todavía no dispone de suficiente detalle sobre cargas, series y repeticiones para valorar la calidad del trabajo sin inventar información."];return[];}
+  const e=atlasI33Evidence(a),story=atlasI33SelectStory(e),primary=atlasI33Safe(atlasI33PrimaryText(e,story)),numeric=atlasI33Safe(atlasI33NumericSupport(e,story)),secondary=atlasI33Safe(atlasI33SecondaryText(e,story)),out=[];
+  if(primary)out.push(primary+(numeric?` ${numeric}`:""));if(secondary&&secondary!==primary)out.push(secondary);return out.slice(0,ATLAS_I33_COACH_REVIEW.maxParagraphs);
+}
+function atlasI33ReviewHtml(a){const parts=atlasI33Review(a);return parts.length?`<span class="atlas-i33-review">${parts.map(x=>`<span class="atlas-i33-thought">${esc(x)}</span>`).join("")}</span>`:"";}
+atlasV096LocalActivityAnalysis=function(a){return atlasI33ReviewHtml(a);};
+atlasV096RenderLocalActivityAnalysis=function(a){const section=atlasV096EnsureLocalAnalysis(),text=$("activityLocalAnalysisText"),analysis=atlasI33ReviewHtml(a);atlasV097PlaceLocalAnalysis();section.classList.toggle("hidden",!analysis);if(text)text.innerHTML=analysis;};
+requestActivityAiInsight=async function(){if(currentActivityDetail)atlasV096RenderLocalActivityAnalysis(currentActivityDetail);};
+
+/* Dinámicas I3.3: lectura contextual por tipo de sesión y rotación cronológica
+   para impedir que actividades próximas reciban exactamente la misma valoración. */
+function atlasI33LapDynamics(raw){
+  const cadRaw=Number(pick(raw||{},["average_cadence","avg_cadence","cadence"])),cad=cadRaw>0?(cadRaw<120?cadRaw*2:cadRaw):null,step=Number(pick(raw||{},["average_step_length","avg_step_length","step_length"])),stride=step>100?step/1000:(Number(pick(raw||{},["average_stride","avg_stride","stride_length"]))||null);
+  return{cadence:cad,gct:Number(pick(raw||{},["average_stance_time","avg_stance_time","ground_contact_time"]))||null,stride:Number(stride)>0?Number(stride):null,vr:Number(pick(raw||{},["average_vertical_ratio","avg_vertical_ratio"]))||null};
+}
+function atlasI33MechanicsSignal(a,e){
+  if(e.interval){const values=e.interval.work.map(r=>atlasI33LapDynamics(r.raw)).filter(d=>Object.values(d).some(v=>Number(v)>0));if(values.length>=2){const first=values[0],last=values.at(-1),cad=first.cadence&&last.cadence?last.cadence/first.cadence:null,stride=first.stride&&last.stride?last.stride/first.stride:null,gct=first.gct&&last.gct?last.gct/first.gct:null,vr=first.vr&&last.vr?last.vr-first.vr:null,stable=(cad==null||cad>=.985)&&(stride==null||stride>=.975)&&(gct==null||gct<=1.035)&&(vr==null||vr<=.25),improves=(gct!=null&&gct<.98)||(vr!=null&&vr<-.2)||(stride!=null&&stride>1.025),fatigues=(cad!=null&&cad<.97&&stride!=null&&stride<.95)||(gct!=null&&gct>1.05)||(vr!=null&&vr>.4),compensates=cad!=null&&stride!=null&&cad>1.01&&stride<.96;if(stable&&improves)return"speed_economy";if(fatigues)return"late_breakdown";if(compensates)return"cadence_compensation";if(stable)return"quality_stable";}}
+  const cadRaw=streamValues(currentActivityStreams,"cadence"),vel=streamValues(currentActivityStreams,"velocity_smooth");if(cadRaw.length&&vel.length){const n=Math.min(cadRaw.length,vel.length),dist=normalizedDistanceStream(streamValues(currentActivityStreams,"distance"),n),total=dist.reduce((m,v)=>Number.isFinite(Number(v))?Math.max(m,Number(v)):m,0);if(total>1000){const bucket=(lo,hi)=>{let cN=0,cD=0,sN=0,sD=0;for(let j=0;j<n;j++){const d=Number(dist[j]);if(!(d>=total*lo&&d<=total*hi))continue;let c=Number(cadRaw[j]),v=Number(vel[j]);if(!(c>0&&v>0))continue;if(c<120)c*=2;cN+=c;cD++;const stride=v*60/c;if(stride>.3&&stride<3){sN+=stride;sD++;}}return{cadence:cD?cN/cD:null,stride:sD?sN/sD:null};},first=bucket(0,.33),last=bucket(.67,1),c=first.cadence&&last.cadence?last.cadence/first.cadence:null,s=first.stride&&last.stride?last.stride/first.stride:null;if(c!=null&&s!=null&&Math.abs(c-1)<=.022&&Math.abs(s-1)<=.035)return"endurance_stable";if(c!=null&&s!=null&&c<.97&&s<.95)return"late_breakdown";if(c!=null&&s!=null&&c>1.01&&s<.96)return"cadence_compensation";}}
+  return null;
+}
+function atlasI33DynamicsHistory(a){
+  const comps=atlasV097DynamicsComparables(a);if(comps.length<3)return null;const cur=atlasV0811Dyn(a),ds=comps.map(atlasV0811Dyn),med=k=>atlasV0811Median(ds.map(x=>x[k])),g=Number(cur.gct),vr=Number(cur.vr),cad=Number(cur.cadence),stride=Number(cur.stride),gm=med("gct"),vm=med("vr"),cm=med("cadence"),sm=med("stride");
+  if(g>0&&gm>0&&vr>0&&vm>0&&g<=gm*.97&&vr<=vm*1.01)return"reactive";if(vr>0&&vm>0&&vr<=vm*.96)return"forward";if(cad>0&&cm>0&&stride>0&&sm>0&&cad>=cm*.99&&stride>=sm*1.04)return"productive";if(g>0&&gm>0&&vr>0&&vm>0&&g>=gm*1.04&&vr>=vm*1.04)return"heavy";return null;
+}
+function atlasI33DynamicsReview(a){
+  if(!isRun(a))return"";const e=atlasI33Evidence(a),signal=atlasI33MechanicsSignal(a,e),history=atlasI33DynamicsHistory(a),type=e.type,scope=`dyn:${signal||history||type}`,pick=(salt,arr)=>atlasI33Variant(a,`dyn:${salt}`,arr,"run"),bank={
+    speed_economy:{interval:["Al subir la velocidad, la técnica se organiza mejor en lugar de ponerse rígida. El gesto gana reactividad y sigue siendo eficiente, una señal positiva para el trabajo rápido.","Las repeticiones rápidas no obligan a compensar; la mecánica responde con más eficacia. La velocidad parece venir de un gesto mejor coordinado, no de forzar más.","La técnica acompaña bien al cambio de ritmo: aparece más respuesta sin perder orden. Eso da valor mecánico a la sesión, además del estímulo fisiológico."],threshold:["La mecánica se vuelve más productiva dentro del trabajo exigente sin perder control. Es una buena señal de economía a una intensidad que debe poder sostenerse.","El aumento de intensidad mejora la respuesta técnica en lugar de degradarla. Para trabajo de umbral, esa eficiencia ayuda a sostener el esfuerzo con menos tensión innecesaria."],default:["La velocidad mejora la respuesta mecánica sin introducir señales claras de desorden. El gesto rápido está saliendo de eficiencia, no de tensión extra.","Cuando aumenta el ritmo, la técnica responde de forma más limpia y reactiva. Esa adaptación es positiva siempre que siga apareciendo sin forzar conscientemente el gesto."]},
+    quality_stable:{default:["La técnica se mantiene estable durante todo el trabajo rápido. La fatiga fisiológica no termina trasladándose al gesto, así que las últimas repeticiones conservan calidad también desde el punto de vista mecánico.","La mecánica aguanta de principio a fin del bloque. No aparecen compensaciones claras cuando se acumula fatiga, una buena señal para repetir intensidad con eficiencia.","El patrón de carrera cambia muy poco entre las primeras y las últimas repeticiones. Esa estabilidad indica que la técnica tolera bien la carga de calidad." ]},
+    late_breakdown:{long:["La fatiga de la tirada termina entrando también en la técnica. No parece un defecto aislado, sino el punto en el que falta durabilidad para conservar el mismo gesto hasta el final.","En el tramo final la mecánica pierde parte de la estabilidad inicial. La prioridad no es corregir conscientemente la técnica, sino llegar a ese momento con más reserva."],default:["Cuando se acumula esfuerzo, la técnica empieza a deteriorarse. La lectura principal es de fatiga global; antes de tocar el gesto conviene mejorar la capacidad para sostenerlo bajo carga.","La parte final muestra compensaciones que no estaban al inicio. Eso señala el momento en que la fatiga empieza a condicionar la forma de correr." ]},
+    cadence_compensation:{default:["Al final aparece una compensación clara: aumenta la frecuencia mientras se acorta el paso. Es una solución funcional para seguir avanzando, pero marca el punto donde la economía empieza a caer.","La fatiga cambia la estrategia mecánica: se recurre a pasos más cortos y rápidos para sostener el ritmo. No es necesariamente malo, aunque sí indica menor margen técnico al final." ]},
+    endurance_stable:{long:["La mecánica resiste bien el paso del tiempo. Incluso cuando aumenta el esfuerzo, la forma de correr cambia muy poco; para una tirada larga, esa durabilidad técnica es una señal especialmente positiva.","La fatiga fisiológica no termina rompiendo la técnica. Mantener un gesto estable durante una tirada larga indica una buena resistencia mecánica, aunque todavía pueda quedar margen cardiovascular.","El patrón de carrera se conserva durante la tirada. Esa estabilidad permite centrar la mejora en la durabilidad fisiológica sin necesidad de introducir correcciones técnicas."],easy:["La técnica se mantiene relajada y estable durante el rodaje. No aparecen compensaciones que sugieran que un día fácil esté costando mecánicamente más de la cuenta.","El gesto permanece estable en un contexto suave, que es exactamente lo deseable: economía sin necesidad de controlar conscientemente la técnica."],default:["La mecánica se mantiene estable a medida que avanza la sesión. No aparece una palanca técnica clara que justifique intervenir; conviene conservar un patrón que ya tolera bien la fatiga.","La forma de correr cambia muy poco con el paso de la sesión. Esa estabilidad es una fortaleza y no necesita correcciones por perseguir métricas aisladas." ]},
+    reactive:{default:["Respecto al patrón habitual, el gesto aparece más reactivo sin señales de rebote extra. La lectura es de mejor economía, no de una métrica concreta que haya que perseguir.","La mecánica responde con más rapidez que en referencias comparables y sin aumentar movimientos poco útiles. Es una señal interesante de eficiencia." ]},
+    forward:{default:["La fuerza parece orientarse mejor hacia el avance que en referencias habituales. Es una mejora interesante de economía, siempre que se repita en sesiones comparables.","El gesto dedica menos movimiento a componentes que no impulsan hacia delante. Esa dirección más eficiente merece seguimiento, no una corrección consciente." ]},
+    productive:{default:["La zancada resulta más productiva sin que la técnica se vuelva pesada. El aumento de avance útil aparece sin una compensación evidente.","La mecánica obtiene más avance por ciclo sin desordenarse. Esa combinación es una señal positiva de economía personal." ]},
+    heavy:{default:["La mecánica aparece algo más pesada de lo habitual. Antes de interpretarlo como un problema técnico, conviene relacionarlo con fatiga, terreno y carga acumulada.","El gesto pierde algo de ligereza frente a referencias comparables. Si desaparece tras recuperar, la explicación más probable está en la fatiga y no en una alteración técnica estable." ]}
+  };
+  const key=signal||history;if(!key||!bank[key])return"";const group=bank[key][type]||bank[key].default||[];return atlasI33Safe(pick(scope,group));
+}
+atlasV140DynamicsInsight=function(a){return atlasI33DynamicsReview(a);};
+atlasV097DynamicsCoachHtml=function(a){return atlasI33DynamicsReview(a);};
+atlasV0811DynamicsComment=function(a){return atlasI33DynamicsReview(a);};
+function renderActivityRunningDynamics(a){
+const section=atlasV0810EnsureRunningDynamics(),grid=$("activityRunningDynamicsGrid"),rows=atlasV0810RunningDynamicsRows(a);section.querySelector(".activity-running-dynamics-title")?.remove();section.querySelector(".activity-running-dynamics-note")?.remove();section.classList.toggle("hidden",!rows.length);if(grid)grid.innerHTML=rows.map(r=>atlasV0810Metric(...r)).join("");const comment=atlasV0811EnsureDynamicsComment(section),analysis=atlasI33DynamicsReview(a);comment.textContent=analysis;comment.style.display=analysis?"block":"none";
+}
+
+
+
 
 /* ===== ɅTLɅS v1.6.23 · I4 intervalos reales + fuerza canónica ===== */
 const ATLAS_I4_VERSION="1.6.23";
@@ -12784,7 +13451,8 @@ atlasDomReadyInitializers.push(()=>{atlasK25EnsureAdvisoryBox();});
    - El mantenimiento profundo se difiere fuera del primer paint.
    - La ficha de actividad no muestra un análisis provisional que luego sea sustituido. */
 const ATLAS_K31_VERSION="1.6.41";
-/* K3.2.1: startup state declared with the core runtime globals above. */
+const atlasK31StartupMetrics={startedAt:null,dbReadyMs:null,firstRenderMs:null,readyMs:null,auxLoadedMs:null,backgroundSyncMs:null,backgroundComplete:false};
+let atlasK31LocalDeferredPromise=null,atlasK31SilentSyncPromise=null;
 
 /* K3: propietario explícito de responsabilidades sin duplicar el estado histórico. */
 const ATLAS_STATE=Object.freeze({
@@ -12852,17 +13520,14 @@ async function atlasK31SilentStartupSync(){
    ni setGlobalSyncing(). El spinner queda reservado a sincronización manual. */
 startupIntervalsSync=atlasK31SilentStartupSync;
 
-/* Diagnóstico: K3.2 consolida un único motor textual de actividad. La ficha
-   ejecuta una sola pasada después de recibir detalle + streams. */
-try{Object.defineProperty(window,"__ATLAS_K31__",{configurable:true,value:Object.freeze({version:ATLAS_K31_VERSION,startup:()=>({...atlasK31StartupMetrics}),activityAnalysis:Object.freeze({effective:"K3.2",renderPasses:1,provisional:false}),domains:Object.freeze(Object.keys(ATLAS_DOMAIN))})});}catch{}
+/* Diagnóstico: deja claro qué motor de análisis es efectivo. Las generaciones antiguas
+   permanecen como helpers históricos hasta el rediseño semántico, pero la ficha sólo
+   invoca una pasada final de I3.3 después de recibir detalle + streams. */
+try{Object.defineProperty(window,"__ATLAS_K31__",{configurable:true,value:Object.freeze({version:ATLAS_K31_VERSION,startup:()=>({...atlasK31StartupMetrics}),activityAnalysis:Object.freeze({effective:"I3.3",renderPasses:1,provisional:false}),domains:Object.freeze(Object.keys(ATLAS_DOMAIN))})});}catch{}
 
 const atlasK31CollectRuntimeDiagnosticsBase=collectRuntimeDiagnostics;
-collectRuntimeDiagnostics=async function(){const out=await atlasK31CollectRuntimeDiagnosticsBase.apply(this,arguments);out.k31={version:ATLAS_K31_VERSION,startup:{...atlasK31StartupMetrics},activityAnalysis:{effective:"K3.2",renderPasses:1,provisional:false},domains:Object.keys(ATLAS_DOMAIN)};out.k311={version:"1.6.42",startupViewport:"TOP",activityFilters:"INITIALIZE_ON_TAB",strengthCompletion:"SAME_DAY_STRENGTH_SUPPORTED"};return out;};
+collectRuntimeDiagnostics=async function(){const out=await atlasK31CollectRuntimeDiagnosticsBase.apply(this,arguments);out.k31={version:ATLAS_K31_VERSION,startup:{...atlasK31StartupMetrics},activityAnalysis:{effective:"I3.3",renderPasses:1,provisional:false},domains:Object.keys(ATLAS_DOMAIN)};out.k311={version:"1.6.42",startupViewport:"TOP",activityFilters:"INITIALIZE_ON_TAB",strengthCompletion:"SAME_DAY_STRENGTH_SUPPORTED"};return out;};
 try{Object.defineProperty(window,"__ATLAS_K311__",{configurable:true,value:Object.freeze({version:"1.6.42",startupViewport:"TOP",activityFilters:"INITIALIZE_ON_TAB",strengthCompletion:"SAME_DAY_STRENGTH_SUPPORTED"})});}catch{}
-
-const atlasK32CollectRuntimeDiagnosticsBase=collectRuntimeDiagnostics;
-collectRuntimeDiagnostics=async function(){const out=await atlasK32CollectRuntimeDiagnosticsBase.apply(this,arguments);out.k32={version:ATLAS_K32_VERSION,activityAnalysis:{engine:ATLAS_K32_ACTIVITY_ANALYSIS.engine,maxSentences:ATLAS_K32_ACTIVITY_ANALYSIS.maxSentences,planFirst:true,genericFallback:false,advisoryOnly:true,dynamicsNarrative:false},legacyNarrativeEngines:0};return out;};
-try{Object.defineProperty(window,"__ATLAS_K32__",{configurable:true,value:Object.freeze({version:ATLAS_K32_VERSION,policy:ATLAS_K32_ACTIVITY_ANALYSIS,analyze:atlasK32ActivityAnalysis})});}catch{}
 
 })();
 
