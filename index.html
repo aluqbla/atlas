@@ -2329,7 +2329,8 @@ const AtlasHrv=(()=>{
 /* ===== ɅTLɅS v1.6.33 · K2.3 canonical Plan / Publication / Sync bindings =====
    Historical public overrides removed where the final implementation was self-contained.
    Golden K2.1 contracts remain the behavioral authority. */
-const APP_VERSION="1.6.41",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="1.6.42",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+try{if("scrollRestoration" in history)history.scrollRestoration="manual";}catch{}
 /* K2.6: confirmed dead-code removal only; no observable behavior changes. */
 /* G5: wrapper/residual consolidation. No sport, Adaptive, CAS or publication contract changes. */
 // Training Engine implementation track: v0.2 — input contract + athlete snapshot + base classification.
@@ -2774,6 +2775,12 @@ async function atlasG2DeferredStartupMaintenance(){
   recordOpsEvent("startup-maintenance","Mantenimiento diferido completado",{durationMs:Math.round(performance.now()-started),version:APP_VERSION}).catch(()=>{});
 }
 
+function atlasK311NormalizeStartupViewport(){
+  try{if("scrollRestoration" in history)history.scrollRestoration="manual";}catch{}
+  try{window.scrollTo({top:0,left:0,behavior:"instant"});}catch{try{window.scrollTo(0,0);}catch{}}
+  try{if(document.scrollingElement)document.scrollingElement.scrollTop=0;}catch{}
+}
+
 async function init(){
   const startupStarted=performance.now();
   atlasK31StartupMetrics.startedAt=new Date().toISOString();
@@ -2794,7 +2801,9 @@ async function init(){
      Adaptive, VO₂ histórico ni render de pestañas que el usuario todavía no ve. */
   const critical=await atlasG3ReadData(["activities","wellness","events","cachedVo2"]);
   atlasG3ApplyData(critical);
+  atlasK311NormalizeStartupViewport();
   safeUiRender("hoy",()=>renderToday(currentActivities,currentWellness,currentCachedVo2));
+  requestAnimationFrame(()=>requestAnimationFrame(atlasK311NormalizeStartupViewport));
   atlasK31StartupMetrics.firstRenderMs=Math.round(performance.now()-startupStarted);
   scheduleLayoutRefresh();
   startRuntimeRefresh();
@@ -3210,7 +3219,7 @@ function showView(tab){
   document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id===`view-${tab}`));
   document.querySelectorAll(".nav-btn").forEach(b=>{const active=b.dataset.tab===tab;b.classList.toggle("active",active);if(active)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");});
   document.body.classList.toggle("assistant-main-active",tab==="assistant");
-  if(tab==="activities")renderActivities();
+  if(tab==="activities"){initActivityFilters();renderActivities();}
   if(tab==="plan")renderPlan();
   if(tab==="assistant"){
     renderAssistantChat();
@@ -7433,9 +7442,10 @@ function atlasV093FallbackScore(event,activity,dayEventCount,dayActivityCount){
   if(!event||!activity)return-999;
   /* Si alguno ya viene pareado explícitamente con otra cosa, no inferimos. */
   if(activity?.paired_event_id!=null||event?.paired_activity_id!=null)return-999;
-  if(atlasV093SportFamily(planEventType(event))!==atlasV093SportFamily(activityType(activity)))return-999;
+  const sportFamily=atlasV093SportFamily(planEventType(event));
+  if(sportFamily!==atlasV093SportFamily(activityType(activity)))return-999;
 
-  let score=0;
+  let score=sportFamily==="strength"?5:0;
   const en=atlasV093NormText(planEventName(event)),an=atlasV093NormText(activityName(activity));
   if(en&&an){
     if(en===an)score+=5;
@@ -7461,6 +7471,10 @@ function atlasV093FallbackScore(event,activity,dayEventCount,dayActivityCount){
   }
 
   if(dayEventCount===1&&dayActivityCount===1)score+=2;
+  /* Fuerza no tiene distancia y Garmin/Intervals puede registrar una duración muy distinta
+     de la prescrita. Si ese día sólo existe una fuerza prevista y una fuerza realizada,
+     la identidad deporte+fecha es suficiente para reconciliarla visualmente. */
+  if(sportFamily==="strength"&&dayEventCount===1&&dayActivityCount===1)score=Math.max(score,7);
   return score;
 }
 function atlasV093PairDay(dayEvents,dayActivities){
@@ -13512,7 +13526,8 @@ startupIntervalsSync=atlasK31SilentStartupSync;
 try{Object.defineProperty(window,"__ATLAS_K31__",{configurable:true,value:Object.freeze({version:ATLAS_K31_VERSION,startup:()=>({...atlasK31StartupMetrics}),activityAnalysis:Object.freeze({effective:"I3.3",renderPasses:1,provisional:false}),domains:Object.freeze(Object.keys(ATLAS_DOMAIN))})});}catch{}
 
 const atlasK31CollectRuntimeDiagnosticsBase=collectRuntimeDiagnostics;
-collectRuntimeDiagnostics=async function(){const out=await atlasK31CollectRuntimeDiagnosticsBase.apply(this,arguments);out.k31={version:ATLAS_K31_VERSION,startup:{...atlasK31StartupMetrics},activityAnalysis:{effective:"I3.3",renderPasses:1,provisional:false},domains:Object.keys(ATLAS_DOMAIN)};return out;};
+collectRuntimeDiagnostics=async function(){const out=await atlasK31CollectRuntimeDiagnosticsBase.apply(this,arguments);out.k31={version:ATLAS_K31_VERSION,startup:{...atlasK31StartupMetrics},activityAnalysis:{effective:"I3.3",renderPasses:1,provisional:false},domains:Object.keys(ATLAS_DOMAIN)};out.k311={version:"1.6.42",startupViewport:"TOP",activityFilters:"INITIALIZE_ON_TAB",strengthCompletion:"SAME_DAY_STRENGTH_SUPPORTED"};return out;};
+try{Object.defineProperty(window,"__ATLAS_K311__",{configurable:true,value:Object.freeze({version:"1.6.42",startupViewport:"TOP",activityFilters:"INITIALIZE_ON_TAB",strengthCompletion:"SAME_DAY_STRENGTH_SUPPORTED"})});}catch{}
 
 })();
 
