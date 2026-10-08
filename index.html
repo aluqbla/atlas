@@ -2351,7 +2351,7 @@ const AtlasHrv=(()=>{
 /* ===== ɅTLɅS v1.6.33 · K2.3 canonical Plan / Publication / Sync bindings =====
    Historical public overrides removed where the final implementation was self-contained.
    Golden K2.1 contracts remain the behavioral authority. */
-const APP_VERSION="1.6.52",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="1.6.54",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const ATLAS_RUNTIME=Object.freeze({appVersion:APP_VERSION,schemaVersion:SCHEMA_VERSION,dbName:DB_NAME,dbVersion:DB_VERSION,contractVersion:1});
 const atlasDiagnosticsRegistry=Object.create(null);
 function registerAtlasDiagnostic(name,value){if(!name)return value;atlasDiagnosticsRegistry[String(name)]=value;return value;}
@@ -13835,6 +13835,206 @@ atlasK25RenderSessionAdvisory=function(session){
 registerAtlasDiagnostic("adaptiveDecision",Object.freeze({version:ATLAS_L3_VERSION,decisionSchema:ATLAS_L3_DECISION_SCHEMA,policy:ATLAS_L3_POLICY}));
 const atlasL3CollectRuntimeDiagnosticsBase=collectRuntimeDiagnostics;
 collectRuntimeDiagnostics=async function(){const out=await atlasL3CollectRuntimeDiagnosticsBase.apply(this,arguments);out.l3={version:ATLAS_L3_VERSION,decisionSchema:ATLAS_L3_DECISION_SCHEMA,policy:ATLAS_L3_POLICY};return out;};
+
+/* ===== ɅTLɅS v1.6.53 · L4 · Strength Model + canonical exercise library =====
+   L4 NO cambia qué fuerza prescribe el Training Engine ni su dosis.
+   Convierte la prescripción existente en un contrato estructurado y estable para que
+   L5 pueda prescribir sobre datos y L6 pueda serializar a proveedores sin parsear texto.
+   La biblioteca usa IDs canónicos independientes de nombres visibles/assets históricos. */
+const ATLAS_L4_VERSION="1.6.53";
+const ATLAS_L4_STRENGTH_MODEL_SCHEMA="atlas.strength.session.v1";
+const ATLAS_L4_EXERCISE_SCHEMA="atlas.strength.exercise.v1";
+const ATLAS_L4_BLOCK_SCHEMA="atlas.strength.block.v1";
+const ATLAS_L4_POLICY=Object.freeze({
+  prescriptionBehavior:"unchanged",
+  canonicalExerciseIds:true,
+  structuredDose:true,
+  legacyTextPreserved:true,
+  providerSerialization:false,
+  automaticRemoteWrites:false,
+  schemaMigration:false
+});
+function atlasL4DeepFreeze(value){
+  if(!value||typeof value!=="object"||Object.isFrozen(value))return value;
+  Object.freeze(value);for(const v of Object.values(value))atlasL4DeepFreeze(v);return value;
+}
+const ATLAS_L4_EXERCISES=atlasL4DeepFreeze({
+  "squat-goblet":{schema:ATLAS_L4_EXERCISE_SCHEMA,id:"squat-goblet",name:"Sentadilla goblet",legacyAsset:"squatGoblet",pattern:"squat",region:"lower_body",primaryMuscles:["Cuádriceps","Glúteos"],secondaryMuscles:["Core"],equipment:["dumbbell"],laterality:"bilateral",modality:"dynamic",runnerRole:["force_production","knee_dominant","trunk_stability"]},
+  "squat-dumbbell":{schema:ATLAS_L4_EXERCISE_SCHEMA,id:"squat-dumbbell",name:"Sentadilla con mancuernas",legacyAsset:"squatDumbbell",pattern:"squat",region:"lower_body",primaryMuscles:["Cuádriceps","Glúteos"],secondaryMuscles:["Core"],equipment:["dumbbells"],laterality:"bilateral",modality:"dynamic",runnerRole:["force_production","knee_dominant","trunk_stability"]},
+  "single-leg-deadlift":{schema:ATLAS_L4_EXERCISE_SCHEMA,id:"single-leg-deadlift",name:"Peso muerto a una pierna",legacyAsset:"singleLegDeadlift",pattern:"hinge",region:"posterior_chain",primaryMuscles:["Isquios","Glúteos"],secondaryMuscles:["Core","Estabilizadores de cadera"],equipment:["bodyweight","dumbbell","dumbbells"],laterality:"unilateral",modality:"dynamic",runnerRole:["posterior_chain","single_leg_stability","hip_control"]},
+  "reverse-lunge":{schema:ATLAS_L4_EXERCISE_SCHEMA,id:"reverse-lunge",name:"Zancada atrás",legacyAsset:"reverseLunge",pattern:"lunge",region:"lower_body",primaryMuscles:["Cuádriceps","Glúteos"],secondaryMuscles:["Estabilizadores de cadera"],equipment:["bodyweight","dumbbells"],laterality:"unilateral",modality:"dynamic",runnerRole:["single_leg_strength","knee_dominant","pelvic_control"]},
+  "bulgarian-split-squat":{schema:ATLAS_L4_EXERCISE_SCHEMA,id:"bulgarian-split-squat",name:"Sentadilla búlgara",legacyAsset:"bulgarianSplitSquat",pattern:"split_squat",region:"lower_body",primaryMuscles:["Cuádriceps","Glúteos"],secondaryMuscles:["Isquios","Estabilizadores de cadera"],equipment:["bodyweight","dumbbells","bench"],laterality:"unilateral",modality:"dynamic",runnerRole:["single_leg_strength","force_production","pelvic_control"]},
+  "glute-bridge":{schema:ATLAS_L4_EXERCISE_SCHEMA,id:"glute-bridge",name:"Puente de glúteos",legacyAsset:"gluteBridge",pattern:"hip_extension",region:"posterior_chain",primaryMuscles:["Glúteos"],secondaryMuscles:["Isquios","Core"],equipment:["bodyweight","dumbbell"],laterality:"bilateral",modality:"dynamic",runnerRole:["hip_extension","posterior_chain","pelvic_control"]},
+  "standing-calf-raise":{schema:ATLAS_L4_EXERCISE_SCHEMA,id:"standing-calf-raise",name:"Elevación de gemelos de pie",legacyAsset:"calfStanding",pattern:"plantar_flexion",region:"foot_ankle",primaryMuscles:["Gemelos"],secondaryMuscles:["Sóleo"],equipment:["bodyweight","dumbbells"],laterality:"bilateral",modality:"dynamic",runnerRole:["ankle_stiffness","calf_capacity","running_economy"]},
+  "seated-soleus-raise":{schema:ATLAS_L4_EXERCISE_SCHEMA,id:"seated-soleus-raise",name:"Sóleo sentado",legacyAsset:"soleusSeated",pattern:"plantar_flexion_knee_flexed",region:"foot_ankle",primaryMuscles:["Sóleo"],secondaryMuscles:["Gemelos"],equipment:["dumbbell","bench"],laterality:"bilateral",modality:"dynamic",runnerRole:["soleus_capacity","ankle_stiffness","running_durability"]},
+  "front-plank":{schema:ATLAS_L4_EXERCISE_SCHEMA,id:"front-plank",name:"Plancha frontal",legacyAsset:"plank",pattern:"anti_extension",region:"core",primaryMuscles:["Core"],secondaryMuscles:["Glúteos","Hombros"],equipment:["bodyweight"],laterality:"bilateral",modality:"isometric",runnerRole:["trunk_stability","pelvic_control"]},
+  "side-plank":{schema:ATLAS_L4_EXERCISE_SCHEMA,id:"side-plank",name:"Plancha lateral",legacyAsset:"sidePlank",pattern:"anti_lateral_flexion",region:"core",primaryMuscles:["Oblicuos","Core"],secondaryMuscles:["Glúteo medio"],equipment:["bodyweight"],laterality:"unilateral",modality:"isometric",runnerRole:["frontal_plane_stability","pelvic_control"]},
+  "dead-bug":{schema:ATLAS_L4_EXERCISE_SCHEMA,id:"dead-bug",name:"Dead bug",legacyAsset:"deadBug",pattern:"anti_extension_coordination",region:"core",primaryMuscles:["Core"],secondaryMuscles:["Estabilidad lumbopélvica"],equipment:["bodyweight"],laterality:"alternating",modality:"dynamic",runnerRole:["trunk_stability","contralateral_coordination","pelvic_control"]}
+});
+const ATLAS_L4_EXERCISE_BY_ASSET=atlasL4DeepFreeze(Object.fromEntries(Object.values(ATLAS_L4_EXERCISES).map(ex=>[ex.legacyAsset,ex.id])));
+function strengthExerciseById(id){return ATLAS_L4_EXERCISES[String(id||"")]||null;}
+function strengthExerciseByAsset(asset){const id=ATLAS_L4_EXERCISE_BY_ASSET[String(asset||"")];return id?ATLAS_L4_EXERCISES[id]:null;}
+function atlasL4NumberRange(text){
+  const s=String(text??"").replace(/,/g,".").trim(),m=s.match(/(\d+(?:\.\d+)?)\s*(?:[–—-]\s*(\d+(?:\.\d+)?))?/);if(!m)return null;
+  const min=Number(m[1]),max=m[2]!=null?Number(m[2]):min;return Number.isFinite(min)&&Number.isFinite(max)?{min,max}:null;
+}
+function atlasL4RirRange(text){
+  const s=String(text??"").replace(/,/g,".").trim(),r=atlasL4NumberRange(s);if(!r)return null;return{min:r.min,max:/\+$/.test(s)?null:r.max,openEnded:/\+$/.test(s)};
+}
+function atlasL4Dose(ex){
+  const sets=atlasL4NumberRange(ex?.sets),repsText=String(ex?.reps||""),rest=atlasL4NumberRange(ex?.rest),rpe=atlasL4NumberRange(ex?.rpe),rir=atlasL4RirRange(ex?.rir),isTime=/\b(?:s|seg|segundos?)\b/i.test(repsText),perSide=/\b(?:por lado|por pierna)\b/i.test(repsText),amount=atlasL4NumberRange(repsText);
+  return atlasL4DeepFreeze({
+    sets:sets?{min:sets.min,max:sets.max}:null,
+    work:isTime?{kind:"duration",seconds:amount?{min:amount.min,max:amount.max}:null,perSide}: {kind:"repetitions",repetitions:amount?{min:amount.min,max:amount.max}:null,perSide},
+    restSec:rest?{min:rest.min,max:rest.max}:null,
+    intensity:{rpe:rpe?{min:rpe.min,max:rpe.max}:null,rir},
+    load:{instruction:String(ex?.load||"").trim()||null},
+    legacy:{sets:String(ex?.sets||""),reps:repsText,rest:String(ex?.rest||""),load:String(ex?.load||""),rpe:ex?.rpe==null?null:String(ex.rpe),rir:ex?.rir==null?null:String(ex.rir)}
+  });
+}
+function atlasL4ExerciseInstance(ex,index=0){
+  const canonical=strengthExerciseByAsset(ex?.asset),exerciseId=canonical?.id||`legacy:${String(ex?.asset||ex?.name||index)}`;
+  return atlasL4DeepFreeze({
+    schema:ATLAS_L4_EXERCISE_SCHEMA,exerciseId,canonical:canonical||null,displayName:String(ex?.name||canonical?.name||"Ejercicio"),legacyAsset:String(ex?.asset||canonical?.legacyAsset||""),laterality:canonical?.laterality||"unspecified",modality:canonical?.modality||"dynamic",dose:atlasL4Dose(ex),cue:String(ex?.cue||"").trim()||null,tags:Array.isArray(ex?.tags)?[...ex.tags]:[],muscles:{primary:[...(canonical?.primaryMuscles||[])],secondary:[...(canonical?.secondaryMuscles||[])]}
+  });
+}
+function atlasL4StrengthSourceSpec(session){
+  if(session?.strengthPlan&&Array.isArray(session.strengthPlan.blocks))return session.strengthPlan;
+  return trainingEngineStrengthSpec(session||{});
+}
+function buildStrengthModel(session){
+  const spec=atlasL4StrengthSourceSpec(session),phase=typeof atlasV132Phase==="function"?atlasV132Phase(session):String(session?.phase||""),blocks=(spec?.blocks||[]).map((block,bi)=>atlasL4DeepFreeze({schema:ATLAS_L4_BLOCK_SCHEMA,id:`block-${bi+1}`,name:String(block?.title||`Bloque ${bi+1}`),subtitle:String(block?.subtitle||""),mode:"straight_sets",exercises:(block?.exercises||[]).map((ex,ei)=>atlasL4ExerciseInstance(ex,ei))}));
+  return atlasL4DeepFreeze({
+    schema:ATLAS_L4_STRENGTH_MODEL_SCHEMA,modelVersion:1,sourcePrescriptionVersion:String(spec?.version||session?.strengthPrescriptionVersion||"legacy"),title:String(spec?.title||session?.name||"Fuerza"),purpose:String(spec?.purpose||session?.purpose||""),focus:String(spec?.focus||""),level:String(spec?.level||session?.strengthLevel||"principal"),variant:String(spec?.variant||session?.strengthVariant||""),phase,distanceKey:String(spec?.distanceKey||session?.distanceKey||session?.goalDistanceKey||""),durationSec:Math.max(0,Math.round((Number(spec?.durationMin)||Number(session?.durationSec)/60||0)*60)),blocks,notes:[...(spec?.notes||session?.notes||[])].map(String)
+  });
+}
+function atlasL4ValidateStrengthModel(session){
+  const model=buildStrengthModel(session),errors=[];if(model.schema!==ATLAS_L4_STRENGTH_MODEL_SCHEMA)errors.push("schema");if(!model.blocks.length)errors.push("blocks");
+  for(const block of model.blocks){if(block.schema!==ATLAS_L4_BLOCK_SCHEMA)errors.push(`${block.id}:schema`);for(const ex of block.exercises){if(!ex.exerciseId)errors.push(`${block.id}:exercise-id`);if(!ex.canonical)errors.push(`${block.id}:${ex.legacyAsset||ex.displayName}:not-canonical`);if(!ex.dose?.sets)errors.push(`${block.id}:${ex.exerciseId}:sets`);if(!ex.dose?.work)errors.push(`${block.id}:${ex.exerciseId}:work`);}}
+  return{ok:errors.length===0,errors,model};
+}
+function atlasL4LibraryAudit(){
+  const ids=Object.keys(ATLAS_L4_EXERCISES),assets=Object.keys(ATLAS_L4_EXERCISE_BY_ASSET),errors=[];if(ids.length!==assets.length)errors.push("asset-map-cardinality");
+  for(const [id,ex] of Object.entries(ATLAS_L4_EXERCISES)){if(ex.id!==id)errors.push(`${id}:id`);if(!ex.legacyAsset)errors.push(`${id}:asset`);if(!ex.pattern)errors.push(`${id}:pattern`);if(!ex.primaryMuscles?.length)errors.push(`${id}:primary-muscle`);}
+  return{ok:errors.length===0,errors,exerciseCount:ids.length,assetCount:assets.length};
+}
+registerAtlasDiagnostic("strengthModel",Object.freeze({version:ATLAS_L4_VERSION,modelSchema:ATLAS_L4_STRENGTH_MODEL_SCHEMA,exerciseSchema:ATLAS_L4_EXERCISE_SCHEMA,blockSchema:ATLAS_L4_BLOCK_SCHEMA,exerciseCount:Object.keys(ATLAS_L4_EXERCISES).length,policy:ATLAS_L4_POLICY,libraryAudit:atlasL4LibraryAudit()}));
+const atlasL4CollectRuntimeDiagnosticsBase=collectRuntimeDiagnostics;
+collectRuntimeDiagnostics=async function(){const out=await atlasL4CollectRuntimeDiagnosticsBase.apply(this,arguments);out.l4={version:ATLAS_L4_VERSION,modelSchema:ATLAS_L4_STRENGTH_MODEL_SCHEMA,exerciseCount:Object.keys(ATLAS_L4_EXERCISES).length,policy:ATLAS_L4_POLICY,libraryAudit:atlasL4LibraryAudit()};return out;};
+
+
+/* ===== ɅTLɅS v1.6.54 · L5 · Strength Prescription Engine =====
+   L5 convierte el modelo canónico L4 en una prescripción runner específica y progresiva.
+   No cambia la frecuencia semanal decidida por el esqueleto ni publica nada en proveedores.
+   Autoridad: fase + experiencia reciente de fuerza + distancia + tipo de semana + nivel de sesión.
+   La carga externa nunca se inventa en kg: se prescribe con RPE/RIR y una instrucción de carga. */
+const ATLAS_L5_VERSION="1.6.54";
+const ATLAS_L5_STRENGTH_PRESCRIPTION_VERSION="L5.1";
+const ATLAS_L5_POLICY=Object.freeze({
+  frequencyAuthority:"existing_weekly_skeleton",
+  prescriptionAuthority:"phase_history_distance_weektype",
+  canonicalExerciseLibrary:"L4",
+  exactKgWithoutAthleteLoadData:false,
+  intensityControl:"RPE_RIR",
+  manualEditsPreserved:true,
+  providerSerialization:false,
+  automaticRemoteWrites:false,
+  schemaMigration:false
+});
+
+function atlasL5StrengthContext(session){
+  const phase=typeof atlasV132Phase==="function"?atlasV132Phase(session):String(session?.phase||"preparation"),
+        distance=typeof atlasV132DistanceKey==="function"?atlasV132DistanceKey(session):String(session?.goalDistanceKey||session?.distanceKey||""),
+        variant=typeof atlasV132Variant==="function"?atlasV132Variant(session):String(session?.strengthVariant||"A"),
+        history=Math.max(0,Math.round(Number(session?.strengthHistoryWeeks)||0)),
+        phaseWeek=Math.max(1,Math.round(Number(session?.phaseWeek)||1)),
+        weekType=String(session?.weekType||"").toLowerCase(),
+        requested=String(session?.strengthLevel||"").toLowerCase();
+  const level=requested==="microdose"||phase==="taper"?"microdose":requested==="maintenance"||phase==="specific"?"maintenance":"principal";
+  return Object.freeze({phase,distance,variant:variant==="B"?"B":"A",history,phaseWeek,weekType,level,short:["5k","10k"].includes(distance),long:["half","marathon"].includes(distance)});
+}
+function atlasL5SeriesLabel(min,max=min){return min===max?`${min} ${min===1?"serie":"series"}`:`${min}–${max} series`;}
+function atlasL5RepLabel(min,max=min,{perSide=false}={}){const base=min===max?`${min} repeticiones`:`${min}–${max} repeticiones`;return`${base}${perSide?" por pierna":""}`;}
+function atlasL5TimeLabel(min,max=min,{perSide=false}={}){const base=min===max?`${min} s`:`${min}–${max} s`;return`${base}${perSide?" por lado":""}`;}
+function atlasL5Profile(ctx){
+  if(ctx.level==="microdose")return Object.freeze({stage:"microdose",durationMin:20,mainSets:[1,2],accessorySets:[1,2],coreSets:[1,2],mainReps:[5,6],unilateralReps:[5,6],calfReps:[8,10],rpe:"5",rir:"4+",mainRest:"45–60 s",accessoryRest:"30–45 s",coreRest:"30 s"});
+  if(ctx.level==="maintenance")return Object.freeze({stage:"maintenance",durationMin:32,mainSets:[2,2],accessorySets:[2,2],coreSets:[2,2],mainReps:[5,6],unilateralReps:[5,6],calfReps:[8,12],rpe:"6–7",rir:"3",mainRest:"90 s",accessoryRest:"60–90 s",coreRest:"30–45 s"});
+  const entry=ctx.history<2||["initial_partial","entry"].includes(ctx.weekType),deload=ctx.weekType==="consolidation";
+  if(entry)return Object.freeze({stage:"acclimation",durationMin:35,mainSets:[2,2],accessorySets:[2,2],coreSets:[1,2],mainReps:ctx.short?[6,6]:[6,8],unilateralReps:[6,8],calfReps:[10,12],rpe:"6",rir:"3–4",mainRest:"90 s",accessoryRest:"60–75 s",coreRest:"30–45 s"});
+  if(deload)return Object.freeze({stage:"consolidation",durationMin:35,mainSets:[2,2],accessorySets:[2,2],coreSets:[1,2],mainReps:[6,8],unilateralReps:[6,8],calfReps:[10,12],rpe:"6",rir:"3–4",mainRest:"90 s",accessoryRest:"60–75 s",coreRest:"30–45 s"});
+  if(ctx.phase==="development")return Object.freeze({stage:"development",durationMin:45,mainSets:[3,3],accessorySets:[2,3],coreSets:[2,2],mainReps:ctx.short?[4,6]:[5,7],unilateralReps:ctx.short?[6,6]:[6,8],calfReps:ctx.short?[8,10]:[10,12],rpe:ctx.short?"7–8":"7",rir:"2–3",mainRest:"120 s",accessoryRest:"75–90 s",coreRest:"45 s"});
+  const progressed=ctx.history>=4&&ctx.phaseWeek>=3;
+  return Object.freeze({stage:"base",durationMin:progressed?45:40,mainSets:progressed?[3,3]:[2,3],accessorySets:[2,2],coreSets:[2,2],mainReps:ctx.short?[6,6]:[6,8],unilateralReps:[8,8],calfReps:[10,12],rpe:progressed?"6–7":"6",rir:progressed?"3":"3–4",mainRest:"90–120 s",accessoryRest:"60–90 s",coreRest:"45 s"});
+}
+function atlasL5Exercise(id,{sets,reps=null,time=null,perSide=false,rest,load,rpe,rir,cue}){
+  const ex=strengthExerciseById(id);if(!ex)throw new Error(`L5 ejercicio canónico no encontrado: ${id}`);
+  return{exerciseId:id,name:ex.name,asset:ex.legacyAsset,sets:atlasL5SeriesLabel(sets[0],sets[1]),reps:time?atlasL5TimeLabel(time[0],time[1],{perSide}):atlasL5RepLabel(reps[0],reps[1],{perSide}),rest,load,rpe,rir,cue,tags:[...ex.runnerRole]};
+}
+function atlasL5StrengthExerciseSet(ctx,p){
+  const common={rpe:p.rpe,rir:p.rir},main={sets:p.mainSets,rest:p.mainRest,...common},acc={sets:p.accessorySets,rest:p.accessoryRest,...common},core={sets:p.coreSets,rest:p.coreRest,rpe:ctx.level==="microdose"?"5":"6",rir:ctx.level==="microdose"?"4+":"3–4"};
+  const squat=atlasL5Exercise(ctx.variant==="A"?"squat-goblet":"squat-dumbbell",{...main,reps:p.mainReps,load:ctx.variant==="A"?"Mancuerna que permita completar la serie con el RIR indicado":"Dos mancuernas que permitan completar la serie con el RIR indicado",cue:"Pie completo apoyado, rodilla estable y subida controlada."});
+  const unilateral=atlasL5Exercise(ctx.variant==="A"?"single-leg-deadlift":"bulgarian-split-squat",{...acc,reps:p.unilateralReps,perSide:true,load:"Peso corporal o mancuernas según el RIR indicado",cue:ctx.variant==="A"?"Cadera cuadrada y espalda neutra; controla todo el descenso.":"Controla la bajada y mantén estable la rodilla de apoyo."});
+  const hip=atlasL5Exercise(ctx.short?"reverse-lunge":"glute-bridge",{...acc,reps:ctx.short?p.unilateralReps:[8,10],perSide:ctx.short,load:ctx.short?"Peso corporal o mancuernas según el RIR indicado":"Peso corporal o mancuerna sobre la cadera según el RIR indicado",cue:ctx.short?"Paso atrás estable y empuje firme con la pierna delantera.":"Extiende desde la cadera sin arquear la zona lumbar."});
+  const calf=atlasL5Exercise("standing-calf-raise",{...acc,reps:p.calfReps,load:"Peso corporal o mancuernas según el RIR indicado",cue:"Recorrido completo, pausa arriba y descenso controlado."});
+  const soleus=atlasL5Exercise("seated-soleus-raise",{...acc,reps:[Math.max(10,p.calfReps[0]+2),Math.max(12,p.calfReps[1]+2)],load:"Mancuerna sobre las rodillas si el peso corporal resulta insuficiente",cue:"Rodilla flexionada; mueve el talón sin rebotes."});
+  const front=atlasL5Exercise("front-plank",{...core,time:ctx.level==="microdose"?[20,30]:[30,45],load:"Peso corporal",cue:"Costillas recogidas, glúteos activos y cuerpo alineado."});
+  const lateral=atlasL5Exercise(ctx.variant==="A"?"side-plank":"dead-bug",ctx.variant==="A"?{...core,time:ctx.level==="microdose"?[20,25]:[25,40],perSide:true,load:"Peso corporal",cue:"Mantén la pelvis alta y estable."}:{...core,reps:[6,8],perSide:true,load:"Peso corporal",cue:"Zona lumbar estable y movimiento contralateral lento."});
+  return{squat,unilateral,hip,calf,soleus,front,lateral};
+}
+function atlasL5BuildStrengthSpec(session){
+  if(session?.strengthPlan&&Array.isArray(session.strengthPlan.blocks)&&(session?._atlasManualEdited||session?._atlasAdaptiveAccepted))return session.strengthPlan;
+  const ctx=atlasL5StrengthContext(session),p=atlasL5Profile(ctx),x=atlasL5StrengthExerciseSet(ctx,p);
+  let blocks=[],focus,purpose,title;
+  if(ctx.level==="microdose"){
+    title="Fuerza · Microdosis";focus="Activación neuromuscular sin fatiga";purpose="Conservar tono, tobillo y control del tronco sin comprometer la frescura de carrera.";
+    blocks=[{title:"Microdosis",subtitle:"Muy fácil",exercises:[x.squat,x.calf,x.front]}];
+  }else if(ctx.level==="maintenance"){
+    title=`Fuerza ${ctx.variant} · Mantenimiento`;focus="Dosis mínima eficaz";purpose="Mantener fuerza útil de piernas, cadera, gemelo/sóleo y core mientras aumenta la especificidad de carrera.";
+    blocks=[{title:"Principal",subtitle:"Bajo coste",exercises:[x.squat,x.unilateral,x.calf,x.soleus,x.lateral]}];
+  }else{
+    title=`Fuerza ${ctx.variant} · ${p.stage==="development"?"Desarrollo":p.stage==="consolidation"?"Descarga":"Base"}`;
+    focus=ctx.short?"Fuerza unilateral y rigidez útil para ritmos altos":"Fuerza y durabilidad para sostener volumen y tiradas largas";
+    purpose="Desarrollar fuerza runner sin competir con las sesiones clave de carrera.";
+    const main=ctx.short?[x.squat,x.unilateral,x.hip,x.calf,x.soleus]:[x.squat,x.unilateral,x.hip,x.calf,x.soleus];
+    blocks=[{title:"Fuerza principal",subtitle:p.stage==="acclimation"?"Adaptación":p.stage==="consolidation"?"Descarga":"Runner",exercises:main},{title:"Core",subtitle:"Estabilidad",exercises:[x.front,x.lateral]}];
+  }
+  const notes=[`Intensidad objetivo: RPE ${p.rpe} · RIR ${p.rir}.`,`Etapa de fuerza: ${p.stage}. La carga externa se elige para respetar RPE/RIR; ATLAS no inventa kg.`];
+  if(p.stage==="acclimation")notes.push("Prioriza técnica y tolerancia. Termina cada ejercicio con margen claro.");
+  if(p.stage==="consolidation")notes.push("Semana de consolidación: baja el volumen de fuerza antes de tocar las sesiones clave de carrera.");
+  if(ctx.level==="maintenance")notes.push("Si la carrera específica aumenta la fatiga, reduce una serie antes de elevar el esfuerzo.");
+  if(ctx.level==="microdose")notes.push("Termina con sensación de activación, nunca de cansancio.");
+  return atlasL4DeepFreeze({version:ATLAS_L5_STRENGTH_PRESCRIPTION_VERSION,engineVersion:ATLAS_L5_VERSION,title,durationMin:p.durationMin,focus,purpose,level:ctx.level,variant:ctx.variant,distanceKey:ctx.distance,phase:ctx.phase,phaseWeek:ctx.phaseWeek,weekType:ctx.weekType||null,historyWeeks:ctx.history,doseProfile:p.stage,blocks,notes,constraints:{noFailure:true,loadByRpeRir:true,exactKgPrescribed:false,frequencyManagedBySkeleton:true}});
+}
+
+/* Añade al esqueleto sólo el tipo de semana que la prescripción necesita para modular dosis.
+   No cambia fechas, frecuencia, colocación ni número de sesiones. */
+const atlasL5BuildWeekSkeletonBase=trainingEngineBuildWeekSkeleton;
+trainingEngineBuildWeekSkeleton=function(input,snapshot,week,context={}){
+  const built=atlasL5BuildWeekSkeletonBase.apply(this,arguments);for(const s of built?.sessions||[])if(s?.family==="Fuerza")s.weekType=week?.weekType||null;return built;
+};
+
+trainingEngineStrengthSpec=function(session){return atlasL5BuildStrengthSpec(session||{});};
+trainingEnginePrescribeStrength=function(session){
+  const spec=trainingEngineStrengthSpec(session),rx={...session,skeleton:false,prescribed:true,status:"PRESCRIBED"};
+  rx.name=spec.title;rx.purpose=spec.purpose;rx.durationSec=spec.durationMin*60;rx.structure=`${spec.title} · ${spec.durationMin} min`;rx.strengthPlan=spec;rx.strengthPrescriptionVersion=ATLAS_L5_STRENGTH_PRESCRIPTION_VERSION;rx.notes=[...(spec.notes||[])];rx.steps=[trainingEngineStep("main",`⚡ ${spec.title} · ${spec.durationMin} min`)];rx.metaLabel=trainingEngineSessionMeta(rx);rx.strengthModel=buildStrengthModel(rx);rx.strengthModelVersion=rx.strengthModel?.modelVersion||1;return rx;
+};
+
+function atlasL5StrengthAudit(){
+  const samples=[
+    {phase:"preparation",phaseWeek:1,weekType:"entry",strengthHistoryWeeks:0,strengthLevel:"principal",strengthVariant:"A",goalDistanceKey:"marathon"},
+    {phase:"development",phaseWeek:3,weekType:"progression",strengthHistoryWeeks:8,strengthLevel:"principal",strengthVariant:"B",goalDistanceKey:"5k"},
+    {phase:"development",phaseWeek:4,weekType:"consolidation",strengthHistoryWeeks:8,strengthLevel:"principal",strengthVariant:"A",goalDistanceKey:"half"},
+    {phase:"specific",phaseWeek:2,weekType:"progression",strengthHistoryWeeks:10,strengthLevel:"maintenance",strengthVariant:"B",goalDistanceKey:"marathon"},
+    {phase:"taper",phaseWeek:1,weekType:"taper",strengthHistoryWeeks:10,strengthLevel:"microdose",strengthVariant:"A",goalDistanceKey:"10k"}
+  ],errors=[],stages=[];
+  for(const s of samples){const spec=atlasL5BuildStrengthSpec(s),model=buildStrengthModel({...s,strengthPlan:spec});stages.push(spec.doseProfile);if(!spec.blocks?.length)errors.push(`${s.phase}:blocks`);if(!model?.blocks?.length)errors.push(`${s.phase}:model`);for(const b of model?.blocks||[])for(const ex of b.exercises||[]){if(!ex.canonical)errors.push(`${s.phase}:${ex.exerciseId}:canonical`);if(!ex.dose?.intensity)errors.push(`${s.phase}:${ex.exerciseId}:intensity`);if(/\b\d+(?:[.,]\d+)?\s*kg\b/i.test(String(ex.dose?.load?.instruction||"")))errors.push(`${s.phase}:${ex.exerciseId}:invented-kg`);}}
+  const expected=["acclimation","development","consolidation","maintenance","microdose"];for(const e of expected)if(!stages.includes(e))errors.push(`missing-stage:${e}`);
+  return Object.freeze({ok:errors.length===0,errors,stages:Object.freeze(stages),sampleCount:samples.length});
+}
+const ATLAS_L5_AUDIT=atlasL5StrengthAudit();
+registerAtlasDiagnostic("strengthPrescription",Object.freeze({version:ATLAS_L5_VERSION,prescriptionVersion:ATLAS_L5_STRENGTH_PRESCRIPTION_VERSION,policy:ATLAS_L5_POLICY,audit:ATLAS_L5_AUDIT}));
+const atlasL5CollectRuntimeDiagnosticsBase=collectRuntimeDiagnostics;
+collectRuntimeDiagnostics=async function(){const out=await atlasL5CollectRuntimeDiagnosticsBase.apply(this,arguments);out.l5={version:ATLAS_L5_VERSION,prescriptionVersion:ATLAS_L5_STRENGTH_PRESCRIPTION_VERSION,policy:ATLAS_L5_POLICY,audit:ATLAS_L5_AUDIT};return out;};
 
 })();
 
