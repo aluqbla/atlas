@@ -2351,7 +2351,7 @@ const AtlasHrv=(()=>{
 /* ===== ɅTLɅS v1.6.33 · K2.3 canonical Plan / Publication / Sync bindings =====
    Historical public overrides removed where the final implementation was self-contained.
    Golden K2.1 contracts remain the behavioral authority. */
-const APP_VERSION="1.6.54",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="1.6.56",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const ATLAS_RUNTIME=Object.freeze({appVersion:APP_VERSION,schemaVersion:SCHEMA_VERSION,dbName:DB_NAME,dbVersion:DB_VERSION,contractVersion:1});
 const atlasDiagnosticsRegistry=Object.create(null);
 function registerAtlasDiagnostic(name,value){if(!name)return value;atlasDiagnosticsRegistry[String(name)]=value;return value;}
@@ -14035,6 +14035,283 @@ const ATLAS_L5_AUDIT=atlasL5StrengthAudit();
 registerAtlasDiagnostic("strengthPrescription",Object.freeze({version:ATLAS_L5_VERSION,prescriptionVersion:ATLAS_L5_STRENGTH_PRESCRIPTION_VERSION,policy:ATLAS_L5_POLICY,audit:ATLAS_L5_AUDIT}));
 const atlasL5CollectRuntimeDiagnosticsBase=collectRuntimeDiagnostics;
 collectRuntimeDiagnostics=async function(){const out=await atlasL5CollectRuntimeDiagnosticsBase.apply(this,arguments);out.l5={version:ATLAS_L5_VERSION,prescriptionVersion:ATLAS_L5_STRENGTH_PRESCRIPTION_VERSION,policy:ATLAS_L5_POLICY,audit:ATLAS_L5_AUDIT};return out;};
+
+
+/* ===== ɅTLɅS v1.6.55 · L6 · Intervals Strength Adapter =====
+   Contrato:
+   - Intervals.icu recibe fuerza como type=WeightTraining.
+   - La description es la representación ejecutable autoritativa porque es la vía
+     que Intervals parsea de forma estable para construir workout steps.
+   - Cada serie mínima prescrita se convierte en un paso temporizado etiquetado con
+     ejercicio + reps/tiempo + RPE/RIR. El tiempo de trabajo NO sustituye a las reps:
+     es sólo una envolvente de transporte para el parser de Intervals.
+   - Los rangos de series no se endurecen: se publica el mínimo obligatorio y se
+     conserva en texto cualquier serie opcional adicional.
+   - Nunca se inventan kg. La carga sigue gobernada por RPE/RIR e instrucción L5.
+   - No cambia consentimiento, diff remoto ni reconciliación de actividades (L7). */
+const ATLAS_L6_VERSION="1.6.55";
+const ATLAS_L6_STRENGTH_ADAPTER_VERSION="atlas.intervals.strength.v1";
+const ATLAS_L6_POLICY=Object.freeze({
+  intervalsType:"WeightTraining",
+  authoritativeTransport:"description_text_syntax",
+  parserSteps:true,
+  nativeStrengthFields:false,
+  exactKg:false,
+  minimumRequiredSets:true,
+  remoteWriteConsent:"K2.5_unchanged",
+  reconciliation:"L7_not_modified"
+});
+function atlasL6StrengthSession(session){return !!(session&&(session.type==="Strength"||session.family==="Fuerza"||session.strengthPlan||session.strengthModel));}
+function atlasL6Num(v){const n=Number(v);return Number.isFinite(n)?n:null;}
+function atlasL6RangeLabel(range,{unit="",openEnded=false}={}){
+  if(!range)return"—";const a=atlasL6Num(range.min),b=atlasL6Num(range.max);
+  if(a==null)return"—";const body=openEnded||b==null?`${formatNatural(a,0)}+`:a===b?formatNatural(a,0):`${formatNatural(a,0)}–${formatNatural(b,0)}`;
+  return unit?`${body} ${unit}`:body;
+}
+function atlasL6IntensityLabel(ex){
+  const rpe=ex?.dose?.intensity?.rpe,rir=ex?.dose?.intensity?.rir,parts=[];
+  if(rpe)parts.push(`RPE ${atlasL6RangeLabel(rpe)}`);
+  if(rir)parts.push(`RIR ${atlasL6RangeLabel(rir,{openEnded:!!rir.openEnded})}`);
+  return parts.join(" · ");
+}
+function atlasL6WorkLabel(ex){
+  const work=ex?.dose?.work;if(!work)return"trabajo prescrito";
+  if(work.kind==="duration")return`${atlasL6RangeLabel(work.seconds,{unit:"s"})}${work.perSide?" por lado":""}`;
+  return`${atlasL6RangeLabel(work.repetitions,{unit:"reps"})}${work.perSide?" por lado":""}`;
+}
+function atlasL6TransportWorkSeconds(ex){
+  const work=ex?.dose?.work;if(!work)return 30;
+  if(work.kind==="duration"){
+    const n=atlasL6Num(work.seconds?.min)??atlasL6Num(work.seconds?.max)??30;
+    return Math.max(10,Math.min(180,Math.round(n*(work.perSide?2:1))));
+  }
+  const reps=atlasL6Num(work.repetitions?.min)??atlasL6Num(work.repetitions?.max)??8;
+  const seconds=reps*4*(work.perSide?2:1);
+  return Math.max(20,Math.min(120,Math.round(seconds)));
+}
+function atlasL6TransportRestSeconds(ex){
+  const rest=ex?.dose?.restSec,n=atlasL6Num(rest?.min)??atlasL6Num(rest?.max)??0;
+  return Math.max(0,Math.min(300,Math.round(n)));
+}
+function atlasL6SetCount(ex){
+  const sets=ex?.dose?.sets,min=Math.max(1,Math.round(atlasL6Num(sets?.min)??atlasL6Num(sets?.max)??1)),max=Math.max(min,Math.round(atlasL6Num(sets?.max)??min));
+  return{min,max,optional:Math.max(0,max-min)};
+}
+function atlasL6StepLine(seconds,text,intensity="active"){
+  const sec=Math.max(1,Math.round(Number(seconds)||1));return`- ${atlasV090TimeSyntax(sec)} intensity=${intensity} // ${String(text||"").replace(/[\r\n]+/g," ").trim()}`;
+}
+function atlasL6ExerciseNote(ex){
+  const set=atlasL6SetCount(ex),parts=[ex.displayName||ex.canonical?.name||"Ejercicio",`${set.min} serie${set.min===1?"":"s"}${set.optional?` + ${set.optional} opcional${set.optional===1?"":"es"}`:""}`,atlasL6WorkLabel(ex),atlasL6IntensityLabel(ex)];
+  return parts.filter(Boolean).join(" · ");
+}
+function atlasL6StrengthRows(model){
+  const blocks=model?.blocks||[],totalExercises=blocks.reduce((n,b)=>n+(b?.exercises?.length||0),0),rows=[];let exerciseIndex=0;
+  for(const block of blocks){
+    rows.push({kind:"heading",text:String(block?.name||"Bloque")+(block?.subtitle?` · ${block.subtitle}`:"")});
+    for(const ex of block?.exercises||[]){
+      exerciseIndex++;const sets=atlasL6SetCount(ex),workSec=atlasL6TransportWorkSeconds(ex),restSec=atlasL6TransportRestSeconds(ex),workLabel=atlasL6WorkLabel(ex),intensity=atlasL6IntensityLabel(ex),hasNextExercise=exerciseIndex<totalExercises;
+      for(let i=1;i<=sets.min;i++){
+        const text=[ex.displayName||ex.canonical?.name||"Ejercicio",`Serie ${i}/${sets.min}`,workLabel,intensity].filter(Boolean).join(" · ");
+        rows.push({kind:"work",seconds:workSec,text,exerciseId:ex.exerciseId,setIndex:i});
+        if(restSec>0&&(i<sets.min||hasNextExercise))rows.push({kind:"rest",seconds:restSec,text:i<sets.min?`Descanso · ${ex.displayName||"Ejercicio"}`:`Descanso / transición · ${ex.displayName||"Ejercicio"}`,exerciseId:ex.exerciseId,setIndex:i});
+      }
+      if(sets.optional)rows.push({kind:"note",text:`Opcional: ${sets.optional} serie${sets.optional===1?"":"s"} adicional${sets.optional===1?"":"es"} de ${ex.displayName||"este ejercicio"}, sólo si mantienes la técnica y el RIR objetivo.`});
+    }
+  }return rows;
+}
+function atlasL6StrengthDescription(session){
+  const model=buildStrengthModel(session||{}),purpose=String(model?.purpose||session?.purpose||"").trim(),focus=String(model?.focus||"").trim(),rows=atlasL6StrengthRows(model),lines=[],target=Math.max(0,Math.round(Number(model?.durationSec)||Number(session?.durationSec)||0)),rowsTimed=rows.reduce((n,r)=>n+((r.kind==="work"||r.kind==="rest")?Math.max(0,Number(r.seconds)||0):0),0),warmupSec=target>=2400?480:target>=1800?360:300,cooldownSec=target>=2400?300:target>=1800?240:180,transitionSec=Math.max(0,target-rowsTimed-warmupSec-cooldownSec);
+  if(purpose)lines.push(purpose,"");
+  lines.push("ATLAS fuerza estructurada · Repeticiones/tiempo, RPE/RIR y descansos son la prescripción; la duración de cada paso es sólo la envolvente técnica para Intervals.icu.");
+  if(focus)lines.push(`Foco: ${focus}`);
+  lines.push("","Warmup",atlasL6StepLine(warmupSec,"Movilidad dinámica, activación y series de aproximación","warmup"),"");
+  for(const row of rows){
+    if(row.kind==="heading"){if(lines.at(-1)!=="")lines.push("");lines.push(row.text);continue;}
+    if(row.kind==="work"){lines.push(atlasL6StepLine(row.seconds,row.text,"active"));continue;}
+    if(row.kind==="rest"){lines.push(atlasL6StepLine(row.seconds,row.text,"recovery"));continue;}
+    if(row.kind==="note")lines.push(`// ${row.text}`);
+  }
+  if(transitionSec>=60)lines.push("",atlasL6StepLine(transitionSec,"Ajuste de cargas, transiciones y preparación técnica entre ejercicios","active"));
+  lines.push("","Cooldown",atlasL6StepLine(cooldownSec,"Vuelta a la calma y movilidad suave","cooldown"));
+  const loadNotes=[];for(const block of model?.blocks||[])for(const ex of block?.exercises||[]){const load=String(ex?.dose?.load?.instruction||"").trim(),cue=String(ex?.cue||"").trim();if(load||cue)loadNotes.push(`${ex.displayName}: ${[load?`Carga: ${load}`:"",cue?`Técnica: ${cue}`:""].filter(Boolean).join(" · ")}`);}
+  if(loadNotes.length){lines.push("","Notas ATLAS");for(const note of loadNotes)lines.push(`// ${note}`);}
+  for(const note of model?.notes||[])if(String(note).trim())lines.push(`// ${String(note).trim()}`);
+  return lines.filter((x,i,a)=>!(x===""&&a[i-1]==="")).join("\n").trim();
+}
+const atlasL6WorkoutDescriptionBase=atlasV090WorkoutDescription;
+atlasV090WorkoutDescription=function(session){return atlasL6StrengthSession(session)?atlasL6StrengthDescription(session):atlasL6WorkoutDescriptionBase(session);};
+const atlasL6RemoteEventBase=atlasV090RemoteEvent;
+atlasV090RemoteEvent=function(plan,session){
+  const event=atlasL6RemoteEventBase(plan,session);if(!atlasL6StrengthSession(session))return event;
+  event.type="WeightTraining";event._atlas={...(event._atlas||{}),strengthAdapterVersion:ATLAS_L6_STRENGTH_ADAPTER_VERSION,strengthModelVersion:buildStrengthModel(session)?.modelVersion||1};return event;
+};
+function atlasL6StrengthAdapterAudit(){
+  const session={date:"2026-10-12",type:"Strength",family:"Fuerza",phase:"development",phaseWeek:3,weekType:"progression",strengthHistoryWeeks:8,strengthLevel:"principal",strengthVariant:"A",goalDistanceKey:"marathon"},rx=trainingEnginePrescribeStrength(session),description=atlasL6StrengthDescription(rx),rows=atlasL6StrengthRows(buildStrengthModel(rx)),errors=[];
+  if(atlasV090IntervalsType(rx)!=="WeightTraining")errors.push("type");if(!description.includes("Serie 1/"))errors.push("series");if(!description.includes("intensity=active"))errors.push("parser-work");if(!description.includes("intensity=recovery"))errors.push("parser-rest");if(!rows.some(r=>r.kind==="work"))errors.push("work-rows");if(/\b\d+(?:[.,]\d+)?\s*kg\b/i.test(description))errors.push("invented-kg");if(!description.includes("RPE")||!description.includes("RIR"))errors.push("intensity");
+  const before=atlasV090RemoteEvent({id:"l6-audit"},{...rx,id:"strength-audit",date:"2026-10-12"});if(before.type!=="WeightTraining")errors.push("remote-type");if(!before._atlas?.strengthAdapterVersion)errors.push("metadata");
+  return Object.freeze({ok:errors.length===0,errors,rowCount:rows.length,descriptionLines:description.split("\n").length,policy:ATLAS_L6_POLICY});
+}
+const ATLAS_L6_AUDIT=atlasL6StrengthAdapterAudit();
+registerAtlasDiagnostic("strengthIntervalsAdapter",Object.freeze({version:ATLAS_L6_VERSION,adapterVersion:ATLAS_L6_STRENGTH_ADAPTER_VERSION,policy:ATLAS_L6_POLICY,audit:ATLAS_L6_AUDIT}));
+const atlasL6CollectRuntimeDiagnosticsBase=collectRuntimeDiagnostics;
+collectRuntimeDiagnostics=async function(){const out=await atlasL6CollectRuntimeDiagnosticsBase.apply(this,arguments);out.l6={version:ATLAS_L6_VERSION,adapterVersion:ATLAS_L6_STRENGTH_ADAPTER_VERSION,policy:ATLAS_L6_POLICY,audit:ATLAS_L6_AUDIT};return out;};
+
+
+/* ===== ɅTLɅS v1.6.56 · L7 · Strength Reconciliation 2.0 =====
+   Objetivo: reconocer de forma robusta cuándo una fuerza prescrita por ɅTLɅS ha
+   sido realizada sin convertir coincidencias dudosas en hechos.
+   Prioridad autoritativa para FUERZA únicamente:
+   1) paired_event_id / paired_activity_id exactos;
+   2) identidad ATLAS (sessionKey / external_id estable);
+   3) mismo día con correspondencia inequívoca;
+   4) ±1 día sólo cuando la correspondencia es inequívoca.
+   El matcher general de carrera permanece intacto. No se modifica ni borra el
+   evento remoto: la reconciliación es observacional/visual y alimenta Execution.
+*/
+const ATLAS_L7_VERSION="1.6.56";
+const ATLAS_L7_STRENGTH_RECONCILIATION_VERSION="2.0";
+const ATLAS_L7_POLICY=Object.freeze({
+  scope:"strength_only",
+  priority:Object.freeze(["EXACT_PAIR","ATLAS_IDENTITY","SAME_DAY_STRONG","OFF_DATE_STRONG"]),
+  offScheduleWindowDays:1,
+  sameDayUniqueStrength:true,
+  offDateRequiresUniqueBipartiteMatch:true,
+  ambiguousNeverAutoMatched:true,
+  executionPlanMutation:false,
+  remoteWrite:false,
+  publicationContract:"unchanged"
+});
+function atlasL7StrengthDescriptorDate(d){return String(d?.effectiveDate||d?.canonicalDate||"").slice(0,10);}
+function atlasL7StrengthActivityId(a){return atlasV160ActivityId(a);}
+function atlasL7StrengthActivityText(a){return atlasV093NormText(`${activityName(a)} ${a?.description||a?.notes||""} ${(Array.isArray(a?.interval_summary)?a.interval_summary:[]).join(" ")}`);}
+function atlasL7StrengthSessionText(s){return atlasV093NormText(`${s?.name||""} ${s?.family||""} ${s?.role||""} ${s?.strengthVariant||""}`);}
+function atlasL7StrengthDurationRatio(session,activity){const p=Number(session?.durationSec),a=Number(activityElapsedSec(activity));return p>0&&a>0?a/p:null;}
+function atlasL7StrengthExerciseNames(session){
+  try{const model=typeof buildStrengthModel==="function"?buildStrengthModel(session||{}):null,out=[];for(const b of model?.blocks||[])for(const ex of b?.exercises||[]){const n=atlasV093NormText(ex?.displayName||ex?.canonical?.name||"");if(n.length>=4)out.push(n);}return[...new Set(out)];}catch{return[];}
+}
+function atlasL7StrengthEvidence(desc,activity){
+  const session=desc?.effectiveSession||desc?.canonicalSession||{},sn=atlasL7StrengthSessionText(session),an=atlasL7StrengthActivityText(activity),reasons=[];let score=0;
+  const sessionName=atlasV093NormText(session?.name),activityNameNorm=atlasV093NormText(activityName(activity));
+  if(sessionName&&activityNameNorm){if(sessionName===activityNameNorm){score+=5;reasons.push("same name");}else if(sessionName.length>=5&&activityNameNorm.length>=5&&(sessionName.includes(activityNameNorm)||activityNameNorm.includes(sessionName))){score+=3;reasons.push("compatible name");}}
+  const names=atlasL7StrengthExerciseNames(session),hits=names.filter(n=>an.includes(n)).length;
+  if(hits){score+=Math.min(6,hits*2);reasons.push(`${hits} exercise${hits===1?"":"s"} identified`);}
+  const ratio=atlasL7StrengthDurationRatio(session,activity);
+  if(Number.isFinite(ratio)){const delta=Math.abs(ratio-1);if(delta<=.25){score+=4;reasons.push("duration close");}else if(delta<=.50){score+=2;reasons.push("duration compatible");}else if(delta<=.80){score+=1;reasons.push("duration weakly compatible");}}
+  if(sn&&an&&/\bfuerza\b|\bstrength\b|\bgym\b|\bpesas\b|\bweight/.test(an)){score+=1;reasons.push("strength semantics");}
+  return{score,reasons,ratio:Number.isFinite(ratio)?ratio:null};
+}
+function atlasL7StrengthMatch(desc,activity,method,score,evidence=[]){
+  const actualDate=activityDate(activity),expectedDate=atlasL7StrengthDescriptorDate(desc),offSchedule=!!(actualDate&&expectedDate&&actualDate!==expectedDate);
+  return Object.freeze({sessionKey:String(desc.sessionKey),activityId:atlasL7StrengthActivityId(activity),activity,method,confidence:["EXACT_PAIR","ATLAS_IDENTITY"].includes(method)?"DIRECT":"HIGH",score:Number(score)||0,evidence:[...evidence],expectedDate,actualDate,offSchedule});
+}
+function atlasL7ResolveStrengthCore(descriptors,activities,{directBySession=new Map(),blockedSessions=new Set(),blockedActivities=new Set(),directAmbiguous=new Map()}={}){
+  const bySession=new Map(),byActivity=new Map(),ambiguous=new Map(directAmbiguous),usedS=new Set(),usedA=new Set();
+  const add=(m)=>{if(!m||usedS.has(m.sessionKey)||usedA.has(m.activityId))return false;bySession.set(m.sessionKey,m);byActivity.set(m.activityId,m);usedS.add(m.sessionKey);usedA.add(m.activityId);return true;};
+  for(const [key,m] of directBySession){if(!ambiguous.has(key))add(m);}
+  const ds=(descriptors||[]).filter(d=>d?.effectiveSession&&!blockedSessions.has(String(d.sessionKey))&&!usedS.has(String(d.sessionKey))),as=(activities||[]).filter(a=>trainingEngineIsStrengthActivity(a)&&!blockedActivities.has(atlasL7StrengthActivityId(a))&&!usedA.has(atlasL7StrengthActivityId(a)));
+  const byDateD=new Map(),byDateA=new Map();for(const d of ds){const date=atlasL7StrengthDescriptorDate(d);if(!date)continue;if(!byDateD.has(date))byDateD.set(date,[]);byDateD.get(date).push(d);}for(const a of as){const date=activityDate(a);if(!date)continue;if(!byDateA.has(date))byDateA.set(date,[]);byDateA.get(date).push(a);}
+  const dates=[...new Set([...byDateD.keys(),...byDateA.keys()])].sort();
+  /* Mismo día. 1↔1 es suficiente para fuerza: Garmin/Intervals puede alterar bastante
+     duración/nombre, pero no hay identidad competidora en ese día. */
+  for(const date of dates){
+    const sd=(byDateD.get(date)||[]).filter(d=>!usedS.has(String(d.sessionKey))),aa=(byDateA.get(date)||[]).filter(a=>!usedA.has(atlasL7StrengthActivityId(a)));
+    if(sd.length===1&&aa.length===1){const e=atlasL7StrengthEvidence(sd[0],aa[0]);add(atlasL7StrengthMatch(sd[0],aa[0],"SAME_DAY_STRONG",92,["unique strength session and activity on same day",...e.reasons]));continue;}
+    if(!sd.length||!aa.length)continue;
+    const edges=[];for(const d of sd)for(const a of aa){const e=atlasL7StrengthEvidence(d,a);if(e.score>=4)edges.push({d,a,e});}
+    for(const d of sd){if(usedS.has(String(d.sessionKey)))continue;const own=edges.filter(x=>x.d===d&&!usedA.has(atlasL7StrengthActivityId(x.a))).sort((x,y)=>y.e.score-x.e.score||atlasL7StrengthActivityId(x.a).localeCompare(atlasL7StrengthActivityId(y.a)));if(!own.length)continue;const top=own[0],runner=own[1],aid=atlasL7StrengthActivityId(top.a),competing=edges.filter(x=>x.a===top.a&&!usedS.has(String(x.d.sessionKey))).sort((x,y)=>y.e.score-x.e.score);const clearSession=!runner||top.e.score-runner.e.score>=2,clearActivity=competing.length===1||top.e.score-competing[1].e.score>=2;if(clearSession&&clearActivity)add(atlasL7StrengthMatch(d,top.a,"SAME_DAY_STRONG",90,["same-day strength evidence",...top.e.reasons]));else ambiguous.set(String(d.sessionKey),[...new Set(own.slice(0,2).map(x=>atlasL7StrengthActivityId(x.a)))].sort());}
+  }
+  /* ±1 día: sólo una arista posible por ambos lados. No hay greedy scoring. */
+  const remD=ds.filter(d=>!usedS.has(String(d.sessionKey))&&!ambiguous.has(String(d.sessionKey))),remA=as.filter(a=>!usedA.has(atlasL7StrengthActivityId(a))),edges=[];
+  for(const d of remD)for(const a of remA){const dd=atlasV160DateDiff(atlasL7StrengthDescriptorDate(d),activityDate(a));if(dd==null||Math.abs(dd)!==1)continue;const e=atlasL7StrengthEvidence(d,a);edges.push({d,a,e,dd});}
+  const sEdges=new Map(),aEdges=new Map();for(const x of edges){const sk=String(x.d.sessionKey),aid=atlasL7StrengthActivityId(x.a);if(!sEdges.has(sk))sEdges.set(sk,[]);sEdges.get(sk).push(x);if(!aEdges.has(aid))aEdges.set(aid,[]);aEdges.get(aid).push(x);}
+  for(const d of remD){const sk=String(d.sessionKey);if(usedS.has(sk)||ambiguous.has(sk))continue;const own=(sEdges.get(sk)||[]).filter(x=>!usedA.has(atlasL7StrengthActivityId(x.a)));if(own.length!==1){if(own.length>1)ambiguous.set(sk,own.map(x=>atlasL7StrengthActivityId(x.a)).sort());continue;}const x=own[0],aid=atlasL7StrengthActivityId(x.a),reverse=(aEdges.get(aid)||[]).filter(y=>!usedS.has(String(y.d.sessionKey)));if(reverse.length!==1){ambiguous.set(sk,[aid]);continue;}add(atlasL7StrengthMatch(d,x.a,"OFF_DATE_STRONG",88,[`unique strength match ${x.dd>0?"one day after":"one day before"}`,...x.e.reasons]));}
+  return{bySession,byActivity,ambiguous,usedSessionKeys:usedS,usedActivityIds:usedA};
+}
+function atlasL7SessionKeyForEvent(plan,event){if(!plan||!event)return null;return typeof atlasV101SessionKeyForEvent==="function"?atlasV101SessionKeyForEvent(plan,event):atlasV160SessionKeyFromExternal(plan,atlasV160ExternalId(event));}
+function atlasL7ActivityDeclaredSessionKey(plan,a){
+  const direct=[a?._atlas?.sessionKey,a?.atlasSessionKey,a?.atlas_session_key,a?.sessionKey,a?.workout?._atlas?.sessionKey].map(x=>String(x||"")).find(Boolean);if(direct)return direct;
+  for(const ext of [a?.external_id,a?.workout_external_id,a?.planned_workout_external_id,a?.workout?.external_id]){const key=atlasV160SessionKeyFromExternal(plan,ext);if(key)return key;}return null;
+}
+function atlasL7StrengthIdentity(plan,descriptors,activities){
+  const dmap=new Map((descriptors||[]).map(d=>[String(d.sessionKey),d])),activityMap=new Map((activities||[]).map(a=>[atlasL7StrengthActivityId(a),a])),eventIdToKey=new Map(),eventByKey=new Map();
+  for(const e of currentEvents||[]){const key=atlasL7SessionKeyForEvent(plan,e);if(!key||!dmap.has(String(key)))continue;const eid=atlasV160EventId(e);if(eid)eventIdToKey.set(String(eid),String(key));if(!eventByKey.has(String(key)))eventByKey.set(String(key),[]);eventByKey.get(String(key)).push(e);}
+  for(const row of plan?.publication?.remoteEvents||[]){const key=String(row?.sessionKey||"");if(!dmap.has(key))continue;for(const id of [row?.intervalsId,row?.id])if(id!=null)eventIdToKey.set(String(id),key);}
+  const linksBySession=new Map(),linksByActivity=new Map(),blockedSessions=new Set(),blockedActivities=new Set();
+  const link=(key,aid,method,evidence)=>{key=String(key||"");aid=String(aid||"");if(!key||!aid||!dmap.has(key)||!activityMap.has(aid))return;const item={key,aid,method,evidence};if(!linksBySession.has(key))linksBySession.set(key,[]);linksBySession.get(key).push(item);if(!linksByActivity.has(aid))linksByActivity.set(aid,[]);linksByActivity.get(aid).push(item);};
+  for(const a of activities||[]){const aid=atlasL7StrengthActivityId(a);if(a?.paired_event_id!=null){const key=eventIdToKey.get(String(a.paired_event_id));if(key)link(key,aid,"EXACT_PAIR","activity.paired_event_id");else blockedActivities.add(aid);}const key=atlasL7ActivityDeclaredSessionKey(plan,a);if(key&&dmap.has(String(key)))link(String(key),aid,"ATLAS_IDENTITY","activity ATLAS identity");}
+  for(const [key,events] of eventByKey){for(const e of events){if(e?.paired_activity_id==null)continue;const aid=String(e.paired_activity_id);if(activityMap.has(aid))link(key,aid,"EXACT_PAIR","event.paired_activity_id");else blockedSessions.add(key);}}
+  const directBySession=new Map(),directAmbiguous=new Map();
+  for(const [key,list0] of linksBySession){const list=[...new Map(list0.map(x=>[`${x.aid}|${x.method}`,x])).values()],activityIds=[...new Set(list.map(x=>x.aid))];if(activityIds.length!==1){directAmbiguous.set(key,activityIds.sort());continue;}const aid=activityIds[0],reverse=[...new Set((linksByActivity.get(aid)||[]).map(x=>x.key))];if(reverse.length!==1){directAmbiguous.set(key,[aid]);continue;}const chosen=list.sort((a,b)=>(a.method==="EXACT_PAIR"?-1:1)-(b.method==="EXACT_PAIR"?-1:1))[0],desc=dmap.get(key),a=activityMap.get(aid);directBySession.set(key,atlasL7StrengthMatch(desc,a,chosen.method,chosen.method==="EXACT_PAIR"?100:98,[chosen.evidence]));}
+  return{directBySession,directAmbiguous,blockedSessions,blockedActivities};
+}
+let atlasL7ReconCache=null;
+function atlasL7StrengthReconciliation(plan,{today=fmtDate(new Date()),force=false}={}){
+  if(!plan)return{bySession:new Map(),byActivity:new Map(),ambiguous:new Map(),matches:[],digest:null};
+  const key=`${plan.id}|${plan.updatedAt||""}|${today}|${(currentEvents||[]).length}|${(currentActivities||[]).length}`;
+  if(!force&&atlasL7ReconCache?.key===key&&atlasL7ReconCache?.events===currentEvents&&atlasL7ReconCache?.activities===currentActivities)return atlasL7ReconCache.value;
+  const descriptors=atlasV160AllDescriptors(plan).filter(d=>d?.effectiveSession&&atlasV160IsStrengthSession(d.effectiveSession)),activities=(currentActivities||[]).filter(a=>trainingEngineIsStrengthActivity(a)&&atlasV160ActivityRelevant(plan,a,today)).sort((a,b)=>activityDate(a).localeCompare(activityDate(b))||atlasL7StrengthActivityId(a).localeCompare(atlasL7StrengthActivityId(b))),identity=atlasL7StrengthIdentity(plan,descriptors,activities),core=atlasL7ResolveStrengthCore(descriptors,activities,identity),matches=[...core.bySession.values()].sort((a,b)=>String(a.expectedDate).localeCompare(String(b.expectedDate))||a.sessionKey.localeCompare(b.sessionKey)),digest=atlasV159Digest(matches.map(m=>({s:m.sessionKey,a:m.activityId,m:m.method,e:m.expectedDate,x:m.actualDate,o:m.offSchedule})));
+  const value={...core,matches,digest,descriptors,activities,version:ATLAS_L7_STRENGTH_RECONCILIATION_VERSION};atlasL7ReconCache={key,events:currentEvents,activities:currentActivities,value};return value;
+}
+
+/* atlasV093PairDay sigue siendo la autoridad para carrera. En fuerza delega en L7
+   para impedir que el fallback histórico oculte una sesión ante una coincidencia dudosa. */
+const atlasL7PairDayBase=atlasV093PairDay;
+atlasV093PairDay=function(dayEvents,dayActivities){
+  const plan=activeTrainingPlan(),hasStrength=(dayEvents||[]).some(e=>atlasV093SportFamily(planEventType(e))==="strength")||(dayActivities||[]).some(a=>trainingEngineIsStrengthActivity(a));if(!plan||!hasStrength)return atlasL7PairDayBase.apply(this,arguments);
+  const recon=atlasL7StrengthReconciliation(plan),activityIndexById=new Map((dayActivities||[]).map((a,i)=>[atlasL7StrengthActivityId(a),i])),atlasStrengthEvents=new Map();
+  (dayEvents||[]).forEach((e,ei)=>{if(atlasV093SportFamily(planEventType(e))!=="strength")return;const sk=atlasL7SessionKeyForEvent(plan,e);if(sk)atlasStrengthEvents.set(ei,String(sk));});
+  const reserved=new Map();for(const [ei,sk] of atlasStrengthEvents){const m=recon.bySession.get(sk),ai=m?activityIndexById.get(m.activityId):null;if(m&&Number.isInteger(ai)&&m.actualDate===planEventDate(dayEvents[ei]))reserved.set(ai,ei);}
+  /* Conserva todos los pares históricos que no pertenezcan a una fuerza ATLAS ni
+     consuman una actividad reservada por una identidad ATLAS más fuerte. */
+  const base=atlasL7PairDayBase(dayEvents,dayActivities),pairs=new Map(),usedActivities=new Set();for(const [ei,p] of base.pairs){const ai=p.activityIndex;if(atlasStrengthEvents.has(ei))continue;if(reserved.has(ai)&&reserved.get(ai)!==ei)continue;pairs.set(ei,p);usedActivities.add(ai);}
+  for(const [ei,sk] of atlasStrengthEvents){if(pairs.has(ei))continue;const m=recon.bySession.get(sk),ai=m?activityIndexById.get(m.activityId):null;if(m&&Number.isInteger(ai)&&m.actualDate===planEventDate(dayEvents[ei])&&!usedActivities.has(ai)){pairs.set(ei,{activityIndex:ai,mode:`l7:${m.method.toLowerCase()}`,score:m.score});usedActivities.add(ai);}}
+  return{pairs,usedActivities};
+};
+
+/* Execution Matcher: L7 es autoritativo sólo para fuerza; todos los records de
+   carrera proceden sin cambios del matcher 2.0. */
+const atlasL7BuildExecutionRecordsBase=atlasV160BuildExecutionRecords;
+atlasV160BuildExecutionRecords=function(plan,options={}){
+  const base=atlasL7BuildExecutionRecordsBase.apply(this,arguments);if(!plan)return base;const today=options?.today||fmtDate(new Date()),recon=atlasL7StrengthReconciliation(plan,{today}),descriptors=new Map((recon.descriptors||[]).map(d=>[String(d.sessionKey),d])),strengthKeys=new Set(descriptors.keys()),nonStrength=(base.records||[]).filter(r=>!r?.sessionKey||!strengthKeys.has(String(r.sessionKey))).filter(r=>!(r?.executionStatus==="EXTRA"&&r?.primaryActivityId&&recon.activities.some(a=>atlasL7StrengthActivityId(a)===String(r.primaryActivityId)))),records=[...nonStrength],ambiguousActivityIds=new Set([...recon.ambiguous.values()].flat().map(String));
+  for(const [key,desc] of descriptors){const m=recon.bySession.get(key),amb=recon.ambiguous.get(key)||null;if(m){const match={activityId:m.activityId,activity:m.activity,matchMethod:`L7_${m.method}`,matchConfidence:m.confidence,matchScore:m.score,candidate:atlasV160Candidate(desc,m.activity)},record=atlasV160ExecutionRecord(plan,desc,match,today,null);record.strengthReconciliation={version:ATLAS_L7_STRENGTH_RECONCILIATION_VERSION,method:m.method,confidence:m.confidence,evidence:m.evidence,offSchedule:m.offSchedule,expectedDate:m.expectedDate,actualDate:m.actualDate};record.strengthReconciliationStatus=m.offSchedule?"COMPLETED_OFF_SCHEDULE":"COMPLETED_SCHEDULED";records.push(record);}else records.push(atlasV160ExecutionRecord(plan,desc,null,today,amb));}
+  const represented=new Set(records.flatMap(r=>r?.activityIds||[]).map(String));for(const a of recon.activities){const aid=atlasL7StrengthActivityId(a);if(!represented.has(aid)&&!ambiguousActivityIds.has(aid))records.push(atlasV160ExtraRecord(plan,a));}
+  records.sort((a,b)=>String(a.actualDate||a.effectiveDate||a.canonicalDate||"").localeCompare(String(b.actualDate||b.effectiveDate||b.canonicalDate||""))||String(a.sessionKey||a.primaryActivityId||"").localeCompare(String(b.sessionKey||b.primaryActivityId||"")));
+  const summary={completed:records.filter(r=>r.executionStatus==="COMPLETED").length,partial:records.filter(r=>r.executionStatus==="PARTIAL").length,missed:records.filter(r=>r.executionStatus==="MISSED").length,extra:records.filter(r=>r.executionStatus==="EXTRA").length,ambiguous:records.filter(r=>r.executionStatus==="AMBIGUOUS").length,pending:records.filter(r=>r.executionStatus==="PENDING").length};return{...base,records,summary,strengthReconciliationVersion:ATLAS_L7_STRENGTH_RECONCILIATION_VERSION,inputDigest:atlasV159Digest({base:base.inputDigest,l7:recon.digest})};
+};
+
+/* El detalle de una fuerza realizada puede recuperar su prescripción incluso si se
+   ejecutó un día antes/después. Para otros deportes se conserva exactamente K. */
+const atlasL7ActivityPlanMatchBase=atlasV096ActivityPlanMatch;
+atlasV096ActivityPlanMatch=function(a){
+  if(!trainingEngineIsStrengthActivity(a))return atlasL7ActivityPlanMatchBase.apply(this,arguments);const plan=activeTrainingPlan();if(!plan)return null;const recon=atlasL7StrengthReconciliation(plan),m=recon.byActivity.get(atlasL7StrengthActivityId(a));if(!m)return null;const event=(currentEvents||[]).find(e=>String(atlasL7SessionKeyForEvent(plan,e)||"")===String(m.sessionKey))||null;return event?{event,mode:`l7:${m.method.toLowerCase()}`,score:m.score,strengthReconciliation:m}:null;
+};
+
+function atlasL7PlanButtonByEvent(event){const id=planEventId(event,currentEvents.indexOf(event));return qsa("[data-plan-event-id]",ui.planDays).find(b=>String(b.dataset.planEventId)===String(id))||null;}
+function atlasL7ActivityButtonById(id){return qsa("[data-activity-id]",ui.planDays).find(b=>String(b.dataset.activityId)===String(id))||null;}
+function atlasL7EnsureCompletedMark(button,m){if(!button)return;button.classList.add("atlas-plan-completed");button.dataset.atlasStrengthReconciliation=m.offSchedule?"off-schedule":"scheduled";let mark=button.querySelector(":scope > .atlas-plan-complete-mark");if(!mark){mark=document.createElement("span");mark.className="atlas-plan-complete-mark";mark.textContent="✅";button.appendChild(mark);}const label=m.offSchedule?`Sesión de fuerza programada realizada fuera de fecha (${m.actualDate})`:"Sesión de fuerza programada realizada";mark.title=label;mark.setAttribute("aria-label",label);}
+function atlasL7DecoratePlanStrengthCompletion(){
+  const plan=activeTrainingPlan();if(!plan||!ui.planDays)return;const recon=atlasL7StrengthReconciliation(plan);for(const m of recon.matches){const actual=atlasL7ActivityButtonById(m.activityId),event=(currentEvents||[]).find(e=>String(atlasL7SessionKeyForEvent(plan,e)||"")===String(m.sessionKey))||null,planned=event?atlasL7PlanButtonByEvent(event):null;if(actual){atlasL7EnsureCompletedMark(actual,m);if(planned&&planned!==actual)planned.remove();}else if(planned){atlasL7EnsureCompletedMark(planned,m);planned.dataset.atlasStrengthCompletedActivityId=m.activityId;}}
+}
+const atlasL7RenderPlanBase=renderPlan;
+renderPlan=function(){const result=atlasL7RenderPlanBase.apply(this,arguments);atlasL7DecoratePlanStrengthCompletion();return result;};
+
+/* Hoy no debe volver a ofrecer una fuerza ya realizada, incluso si se hizo ±1 día. */
+const atlasL7UpcomingCompletedBase=atlasK25UpcomingEventCompleted;
+atlasK25UpcomingEventCompleted=function(event,plan,completedKeys,todayPairs,todayEvents){if(atlasL7UpcomingCompletedBase.apply(this,arguments))return true;if(!plan||atlasV093SportFamily(planEventType(event))!=="strength")return false;const key=atlasL7SessionKeyForEvent(plan,event),m=key?atlasL7StrengthReconciliation(plan).bySession.get(String(key)):null;return !!m;};
+
+function atlasL7StrengthReconciliationAudit(){
+  const s=(key,date,dur=1800)=>({sessionKey:key,effectiveDate:date,canonicalDate:date,effectiveSession:{id:key,type:"Strength",family:"Fuerza",name:`Fuerza ${key}`,durationSec:dur,strengthVariant:"A"}}),a=(id,date,dur=1800,name="Strength Training")=>({id,type:"WeightTraining",name,start_date_local:`${date}T08:00:00`,moving_time:dur}),errors=[];
+  let r=atlasL7ResolveStrengthCore([s("same","2026-10-10")],[a("a-same","2026-10-10")]);if(r.bySession.get("same")?.method!=="SAME_DAY_STRONG")errors.push("same-day-unique");
+  r=atlasL7ResolveStrengthCore([s("off","2026-10-12")],[a("a-off","2026-10-13")]);if(r.bySession.get("off")?.method!=="OFF_DATE_STRONG"||!r.bySession.get("off")?.offSchedule)errors.push("off-date-unique");
+  r=atlasL7ResolveStrengthCore([s("x","2026-10-15"),s("y","2026-10-15")],[a("ax","2026-10-15"),a("ay","2026-10-15")]);if(r.bySession.size!==0||r.ambiguous.size===0)errors.push("ambiguous-not-blocked");
+  const direct=atlasL7StrengthMatch(s("direct","2026-10-18"),a("a-direct","2026-10-18"),"EXACT_PAIR",100,["test"]);r=atlasL7ResolveStrengthCore([s("direct","2026-10-18")],[direct.activity],{directBySession:new Map([["direct",direct]])});if(r.bySession.get("direct")?.method!=="EXACT_PAIR")errors.push("direct-priority");
+  r=atlasL7ResolveStrengthCore([s("far","2026-10-20")],[a("a-far","2026-10-22")]);if(r.bySession.size)errors.push("window-too-wide");
+  return Object.freeze({ok:errors.length===0,errors,policy:ATLAS_L7_POLICY});
+}
+const ATLAS_L7_AUDIT=atlasL7StrengthReconciliationAudit();
+registerAtlasDiagnostic("strengthReconciliation",Object.freeze({version:ATLAS_L7_VERSION,reconciliationVersion:ATLAS_L7_STRENGTH_RECONCILIATION_VERSION,policy:ATLAS_L7_POLICY,audit:ATLAS_L7_AUDIT,stats:()=>{const plan=activeTrainingPlan(),r=plan?atlasL7StrengthReconciliation(plan):null;return r?{matches:r.matches.length,ambiguous:r.ambiguous.size,offSchedule:r.matches.filter(x=>x.offSchedule).length}:null;}}));
+const atlasL7CollectRuntimeDiagnosticsBase=collectRuntimeDiagnostics;
+collectRuntimeDiagnostics=async function(){const out=await atlasL7CollectRuntimeDiagnosticsBase.apply(this,arguments);out.l7={version:ATLAS_L7_VERSION,reconciliationVersion:ATLAS_L7_STRENGTH_RECONCILIATION_VERSION,policy:ATLAS_L7_POLICY,audit:ATLAS_L7_AUDIT};return out;};
 
 })();
 
