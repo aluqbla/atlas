@@ -2351,7 +2351,7 @@ const AtlasHrv=(()=>{
 /* ===== ɅTLɅS v1.6.33 · K2.3 canonical Plan / Publication / Sync bindings =====
    Historical public overrides removed where the final implementation was self-contained.
    Golden K2.1 contracts remain the behavioral authority. */
-const APP_VERSION="1.6.56",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="1.6.57",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const ATLAS_RUNTIME=Object.freeze({appVersion:APP_VERSION,schemaVersion:SCHEMA_VERSION,dbName:DB_NAME,dbVersion:DB_VERSION,contractVersion:1});
 const atlasDiagnosticsRegistry=Object.create(null);
 function registerAtlasDiagnostic(name,value){if(!name)return value;atlasDiagnosticsRegistry[String(name)]=value;return value;}
@@ -6639,7 +6639,7 @@ function buildEffectivePlan(plan,schedule=null,overridesOverride=null){
   const latest=new Map();
   for(const o of overrides||[]){if(o?.sessionKey)latest.set(String(o.sessionKey),atlasV0814NewestOverride(latest.get(String(o.sessionKey)),o));}
   for(const o of latest.values()){
-    if(o.deleted||!o.targetDate||!atlasV0814SameWeek(o.originalDate,o.targetDate))continue;
+    if(o.deleted||!o.targetDate)continue;
     let sourceDay=null,idx=-1;
     for(const d of days){
       idx=(d.sessions||[]).findIndex(s=>atlasV0814SessionKey(s)===String(o.sessionKey));
