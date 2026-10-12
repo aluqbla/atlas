@@ -2351,7 +2351,7 @@ const AtlasHrv=(()=>{
 /* ===== ɅTLɅS v1.6.33 · K2.3 canonical Plan / Publication / Sync bindings =====
    Historical public overrides removed where the final implementation was self-contained.
    Golden K2.1 contracts remain the behavioral authority. */
-const APP_VERSION="1.6.57",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="1.6.58",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const ATLAS_RUNTIME=Object.freeze({appVersion:APP_VERSION,schemaVersion:SCHEMA_VERSION,dbName:DB_NAME,dbVersion:DB_VERSION,contractVersion:1});
 const atlasDiagnosticsRegistry=Object.create(null);
 function registerAtlasDiagnostic(name,value){if(!name)return value;atlasDiagnosticsRegistry[String(name)]=value;return value;}
@@ -14312,6 +14312,126 @@ const ATLAS_L7_AUDIT=atlasL7StrengthReconciliationAudit();
 registerAtlasDiagnostic("strengthReconciliation",Object.freeze({version:ATLAS_L7_VERSION,reconciliationVersion:ATLAS_L7_STRENGTH_RECONCILIATION_VERSION,policy:ATLAS_L7_POLICY,audit:ATLAS_L7_AUDIT,stats:()=>{const plan=activeTrainingPlan(),r=plan?atlasL7StrengthReconciliation(plan):null;return r?{matches:r.matches.length,ambiguous:r.ambiguous.size,offSchedule:r.matches.filter(x=>x.offSchedule).length}:null;}}));
 const atlasL7CollectRuntimeDiagnosticsBase=collectRuntimeDiagnostics;
 collectRuntimeDiagnostics=async function(){const out=await atlasL7CollectRuntimeDiagnosticsBase.apply(this,arguments);out.l7={version:ATLAS_L7_VERSION,reconciliationVersion:ATLAS_L7_STRENGTH_RECONCILIATION_VERSION,policy:ATLAS_L7_POLICY,audit:ATLAS_L7_AUDIT};return out;};
+
+
+/* ===== ɅTLɅS v1.6.58 · L8.2 · VO₂ max latest-run consistency hotfix =====
+   Contrato:
+   - Hoy y Rendimiento muestran el VO₂ de la actividad de carrera más reciente.
+   - Una entrada wellness sólo puede actuar como fallback si pertenece al mismo día
+     que esa carrera; nunca convierte un día sin carrera en una nueva lectura de VO₂.
+   - La ficha de actividad reutiliza la misma asociación por carrera cuando el endpoint
+     específico no devuelve valor.
+   - Se conservan hasta 2 decimales reales; los ceros finales no se fuerzan (54, no 54,00).
+   - No se modifica histórico, Training Engine, Adaptive, Plan ni publicación remota. */
+const ATLAS_L82_VERSION="1.6.58";
+const ATLAS_L82_POLICY=Object.freeze({
+  todayVo2:"latest_run_only",
+  profileVo2:"latest_run_only",
+  activityVo2:"activity_bound_with_same_day_wellness_fallback",
+  decimals:"up_to_2_without_forced_trailing_zeros",
+  schemaMigration:false,
+  remoteWrites:false
+});
+
+function atlasL82GenericActivityVo2(run){
+  for(const raw of [run?.vo2max,run?.vo2Max,run?.vo2_max,run?.icu_vo2max]){
+    const n=Number(raw?.value??raw);if(Number.isFinite(n)&&n>0)return{value:n,source:"activity_field"};
+  }
+  return null;
+}
+function atlasL82WellnessVo2ForRun(run,wellness=currentWellness){
+  const date=activityDate(run);if(!date)return null;
+  const rows=(wellness||[]).filter(w=>String(w?.id||w?.date||"").slice(0,10)===date);
+  for(const w of rows){
+    const n=Number(pick(w,["vo2max","vo2Max","vo2_max"]));
+    if(Number.isFinite(n)&&n>0)return{value:n,source:"wellness_same_run_day",record:w};
+  }
+  return null;
+}
+function atlasL82ResolveRunVo2(run,wellness=currentWellness,cachedVo2=currentCachedVo2){
+  if(!run||!isRun(run))return null;
+  const direct=findVo2InActivity(run);if(Number.isFinite(Number(direct?.value))&&Number(direct.value)>0)return{value:Number(direct.value),source:direct.source||"activity_precise",record:run};
+  if(cachedVo2?.activityId!=null&&String(cachedVo2.activityId)===String(run.id)){
+    const n=Number(cachedVo2.value);if(Number.isFinite(n)&&n>0)return{value:n,source:cachedVo2.source||"cache",record:run};
+  }
+  const generic=atlasL82GenericActivityVo2(run);if(generic)return{...generic,record:run};
+  const fallback=atlasL82WellnessVo2ForRun(run,wellness);if(fallback)return fallback;
+  return null;
+}
+function atlasL82LatestRunVo2(runs=currentActivities,wellness=currentWellness,cachedVo2=currentCachedVo2){
+  const latest=(runs||[]).filter(isRun).sort((a,b)=>activityStamp(b).localeCompare(activityStamp(a)))[0]||null;
+  if(!latest)return null;
+  const resolved=atlasL82ResolveRunVo2(latest,wellness,cachedVo2);if(!resolved)return null;
+  return{...resolved,activityId:latest.id,date:activityDate(latest),record:latest};
+}
+
+/* Hoy: no compite un valor wellness de otro día ni una carrera antigua. */
+const atlasL82LatestVo2MetricBase=latestVo2Metric;
+latestVo2Metric=function(wellness,runs,cachedVo2){
+  return atlasL82LatestRunVo2(runs,wellness,cachedVo2);
+};
+
+/* Perfil/Rendimiento: usa exactamente la misma carrera más reciente que Hoy sin
+   adulterar la caché global antes de que el refresco específico termine. */
+const atlasL82RenderProfilePanelBase=renderProfilePanel;
+renderProfilePanel=function(athlete){
+  const metric=atlasL82LatestRunVo2(currentActivities,currentWellness,currentCachedVo2),saved=currentCachedVo2;
+  if(metric)currentCachedVo2={activityId:metric.activityId,value:metric.value,source:metric.source,date:metric.date};
+  try{return atlasL82RenderProfilePanelBase.apply(this,arguments);}
+  finally{currentCachedVo2=saved;}
+};
+
+/* Ficha: el valor sigue ligado a la actividad concreta. El wellness del mismo día
+   sólo cubre la ausencia de valor en detalle/endpoint, nunca una carrera distinta. */
+const atlasL82ActivityVo2Base=activityVo2;
+activityVo2=function(a){
+  const base=atlasL82ActivityVo2Base.apply(this,arguments);if(Number.isFinite(Number(base))&&Number(base)>0)return Number(base);
+  const fallback=atlasL82ResolveRunVo2(a,currentWellness,currentCachedVo2);return Number.isFinite(Number(fallback?.value))&&Number(fallback.value)>0?Number(fallback.value):null;
+};
+
+/* Refresco de la carrera más reciente: si el endpoint específico no entrega VO₂,
+   se adopta el valor que Intervals expone para el mismo día de esa carrera y se
+   persiste asociado al activityId. Así Hoy, Perfil y ficha convergen. */
+refreshLatestRunVo2=async function(run){
+  if(!run?.id)return;
+  let n=NaN,source="activity";
+  try{
+    const p=await api(`/api/activity-vo2max?id=${encodeURIComponent(run.id)}`);
+    n=Number(p?.vo2max);source=p?.source||"activity";
+  }catch{}
+  if(!Number.isFinite(n)||n<=0){
+    const local=atlasL82ResolveRunVo2(run,currentWellness,currentCachedVo2);
+    n=Number(local?.value);source=local?.source||source;
+  }
+  run.atlasVo2CheckedAt=new Date().toISOString();
+  if(!Number.isFinite(n)||n<=0){await storePut("activities",run).catch(()=>{});return;}
+  const value={activityId:run.id,value:n,source,date:activityDate(run),updatedAt:new Date().toISOString()};
+  currentCachedVo2=value;atlasG3Snapshot.cachedVo2={key:"latestRunVo2",value};
+  run.atlasVo2Max=n;
+  await Promise.all([
+    storePut("meta",{key:"latestRunVo2",value}).catch(()=>{}),
+    storePut("activities",run).catch(()=>{})
+  ]);
+  if(String(currentActivityDetail?.id||"")===String(run.id)){
+    currentActivityVo2=n;renderActivityDetail(currentActivityDetail);
+  }
+  if(ui.vo2Value)ui.vo2Value.textContent=formatVo2Value(n);
+  if(atlasG3Snapshot.profile||atlasG3Snapshot.athlete)safeUiRender("perfil",()=>renderDataSummary(atlasG3Snapshot));
+  requestAnimationFrame(()=>{fitMetricTypography();fitProfilePerformanceTypography();});
+};
+
+function atlasL82Vo2Audit(){
+  const run={id:"latest",type:"Run",start_date_local:"2026-10-12T07:45:00"},older={id:"older",type:"Run",start_date_local:"2026-10-09T07:45:00",atlasVo2Max:54.16},well=[{id:"2026-10-12",vo2max:54},{id:"2026-10-11",vo2max:99}],cache={activityId:"older",value:54.16,source:"activity"},m=atlasL82LatestRunVo2([older,run],well,cache),errors=[];
+  if(m?.activityId!=="latest"||m?.value!==54)errors.push("latest-run-only");
+  if(formatVo2Value(54)!=="54")errors.push("no-forced-decimals");
+  if(formatVo2Value(54.16)!=="54,16")errors.push("real-decimals");
+  if(atlasL82WellnessVo2ForRun({...run,start_date_local:"2026-10-10T07:45:00"},well)!==null)errors.push("no-rest-day-invention");
+  return Object.freeze({ok:errors.length===0,errors,policy:ATLAS_L82_POLICY});
+}
+const ATLAS_L82_AUDIT=atlasL82Vo2Audit();
+registerAtlasDiagnostic("vo2LatestRun",Object.freeze({version:ATLAS_L82_VERSION,policy:ATLAS_L82_POLICY,audit:ATLAS_L82_AUDIT}));
+const atlasL82CollectRuntimeDiagnosticsBase=collectRuntimeDiagnostics;
+collectRuntimeDiagnostics=async function(){const out=await atlasL82CollectRuntimeDiagnosticsBase.apply(this,arguments);out.l82={version:ATLAS_L82_VERSION,policy:ATLAS_L82_POLICY,audit:ATLAS_L82_AUDIT};return out;};
 
 })();
 
