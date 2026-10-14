@@ -2375,7 +2375,7 @@ const AtlasHrv=(()=>{
 /* ===== ɅTLɅS v1.6.33 · K2.3 canonical Plan / Publication / Sync bindings =====
    Historical public overrides removed where the final implementation was self-contained.
    Golden K2.1 contracts remain the behavioral authority. */
-const APP_VERSION="1.6.65",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="1.6.66",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const ATLAS_RUNTIME=Object.freeze({appVersion:APP_VERSION,schemaVersion:SCHEMA_VERSION,dbName:DB_NAME,dbVersion:DB_VERSION,contractVersion:1});
 const atlasDiagnosticsRegistry=Object.create(null);
 function registerAtlasDiagnostic(name,value){if(!name)return value;atlasDiagnosticsRegistry[String(name)]=value;return value;}
@@ -3604,18 +3604,18 @@ async function atlasG4Optional(kind,fn){
 
 async function commitSyncPayload(payload,bootstrap,{oldest,newest,mode}){
   const p=validateSyncPayload(payload),b=validBootstrapPayload(bootstrap)?bootstrap:null;
-  const localActivityMeta=new Map(currentActivities.filter(x=>x&&x.id!=null).map(x=>[String(x.id),{atlasVo2Max:x.atlasVo2Max,atlasVo2CheckedAt:x.atlasVo2CheckedAt}]));
+  const localActivityMeta=new Map(currentActivities.filter(x=>x&&x.id!=null).map(x=>[String(x.id),{atlasVo2Max:x.atlasVo2Max,atlasVo2CheckedAt:x.atlasVo2CheckedAt,atlasVo2Source:x.atlasVo2Source,atlasVo2Quality:x.atlasVo2Quality,atlasVo2UpdatedAt:x.atlasVo2UpdatedAt}]));
   const missing=p.activities.filter(x=>x&&x.id!=null&&!localActivityMeta.has(String(x.id))).map(x=>x.id);
   if(missing.length){
     const fallback=await storeGetMany("activities",missing).catch(()=>[]);atlasG4SyncDiagnostics.metadataFallbackReads+=fallback.filter(Boolean).length;
-    for(const row of fallback)if(row&&row.id!=null)localActivityMeta.set(String(row.id),{atlasVo2Max:row.atlasVo2Max,atlasVo2CheckedAt:row.atlasVo2CheckedAt});
+    for(const row of fallback)if(row&&row.id!=null)localActivityMeta.set(String(row.id),{atlasVo2Max:row.atlasVo2Max,atlasVo2CheckedAt:row.atlasVo2CheckedAt,atlasVo2Source:row.atlasVo2Source,atlasVo2Quality:row.atlasVo2Quality,atlasVo2UpdatedAt:row.atlasVo2UpdatedAt});
   }
   const mergedActivities=[],stores=["activities","wellness","meta",...(b?["athlete","gear","sportSettings"]:[])];
   const d=await ensureDb(),tx=d.transaction(stores,"readwrite"),activities=tx.objectStore("activities"),wellness=tx.objectStore("wellness"),meta=tx.objectStore("meta");
   for(const row of p.activities){
     if(!row||row.id==null)continue;
     const saved=localActivityMeta.get(String(row.id)),next={...row},precise=Number(saved?.atlasVo2Max);
-    if(Number.isFinite(precise)&&precise>0)next.atlasVo2Max=precise;if(saved?.atlasVo2CheckedAt)next.atlasVo2CheckedAt=saved.atlasVo2CheckedAt;
+    if(Number.isFinite(precise)&&precise>0)next.atlasVo2Max=precise;if(saved?.atlasVo2CheckedAt)next.atlasVo2CheckedAt=saved.atlasVo2CheckedAt;if(saved?.atlasVo2Source)next.atlasVo2Source=saved.atlasVo2Source;if(saved?.atlasVo2Quality)next.atlasVo2Quality=saved.atlasVo2Quality;if(saved?.atlasVo2UpdatedAt)next.atlasVo2UpdatedAt=saved.atlasVo2UpdatedAt;
     activities.put(next);mergedActivities.push(next);
   }
   const mergedWellness=[];for(const row of p.wellness)if(row&&row.id!=null){wellness.put(row);mergedWellness.push(row);}
@@ -5385,13 +5385,13 @@ async function fetchAndPersistRunVo2Precision(run){
 async function backfillVo2HistoryPrecision(range=null,limit=24){
   if(vo2HistoryBackfillPromise||!atlasOnline()||!hasAtlasConnectionConfig())return null;
   const start=range?.start||"0000-01-01",end=range?.end||"9999-12-31";
-  const candidates=[...currentActivities].filter(isRun).filter(a=>{const d=activityDate(a);return d&&d>=start&&d<=end&&!activityHasPreciseVo2(a)&&!a.atlasVo2CheckedAt;}).sort((a,b)=>activityStamp(b).localeCompare(activityStamp(a))).slice(0,Math.max(1,Number(limit)||24));
+  const candidates=[...currentActivities].filter(isRun).filter(a=>{const d=activityDate(a);return d&&d>=start&&d<=end&&!activityHasPreciseVo2(a)&&atlasM81Vo2RetryEligible(a);}).sort((a,b)=>activityStamp(b).localeCompare(activityStamp(a))).slice(0,Math.max(1,Number(limit)||24));
   if(!candidates.length)return{checked:0,updated:0,remaining:0};
   vo2HistoryBackfillPromise=(async()=>{
     let cursor=0,updated=0,checked=0;
     const worker=async()=>{while(cursor<candidates.length){const run=candidates[cursor++];try{if(await fetchAndPersistRunVo2Precision(run))updated++;checked++;}catch(error){console.warn("ɅTLɅS · recuperación histórica VO₂",error);break;}}};
     await Promise.all(Array.from({length:Math.min(4,candidates.length)},worker));
-    const remaining=currentActivities.filter(isRun).filter(a=>{const d=activityDate(a);return d&&d>=start&&d<=end&&!activityHasPreciseVo2(a)&&!a.atlasVo2CheckedAt;}).length;
+    const remaining=currentActivities.filter(isRun).filter(a=>{const d=activityDate(a);return d&&d>=start&&d<=end&&!activityHasPreciseVo2(a)&&atlasM81Vo2RetryEligible(a);}).length;
     return{checked,updated,remaining};
   })();
   try{return await vo2HistoryBackfillPromise;}finally{vo2HistoryBackfillPromise=null;}
@@ -13009,7 +13009,7 @@ function atlasK32R3QualityKind(e){
   return e?.type==="interval"?"interval":null;
 }
 function atlasK32R3Benefit(e){
-  const plan=e?.planContext?.plan||e?.plan?.match?.plan||null,race=atlasK32R3RaceLabel(plan),phase=atlasK32R3PhasePhrase(e),ctx=plan?` Dentro de la preparación de ${race}${phase?` (${phase})`:""}, `:" ";
+  const plan=e?.planContext?.plan||e?.plan?.match?.plan||null,race=atlasK32R3RaceLabel(plan),ctx=plan?` Dentro de la preparación de ${race}, `:" ";
   if(trainingEngineIsStrengthActivity(e?.a))return`${ctx}refuerza fuerza útil, estabilidad y tolerancia muscular para soportar mejor el volumen y los ritmos de carrera.`.replace(/^\s+/,"");
   if(e?.type==="recovery")return`${ctx}favorece la recuperación activa y suma estímulo aeróbico con un coste de fatiga bajo.`.replace(/^\s+/,"");
   if(e?.type==="easy")return`${ctx}aporta base aeróbica y economía de carrera, acumulando kilómetros sin comprometer la siguiente sesión clave.`.replace(/^\s+/,"");
@@ -14576,9 +14576,9 @@ function atlasM1EvaluateWindow(plan,execution,schedule,{start,end,today}={}){
   return{start,end,score,band:atlasM1Band(score),confidence,dimensions,counts,volumeRatio:atlasM1Round(volumeRatio,3),strengths:narrative.strengths,concerns:narrative.concerns,evidenceIds:records.map(r=>String(r.executionRecordId||"")).filter(Boolean).sort()};
 }
 function atlasM1WeeklyTrend(plan,execution,schedule,start,today){const out=[];let cursor=atlasV0814WeekBounds(start).start;while(cursor<=today){const end=atlasM1MinDate(addDays(cursor,6),today),ev=atlasM1EvaluateWindow(plan,execution,schedule,{start:cursor,end,today});out.push({weekStart:cursor,weekEnd:end,score:ev.score,band:ev.band.key});cursor=addDays(cursor,7);}return out.slice(-4);}
-function buildPlanHealthModel(plan,{today=fmtDate(new Date())}={}){
+function buildPlanHealthModel(plan,{today=fmtDate(new Date()),execution=null,schedule=null}={}){
   if(!plan)return null;const startDate=String(plan.startDate||today);if(today<startDate)return Object.freeze({schema:ATLAS_M1_SCHEMA,version:ATLAS_M1_VERSION,status:"PAUSED_UNTIL_PLAN_START",planId:plan.id,today,score:null,band:atlasM1Band(null),confidence:"LOW",maturity:"PROVISIONAL",window:null,cumulative:null,dimensions:{},counts:{},weeklyTrend:[],strengths:[],concerns:[],evidenceIds:[],inputDigest:atlasV159Digest({planId:plan.id,today,startDate,status:"PAUSED"})});
-  const schedule=buildEffectivePlan(plan),execution=atlasV160BuildExecutionRecords(plan,{today}),windowStart=atlasM1MaxDate(startDate,addDays(today,-27)),current=atlasM1EvaluateWindow(plan,execution,schedule,{start:windowStart,end:today,today}),cumulative=atlasM1EvaluateWindow(plan,execution,schedule,{start:startDate,end:today,today}),days=atlasM1DaysBetween(startDate,today),eligible=(current.counts.completed||0)+(current.counts.partial||0)+(current.counts.missed||0),maturity=(days<7||eligible<4)?"PROVISIONAL":"ESTABLISHED",weeklyTrend=atlasM1WeeklyTrend(plan,execution,schedule,windowStart,today),inputDigest=atlasV159Digest({version:ATLAS_M1_VERSION,planId:plan.id,today,startDate,effective:atlasV159Digest(schedule?.days||[]),execution:execution?.inputDigest||null,windowStart});
+  const effectiveSchedule=schedule||buildEffectivePlan(plan),executionModel=execution||atlasV160BuildExecutionRecords(plan,{today}),windowStart=atlasM1MaxDate(startDate,addDays(today,-27)),current=atlasM1EvaluateWindow(plan,executionModel,effectiveSchedule,{start:windowStart,end:today,today}),cumulative=atlasM1EvaluateWindow(plan,executionModel,effectiveSchedule,{start:startDate,end:today,today}),days=atlasM1DaysBetween(startDate,today),eligible=(current.counts.completed||0)+(current.counts.partial||0)+(current.counts.missed||0),maturity=(days<7||eligible<4)?"PROVISIONAL":"ESTABLISHED",weeklyTrend=atlasM1WeeklyTrend(plan,executionModel,effectiveSchedule,windowStart,today),inputDigest=atlasV159Digest({version:ATLAS_M1_VERSION,planId:plan.id,today,startDate,effective:atlasV159Digest(effectiveSchedule?.days||[]),execution:executionModel?.inputDigest||null,windowStart});
   return Object.freeze({schema:ATLAS_M1_SCHEMA,version:ATLAS_M1_VERSION,status:"READY",planId:plan.id,today,score:current.score,band:current.band,confidence:current.confidence,maturity,window:{days:28,start:windowStart,end:today},cumulative:{score:cumulative.score,band:cumulative.band,start:startDate,end:today,dimensions:cumulative.dimensions,counts:cumulative.counts},dimensions:current.dimensions,counts:current.counts,weeklyTrend,strengths:current.strengths,concerns:current.concerns,evidenceIds:current.evidenceIds,inputDigest});
 }
 
@@ -15235,7 +15235,7 @@ function atlasM7AdaptiveBridge(goal,performance,health,checkpoints){
 function atlasM7RecentOutcomes(outcomeModel){return(outcomeModel?.outcomes||[]).filter(o=>o.actualDate&&![ATLAS_M4_OUTCOME.PENDING,ATLAS_M4_OUTCOME.NOT_EXPECTED,ATLAS_M4_OUTCOME.INSUFFICIENT_DATA].includes(o.outcome)).sort((a,b)=>String(b.actualDate).localeCompare(String(a.actualDate))||String(b.outcomeId).localeCompare(String(a.outcomeId))).slice(0,3);}
 function buildPlanIntelligenceModel(plan,{today=fmtDate(new Date()),force=false}={}){
   if(!plan)return null;const key=atlasM7ModelKey(plan,today),hit=atlasM7Cache.get(plan);if(!force&&hit?.key===key)return hit.model;
-  const execution=atlasV160BuildExecutionRecords(plan,{today}),health=buildPlanHealthModel(plan,{today}),goal=buildGoalProgressModel(plan,{today,health}),performance=buildPerformanceProgressionModel(plan,{today,execution,health}),outcomes=buildWorkoutOutcomeModel(plan,{today,execution,activities:currentActivities}),checkpoints=buildCheckpointModel(plan,{today,execution,outcomeModel:outcomes,activities:currentActivities}),ability=buildDynamicAbilityAnchorsModel(plan,{today,execution,activities:currentActivities,checkpointModel:checkpoints}),adaptiveBridge=atlasM7AdaptiveBridge(goal,performance,health,checkpoints),recentOutcomes=atlasM7RecentOutcomes(outcomes),inputDigest=atlasV159Digest({version:ATLAS_M7_VERSION,planId:plan.id,today,health:health?.inputDigest||null,goal:goal?.inputDigest||null,performance:performance?.inputDigest||null,outcomes:outcomes?.inputDigest||null,checkpoints:checkpoints?.inputDigest||null,ability:ability?.inputDigest||null,adaptive:adaptiveBridge});
+  const execution=atlasV160BuildExecutionRecords(plan,{today}),health=buildPlanHealthModel(plan,{today,execution}),goal=buildGoalProgressModel(plan,{today,health}),performance=buildPerformanceProgressionModel(plan,{today,execution,health}),outcomes=buildWorkoutOutcomeModel(plan,{today,execution,activities:currentActivities}),checkpoints=buildCheckpointModel(plan,{today,execution,outcomeModel:outcomes,activities:currentActivities}),ability=buildDynamicAbilityAnchorsModel(plan,{today,execution,activities:currentActivities,checkpointModel:checkpoints}),adaptiveBridge=atlasM7AdaptiveBridge(goal,performance,health,checkpoints),recentOutcomes=atlasM7RecentOutcomes(outcomes),inputDigest=atlasV159Digest({version:ATLAS_M7_VERSION,planId:plan.id,today,health:health?.inputDigest||null,goal:goal?.inputDigest||null,performance:performance?.inputDigest||null,outcomes:outcomes?.inputDigest||null,checkpoints:checkpoints?.inputDigest||null,ability:ability?.inputDigest||null,adaptive:adaptiveBridge});
   const model=Object.freeze({schema:ATLAS_M7_SCHEMA,version:ATLAS_M7_VERSION,status:today<String(plan.startDate||today)?"PAUSED_UNTIL_PLAN_START":"READY",planId:plan.id,today,health,goal,performance,outcomes,checkpoints,ability,adaptiveBridge,recentOutcomes:Object.freeze(recentOutcomes),inputDigest});atlasM7Cache.set(plan,{key,model});return model;
 }
 function atlasM7EnsureSection(){
@@ -15257,7 +15257,7 @@ function renderPlanIntelligenceUI(plan=activeTrainingPlan()){
 }
 /* Ritmos visibles = anchors dinámicos M6. El objetivo sólo gobierna las familias
    específicas; el umbral oficial de Intervals sigue siendo autoritativo. */
-renderTrainingPlanPaces=function(){const box=$("trainingPlanPaces"),plan=activeTrainingPlan();if(!box||!plan)return;const dynamic=buildDynamicAbilityAnchorsModel(plan),anchors=dynamic?.paceAnchors||atlasK241EffectiveAnchors(plan)||plan.engine?.paceAnchors;if(!anchors){box.innerHTML='<p class="atlas-supporting">Los ritmos aún no están disponibles.</p>';return;}const rows=trainingPlanPremiumPaceRows(anchors).map(r=>({...r,vHtml:`${esc(String(r.v||"—").replace(/\s*min\/km\s*$/i,""))}${r.v&&r.v!=="—"?'<small> min/km</small>':''}`})),needs=dynamic?.currentAbility?.anchorTest?.required===true;box.innerHTML=`<div class="training-plan-premium-grid paces">${rows.map(r=>`<div class="training-plan-premium-card"><div class="training-plan-premium-top"><span class="training-plan-premium-emoji">${r.e}</span><span class="training-plan-premium-label">${esc(r.l)}</span></div><div class="training-plan-premium-value ${trainingPlanMetricSize(r.v)}">${r.vHtml}</div></div>`).join("")}${needs?'<div class="training-plan-premium-note">⚠️ Falta un umbral oficial válido para calcular algunos ritmos sin inventarlos.</div>':''}</div>`;};
+renderTrainingPlanPaces=function(){const box=$("trainingPlanPaces"),plan=activeTrainingPlan();if(!box||!plan)return;const cached=typeof atlasM81PeekPlanIntelligence==="function"?atlasM81PeekPlanIntelligence(plan):null,dynamic=cached?.ability||buildDynamicAbilityAnchorsModel(plan),anchors=dynamic?.paceAnchors||atlasK241EffectiveAnchors(plan)||plan.engine?.paceAnchors;if(!anchors){box.innerHTML='<p class="atlas-supporting">Los ritmos aún no están disponibles.</p>';return;}const rows=trainingPlanPremiumPaceRows(anchors).map(r=>({...r,vHtml:`${esc(String(r.v||"—").replace(/\s*min\/km\s*$/i,""))}${r.v&&r.v!=="—"?'<small> min/km</small>':''}`})),needs=dynamic?.currentAbility?.anchorTest?.required===true;box.innerHTML=`<div class="training-plan-premium-grid paces">${rows.map(r=>`<div class="training-plan-premium-card"><div class="training-plan-premium-top"><span class="training-plan-premium-emoji">${r.e}</span><span class="training-plan-premium-label">${esc(r.l)}</span></div><div class="training-plan-premium-value ${trainingPlanMetricSize(r.v)}">${r.vHtml}</div></div>`).join("")}${needs?'<div class="training-plan-premium-note">⚠️ Falta un umbral oficial válido para calcular algunos ritmos sin inventarlos.</div>':''}</div>`;};
 /* M7 se inserta encima del renderer validado: no reemplaza ninguna sección previa. */
 const atlasM7RenderWorkspaceBase=renderTrainingPlanWorkspace;
 renderTrainingPlanWorkspace=function(){const result=atlasM7RenderWorkspaceBase.apply(this,arguments);renderPlanIntelligenceUI(activeTrainingPlan());renderTrainingPlanPaces();return result;};
@@ -15274,6 +15274,137 @@ registerAtlasDiagnostic("planIntelligence",Object.freeze({version:ATLAS_M7_VERSI
 const atlasM7CollectRuntimeDiagnosticsBase=collectRuntimeDiagnostics;
 collectRuntimeDiagnostics=async function(){const out=await atlasM7CollectRuntimeDiagnosticsBase.apply(this,arguments),p=activeTrainingPlan(),m=p?buildPlanIntelligenceModel(p):null;out.m7={version:ATLAS_M7_VERSION,schema:ATLAS_M7_SCHEMA,policy:ATLAS_M7_POLICY,audit:ATLAS_M7_AUDIT,current:m?{goal:m.goal?.state||null,health:m.health?{score:m.health.score,band:m.health.band,confidence:m.health.confidence}:null,performance:m.performance?.overall||null,checkpoints:m.checkpoints?.trajectory||null,adaptiveBridge:m.adaptiveBridge,inputDigest:m.inputDigest}:null};return out;};
 atlasDomReadyInitializers.push(()=>{atlasM7EnsureSection();});
+
+
+/* ===== ɅTLɅS v1.6.66 · M8.1 · Precision / Responsiveness / Copy hotfix =====
+   Base exclusiva: v1.6.65-M7 FINAL Fase M.
+   - VO₂: conserva la máxima precisión realmente expuesta por Intervals y vuelve a
+     consultar fuentes redondeadas/temporales en lugar de congelarlas como precisas.
+   - Rendimiento: Plan Intelligence se calcula después del primer paint y reutiliza
+     Execution/M6; las secciones cerradas no fuerzan trabajo pesado de presentación.
+   - Activity Analysis: elimina la fase redundante entre paréntesis de Beneficio.
+   No cambia Canonical/Effective Plan, Training/Adaptive, schema/DB ni remoto. */
+const ATLAS_M81_VERSION="1.6.66";
+const ATLAS_M81_VO2_RETRY_MS=6*60*60*1000;
+const ATLAS_M81_POLICY=Object.freeze({
+  vo2:"best_intervals_precision_no_inference",
+  roundedVo2RetryHours:6,
+  planIntelligence:"lazy_on_evolution_open",
+  reuseExecutionRecords:true,
+  collapsedHeavySections:"lazy",
+  activityBenefitPhaseParenthesis:false,
+  canonicalWrites:false,effectivePlanWrites:false,adaptiveWrites:false,remoteWrites:false,schemaMigration:false
+});
+
+/* ---- VO₂ precision provenance ---- */
+function atlasM81NumVo2(v){const n=Number(v?.value??v);return Number.isFinite(n)&&n>10&&n<100?n:null;}
+function atlasM81Vo2Quality(source,value,explicit=null){
+  const ex=String(explicit||"").toUpperCase();if(["PRECISE","FALLBACK"].includes(ex))return ex;
+  const s=String(source||"").toLowerCase(),n=Number(value);
+  if(s.includes("fit:")||s.includes("vo2maxgarmin")||s.includes("garminvo2")||s.includes("vo2_max_garmin"))return"PRECISE";
+  if(Number.isFinite(n)&&Math.abs(n-Math.round(n))>.0001)return"PRECISE";
+  if(s.includes("wellness"))return"FALLBACK";
+  return"UNKNOWN";
+}
+function atlasM81Vo2Rank(candidate){if(!candidate)return-1;const q=atlasM81Vo2Quality(candidate.source,candidate.value,candidate.quality);if(q==="PRECISE")return 30;if(q==="UNKNOWN")return 20;return 10;}
+function atlasM81GarminActivityVo2(run){
+  const fields=["VO2MaxGarmin","vo2MaxGarmin","vo2maxGarmin","garminVO2Max","garminVo2Max","vo2_max_garmin"];
+  for(const obj of[run,run?.customFields,run?.custom_fields].filter(Boolean))for(const f of fields){const n=atlasM81NumVo2(obj?.[f]);if(n)return{value:n,source:f,quality:"PRECISE",record:run};}
+  for(const obj of[run,run?.customFields,run?.custom_fields].filter(Boolean))for(const[k,v]of Object.entries(obj)){if(/vo2.*max.*garmin|garmin.*vo2.*max/i.test(k)){const n=atlasM81NumVo2(v);if(n)return{value:n,source:k,quality:"PRECISE",record:run};}}
+  return null;
+}
+function atlasM81SavedActivityVo2(run){const n=atlasM81NumVo2(run?.atlasVo2Max);if(!n)return null;const source=run?.atlasVo2Source||"atlasVo2Max",quality=atlasM81Vo2Quality(source,n,run?.atlasVo2Quality);return{value:n,source,quality,record:run};}
+function atlasM81GenericActivityVo2(run){for(const raw of[run?.vo2max,run?.vo2Max,run?.vo2_max,run?.icu_vo2max]){const n=atlasM81NumVo2(raw);if(n)return{value:n,source:"activity_field",quality:Math.abs(n-Math.round(n))>.0001?"PRECISE":"UNKNOWN",record:run};}return null;}
+function atlasM81WellnessCandidate(run,wellness=currentWellness,source="wellness_same_run_day"){
+  const row=atlasL82WellnessVo2ForRun(run,wellness),n=atlasM81NumVo2(row?.value);if(!n)return null;return{value:n,source,quality:atlasM81Vo2Quality(source,n),record:row?.record||run};
+}
+function atlasM81CachedCandidate(run,cached=currentCachedVo2){if(cached?.activityId==null||String(cached.activityId)!==String(run?.id))return null;const n=atlasM81NumVo2(cached.value);if(!n)return null;return{value:n,source:cached.source||"cache",quality:atlasM81Vo2Quality(cached.source,n,cached.quality),record:run};}
+function atlasM81BestVo2Candidate(candidates){return(candidates||[]).filter(Boolean).sort((a,b)=>atlasM81Vo2Rank(b)-atlasM81Vo2Rank(a)||Number(Math.abs(Number(b.value)-Math.round(Number(b.value)))>.0001)-Number(Math.abs(Number(a.value)-Math.round(Number(a.value)))>.0001))[0]||null;}
+
+/* `atlasVo2Max` sólo se considera fuente precisa cuando existe evidencia de precisión.
+   Un entero histórico sin procedencia queda disponible como fallback a través de L8.2,
+   pero no puede tapar un decimal más preciso del wellness/API. */
+findVo2InActivity=function(activity){
+  const garmin=atlasM81GarminActivityVo2(activity);if(garmin)return{value:garmin.value,source:garmin.source};
+  const saved=atlasM81SavedActivityVo2(activity);if(saved&&saved.quality==="PRECISE")return{value:saved.value,source:saved.source};
+  return null;
+};
+activityHasPreciseVo2=function(activity){const c=atlasM81SavedActivityVo2(activity);return !!c&&c.quality==="PRECISE";};
+function atlasM81Vo2RetryEligible(activity){
+  if(activityHasPreciseVo2(activity))return false;const legacyRounded=atlasM81NumVo2(activity?.atlasVo2Max)&&!activity?.atlasVo2Quality&&!activity?.atlasVo2Source;if(legacyRounded)return true;const stamp=Date.parse(String(activity?.atlasVo2UpdatedAt||activity?.atlasVo2CheckedAt||""));return !Number.isFinite(stamp)||Date.now()-stamp>=ATLAS_M81_VO2_RETRY_MS;
+}
+atlasL82ResolveRunVo2=function(run,wellness=currentWellness,cachedVo2=currentCachedVo2){
+  if(!run||!isRun(run))return null;return atlasM81BestVo2Candidate([atlasM81GarminActivityVo2(run),atlasM81GenericActivityVo2(run),atlasM81WellnessCandidate(run,wellness),atlasM81SavedActivityVo2(run),atlasM81CachedCandidate(run,cachedVo2)]);
+};
+async function atlasM81LiveWellnessVo2(run){
+  const date=activityDate(run);if(!date||!atlasOnline()||!hasAtlasConnectionConfig())return null;
+  try{const p=await api(`/api/sync?oldest=${encodeURIComponent(date)}&newest=${encodeURIComponent(date)}`),rows=Array.isArray(p?.wellness)?p.wellness:[],c=atlasM81WellnessCandidate(run,rows,"wellness_live_intervals");return c;}catch{return null;}
+}
+async function atlasM81FetchBestRunVo2(run,{includeEndpoint=true}={}){
+  if(!run?.id)return null;const candidates=[];
+  const local=atlasL82ResolveRunVo2(run,currentWellness,currentCachedVo2);if(local)candidates.push(local);
+  if(!includeEndpoint&&local?.quality==="PRECISE")return local;
+  if(includeEndpoint)try{const p=await api(`/api/activity-vo2max?id=${encodeURIComponent(run.id)}`),n=atlasM81NumVo2(p?.vo2max);if(n)candidates.push({value:n,source:p?.source||"activity_endpoint",quality:atlasM81Vo2Quality(p?.source,n),record:run});}catch{}
+  const bestBeforeLive=atlasM81BestVo2Candidate(candidates);
+  if(!bestBeforeLive||bestBeforeLive.quality!=="PRECISE"){const live=await atlasM81LiveWellnessVo2(run);if(live)candidates.push(live);}
+  return atlasM81BestVo2Candidate(candidates);
+}
+async function atlasM81PersistRunVo2(run,candidate,{latest=true}={}){
+  if(!run?.id||!candidate)return false;const n=atlasM81NumVo2(candidate.value);if(!n)return false;const now=new Date().toISOString(),quality=atlasM81Vo2Quality(candidate.source,n,candidate.quality),value={activityId:run.id,value:n,source:candidate.source||"unknown",quality,date:activityDate(run),updatedAt:now};
+  const apply=row=>{if(!row)return;row.atlasVo2Max=n;row.atlasVo2Source=value.source;row.atlasVo2Quality=quality;row.atlasVo2CheckedAt=now;row.atlasVo2UpdatedAt=now;};apply(run);
+  const local=(currentActivities||[]).find(x=>String(x?.id)===String(run.id));if(local&&local!==run)apply(local);
+  const writes=[storePut("activities",local||run).catch(()=>{})];if(latest){currentCachedVo2=value;atlasG3Snapshot.cachedVo2={key:"latestRunVo2",value};writes.push(storePut("meta",{key:"latestRunVo2",value}).catch(()=>{}));}
+  await Promise.all(writes);atlasM81DataRevision++;const p=activeTrainingPlan();if(p)atlasM7Invalidate(p);return true;
+}
+refreshLatestRunVo2=async function(run){
+  if(!run?.id)return;const best=await atlasM81FetchBestRunVo2(run);if(!best){run.atlasVo2CheckedAt=new Date().toISOString();await storePut("activities",run).catch(()=>{});return;}
+  await atlasM81PersistRunVo2(run,best,{latest:true});const n=best.value;
+  if(String(currentActivityDetail?.id||"")===String(run.id)){currentActivityVo2=n;renderActivityDetail(currentActivityDetail);}
+  if(ui.vo2Value)ui.vo2Value.textContent=formatVo2Value(n);if(atlasG3Snapshot.profile||atlasG3Snapshot.athlete)safeUiRender("perfil",()=>renderDataSummary(atlasG3Snapshot));requestAnimationFrame(()=>{fitMetricTypography();fitProfilePerformanceTypography();});
+};
+fetchAndPersistRunVo2Precision=async function(run){const best=await atlasM81FetchBestRunVo2(run);if(!best){run.atlasVo2CheckedAt=new Date().toISOString();await storePut("activities",run).catch(()=>{});return false;}await atlasM81PersistRunVo2(run,best,{latest:false});return best.quality==="PRECISE";};
+function atlasM81CachedVo2NeedsRefresh(run,cached=currentCachedVo2){if(!run?.id)return false;if(cached?.activityId==null||String(cached.activityId)!==String(run.id))return true;const q=atlasM81Vo2Quality(cached.source,cached.value,cached.quality);if(q==="PRECISE")return false;const legacyRounded=atlasM81NumVo2(cached?.value)&&!cached?.quality&&!run?.atlasVo2Quality;if(legacyRounded)return true;const stamp=Date.parse(String(cached.updatedAt||run.atlasVo2UpdatedAt||run.atlasVo2CheckedAt||""));return !Number.isFinite(stamp)||Date.now()-stamp>=ATLAS_M81_VO2_RETRY_MS;}
+const atlasM81G3PostEffectsBase=atlasG3PostEffects;
+atlasG3PostEffects=function(opts={}){
+  const safe={...opts,vo2:false},result=atlasM81G3PostEffectsBase(safe);if(opts?.vo2){let latest=null;for(const a of currentActivities||[])if(isRun(a)&&(!latest||activityStamp(a)>activityStamp(latest)))latest=a;if(latest?.id&&atlasM81CachedVo2NeedsRefresh(latest,currentCachedVo2))refreshLatestRunVo2(latest).catch(error=>recordRuntimeAudit("vo2-refresh-m81",error).catch(()=>{}));if(currentMetricDetail&&METRIC_DETAIL_CONFIG[currentMetricDetail]?.key==="vo2")scheduleVo2HistoryPrecisionBackfill(metricWindow(),true);}return result;
+};
+const atlasM81OpenActivityDetailBase=openActivityDetail;
+openActivityDetail=async function(id){const result=await atlasM81OpenActivityDetailBase.apply(this,arguments),a=currentActivityDetail;if(a&&isRun(a)&&(!Number.isFinite(Number(currentActivityVo2))||Math.abs(Number(currentActivityVo2)-Math.round(Number(currentActivityVo2)))<.0001)){const best=await atlasM81FetchBestRunVo2(a,{includeEndpoint:false});if(best&&atlasM81NumVo2(best.value)){await atlasM81PersistRunVo2(a,best,{latest:String(atlasL82LatestRunVo2(currentActivities,currentWellness,currentCachedVo2)?.activityId||"")===String(a.id)});currentActivityVo2=best.value;renderActivityDetail(a);}}return result;};
+
+/* ---- Plan Intelligence responsiveness ---- */
+let atlasM81DataRevision=0,atlasM81IntelligenceTimer=null,atlasM81ScheduledPlan=null;
+const atlasM81G3ApplyDataBase=atlasG3ApplyData;
+atlasG3ApplyData=function(data){const relevant=["activities","wellness","sportSettings","events"].some(k=>Object.prototype.hasOwnProperty.call(data||{},k)),r=atlasM81G3ApplyDataBase.apply(this,arguments);if(relevant){atlasM81DataRevision++;const p=activeTrainingPlan();if(p)atlasM7Invalidate(p);}return r;};
+const atlasM81G3RememberBase=atlasG3Remember;
+atlasG3Remember=function(key,value){const r=atlasM81G3RememberBase.apply(this,arguments);if(["activities","wellness","sportSettings","events"].includes(String(key))){atlasM81DataRevision++;const p=activeTrainingPlan();if(p)atlasM7Invalidate(p);}return r;};
+atlasM7ModelKey=function(plan,today){let th=null;try{th=atlasK242SportThreshold();}catch{}return atlasV159Digest({v:ATLAS_M7_VERSION,m81:ATLAS_M81_VERSION,rev:atlasM81DataRevision,planId:plan?.id||null,today,updatedAt:plan?.updatedAt||null,adaptiveUpdatedAt:plan?.adaptiveEngine?.updatedAt||null,threshold:th?[th.paceSecKm,th.heartRateBpm,th.observedAt]:null});};
+function atlasM81PeekPlanIntelligence(plan,{today=fmtDate(new Date())}={}){if(!plan)return null;const hit=atlasM7Cache.get(plan);return hit?.key===atlasM7ModelKey(plan,today)?hit.model:null;}
+const atlasM81RenderPacesFull=renderTrainingPlanPaces;
+renderTrainingPlanPaces=function(){const section=document.querySelector('[data-training-plan-section="paces"]'),box=$("trainingPlanPaces");if(section&&!section.classList.contains("open")){if(box&&!box.dataset.atlasM81Lazy){box.dataset.atlasM81Lazy="1";box.innerHTML="";}return;}return atlasM81RenderPacesFull.apply(this,arguments);};
+const atlasM81StructuralBase=atlasM7StructuralNoticeBase;
+atlasV164StructuralNotice=function(plan){const base=atlasM81StructuralBase(plan);if(base)return base;const bridge=atlasM81PeekPlanIntelligence(plan)?.adaptiveBridge;if(bridge?.action!=="GOAL_REVIEW_REQUIRED")return null;return{tone:"warn",title:"Revisar objetivo",copy:`${bridge.reason} ɅTLɅS no modifica el objetivo ni el plan sin tu decisión.`};};
+function atlasM81SchedulePlanIntelligence(plan,{immediate=false,force=false}={}){
+  if(!plan)return;atlasM81ScheduledPlan=plan;if(atlasM81IntelligenceTimer){clearTimeout(atlasM81IntelligenceTimer);atlasM81IntelligenceTimer=null;}
+  const run=()=>{atlasM81IntelligenceTimer=null;const p=atlasM81ScheduledPlan;if(!p||p!==activeTrainingPlan())return;const model=buildPlanIntelligenceModel(p,{force});const evolution=document.querySelector('[data-training-plan-section="evolution"]');if(evolution?.classList.contains("open"))renderPlanIntelligenceUI(p);const paces=document.querySelector('[data-training-plan-section="paces"]');if(paces?.classList.contains("open"))atlasM81RenderPacesFull(model);atlasV164RenderPlanNotice();};
+  atlasM81IntelligenceTimer=setTimeout(run,immediate?0:90);
+}
+const atlasM81RenderWorkspaceBase=atlasM7RenderWorkspaceBase;
+renderTrainingPlanWorkspace=function(){const result=atlasM81RenderWorkspaceBase.apply(this,arguments),plan=activeTrainingPlan();atlasM7EnsureSection();const evo=$("trainingPlanIntelligence"),section=document.querySelector('[data-training-plan-section="evolution"]');if(evo&&!evo.innerHTML)evo.innerHTML='<p class="atlas-supporting">La evolución se calcula al abrir esta sección.</p>';if(section?.classList.contains("open"))atlasM81SchedulePlanIntelligence(plan,{immediate:true});return result;};
+const atlasM81EvaluateAdaptiveBase=atlasM7EvaluateAdaptiveBase;
+atlasV096EvaluateAdaptivePlan=async function(plan,options={}){const result=await atlasM81EvaluateAdaptiveBase.apply(this,arguments);atlasM7Invalidate(plan);if(plan&&plan===activeTrainingPlan()&&!ui.trainingPlanWorkspace?.classList.contains("hidden")){const evolution=document.querySelector('[data-training-plan-section="evolution"]');if(evolution?.classList.contains("open"))atlasM81SchedulePlanIntelligence(plan,{immediate:true,force:true});const paces=document.querySelector('[data-training-plan-section="paces"]');if(paces?.classList.contains("open"))renderTrainingPlanPaces();}return result;};
+atlasDomReadyInitializers.push(()=>{on(ui.trainingPlanWorkspace,"click",e=>{const b=e.target.closest("[data-training-plan-section-toggle]");if(!b)return;const key=b.dataset.trainingPlanSectionToggle,section=b.closest("[data-training-plan-section]");if(!section?.classList.contains("open"))return;if(key==="evolution"){const cached=atlasM81PeekPlanIntelligence(activeTrainingPlan());if(cached)renderPlanIntelligenceUI(activeTrainingPlan());else atlasM81SchedulePlanIntelligence(activeTrainingPlan(),{immediate:true});}else if(key==="paces"){renderTrainingPlanPaces();}});});
+
+function atlasM81Audit(){
+  const errors=[],run={id:"r",type:"Run",start_date_local:"2026-10-14T07:00:00",atlasVo2Max:54,atlasVo2Source:"wellness_same_run_day",atlasVo2Quality:"FALLBACK"},well=[{id:"2026-10-14",vo2max:54.37}],r=atlasL82ResolveRunVo2(run,well,null);if(r?.value!==54.37||r?.quality!=="PRECISE")errors.push("vo2-decimal-preferred");
+  const precise={...run,VO2MaxGarmin:54.42};if(atlasL82ResolveRunVo2(precise,well,null)?.value!==54.42)errors.push("vo2-garmin-priority");if(formatVo2Value(54)!=="54"||formatVo2Value(54.37)!=="54,37")errors.push("vo2-format-contract");
+  const benefit=atlasK32R3Benefit({type:"easy",a:{type:"Run"},planContext:{plan:{distanceKey:"marathon"},phase:"preparation"}});if(/\(preparaci[oó]n\)/i.test(benefit)||!benefit.includes("preparación de maratón"))errors.push("benefit-copy");
+  if(ATLAS_M81_POLICY.remoteWrites!==false||ATLAS_M81_POLICY.canonicalWrites!==false||ATLAS_M81_POLICY.adaptiveWrites!==false)errors.push("policy-write-guard");
+  return Object.freeze({ok:errors.length===0,errors,policy:ATLAS_M81_POLICY});
+}
+const ATLAS_M81_AUDIT=atlasM81Audit();
+registerAtlasDiagnostic("postMPerformanceHotfix",Object.freeze({version:ATLAS_M81_VERSION,policy:ATLAS_M81_POLICY,audit:ATLAS_M81_AUDIT}));
+const atlasM81CollectRuntimeDiagnosticsBase=collectRuntimeDiagnostics;
+collectRuntimeDiagnostics=async function(){const out=await atlasM81CollectRuntimeDiagnosticsBase.apply(this,arguments);out.m81={version:ATLAS_M81_VERSION,policy:ATLAS_M81_POLICY,audit:ATLAS_M81_AUDIT,dataRevision:atlasM81DataRevision};return out;};
 
 })();
 
