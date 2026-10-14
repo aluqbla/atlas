@@ -2375,7 +2375,7 @@ const AtlasHrv=(()=>{
 /* ===== ɅTLɅS v1.6.33 · K2.3 canonical Plan / Publication / Sync bindings =====
    Historical public overrides removed where the final implementation was self-contained.
    Golden K2.1 contracts remain the behavioral authority. */
-const APP_VERSION="1.6.66",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="1.6.67",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const ATLAS_RUNTIME=Object.freeze({appVersion:APP_VERSION,schemaVersion:SCHEMA_VERSION,dbName:DB_NAME,dbVersion:DB_VERSION,contractVersion:1});
 const atlasDiagnosticsRegistry=Object.create(null);
 function registerAtlasDiagnostic(name,value){if(!name)return value;atlasDiagnosticsRegistry[String(name)]=value;return value;}
@@ -15405,6 +15405,118 @@ const ATLAS_M81_AUDIT=atlasM81Audit();
 registerAtlasDiagnostic("postMPerformanceHotfix",Object.freeze({version:ATLAS_M81_VERSION,policy:ATLAS_M81_POLICY,audit:ATLAS_M81_AUDIT}));
 const atlasM81CollectRuntimeDiagnosticsBase=collectRuntimeDiagnostics;
 collectRuntimeDiagnostics=async function(){const out=await atlasM81CollectRuntimeDiagnosticsBase.apply(this,arguments);out.m81={version:ATLAS_M81_VERSION,policy:ATLAS_M81_POLICY,audit:ATLAS_M81_AUDIT,dataRevision:atlasM81DataRevision};return out;};
+
+
+/* ===== ɅTLɅS v1.6.67 · M8.2 · VO₂ precision source arbitration =====
+   Corrige la regresión observada en octubre de 2026:
+   - Un campo Garmin entero NO demuestra que el dato sea preciso.
+   - La fuente local, wellness vivo y endpoint específico se comparan antes de cerrar el valor.
+   - Worker >=0.8.4 compara además campo directo de Intervals y FIT y devuelve el mejor disponible.
+   - Nunca se inventan decimales: si todas las fuentes entregan un entero, se conserva el entero.
+   No modifica Plan, Adaptive, schema/DB ni publicación. */
+const ATLAS_M82_VERSION="1.6.67";
+const ATLAS_M82_POLICY=Object.freeze({
+  vo2SourceArbitration:"fractional_evidence_first",
+  integerGarminFieldIsNotProofOfPrecision:true,
+  workerContract:"activity_vo2max_best_direct_fit_candidate_v0.8.4",
+  noDecimalInference:true,
+  canonicalWrites:false,effectivePlanWrites:false,adaptiveWrites:false,remoteWrites:false,schemaMigration:false
+});
+function atlasM82HasFraction(v){const n=Number(v);return Number.isFinite(n)&&Math.abs(n-Math.round(n))>.0001;}
+function atlasM82DirectGarminSource(source){const s=String(source||"").toLowerCase();return !s.includes("fit:")&&(s.includes("vo2maxgarmin")||s.includes("garminvo2")||s.includes("vo2_max_garmin")||s.includes("activity.vo2"));}
+atlasM81Vo2Quality=function(source,value,explicit=null){
+  const n=Number(value),s=String(source||"").toLowerCase(),ex=String(explicit||"").toUpperCase();
+  if(atlasM82HasFraction(n))return"PRECISE";
+  if(s.includes("fit:")&&ex==="PRECISE")return"PRECISE";
+  if(atlasM82DirectGarminSource(s))return"UNKNOWN";
+  if(ex==="FALLBACK")return"FALLBACK";
+  if(ex==="PRECISE")return"UNKNOWN";
+  if(s.includes("wellness"))return"FALLBACK";
+  return"UNKNOWN";
+};
+atlasM81GarminActivityVo2=function(run){
+  const fields=["VO2MaxGarmin","vo2MaxGarmin","vo2maxGarmin","garminVO2Max","garminVo2Max","vo2_max_garmin"];
+  for(const obj of[run,run?.customFields,run?.custom_fields].filter(Boolean))for(const f of fields){const n=atlasM81NumVo2(obj?.[f]);if(n)return{value:n,source:f,quality:atlasM82HasFraction(n)?"PRECISE":"UNKNOWN",record:run};}
+  for(const obj of[run,run?.customFields,run?.custom_fields].filter(Boolean))for(const[k,v]of Object.entries(obj)){if(/vo2.*max.*garmin|garmin.*vo2.*max/i.test(k)){const n=atlasM81NumVo2(v);if(n)return{value:n,source:k,quality:atlasM82HasFraction(n)?"PRECISE":"UNKNOWN",record:run};}}
+  return null;
+};
+atlasM81FetchBestRunVo2=async function(run,{includeEndpoint=true}={}){
+  if(!run?.id)return null;const candidates=[];
+  const local=atlasL82ResolveRunVo2(run,currentWellness,currentCachedVo2);if(local)candidates.push(local);
+  if(includeEndpoint){
+    try{
+      const p=await api(`/api/activity-vo2max?id=${encodeURIComponent(run.id)}`),n=atlasM81NumVo2(p?.vo2max);
+      if(n)candidates.push({value:n,source:p?.source||"activity_endpoint",quality:p?.precision==="fractional"||atlasM82HasFraction(n)?"PRECISE":"UNKNOWN",record:run,workerVersion:p?.workerVersion||null});
+    }catch{}
+  }
+  /* Aunque el endpoint devuelva un Garmin entero, todavía puede existir un decimal
+     wellness en Intervals para el mismo día. Sólo se omite la consulta cuando ya hay
+     evidencia fraccionaria real. */
+  let best=atlasM81BestVo2Candidate(candidates);
+  if(!best||best.quality!=="PRECISE"){
+    const live=await atlasM81LiveWellnessVo2(run);if(live)candidates.push(live);
+    best=atlasM81BestVo2Candidate(candidates);
+  }
+  return best;
+};
+atlasM81CachedVo2NeedsRefresh=function(run,cached=currentCachedVo2){
+  if(!run?.id)return false;
+  if(cached?.activityId==null||String(cached.activityId)!==String(run.id))return true;
+  const n=atlasM81NumVo2(cached?.value),source=String(cached?.source||"");
+  if(!n)return true;
+  if(atlasM82HasFraction(n))return false;
+  /* Un entero antiguo marcado PRECISE por M8.1 se fuerza a revalidar una vez. */
+  if(atlasM82DirectGarminSource(source)||!cached?.quality||String(cached.quality).toUpperCase()==="PRECISE")return true;
+  const stamp=Date.parse(String(cached.updatedAt||run.atlasVo2UpdatedAt||run.atlasVo2CheckedAt||""));
+  return !Number.isFinite(stamp)||Date.now()-stamp>=ATLAS_M81_VO2_RETRY_MS;
+};
+
+/* Histórico VO₂: resolver cada fecha por calidad, no por orden de escritura.
+   Evita que VO2MaxGarmin=55 sobrescriba un wellness/FIT 54,63 del mismo día. */
+function atlasM82Vo2DailySeries(start="0000-01-01",end="9999-12-31"){
+  const byDate=new Map(),offer=(date,candidate)=>{
+    const d=String(date||"").slice(0,10);if(!candidate||!d||d<start||d>end)return;
+    const current=byDate.get(d),best=atlasM81BestVo2Candidate([current?.candidate,candidate]);
+    if(best)byDate.set(d,{date:d,value:Number(best.value),candidate:best});
+  };
+  for(const w of currentWellness||[]){
+    const d=String(w?.id||w?.date||"").slice(0,10),n=atlasM81NumVo2(pick(w,["vo2max","vo2Max","vo2_max"]));
+    if(n)offer(d,{value:n,source:"wellness",quality:atlasM81Vo2Quality("wellness",n),record:w});
+  }
+  for(const r of (currentActivities||[]).filter(isRun)){
+    const d=activityDate(r);if(!d||d<start||d>end)continue;
+    for(const c of [atlasM81GarminActivityVo2(r),atlasM81GenericActivityVo2(r),atlasM81SavedActivityVo2(r)])offer(d,c);
+  }
+  if(currentCachedVo2?.activityId){
+    const r=(currentActivities||[]).find(a=>String(a?.id)===String(currentCachedVo2.activityId));
+    if(r)offer(activityDate(r),atlasM81CachedCandidate(r,currentCachedVo2));
+  }
+  return[...byDate.values()].sort((a,b)=>a.date.localeCompare(b.date)).map(({date,value})=>({date,value}));
+}
+const atlasM82DetailSeriesBase=detailSeries;
+detailSeries=function(key,start,end,days){if(key==="vo2")return atlasM82Vo2DailySeries(start,end);return atlasM82DetailSeriesBase.apply(this,arguments);};
+previousKnownVo2=function(beforeDate){const s=atlasM82Vo2DailySeries("0000-01-01",addDays(beforeDate,-1));return s.length?s.at(-1):null;};
+
+const atlasM82AllMetricValuesBase=allMetricValues;
+allMetricValues=function(key){if(key==="vo2")return atlasM82Vo2DailySeries().map(x=>x.value).filter(Number.isFinite);return atlasM82AllMetricValuesBase.apply(this,arguments);};
+/* M3 usa la misma resolución de fuente que la UI; una actividad con Garmin entero
+   no puede ocultar un wellness/FIT fraccionario del mismo día. */
+atlasM3RunVo2=function(a,wellness=currentWellness){const c=atlasL82ResolveRunVo2(a,wellness,currentCachedVo2),n=atlasM81NumVo2(c?.value);return n||null;};
+function atlasM82Audit(){
+  const errors=[],run={id:"r",type:"Run",start_date_local:"2026-10-14T07:00:00",VO2MaxGarmin:55,atlasVo2Max:55,atlasVo2Source:"VO2MaxGarmin",atlasVo2Quality:"PRECISE"};
+  const g=atlasM81GarminActivityVo2(run);if(g?.quality!=="UNKNOWN")errors.push("integer-garmin-not-precise");
+  if(atlasM81Vo2Quality("activity.VO2MaxGarmin",55,"PRECISE")!=="UNKNOWN")errors.push("legacy-integer-downgrade");
+  if(atlasM81Vo2Quality("fit:mesg140.field7",54.63,"PRECISE")!=="PRECISE")errors.push("fit-fraction-precise");
+  const picked=atlasM81BestVo2Candidate([{value:55,source:"VO2MaxGarmin",quality:"UNKNOWN"},{value:54.63,source:"fit:mesg140.field7",quality:"PRECISE"}]);if(picked?.value!==54.63)errors.push("fractional-fit-wins");
+  if(formatVo2Value(55)!=="55"||formatVo2Value(54.63)!=="54,63")errors.push("format");
+  if(ATLAS_M82_POLICY.remoteWrites!==false||ATLAS_M82_POLICY.canonicalWrites!==false)errors.push("write-guard");
+  return Object.freeze({ok:errors.length===0,errors,policy:ATLAS_M82_POLICY});
+}
+const ATLAS_M82_AUDIT=atlasM82Audit();
+registerAtlasDiagnostic("vo2PrecisionM82",Object.freeze({version:ATLAS_M82_VERSION,policy:ATLAS_M82_POLICY,audit:ATLAS_M82_AUDIT}));
+const atlasM82CollectRuntimeDiagnosticsBase=collectRuntimeDiagnostics;
+collectRuntimeDiagnostics=async function(){const out=await atlasM82CollectRuntimeDiagnosticsBase.apply(this,arguments);out.m82={version:ATLAS_M82_VERSION,policy:ATLAS_M82_POLICY,audit:ATLAS_M82_AUDIT};return out;};
+
 
 })();
 
