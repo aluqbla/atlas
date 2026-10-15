@@ -2375,7 +2375,7 @@ const AtlasHrv=(()=>{
 /* ===== ɅTLɅS v1.6.33 · K2.3 canonical Plan / Publication / Sync bindings =====
    Historical public overrides removed where the final implementation was self-contained.
    Golden K2.1 contracts remain the behavioral authority. */
-const APP_VERSION="1.6.67",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
+const APP_VERSION="1.6.68",SCHEMA_VERSION=10,DB_NAME="atlas",DB_VERSION=3;
 const ATLAS_RUNTIME=Object.freeze({appVersion:APP_VERSION,schemaVersion:SCHEMA_VERSION,dbName:DB_NAME,dbVersion:DB_VERSION,contractVersion:1});
 const atlasDiagnosticsRegistry=Object.create(null);
 function registerAtlasDiagnostic(name,value){if(!name)return value;atlasDiagnosticsRegistry[String(name)]=value;return value;}
@@ -15516,6 +15516,49 @@ const ATLAS_M82_AUDIT=atlasM82Audit();
 registerAtlasDiagnostic("vo2PrecisionM82",Object.freeze({version:ATLAS_M82_VERSION,policy:ATLAS_M82_POLICY,audit:ATLAS_M82_AUDIT}));
 const atlasM82CollectRuntimeDiagnosticsBase=collectRuntimeDiagnostics;
 collectRuntimeDiagnostics=async function(){const out=await atlasM82CollectRuntimeDiagnosticsBase.apply(this,arguments);out.m82={version:ATLAS_M82_VERSION,policy:ATLAS_M82_POLICY,audit:ATLAS_M82_AUDIT};return out;};
+
+
+
+/* ===== ɅTLɅS v1.6.68 · M8.3 · Garmin direct precise VO₂ =====
+   Garmin comenzó a filtrar sus métricas propietarias en los FIT enviados a partners.
+   Para VO₂, Intervals sigue siendo fallback, pero Worker >=0.8.5 puede consultar
+   Garmin Connect maxmet directamente y devolver vo2MaxPreciseValue.
+   Nunca se infieren decimales a partir de gráficas ni de enteros. */
+const ATLAS_M83_VERSION="1.6.68";
+const ATLAS_M83_POLICY=Object.freeze({
+  preferredPreciseSource:"garmin_connect_maxmet_vo2MaxPreciseValue",
+  intervalsRole:"fallback_when_direct_garmin_unavailable",
+  noDecimalInference:true,
+  latestRunAssociation:true,
+  historicalRewrite:false,
+  canonicalWrites:false,
+  effectivePlanWrites:false,
+  adaptiveWrites:false,
+  remoteTrainingWrites:false,
+  schemaMigration:false
+});
+const atlasM83Vo2QualityBase=atlasM81Vo2Quality;
+atlasM81Vo2Quality=function(source,value,explicit=null){
+  const s=String(source||"").toLowerCase();
+  if(s.includes("garmin_connect")&&s.includes("vo2maxprecisevalue"))return"PRECISE";
+  return atlasM83Vo2QualityBase(source,value,explicit);
+};
+function atlasM83Audit(){
+  const errors=[];
+  if(atlasM81Vo2Quality("garmin_connect:maxmet.generic.vo2MaxPreciseValue",54.6)!=="PRECISE")errors.push("garmin-direct-precise");
+  if(formatVo2Value(54.6)!=="54,6"||formatVo2Value(55)!=="55")errors.push("format-contract");
+  if(ATLAS_M83_POLICY.noDecimalInference!==true)errors.push("no-inference");
+  if(ATLAS_M83_POLICY.canonicalWrites!==false||ATLAS_M83_POLICY.adaptiveWrites!==false||ATLAS_M83_POLICY.remoteTrainingWrites!==false)errors.push("write-guard");
+  return Object.freeze({ok:errors.length===0,errors,policy:ATLAS_M83_POLICY});
+}
+const ATLAS_M83_AUDIT=atlasM83Audit();
+registerAtlasDiagnostic("garminDirectVo2M83",Object.freeze({version:ATLAS_M83_VERSION,policy:ATLAS_M83_POLICY,audit:ATLAS_M83_AUDIT}));
+const atlasM83CollectRuntimeDiagnosticsBase=collectRuntimeDiagnostics;
+collectRuntimeDiagnostics=async function(){
+  const out=await atlasM83CollectRuntimeDiagnosticsBase.apply(this,arguments);
+  out.m83={version:ATLAS_M83_VERSION,policy:ATLAS_M83_POLICY,audit:ATLAS_M83_AUDIT};
+  return out;
+};
 
 
 })();
